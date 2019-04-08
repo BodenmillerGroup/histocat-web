@@ -1,0 +1,19 @@
+# Contains requirements common to all environments
+
+fastapi
+uvicorn
+pyjwt
+python-multipart
+email-validator
+requests
+celery==4.3.0
+passlib[bcrypt]
+tenacity
+pydantic
+emails
+raven
+gunicorn
+jinja2
+psycopg2-binary
+alembic
+sqlalchemy

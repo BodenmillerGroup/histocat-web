@@ -1,0 +1,54 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HistoCAT for Web",
+  "author": {
+    "name": "Anton Rau",
+    "email": "anton.rau@uzh.ch"
+  },
+  "homepage": "https://github.com/plankter/histocat#readme",
+  "keywords": [
+    "HistoCAT",
+    "BodenmillerLab"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plankter/histocat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/plankter/histocat.git/issues"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test:unit": "vue-cli-service test:unit"
+  },
+  "dependencies": {
+    "axios": "0.18.0",
+    "register-service-worker": "1.6.2",
+    "tslib": "1.9.3",
+    "typesafe-vuex": "3.1.1",
+    "vee-validate": "2.2.0",
+    "vue": "2.6.10",
+    "vue-class-component": "7.0.2",
+    "vue-property-decorator": "8.1.0",
+    "vue-router": "3.0.2",
+    "vuetify": "1.5.9",
+    "vuex": "3.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.11",
+    "@vue/cli-plugin-pwa": "3.5.1",
+    "@vue/cli-plugin-typescript": "3.5.3",
+    "@vue/cli-plugin-unit-jest": "3.5.3",
+    "@vue/cli-service": "3.5.3",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "ts-jest": "24.0.2",
+    "tslint-config-prettier": "1.18.0",
+    "typescript": "3.4.2",
+    "vue-cli-plugin-vuetify": "0.5.0",
+    "vue-template-compiler": "2.6.10"
+  }
+}

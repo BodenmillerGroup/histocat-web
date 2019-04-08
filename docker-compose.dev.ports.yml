@@ -1,0 +1,18 @@
+version: '3.3'
+services:
+  db:
+    ports:
+      - '5432:5432'
+  pgadmin:
+    ports:
+      - '5050:5050'
+  proxy:
+    ports:
+      - '80:80'
+      - '8090:8080'
+  flower:
+    ports:
+      - '5555:5555'
+  backend:
+    ports:
+      - '8888:8888'

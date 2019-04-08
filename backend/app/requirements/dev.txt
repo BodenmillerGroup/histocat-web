@@ -1,0 +1,12 @@
+# Specifies only dev-specific requirements, but imports the common ones too
+
+-r common.txt
+
+mypy
+black
+jupyter
+isort
+autoflake
+flake8
+pytest
+vulture

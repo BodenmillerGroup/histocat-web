@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+dist/
+build*
+*.egg-info
+.mypy_cache
+
+# Virtualenv
+venv/

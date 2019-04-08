@@ -1,0 +1,16 @@
+# Mac OSX
+.DS_Store
+
+# local env files
+.env.local
+.env.*.local
+
+# Editor directories and files
+.idea
+.vscode
+
+# Docker
+docker-stack.yml
+
+# Virtualenv
+venv/
