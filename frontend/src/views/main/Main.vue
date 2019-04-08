@@ -71,7 +71,7 @@
         </v-list>
       </v-layout>
     </v-navigation-drawer>
-    <v-toolbar dark color="primary" app :clipped-left="$vuetify.breakpoint.lgAndUp">
+    <v-toolbar dark color="primary" app :clipped-left="$vuetify.breakpoint.lgAndUp" dense>
       <v-toolbar-side-icon @click.stop="switchShowDrawer"></v-toolbar-side-icon>
       <v-toolbar-title v-text="appName"></v-toolbar-title>
       <v-spacer></v-spacer>
