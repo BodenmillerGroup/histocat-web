@@ -1,5 +1,6 @@
 from typing import Optional
 
+from datetime import datetime
 from pydantic import BaseModel
 
 
@@ -34,3 +35,4 @@ class User(UserBaseInDB):
 # Additional properties stored in DB
 class UserInDB(UserBaseInDB):
     hashed_password: str
+    created_at: datetime

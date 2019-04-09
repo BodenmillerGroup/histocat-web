@@ -1,12 +1,12 @@
 # Specifies only dev-specific requirements, but imports the common ones too
 
--r common.txt
+-r common.in
 
-mypy
-black
-jupyter
-isort
 autoflake
+black
 flake8
+isort
+jupyter
+mypy
 pytest
 vulture
