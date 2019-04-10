@@ -1,14 +1,25 @@
+import logging
 import os
 from abc import abstractproperty, abstractmethod
 
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Integer, String, JSON
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.sql.functions import now
+
+logger = logging.getLogger(__name__)
 
 Base = declarative_base()
 
 
-class DateMixIn:
+class IdMixin:
+    '''
+    Mixin class to automatically add an ID column to a database table with primary key constraint.
+    '''
+
+    id = Column(Integer, primary_key=True, index=True)
+
+
+class CreatedAtMixin:
     '''
     Mixin class to automatically add columns with datetime stamps to a database table.
     '''
@@ -19,8 +30,18 @@ class DateMixIn:
 
     @declared_attr
     def created_at(cls):
-        '''datetime: date and time when the row was inserted into the column'''
-        return Column(DateTime, default=now())
+        '''datetime: date and time when the row was inserted into the table'''
+        return Column(DateTime, default=now(), nullable=False)
+
+
+class UpdatedAtMixin:
+    '''
+    Mixin class to automatically add columns with datetime stamps to a database table.
+    '''
+
+    # NOTE: We use the "declared_attr" property for the mixin to ensure that
+    # the columns are added to the end of the columns list. This simplifies
+    # table distribution.
 
     @declared_attr
     def updated_at(cls):
@@ -29,19 +50,27 @@ class DateMixIn:
         return Column(
             DateTime,
             default=now(),
-            onupdate=now()
+            onupdate=now(),
+            nullable=False
         )
 
 
-class IdMixIn:
+class MetaMixin:
     '''
-    Mixin class to automatically add an ID column to a database table with primary key constraint.
+    Mixin class to add a JSON meta data column to a database table.
     '''
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    # NOTE: We use the "declared_attr" property for the mixin to ensure that
+    # the columns are added to the end of the columns list. This simplifies
+    # table distribution.
+
+    @declared_attr
+    def meta(cls):
+        '''JSON: meta data'''
+        return Column(JSON)
 
 
-class FileSystemModel(Base, IdMixIn):
+class FileSystemModel(IdMixin, Base):
     '''
     Abstract base class for model classes, which refer to data stored on disk outside of the database.
     '''

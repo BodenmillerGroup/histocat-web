@@ -1,19 +1,16 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, UniqueConstraint
-from sqlalchemy.sql.functions import now
+from sqlalchemy import Boolean, Column, String
 
-from app.db_models.base import Base
+from app.db_models.base import Base, IdMixin, CreatedAtMixin, UpdatedAtMixin
 
 
-class User(Base):
+class User(IdMixin, Base, CreatedAtMixin, UpdatedAtMixin):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     full_name = Column(String, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
-    is_superuser = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=now())
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_superuser = Column(Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return f'<User(id={self.id}, full_name={self.full_name}, email={self.email}, is_active={self.is_active},' \

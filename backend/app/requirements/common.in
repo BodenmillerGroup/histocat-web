@@ -1,19 +1,30 @@
 # Contains requirements common to all environments
 
 alembic
+cached_property
 celery
 email-validator
 emails
 fastapi
+GeoAlchemy2
 gunicorn
+h5py
 jinja2
+lxml
+mahotas
+opencv-python-headless
+pandas
 passlib[bcrypt]
 psycopg2-binary
 pydantic
 pyjwt
 python-multipart
+PyYAML
 raven
 requests
+scikit-image
+Shapely
 sqlalchemy
+tables
 tenacity
 uvicorn
