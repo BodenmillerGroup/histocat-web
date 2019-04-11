@@ -2,7 +2,8 @@ import logging
 import os
 from abc import abstractproperty, abstractmethod
 
-from sqlalchemy import Column, DateTime, Integer, String, JSON
+from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.sql.functions import now
 
@@ -67,7 +68,7 @@ class MetaMixin:
     @declared_attr
     def meta(cls):
         '''JSON: meta data'''
-        return Column(JSON)
+        return Column(JSONB)
 
 
 class FileSystemModel(IdMixin, Base):

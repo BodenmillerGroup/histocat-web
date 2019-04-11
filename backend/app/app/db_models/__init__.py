@@ -3,3 +3,6 @@
 from .base import Base  # noqa
 from .user import User  # noqa
 from .experiment import Experiment  # noqa
+from .slide import Slide  # noqa
+from .acquisition import Acquisition  # noqa
+from .channel import Channel  # noqa

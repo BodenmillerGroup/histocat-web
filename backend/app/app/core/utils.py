@@ -495,7 +495,7 @@ class autocreate_directory_property(object):
         value = obj.__dict__[self.func.__name__] = self.func(obj)
         if not isinstance(value, str):
             raise TypeError(
-                'Value of property "%s" must have type basestring: %s'
+                'Value of property "%s" must have type string: %s'
                 % (self.func.__name__, value)
             )
         if not value:

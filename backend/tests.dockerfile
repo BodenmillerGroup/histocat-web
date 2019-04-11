@@ -1,6 +1,8 @@
 FROM python:3.7
 
-RUN pip install requests pytest tenacity passlib[bcrypt] fastapi psycopg2-binary SQLAlchemy
+COPY ./app /app
+
+RUN pip install -r /app/requirements/dev.txt
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
@@ -8,8 +10,6 @@ RUN pip install requests pytest tenacity passlib[bcrypt] fastapi psycopg2-binary
 ARG env=prod
 RUN bash -c "if [ $env == 'dev' ] ; then pip install jupyter ; fi"
 EXPOSE 8888
-
-COPY ./app /app
 
 ENV PYTHONPATH=/app
 

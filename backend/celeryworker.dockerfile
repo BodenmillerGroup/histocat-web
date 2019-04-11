@@ -1,6 +1,8 @@
 FROM python:3.7
 
-RUN pip install raven celery==4.3.0 passlib[bcrypt] tenacity requests emails pyjwt email_validator jinja2 psycopg2-binary alembic SQLAlchemy
+COPY ./app /app
+
+RUN pip install -r /app/requirements/prod.txt
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
@@ -11,7 +13,6 @@ EXPOSE 8888
 
 ENV C_FORCE_ROOT=1
 
-COPY ./app /app
 WORKDIR /app
 
 ENV PYTHONPATH=/app
