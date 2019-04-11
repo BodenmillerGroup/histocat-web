@@ -22,6 +22,7 @@ def upgrade():
                     sa.Column('id', sa.Integer(), primary_key=True, index=True),
                     sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
                     sa.Column('description', sa.String()),
+                    sa.Column('root_directory', sa.String(4096)),
                     sa.Column('location', sa.String(4096)),
                     sa.Column('meta', JSONB()),
                     sa.Column('created_at', sa.DateTime(), nullable=False),

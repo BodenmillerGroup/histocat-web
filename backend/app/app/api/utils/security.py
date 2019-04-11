@@ -10,7 +10,7 @@ from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
 from app.db_models.user import User
-from app.models.token import TokenPayload
+from app.models.token import TokenPayloadModel
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/login/access-token")
 
@@ -20,12 +20,12 @@ def get_current_user(
 ):
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
-        token_data = TokenPayload(**payload)
+        token_data = TokenPayloadModel(**payload)
     except PyJWTError:
         raise HTTPException(
             status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials"
         )
-    user = crud.user.get(db, user_id=token_data.user_id)
+    user = crud.user.get(db, id=token_data.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

@@ -3,7 +3,7 @@ import requests
 from app import crud
 from app.core import config
 from app.db.session import db_session
-from app.models.user import UserInCreate
+from app.models.user import UserInCreateModel
 from app.tests.utils.user import user_authentication_headers
 from app.tests.utils.utils import get_server_api, random_lower_string
 
@@ -40,8 +40,8 @@ def test_get_existing_user(superuser_token_headers):
     server_api = get_server_api()
     username = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=username, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=username, password=password)
+    user = crud.user.create(db_session, params=user_in)
     user_id = user.id
     r = requests.get(
         f"{server_api}{config.API_V1_STR}/users/{user_id}",
@@ -58,8 +58,8 @@ def test_create_user_existing_username(superuser_token_headers):
     username = random_lower_string()
     # username = email
     password = random_lower_string()
-    user_in = UserInCreate(email=username, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=username, password=password)
+    user = crud.user.create(db_session, params=user_in)
     data = {"email": username, "password": password}
     r = requests.post(
         f"{server_api}{config.API_V1_STR}/users/",
@@ -75,8 +75,8 @@ def test_create_user_by_normal_user():
     server_api = get_server_api()
     username = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=username, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=username, password=password)
+    user = crud.user.create(db_session, params=user_in)
     user_token_headers = user_authentication_headers(server_api, username, password)
     data = {"email": username, "password": password}
     r = requests.post(
@@ -89,13 +89,13 @@ def test_retrieve_users(superuser_token_headers):
     server_api = get_server_api()
     username = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=username, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=username, password=password)
+    user = crud.user.create(db_session, params=user_in)
 
     username2 = random_lower_string()
     password2 = random_lower_string()
-    user_in2 = UserInCreate(email=username2, password=password2)
-    user2 = crud.user.create(db_session, user_in=user_in2)
+    user_in2 = UserInCreateModel(email=username2, password=password2)
+    user2 = crud.user.create(db_session, params=user_in2)
 
     r = requests.get(
         f"{server_api}{config.API_V1_STR}/users/", headers=superuser_token_headers

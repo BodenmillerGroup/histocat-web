@@ -3,16 +3,16 @@ from pydantic.types import EmailStr
 
 from app.api.utils.security import get_current_active_superuser
 from app.core.celery_app import celery_app
-from app.models.msg import Msg
-from app.models.user import UserInDB
+from app.models.msg import MsgModel
+from app.models.user import UserInDBModel
 from app.utils import send_test_email
 
 router = APIRouter()
 
 
-@router.post("/test-celery/", tags=["utils"], response_model=Msg, status_code=201)
+@router.post("/test-celery/", tags=["utils"], response_model=MsgModel, status_code=201)
 def test_celery(
-    msg: Msg, current_user: UserInDB = Depends(get_current_active_superuser)
+    msg: MsgModel, current_user: UserInDBModel = Depends(get_current_active_superuser)
 ):
     """
     Test Celery worker
@@ -21,9 +21,9 @@ def test_celery(
     return {"msg": "Word received"}
 
 
-@router.post("/test-email/", tags=["utils"], response_model=Msg, status_code=201)
+@router.post("/test-email/", tags=["utils"], response_model=MsgModel, status_code=201)
 def test_email(
-    email_to: EmailStr, current_user: UserInDB = Depends(get_current_active_superuser)
+    email_to: EmailStr, current_user: UserInDBModel = Depends(get_current_active_superuser)
 ):
     """
     Test emails

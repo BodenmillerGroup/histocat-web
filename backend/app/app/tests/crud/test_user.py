@@ -2,15 +2,15 @@ from fastapi.encoders import jsonable_encoder
 
 from app import crud
 from app.db.session import db_session
-from app.models.user import UserInCreate
+from app.models.user import UserInCreateModel
 from app.tests.utils.utils import random_lower_string
 
 
 def test_create_user():
     email = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=email, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=email, password=password)
+    user = crud.user.create(db_session, params=user_in)
     assert user.email == email
     assert hasattr(user, "hashed_password")
 
@@ -18,8 +18,8 @@ def test_create_user():
 def test_authenticate_user():
     email = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=email, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=email, password=password)
+    user = crud.user.create(db_session, params=user_in)
     authenticated_user = crud.user.authenticate(
         db_session, email=email, password=password
     )
@@ -37,8 +37,8 @@ def test_not_authenticate_user():
 def test_check_if_user_is_active():
     email = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=email, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=email, password=password)
+    user = crud.user.create(db_session, params=user_in)
     is_active = crud.user.is_active(user)
     assert is_active is True
 
@@ -46,9 +46,9 @@ def test_check_if_user_is_active():
 def test_check_if_user_is_active_inactive():
     email = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=email, password=password, disabled=True)
+    user_in = UserInCreateModel(email=email, password=password, disabled=True)
     print(user_in)
-    user = crud.user.create(db_session, user_in=user_in)
+    user = crud.user.create(db_session, params=user_in)
     print(user)
     is_active = crud.user.is_active(user)
     print(is_active)
@@ -58,8 +58,8 @@ def test_check_if_user_is_active_inactive():
 def test_check_if_user_is_superuser():
     email = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=email, password=password, is_superuser=True)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=email, password=password, is_superuser=True)
+    user = crud.user.create(db_session, params=user_in)
     is_superuser = crud.user.is_superuser(user)
     assert is_superuser is True
 
@@ -67,8 +67,8 @@ def test_check_if_user_is_superuser():
 def test_check_if_user_is_superuser_normal_user():
     username = random_lower_string()
     password = random_lower_string()
-    user_in = UserInCreate(email=username, password=password)
-    user = crud.user.create(db_session, user_in=user_in)
+    user_in = UserInCreateModel(email=username, password=password)
+    user = crud.user.create(db_session, params=user_in)
     is_superuser = crud.user.is_superuser(user)
     assert is_superuser is False
 
@@ -76,8 +76,8 @@ def test_check_if_user_is_superuser_normal_user():
 def test_get_user():
     password = random_lower_string()
     username = random_lower_string()
-    user_in = UserInCreate(email=username, password=password, is_superuser=True)
-    user = crud.user.create(db_session, user_in=user_in)
-    user_2 = crud.user.get(db_session, user_id=user.id)
+    user_in = UserInCreateModel(email=username, password=password, is_superuser=True)
+    user = crud.user.create(db_session, params=user_in)
+    user_2 = crud.user.get(db_session, id=user.id)
     assert user.email == user_2.email
     assert jsonable_encoder(user) == jsonable_encoder(user_2)

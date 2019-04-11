@@ -4,11 +4,11 @@ from fastapi.encoders import jsonable_encoder
 
 from app.core.security import get_password_hash, verify_password
 from app.db_models.user import User
-from app.models.user import UserInCreate, UserInUpdate
+from app.models.user import UserInCreateModel, UserInUpdateModel
 
 
-def get(db_session, *, user_id: int) -> Optional[User]:
-    return db_session.query(User).filter(User.id == user_id).first()
+def get(db_session, *, id: int) -> Optional[User]:
+    return db_session.query(User).filter(User.id == id).first()
 
 
 def get_by_email(db_session, *, email: str) -> Optional[User]:
@@ -36,12 +36,12 @@ def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[User]]:
     return db_session.query(User).offset(skip).limit(limit).all()
 
 
-def create(db_session, *, user_in: UserInCreate) -> User:
+def create(db_session, *, params: UserInCreateModel) -> User:
     user = User(
-        email=user_in.email,
-        hashed_password=get_password_hash(user_in.password),
-        full_name=user_in.full_name,
-        is_superuser=user_in.is_superuser,
+        email=params.email,
+        hashed_password=get_password_hash(params.password),
+        full_name=params.full_name,
+        is_superuser=params.is_superuser,
     )
     db_session.add(user)
     db_session.commit()
@@ -49,15 +49,15 @@ def create(db_session, *, user_in: UserInCreate) -> User:
     return user
 
 
-def update(db_session, *, user: User, user_in: UserInUpdate) -> User:
+def update(db_session, *, user: User, params: UserInUpdateModel) -> User:
     user_data = jsonable_encoder(user)
     for field in user_data:
-        if field in user_in.fields:
-            value_in = getattr(user_in, field)
+        if field in params.fields:
+            value_in = getattr(params, field)
             if value_in is not None:
                 setattr(user, field, value_in)
-    if user_in.password:
-        passwordhash = get_password_hash(user_in.password)
+    if params.password:
+        passwordhash = get_password_hash(params.password)
         user.hashed_password = passwordhash
     db_session.add(user)
     db_session.commit()

@@ -5,34 +5,31 @@ from pydantic import BaseModel
 
 
 # Shared properties
-class UserBase(BaseModel):
+class UserBaseModel(BaseModel):
+    id: int = None
     email: Optional[str] = None
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
     full_name: Optional[str] = None
 
 
-class UserBaseInDB(UserBase):
-    id: int = None
-
-
 # Properties to receive via API on creation
-class UserInCreate(UserBaseInDB):
+class UserInCreateModel(UserBaseModel):
     email: str
     password: str
 
 
 # Properties to receive via API on update
-class UserInUpdate(UserBaseInDB):
+class UserInUpdateModel(UserBaseModel):
     password: Optional[str] = None
 
 
 # Additional properties to return via API
-class User(UserBaseInDB):
+class UserModel(UserBaseModel):
     pass
 
 
 # Additional properties stored in DB
-class UserInDB(UserBaseInDB):
+class UserInDBModel(UserBaseModel):
     hashed_password: str
     created_at: datetime
