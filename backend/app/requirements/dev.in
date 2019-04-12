@@ -8,5 +8,6 @@ flake8
 isort
 jupyter
 mypy
+ptvsd
 pytest
 vulture

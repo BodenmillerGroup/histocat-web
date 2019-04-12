@@ -1,3 +1,6 @@
+import logging
+import os
+
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
@@ -5,6 +8,16 @@ from starlette.requests import Request
 from app.api.api_v1.api import api_router
 from app.core import config
 from app.db.session import Session
+from app.debug import init_debug
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+if os.environ.get('ENV') == 'dev':
+    try:
+        init_debug()
+    except Exception as e:
+        logger.error(e)
 
 app = FastAPI(title=config.PROJECT_NAME, openapi_url="/api/v1/openapi.json")
 

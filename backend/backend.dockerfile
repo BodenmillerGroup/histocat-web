@@ -1,8 +1,11 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
 
-COPY ./app /app
+WORKDIR /app
 
-RUN pip install -r /app/requirements/prod.txt
+# By copying over requirements first, we make sure that Docker will cache
+# our installed requirements rather than reinstall them on every build
+COPY /app/requirements/dev.txt /app/requirements.txt
+RUN pip install --no-cache -r requirements.txt
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
@@ -11,8 +14,9 @@ ARG env=prod
 RUN bash -c "if [ $env == 'dev' ] ; then pip install jupyter ; fi"
 EXPOSE 8888
 
-WORKDIR /app/
+# Now copy in our code, and run it
+COPY ./app /app
 
 ENV PYTHONPATH=/app
 
-EXPOSE 80
+EXPOSE 80 5678

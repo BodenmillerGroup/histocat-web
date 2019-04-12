@@ -16,3 +16,4 @@ services:
   backend:
     ports:
       - '8888:8888'
+      - '5678:5678'

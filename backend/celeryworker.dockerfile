@@ -1,8 +1,11 @@
 FROM python:3.7
 
-COPY ./app /app
+WORKDIR /app
 
-RUN pip install -r /app/requirements/prod.txt
+# By copying over requirements first, we make sure that Docker will cache
+# our installed requirements rather than reinstall them on every build
+COPY /app/requirements/prod.txt /app/requirements.txt
+RUN pip install --no-cache -r requirements.txt
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
@@ -13,12 +16,10 @@ EXPOSE 8888
 
 ENV C_FORCE_ROOT=1
 
-WORKDIR /app
+COPY ./app /app
 
 ENV PYTHONPATH=/app
 
-COPY ./app/worker-start.sh /worker-start.sh
+RUN chmod +x /app/worker-start.sh
 
-RUN chmod +x /worker-start.sh
-
-CMD ["bash", "/worker-start.sh"]
+CMD ["bash", "/app/worker-start.sh"]
