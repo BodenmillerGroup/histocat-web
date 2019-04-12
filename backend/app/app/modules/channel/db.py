@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship, backref
 
 from app.core.errors import DataError
 from app.core.utils import remove_location_upon_delete, create_directory, autocreate_directory_property
-from app.db_models.base import DirectoryModel, MetaMixin, CreatedAtMixin
+from app.db.base import DirectoryModel, MetaMixin, CreatedAtMixin
 
 logger = logging.getLogger(__name__)
 

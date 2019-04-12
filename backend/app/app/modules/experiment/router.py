@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.db_models import User
+from app.modules.user.db import User
 from . import crud
 from .models import ExperimentModel, ExperimentInCreateModel, ExperimentInUpdateModel
 

@@ -8,7 +8,7 @@ from starlette.status import HTTP_403_FORBIDDEN
 from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
-from app.db_models.user import User
+from app.modules.user.db import User
 from app.modules.auth.models import TokenPayloadModel
 from app.modules.user.crud import is_active, get, is_superuser
 

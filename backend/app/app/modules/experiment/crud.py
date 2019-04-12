@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 
-from app.db_models.experiment import Experiment
+from app.modules.experiment.db import Experiment
 from .models import ExperimentInCreateModel, ExperimentInUpdateModel
 
 

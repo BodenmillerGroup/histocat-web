@@ -9,7 +9,7 @@ from app.api.utils.security import get_current_user
 from app.core import config
 from app.core.jwt import create_access_token
 from app.core.security import get_password_hash
-from app.db_models.user import User as DBUser
+from app.modules.user.db import User as DBUser
 from app.modules.core.models import MsgModel
 from app.modules.user import crud
 from app.modules.user.models import UserModel

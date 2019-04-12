@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, String
 
-from app.db_models.base import Base, IdMixin, CreatedAtMixin, UpdatedAtMixin
+from app.db.base import Base, IdMixin, CreatedAtMixin, UpdatedAtMixin
 
 
 class User(IdMixin, Base, CreatedAtMixin, UpdatedAtMixin):

@@ -26,7 +26,7 @@ from app.core.file_upload_status import FileUploadStatus
 from app.core.image import ChannelImage, IllumstatsImage, IllumstatsContainer
 from app.core.metadata import ChannelImageMetadata, IllumstatsImageMetadata
 from app.core.utils import notimplemented, assert_type, remove_location_upon_delete
-from app.db_models.base import FileModel, CreatedAtMixin
+from app.db.base import FileModel, CreatedAtMixin
 from app.io.readers import DatasetReader
 from app.io.writers import DatasetWriter
 
