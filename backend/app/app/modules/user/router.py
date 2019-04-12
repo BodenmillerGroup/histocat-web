@@ -5,13 +5,13 @@ from fastapi.encoders import jsonable_encoder
 from pydantic.types import EmailStr
 from sqlalchemy.orm import Session
 
-from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core import config
 from app.db_models.user import User
-from app.models.user import UserModel, UserInCreateModel, UserInDBModel, UserInUpdateModel
 from app.utils import send_new_account_email
+from . import crud
+from .models import UserModel, UserInCreateModel, UserInDBModel, UserInUpdateModel
 
 router = APIRouter()
 
@@ -26,7 +26,7 @@ def read_users(
     """
     Retrieve users
     """
-    users = crud.user.get_multi(db, skip=skip, limit=limit)
+    users = crud.get_multi(db, skip=skip, limit=limit)
     return users
 
 
@@ -40,13 +40,13 @@ def create_user(
     """
     Create new user
     """
-    user = crud.user.get_by_email(db, email=params.email)
+    user = crud.get_by_email(db, email=params.email)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system.",
         )
-    user = crud.user.create(db, params=params)
+    user = crud.create(db, params=params)
     if config.EMAILS_ENABLED and params.email:
         send_new_account_email(
             email_to=params.email, username=params.email, password=params.password
@@ -74,7 +74,7 @@ def update_user_me(
         user_in.full_name = full_name
     if email is not None:
         user_in.email = email
-    user = crud.user.update(db, user=current_user, params=user_in)
+    user = crud.update(db, user=current_user, params=user_in)
     return user
 
 
@@ -105,14 +105,14 @@ def create_user_open(
             status_code=403,
             detail="Open user resgistration is forbidden on this server",
         )
-    user = crud.user.get_by_email(db, email=email)
+    user = crud.get_by_email(db, email=email)
     if user:
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system",
         )
     user_in = UserInCreateModel(password=password, email=email, full_name=full_name)
-    user = crud.user.create(db, params=user_in)
+    user = crud.create(db, params=user_in)
     return user
 
 
@@ -125,10 +125,10 @@ def read_user_by_id(
     """
     Get a specific user by id
     """
-    user = crud.user.get(db, id=user_id)
+    user = crud.get(db, id=user_id)
     if user == current_user:
         return user
-    if not crud.user.is_superuser(current_user):
+    if not crud.is_superuser(current_user):
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
         )
@@ -146,12 +146,12 @@ def update_user(
     """
     Update a user
     """
-    user = crud.user.get(db, id=user_id)
+    user = crud.get(db, id=user_id)
 
     if not user:
         raise HTTPException(
             status_code=404,
             detail="The user with this username does not exist in the system",
         )
-    user = crud.user.update(db, user=user, params=user_in)
+    user = crud.update(db, user=user, params=user_in)
     return user

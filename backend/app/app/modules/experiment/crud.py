@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi.encoders import jsonable_encoder
 
 from app.db_models.experiment import Experiment
-from app.models.experiment import ExperimentInCreateModel, ExperimentInUpdateModel
+from .models import ExperimentInCreateModel, ExperimentInUpdateModel
 
 
 def get(db_session, *, id: int) -> Optional[Experiment]:
