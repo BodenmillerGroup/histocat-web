@@ -7,7 +7,7 @@
 
 # Editor directories and files
 .idea
-.vscode
+# .vscode
 
 # Docker
 docker-stack.yml
