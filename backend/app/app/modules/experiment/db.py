@@ -4,7 +4,7 @@ import os
 from sqlalchemy import Column, String, Text
 
 from app.core.utils import remove_location_upon_delete, autocreate_directory_property
-from app.db_models.base import DirectoryModel, CreatedAtMixin, MetaMixin
+from app.db.base import DirectoryModel, CreatedAtMixin, MetaMixin
 
 logger = logging.getLogger(__name__)
 

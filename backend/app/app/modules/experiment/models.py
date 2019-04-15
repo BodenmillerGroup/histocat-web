@@ -14,14 +14,14 @@ class ExperimentBaseModel(BaseModel):
 
 
 # Properties to receive via API on creation
-class ExperimentInCreateModel(ExperimentBaseModel):
+class ExperimentInCreateModel(BaseModel):
     name: str
     description: Optional[str] = None
     root_directory: str
 
 
 # Properties to receive via API on update
-class ExperimentInUpdateModel(ExperimentBaseModel):
+class ExperimentInUpdateModel(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
 

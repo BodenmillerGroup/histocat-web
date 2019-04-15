@@ -3,11 +3,11 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app import crud
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.db_models import User
-from app.models.experiment import ExperimentModel, ExperimentInCreateModel, ExperimentInUpdateModel
+from app.modules.user.db import User
+from . import crud
+from .models import ExperimentModel, ExperimentInCreateModel, ExperimentInUpdateModel
 
 router = APIRouter()
 
@@ -22,7 +22,7 @@ def read_experiments(
     """
     Retrieve experiments
     """
-    expperiments = crud.experiment.get_multi(db, skip=skip, limit=limit)
+    expperiments = crud.get_multi(db, skip=skip, limit=limit)
     return expperiments
 
 
@@ -36,13 +36,13 @@ def create_experiment(
     """
     Create new experiment
     """
-    experiment = crud.experiment.get_by_name(db, name=experiment_in.name)
+    experiment = crud.get_by_name(db, name=experiment_in.name)
     if experiment:
         raise HTTPException(
             status_code=400,
             detail="The experiment with this name already exists in the system.",
         )
-    experiment = crud.experiment.create(db, params=experiment_in)
+    experiment = crud.create(db, params=experiment_in)
     return experiment
 
 
@@ -55,7 +55,7 @@ def read_experiment_by_id(
     """
     Get a specific experiment by id
     """
-    experiment = crud.experiment.get(db, id=experiment_id)
+    experiment = crud.get(db, id=experiment_id)
     return experiment
 
 
@@ -70,12 +70,12 @@ def update_experiment(
     """
     Update a user
     """
-    experiment = crud.experiment.get(db, id=experiment_id)
+    experiment = crud.get(db, id=experiment_id)
 
     if not experiment:
         raise HTTPException(
             status_code=404,
             detail="The experiment with this id does not exist in the system",
         )
-    experiment = crud.experiment.update(db, experiment=experiment, params=experiment_in)
+    experiment = crud.update(db, experiment=experiment, params=experiment_in)
     return experiment

@@ -3,8 +3,8 @@ from typing import List, Optional
 from fastapi.encoders import jsonable_encoder
 
 from app.core.security import get_password_hash, verify_password
-from app.db_models.user import User
-from app.models.user import UserInCreateModel, UserInUpdateModel
+from app.modules.user.db import User
+from .models import UserInCreateModel, UserInUpdateModel
 
 
 def get(db_session, *, id: int) -> Optional[User]:

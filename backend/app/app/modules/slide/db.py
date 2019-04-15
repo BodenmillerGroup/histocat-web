@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, backref
 
 from app.core.file_upload_status import FileUploadStatus
 from app.core.utils import remove_location_upon_delete, autocreate_directory_property
-from app.db_models.base import CreatedAtMixin, DirectoryModel, MetaMixin
+from app.db.base import CreatedAtMixin, DirectoryModel, MetaMixin
 
 logger = logging.getLogger(__name__)
 

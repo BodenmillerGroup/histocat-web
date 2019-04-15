@@ -1,6 +1,6 @@
-from app import crud
 from app.core import config
-from app.models.user import UserInCreateModel
+from app.modules.user.models import UserInCreateModel
+from app.modules.user import crud
 
 
 def init_db(db_session):
@@ -9,11 +9,11 @@ def init_db(db_session):
     # the tables un-commenting the next line
     # Base.metadata.create_all(bind=engine)
 
-    user = crud.user.get_by_email(db_session, email=config.FIRST_SUPERUSER)
+    user = crud.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
         user_in = UserInCreateModel(
             email=config.FIRST_SUPERUSER,
             password=config.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
         )
-        user = crud.user.create(db_session, params=user_in)
+        user = crud.create(db_session, params=user_in)
