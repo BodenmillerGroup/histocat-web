@@ -561,7 +561,7 @@ def notimplemented(func):
     return wrapper
 
 
-def delete_location(path):
+def delete_location(path: str):
     '''Deletes a location on disk.
 
     Parameters

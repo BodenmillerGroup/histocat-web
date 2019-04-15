@@ -85,7 +85,7 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
                     'Therefore, its location cannot be determined.'
                 )
             self._location = os.path.join(
-                self.plate.acquisitions_location,
+                self.slide.acquisitions_location,
                 ACQUISITION_LOCATION_FORMAT.format(id=self.id)
             )
             if not os.path.exists(self._location):

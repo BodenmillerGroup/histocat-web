@@ -85,7 +85,7 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
                     'Therefore, its location cannot be determined.'
                 )
             self._location = os.path.join(
-                self.experiment.channels_location,
+                self.acquisition.channels_location,
                 CHANNEL_LOCATION_FORMAT.format(id=self.id)
             )
             if not os.path.exists(self._location):

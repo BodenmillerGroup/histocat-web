@@ -500,8 +500,7 @@ class DatasetWriter(Writer):
         elif row_index and column_index:
             dset[row_index, column_index] = data
         elif index is not None:
-            if (isinstance(index, list) and
-                isinstance(data, np.ndarray)):
+            if isinstance(index, list) and isinstance(data, np.ndarray):
                 for i, d in zip(index, data):
                     dset[i] = d.tolist()
             else:

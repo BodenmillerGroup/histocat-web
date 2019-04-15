@@ -14,7 +14,7 @@ def get_by_name(db_session, *, name: str) -> Optional[Experiment]:
     return db_session.query(Experiment).filter(Experiment.name == name).first()
 
 
-def get_multi(db_session, *, skip=0, limit=100) -> List[Optional[Experiment]]:
+def get_multi(db_session, *, skip: int = 0, limit: int = 100) -> List[Optional[Experiment]]:
     return db_session.query(Experiment).offset(skip).limit(limit).all()
 
 
