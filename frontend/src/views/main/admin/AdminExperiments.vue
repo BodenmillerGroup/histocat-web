@@ -11,7 +11,7 @@
       <template slot="items" slot-scope="props">
         <td>{{ props.item.name }}</td>
         <td>{{ props.item.description }}</td>
-        <td>{{ props.item.rootDirectory }}</td>
+        <td>{{ props.item.root_directory }}</td>
         <td class="justify-center layout px-0">
           <v-tooltip top>
             <span>Edit</span>
@@ -48,7 +48,7 @@
       {
         text: 'Root',
         sortable: true,
-        value: 'rootDirectory',
+        value: 'root_directory',
         align: 'left',
       },
       {
