@@ -17,21 +17,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { readUserProfile } from '@/store/main/getters';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { readUserProfile } from '@/modules/main/getters';
 
-@Component
-export default class Dashboard extends Vue {
-  get greetedUser() {
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile && userProfile.full_name) {
-      if (userProfile.full_name) {
-        return userProfile.full_name;
-      } else {
-        return userProfile.email;
+  @Component
+  export default class Dashboard extends Vue {
+    get greetedUser() {
+      const userProfile = readUserProfile(this.$store);
+      if (userProfile && userProfile.full_name) {
+        if (userProfile.full_name) {
+          return userProfile.full_name;
+        } else {
+          return userProfile.email;
+        }
       }
     }
   }
-}
 </script>

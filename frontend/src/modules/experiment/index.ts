@@ -1,13 +1,13 @@
 import { mutations } from './mutations';
 import { getters } from './getters';
 import { actions } from './actions';
-import { AdminState } from './state';
+import { ExperimentsState } from './state';
 
-const defaultState: AdminState = {
-  users: [],
+const defaultState: ExperimentsState = {
+  experiments: [],
 };
 
-export const adminModule = {
+export const experimentModule = {
   state: defaultState,
   mutations,
   actions,

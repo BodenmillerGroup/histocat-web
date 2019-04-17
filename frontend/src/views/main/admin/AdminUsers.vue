@@ -12,8 +12,12 @@
         <td>{{ props.item.name }}</td>
         <td>{{ props.item.email }}</td>
         <td>{{ props.item.full_name }}</td>
-        <td><v-icon v-if="props.item.is_active">checkmark</v-icon></td>
-        <td><v-icon v-if="props.item.is_superuser">checkmark</v-icon></td>
+        <td>
+          <v-icon v-if="props.item.is_active">checkmark</v-icon>
+        </td>
+        <td>
+          <v-icon v-if="props.item.is_superuser">checkmark</v-icon>
+        </td>
         <td class="justify-center layout px-0">
           <v-tooltip top>
             <span>Edit</span>
@@ -28,56 +32,55 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { IUserProfile } from '@/interfaces/user';
-import { readAdminUsers } from '@/store/admin/getters';
-import { dispatchGetUsers } from '@/store/admin/actions';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { readAdminUsers } from '@/modules/user/getters';
+  import { dispatchGetUsers } from '@/modules/user/actions';
 
-@Component
-export default class AdminUsers extends Vue {
-  headers = [
-    {
-      text: 'Name',
-      sortable: true,
-      value: 'name',
-      align: 'left',
-    },
-    {
-      text: 'Email',
-      sortable: true,
-      value: 'email',
-      align: 'left',
-    },
-    {
-      text: 'Full Name',
-      sortable: true,
-      value: 'full_name',
-      align: 'left',
-    },
-    {
-      text: 'Is Active',
-      sortable: true,
-      value: 'isActive',
-      align: 'left',
-    },
-    {
-      text: 'Is Superuser',
-      sortable: true,
-      value: 'isSuperuser',
-      align: 'left',
-    },
-    {
-      text: 'Actions',
-      value: 'id',
-    },
-  ];
-  get users() {
-    return readAdminUsers(this.$store);
-  }
+  @Component
+  export default class AdminUsers extends Vue {
+    headers = [
+      {
+        text: 'Name',
+        sortable: true,
+        value: 'name',
+        align: 'left',
+      },
+      {
+        text: 'Email',
+        sortable: true,
+        value: 'email',
+        align: 'left',
+      },
+      {
+        text: 'Full Name',
+        sortable: true,
+        value: 'full_name',
+        align: 'left',
+      },
+      {
+        text: 'Is Active',
+        sortable: true,
+        value: 'isActive',
+        align: 'left',
+      },
+      {
+        text: 'Is Superuser',
+        sortable: true,
+        value: 'isSuperuser',
+        align: 'left',
+      },
+      {
+        text: 'Actions',
+        value: 'id',
+      },
+    ];
 
-  async mounted() {
-    await dispatchGetUsers(this.$store);
+    get users() {
+      return readAdminUsers(this.$store);
+    }
+
+    async mounted() {
+      await dispatchGetUsers(this.$store);
+    }
   }
-}
 </script>

@@ -13,31 +13,31 @@
           </v-layout>
         </v-container>
       </v-content>
-      <router-view v-else />
+      <router-view v-else/>
       <NotificationsManager></NotificationsManager>
     </v-app>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import NotificationsManager from '@/components/NotificationsManager.vue';
-import { readIsLoggedIn } from '@/store/main/getters';
-import { dispatchCheckLoggedIn } from '@/store/main/actions';
+  import { Component, Vue } from 'vue-property-decorator';
+  import NotificationsManager from '@/components/NotificationsManager.vue';
+  import { readIsLoggedIn } from '@/modules/main/getters';
+  import { dispatchCheckLoggedIn } from '@/modules/main/actions';
 
-@Component({
-  components: {
-    NotificationsManager,
-  },
-})
-export default class App extends Vue {
+  @Component({
+    components: {
+      NotificationsManager,
+    },
+  })
+  export default class App extends Vue {
 
-  get loggedIn() {
-    return readIsLoggedIn(this.$store);
+    get loggedIn() {
+      return readIsLoggedIn(this.$store);
+    }
+
+    async created() {
+      await dispatchCheckLoggedIn(this.$store);
+    }
   }
-
-  async created() {
-    await dispatchCheckLoggedIn(this.$store);
-  }
-}
 </script>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from '@/interfaces/user';
+import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from './models';
 import { authHeaders } from '@/utils';
 
 export const api = {

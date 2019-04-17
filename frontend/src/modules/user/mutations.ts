@@ -1,20 +1,20 @@
-import { IUserProfile } from '@/interfaces/user';
-import { AdminState } from './state';
+import { IUserProfile } from './models';
+import { UserState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { State } from '../state';
+import { State } from '@/store/state';
 
 export const mutations = {
-    setUsers(state: AdminState, payload: IUserProfile[]) {
+    setUsers(state: UserState, payload: IUserProfile[]) {
         state.users = payload;
     },
-    setUser(state: AdminState, payload: IUserProfile) {
+    setUser(state: UserState, payload: IUserProfile) {
         const users = state.users.filter((user: IUserProfile) => user.id !== payload.id);
         users.push(payload);
         state.users = users;
     },
 };
 
-const { commit } = getStoreAccessors<AdminState, State>('');
+const { commit } = getStoreAccessors<UserState, State>('');
 
 export const commitSetUser = commit(mutations.setUser);
 export const commitSetUsers = commit(mutations.setUsers);

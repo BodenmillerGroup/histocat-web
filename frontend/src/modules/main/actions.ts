@@ -1,10 +1,10 @@
-import { api } from '@/api/user';
+import { api } from '@/modules/user/api';
 import router from '@/router';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
 import { AxiosError } from 'axios';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
-import { State } from '../state';
+import { State } from '@/store/state';
 import {
     commitAddNotification,
     commitRemoveNotification,

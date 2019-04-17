@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-navigation-drawer persistent :mini-variant="miniDrawer" :clipped="$vuetify.breakpoint.lgAndUp" v-model="showDrawer" fixed app>
+    <v-navigation-drawer persistent :mini-variant="miniDrawer" :clipped="$vuetify.breakpoint.lgAndUp"
+                         v-model="showDrawer" fixed app>
       <v-layout column fill-height>
         <v-list>
           <v-subheader>Main menu</v-subheader>
@@ -110,65 +111,65 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+  import { Component, Vue } from 'vue-property-decorator';
 
-import { appName } from '@/env';
-import { readDashboardMiniDrawer, readDashboardShowDrawer, readHasAdminAccess } from '@/store/main/getters';
-import { commitSetDashboardShowDrawer, commitSetDashboardMiniDrawer } from '@/store/main/mutations';
-import { dispatchUserLogOut } from '@/store/main/actions';
+  import { appName } from '@/env';
+  import { readDashboardMiniDrawer, readDashboardShowDrawer, readHasAdminAccess } from '@/modules/main/getters';
+  import { commitSetDashboardMiniDrawer, commitSetDashboardShowDrawer } from '@/modules/main/mutations';
+  import { dispatchUserLogOut } from '@/modules/main/actions';
 
-const routeGuardMain = async (to, from, next) => {
-  if (to.path === '/main') {
-    next('/main/dashboard');
-  } else {
-    next();
+  const routeGuardMain = async (to, from, next) => {
+    if (to.path === '/main') {
+      next('/main/dashboard');
+    } else {
+      next();
+    }
+  };
+
+  @Component
+  export default class Main extends Vue {
+    appName = appName;
+
+    beforeRouteEnter(to, from, next) {
+      routeGuardMain(to, from, next);
+    }
+
+    beforeRouteUpdate(to, from, next) {
+      routeGuardMain(to, from, next);
+    }
+
+    get miniDrawer() {
+      return readDashboardMiniDrawer(this.$store);
+    }
+
+    get showDrawer() {
+      return readDashboardShowDrawer(this.$store);
+    }
+
+    set showDrawer(value) {
+      commitSetDashboardShowDrawer(this.$store, value);
+    }
+
+    switchShowDrawer() {
+      commitSetDashboardShowDrawer(
+        this.$store,
+        !readDashboardShowDrawer(this.$store),
+      );
+    }
+
+    switchMiniDrawer() {
+      commitSetDashboardMiniDrawer(
+        this.$store,
+        !readDashboardMiniDrawer(this.$store),
+      );
+    }
+
+    get hasAdminAccess() {
+      return readHasAdminAccess(this.$store);
+    }
+
+    async logout() {
+      await dispatchUserLogOut(this.$store);
+    }
   }
-};
-
-@Component
-export default class Main extends Vue {
-  appName = appName;
-
-  beforeRouteEnter(to, from, next) {
-    routeGuardMain(to, from, next);
-  }
-
-  beforeRouteUpdate(to, from, next) {
-    routeGuardMain(to, from, next);
-  }
-
-  get miniDrawer() {
-    return readDashboardMiniDrawer(this.$store);
-  }
-
-  get showDrawer() {
-    return readDashboardShowDrawer(this.$store);
-  }
-
-  set showDrawer(value) {
-    commitSetDashboardShowDrawer(this.$store, value);
-  }
-
-  switchShowDrawer() {
-    commitSetDashboardShowDrawer(
-      this.$store,
-      !readDashboardShowDrawer(this.$store),
-    );
-  }
-
-  switchMiniDrawer() {
-    commitSetDashboardMiniDrawer(
-      this.$store,
-      !readDashboardMiniDrawer(this.$store),
-    );
-  }
-
-  get hasAdminAccess() {
-    return readHasAdminAccess(this.$store);
-  }
-
-  async logout() {
-    await dispatchUserLogOut(this.$store);
-  }
-}
 </script>

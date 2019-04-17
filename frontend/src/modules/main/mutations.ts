@@ -1,7 +1,7 @@
-import { IUserProfile } from '@/interfaces/user';
+import { IUserProfile } from '@/modules/user/models';
 import { MainState, AppNotification } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { State } from '../state';
+import { State } from '@/store/state';
 
 
 export const mutations = {

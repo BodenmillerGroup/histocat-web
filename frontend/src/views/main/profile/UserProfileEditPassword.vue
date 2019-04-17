@@ -12,7 +12,7 @@
             <div class="title primary--text text--darken-2" v-else>{{userProfile.email}}</div>
           </div>
           <v-form ref="form">
-            <v-text-field 
+            <v-text-field
               type="password"
               ref="password"
               label="Password"
@@ -48,39 +48,38 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { IUserProfileUpdate } from '@/interfaces/user';
-import { readUserProfile } from '@/store/main/getters';
-import { dispatchUpdateUserProfile } from '@/store/main/actions';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { IUserProfileUpdate } from '@/modules/user/models';
+  import { readUserProfile } from '@/modules/main/getters';
+  import { dispatchUpdateUserProfile } from '@/modules/main/actions';
 
-@Component
-export default class UserProfileEdit extends Vue {
-  valid = true;
-  password1 = '';
-  password2 = '';
+  @Component
+  export default class UserProfileEdit extends Vue {
+    valid = true;
+    password1 = '';
+    password2 = '';
 
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
+    get userProfile() {
+      return readUserProfile(this.$store);
+    }
 
-  reset() {
-    this.password1 = '';
-    this.password2 = '';
-    this.$validator.reset();
-  }
+    reset() {
+      this.password1 = '';
+      this.password2 = '';
+      this.$validator.reset();
+    }
 
-  cancel() {
-    this.$router.back();
-  }
+    cancel() {
+      this.$router.back();
+    }
 
-  async submit() {
-    if (await this.$validator.validateAll()) {
-      const updatedProfile: IUserProfileUpdate = {};
-      updatedProfile.password = this.password1;
-      await dispatchUpdateUserProfile(this.$store, updatedProfile);
-      this.$router.push('/main/profile');
+    async submit() {
+      if (await this.$validator.validateAll()) {
+        const updatedProfile: IUserProfileUpdate = {};
+        updatedProfile.password = this.password1;
+        await dispatchUpdateUserProfile(this.$store, updatedProfile);
+        this.$router.push('/main/profile');
+      }
     }
   }
-}
 </script>

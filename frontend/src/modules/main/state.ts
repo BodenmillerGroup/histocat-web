@@ -1,4 +1,4 @@
-import { IUserProfile } from '@/interfaces/user';
+import { IUserProfile } from '@/modules/user/models';
 
 export interface AppNotification {
     content: string;

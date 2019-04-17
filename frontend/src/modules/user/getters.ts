@@ -1,10 +1,10 @@
-import { AdminState } from './state';
+import { UserState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { State } from '../state';
+import { State } from '@/store/state';
 
 export const getters = {
-    adminUsers: (state: AdminState) => state.users,
-    adminOneUser: (state: AdminState) => (userId: number) => {
+    adminUsers: (state: UserState) => state.users,
+    adminOneUser: (state: UserState) => (userId: number) => {
         const filteredUsers = state.users.filter((user) => user.id === userId);
         if (filteredUsers.length > 0) {
             return { ...filteredUsers[0] };
@@ -12,7 +12,7 @@ export const getters = {
     },
 };
 
-const { read } = getStoreAccessors<AdminState, State>('');
+const { read } = getStoreAccessors<UserState, State>('');
 
 export const readAdminOneUser = read(getters.adminOneUser);
 export const readAdminUsers = read(getters.adminUsers);

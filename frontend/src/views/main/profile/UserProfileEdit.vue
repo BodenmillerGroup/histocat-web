@@ -44,54 +44,53 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { IUserProfileUpdate } from '@/interfaces/user';
-import { readUserProfile } from '@/store/main/getters';
-import { dispatchUpdateUserProfile } from '@/store/main/actions';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { IUserProfileUpdate } from '@/modules/user/models';
+  import { readUserProfile } from '@/modules/main/getters';
+  import { dispatchUpdateUserProfile } from '@/modules/main/actions';
 
-@Component
-export default class UserProfileEdit extends Vue {
-  valid = true;
-  fullName: string = '';
-  email: string = '';
+  @Component
+  export default class UserProfileEdit extends Vue {
+    valid = true;
+    fullName: string = '';
+    email: string = '';
 
-  created() {
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile) {
-      this.fullName = userProfile.full_name;
-      this.email = userProfile.email;
-    }
-  }
-
-  get userProfile() {
-    return readUserProfile(this.$store);
-  }
-
-  reset() {
-    const userProfile = readUserProfile(this.$store);
-    if (userProfile) {
-      this.fullName = userProfile.full_name;
-      this.email = userProfile.email;
-    }
-  }
-
-  cancel() {
-    this.$router.back();
-  }
-
-  async submit() {
-    if ((this.$refs.form as any).validate()) {
-      const updatedProfile: IUserProfileUpdate = {};
-      if (this.fullName) {
-        updatedProfile.full_name = this.fullName;
+    created() {
+      const userProfile = readUserProfile(this.$store);
+      if (userProfile) {
+        this.fullName = userProfile.full_name;
+        this.email = userProfile.email;
       }
-      if (this.email) {
-        updatedProfile.email = this.email;
+    }
+
+    get userProfile() {
+      return readUserProfile(this.$store);
+    }
+
+    reset() {
+      const userProfile = readUserProfile(this.$store);
+      if (userProfile) {
+        this.fullName = userProfile.full_name;
+        this.email = userProfile.email;
       }
-      await dispatchUpdateUserProfile(this.$store, updatedProfile);
-      this.$router.push('/main/profile');
+    }
+
+    cancel() {
+      this.$router.back();
+    }
+
+    async submit() {
+      if ((this.$refs.form as any).validate()) {
+        const updatedProfile: IUserProfileUpdate = {};
+        if (this.fullName) {
+          updatedProfile.full_name = this.fullName;
+        }
+        if (this.email) {
+          updatedProfile.email = this.email;
+        }
+        await dispatchUpdateUserProfile(this.$store, updatedProfile);
+        this.$router.push('/main/profile');
+      }
     }
   }
-}
 </script>

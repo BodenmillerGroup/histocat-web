@@ -11,11 +11,13 @@
             <div
               class="title primary--text text--darken-2"
               v-if="user"
-            >{{user.email}}</div>
+            >{{user.email}}
+            </div>
             <div
               class="title primary--text text--darken-2"
               v-else
-            >-----</div>
+            >-----
+            </div>
           </div>
           <v-form
             v-model="valid"
@@ -36,12 +38,14 @@
               :error-messages="errors.collect('email')"
               required
             ></v-text-field>
-            <div class="subheading secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span v-else>(currently is not a superuser)</span></div>
+            <div class="subheading secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
+              v-else>(currently is not a superuser)</span></div>
             <v-checkbox
               label="Is Superuser"
               v-model="isSuperuser"
             ></v-checkbox>
-            <div class="subheading secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span v-else>(currently not active)</span></div>
+            <div class="subheading secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
+              v-else>(currently not active)</span></div>
             <v-checkbox
               label="Is Active"
               v-model="isActive"
@@ -99,65 +103,65 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { IUserProfile, IUserProfileUpdate } from '@/interfaces/user';
-import { dispatchGetUsers, dispatchUpdateUser } from '@/store/admin/actions';
-import { readAdminOneUser } from '@/store/admin/getters';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { IUserProfileUpdate } from '@/modules/user/models';
+  import { dispatchGetUsers, dispatchUpdateUser } from '@/modules/user/actions';
+  import { readAdminOneUser } from '@/modules/user/getters';
 
-@Component
-export default class EditUser extends Vue {
-  valid = true;
-  fullName: string = '';
-  email: string = '';
-  isActive: boolean = true;
-  isSuperuser: boolean = false;
-  setPassword = false;
-  password1: string = '';
-  password2: string = '';
+  @Component
+  export default class EditUser extends Vue {
+    valid = true;
+    fullName: string = '';
+    email: string = '';
+    isActive: boolean = true;
+    isSuperuser: boolean = false;
+    setPassword = false;
+    password1: string = '';
+    password2: string = '';
 
-  async mounted() {
-    await dispatchGetUsers(this.$store);
-    this.reset();
-  }
+    async mounted() {
+      await dispatchGetUsers(this.$store);
+      this.reset();
+    }
 
-  reset() {
-    this.setPassword = false;
-    this.password1 = '';
-    this.password2 = '';
-    this.$validator.reset();
-    if (this.user) {
-      this.fullName = this.user.full_name;
-      this.email = this.user.email;
-      this.isActive = this.user.is_active;
-      this.isSuperuser = this.user.is_superuser;
+    reset() {
+      this.setPassword = false;
+      this.password1 = '';
+      this.password2 = '';
+      this.$validator.reset();
+      if (this.user) {
+        this.fullName = this.user.full_name;
+        this.email = this.user.email;
+        this.isActive = this.user.is_active;
+        this.isSuperuser = this.user.is_superuser;
+      }
+    }
+
+    cancel() {
+      this.$router.back();
+    }
+
+    async submit() {
+      if (await this.$validator.validateAll()) {
+        const updatedProfile: IUserProfileUpdate = {};
+        if (this.fullName) {
+          updatedProfile.full_name = this.fullName;
+        }
+        if (this.email) {
+          updatedProfile.email = this.email;
+        }
+        updatedProfile.is_active = this.isActive;
+        updatedProfile.is_superuser = this.isSuperuser;
+        if (this.setPassword) {
+          updatedProfile.password = this.password1;
+        }
+        await dispatchUpdateUser(this.$store, { id: this.user!.id, user: updatedProfile });
+        this.$router.push('/main/admin/users');
+      }
+    }
+
+    get user() {
+      return readAdminOneUser(this.$store)(+this.$router.currentRoute.params.id);
     }
   }
-
-  cancel() {
-    this.$router.back();
-  }
-
-  async submit() {
-    if (await this.$validator.validateAll()) {
-      const updatedProfile: IUserProfileUpdate = {};
-      if (this.fullName) {
-        updatedProfile.full_name = this.fullName;
-      }
-      if (this.email) {
-        updatedProfile.email = this.email;
-      }
-      updatedProfile.is_active = this.isActive;
-      updatedProfile.is_superuser = this.isSuperuser;
-      if (this.setPassword) {
-        updatedProfile.password = this.password1;
-      }
-      await dispatchUpdateUser(this.$store, { id: this.user!.id, user: updatedProfile });
-      this.$router.push('/main/admin/users');
-    }
-  }
-
-  get user() {
-    return readAdminOneUser(this.$store)(+this.$router.currentRoute.params.id);
-  }
-}
 </script>

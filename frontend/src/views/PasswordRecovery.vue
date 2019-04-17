@@ -10,7 +10,9 @@
             <v-card-text>
               <p class="subheading">A password recovery email will be sent to the registered account</p>
               <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
-                <v-text-field @keyup.enter="submit" label="Username" type="text" prepend-icon="person" v-model="username" v-validate="'required'" data-vv-name="username" :error-messages="errors.collect('username')" required></v-text-field>
+                <v-text-field @keyup.enter="submit" label="Username" type="text" prepend-icon="person"
+                              v-model="username" v-validate="'required'" data-vv-name="username"
+                              :error-messages="errors.collect('username')" required></v-text-field>
               </v-form>
             </v-card-text>
             <v-card-actions>
@@ -28,24 +30,24 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { appName } from '@/env';
-import { dispatchPasswordRecovery } from '@/store/main/actions';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { appName } from '@/env';
+  import { dispatchPasswordRecovery } from '@/modules/main/actions';
 
-@Component
-export default class Login extends Vue {
-  valid = true;
-  username: string = '';
-  appName = appName;
+  @Component
+  export default class Login extends Vue {
+    valid = true;
+    username: string = '';
+    appName = appName;
 
-  cancel() {
-    this.$router.back();
+    cancel() {
+      this.$router.back();
+    }
+
+    submit() {
+      dispatchPasswordRecovery(this.$store, { username: this.username });
+    }
   }
-
-  submit() {
-    dispatchPasswordRecovery(this.$store, { username: this.username });
-  }
-}
 </script>
 
 <style>

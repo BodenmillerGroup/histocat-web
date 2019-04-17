@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IExperiment, IExperimentCreate, IExperimentUpdate } from '@/interfaces/experiment';
+import { IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
 import { authHeaders } from '@/utils';
 
 
