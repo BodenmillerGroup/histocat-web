@@ -9,7 +9,7 @@ import { experimentModule } from '@/modules/experiment';
 
 Vue.use(Vuex);
 
-const debug = process.env.NODE_ENV !== 'prod';
+const debug = process.env.NODE_ENV !== 'production';
 
 const storeOptions: StoreOptions<State> = {
   modules: {

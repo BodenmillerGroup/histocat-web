@@ -84,6 +84,21 @@ export default new Router({
                   component: () => import(
                     /* webpackChunkName: "main-admin-users-create" */ '@/views/main/admin/CreateUser.vue'),
                 },
+                {
+                  path: 'experiments',
+                  redirect: 'experiments/all',
+                },
+                {
+                  path: 'experiments/all',
+                  component: () => import(
+                    /* webpackChunkName: "main-admin-experiments" */ '@/views/main/admin/AdminExperiments.vue'),
+                },
+                {
+                  path: 'experiments/create',
+                  name: 'main-admin-experiments-create',
+                  component: () => import(
+                    /* webpackChunkName: "main-admin-experiments-create" */ '@/views/main/admin/CreateExperiment.vue'),
+                },
               ],
             },
           ],

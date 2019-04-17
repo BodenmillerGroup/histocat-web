@@ -4,14 +4,14 @@ import { getStoreAccessors } from 'typesafe-vuex';
 import { State } from '@/store/state';
 
 export const mutations = {
-    setUsers(state: UserState, payload: IUserProfile[]) {
-        state.users = payload;
-    },
-    setUser(state: UserState, payload: IUserProfile) {
-        const users = state.users.filter((user: IUserProfile) => user.id !== payload.id);
-        users.push(payload);
-        state.users = users;
-    },
+  setUsers(state: UserState, payload: IUserProfile[]) {
+    state.users = payload;
+  },
+  setUser(state: UserState, payload: IUserProfile) {
+    const users = state.users.filter((user: IUserProfile) => user.id !== payload.id);
+    users.push(payload);
+    state.users = users;
+  },
 };
 
 const { commit } = getStoreAccessors<UserState, State>('');

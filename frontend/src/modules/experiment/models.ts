@@ -2,7 +2,7 @@ export interface IExperiment {
     id: number;
     name: string;
     description: string;
-    root_directory: string;
+    rootDirectory: string;
     location: string;
     meta: object;
     created_at: Date
@@ -15,6 +15,6 @@ export interface IExperimentUpdate {
 
 export interface IExperimentCreate {
     name: string;
-    root_directory: string;
+    rootDirectory: string;
     description?: string;
 }
