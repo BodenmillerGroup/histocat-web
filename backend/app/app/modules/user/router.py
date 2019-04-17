@@ -26,8 +26,8 @@ def read_users(
     """
     Retrieve users
     """
-    users = crud.get_multi(db, skip=skip, limit=limit)
-    return users
+    items = crud.get_multi(db, skip=skip, limit=limit)
+    return items
 
 
 @router.post("/users/", tags=["users"], response_model=UserModel)
@@ -40,18 +40,18 @@ def create_user(
     """
     Create new user
     """
-    user = crud.get_by_email(db, email=params.email)
-    if user:
+    item = crud.get_by_email(db, email=params.email)
+    if item:
         raise HTTPException(
             status_code=400,
             detail="The user with this username already exists in the system.",
         )
-    user = crud.create(db, params=params)
+    item = crud.create(db, params=params)
     if config.EMAILS_ENABLED and params.email:
         send_new_account_email(
             email_to=params.email, username=params.email, password=params.password
         )
-    return user
+    return item
 
 
 @router.put("/users/me", tags=["users"], response_model=UserModel)
@@ -66,16 +66,16 @@ def update_user_me(
     """
     Update own user
     """
-    current_user_data = jsonable_encoder(current_user)
-    user_in = UserInUpdateModel(**current_user_data)
+    data = jsonable_encoder(current_user)
+    params = UserInUpdateModel(**data)
     if password is not None:
-        user_in.password = password
+        params.password = password
     if full_name is not None:
-        user_in.full_name = full_name
+        params.full_name = full_name
     if email is not None:
-        user_in.email = email
-    user = crud.update(db, user=current_user, params=user_in)
-    return user
+        params.email = email
+    item = crud.update(db, item=current_user, params=params)
+    return item
 
 
 @router.get("/users/me", tags=["users"], response_model=UserModel)
@@ -112,20 +112,20 @@ def create_user_open(
             detail="The user with this username already exists in the system",
         )
     user_in = UserInCreateModel(password=password, email=email, full_name=full_name)
-    user = crud.create(db, params=user_in)
-    return user
+    item = crud.create(db, params=user_in)
+    return item
 
 
-@router.get("/users/{user_id}", tags=["users"], response_model=UserModel)
+@router.get("/users/{id}", tags=["users"], response_model=UserModel)
 def read_user_by_id(
-    user_id: int,
+    id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
     Get a specific user by id
     """
-    user = crud.get(db, id=user_id)
+    user = crud.get(db, id=id)
     if user == current_user:
         return user
     if not crud.is_superuser(current_user):
@@ -135,23 +135,23 @@ def read_user_by_id(
     return user
 
 
-@router.put("/users/{user_id}", tags=["users"], response_model=UserModel)
+@router.put("/users/{id}", tags=["users"], response_model=UserModel)
 def update_user(
     *,
     db: Session = Depends(get_db),
-    user_id: int,
-    user_in: UserInUpdateModel,
+    id: int,
+    params: UserInUpdateModel,
     current_user: UserInDBModel = Depends(get_current_active_superuser),
 ):
     """
     Update a user
     """
-    user = crud.get(db, id=user_id)
+    item = crud.get(db, id=id)
 
-    if not user:
+    if not item:
         raise HTTPException(
             status_code=404,
             detail="The user with this username does not exist in the system",
         )
-    user = crud.update(db, user=user, params=user_in)
-    return user
+    item = crud.update(db, item=item, params=params)
+    return item

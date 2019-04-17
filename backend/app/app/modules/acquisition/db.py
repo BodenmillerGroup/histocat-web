@@ -59,7 +59,7 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
         backref=backref('acquisitions', cascade='all, delete-orphan')
     )
 
-    def __init__(self, name: str, slide_id: int, description: str = ''):
+    def __init__(self, name: str, slide_id: int, description: str = '', meta: dict = None):
         '''
         Parameters
         ----------
@@ -69,11 +69,14 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
             ID of the parent :class:`Slide <app.db_models.slide.Slide>`
         description: str, optional
             description of the acquisition
+        meta: dict, optional
+            meta data of the aquisition
         '''
         # TODO: ensure that name is unique within slide
         self.name = name
         self.description = description
         self.slide_id = slide_id
+        self.meta = meta
 
     @hybrid_property
     def location(self) -> str:

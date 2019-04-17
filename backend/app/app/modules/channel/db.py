@@ -35,6 +35,9 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
     #: str: name given by the microscope or user
     name = Column(String, index=True)
 
+    #: str: metal name
+    metal = Column(String, index=True)
+
     #: int: number of bytes used to encode intensity
     bit_depth = Column(Integer)
 
@@ -59,21 +62,26 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
         backref=backref('channels', cascade='all, delete-orphan')
     )
 
-    def __init__(self, name: str, bit_depth: int, acquisition_id: int):
+    def __init__(self, name: str, metal: str, acquisition_id: int, bit_depth: int, meta: dict = None):
         '''
         Parameters
         ----------
         name: str
             name of the channel
-        bit_depth: int
-            number of bits used to indicate intensity of pixels
+        metal: str
+            name of the metal
         acquisition_id: int
             ID of the parent
             :class:`Experiment <tmlib.models.experiment.Experiment>`
+        bit_depth: int
+            number of bits used to indicate intensity of pixels
+        meta: dict, optional
+            meta data of the channel
         '''
         self.name = name
         self.bit_depth = bit_depth
         self.acquisition_id = acquisition_id
+        self.meta = meta
 
     @hybrid_property
     def location(self) -> str:

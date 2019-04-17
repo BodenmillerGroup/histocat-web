@@ -4,8 +4,8 @@
 #
 #    pip-compile --upgrade --generate-hashes backend/app/requirements/prod.in
 #
-alembic==1.0.8 \
-    --hash=sha256:505d41e01dc0c9e6d85c116d0d35dbb0a833dcb490bf483b75abeb06648864e8
+alembic==1.0.9 \
+    --hash=sha256:40b9a619aa5f25ea1e1508adcda88b33704ef28e02c9cfa6471e5c772ecf0829
 amqp==2.4.2 \
     --hash=sha256:043beb485774ca69718a35602089e524f87168268f0d1ae115f28b88d27f92d7 \
     --hash=sha256:35a3b5006ca00b21aaeec8ceea07130f07b902dd61bfe42815039835f962f5f1 \
@@ -111,9 +111,9 @@ email-validator==1.0.3 \
 emails==0.5.15 \
     --hash=sha256:2d93bb09539d65a16cf1f68db4ffd0f7f45067633e950866e8a4ef89a7c290ec \
     --hash=sha256:fcc02567a528eae6b66d2a5c20ce7a0326e4f6b201bc8ae302f89413164db06a
-fastapi==0.15.0 \
-    --hash=sha256:a90bb07b1d016b5923e91d301f2e02a4a80919bc7b1b7b3f7b3b251ce98f8e46 \
-    --hash=sha256:d4fc73407769886e4e69e7b9491149e363410b596b4a9eb490811a80a4977ce0
+fastapi==0.16.0 \
+    --hash=sha256:cc224e2a796d7167affc326f4736695a086d20540524a2db91ee1d1d16239216 \
+    --hash=sha256:d3e5e5ca55398b5841ff113ab18cb1c4ce6ebf105c121b606b5d25bf627e8c3f
 geoalchemy2==0.6.1 \
     --hash=sha256:0ac39298635bf4d62977b20eb949862e93e08db3fdb54dab36de3df1df4ff52f \
     --hash=sha256:e26a3f6ee8b26be81fd5d68c5c0819116e3495e2f9b1f7bc10db4195f7cfd8a1
@@ -230,8 +230,8 @@ lxml==4.3.3 \
     --hash=sha256:ff424b01d090ffe1947ec7432b07f536912e0300458f9a7f48ea217dd8362b86
 mahotas==1.4.5 \
     --hash=sha256:cf7e661add06fb446a257fdecfb24e103e36b4e69a675c188e042921a0ff75ab
-mako==1.0.8 \
-    --hash=sha256:04092940c0df49b01f43daea4f5adcecd0e50ef6a4b222be5ac003d5d84b2843 \
+mako==1.0.9 \
+    --hash=sha256:0728c404877cd4ca72c409c0ea372dc5f3b53fa1ad2bb434e1d216c0444ff1fd \
     # via alembic
 markupsafe==1.1.1 \
     --hash=sha256:00bc623926325b26bb9605ae9eae8a215691f33cae5df11ca5424f06f2d1f473 \
@@ -460,9 +460,9 @@ psycopg2-binary==2.8.2 \
 pycparser==2.19 \
     --hash=sha256:a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3 \
     # via cffi
-pydantic==0.21 \
-    --hash=sha256:93fa585402e7c8c01623ea8af6ca23363e8b4c6a020b7a2de9e99fa29d642d50 \
-    --hash=sha256:eb441dd50779347a450494c437db3ecbb13c1f3854497df879662782af516c5c
+pydantic==0.23 \
+    --hash=sha256:1205cd1213e8acee40a9ad7160b24de74484fd79ec3f09150b255896a3f506ab \
+    --hash=sha256:58b71804e9a6b4e1ccf8b3dbbca8c0f9cf4b494e5bea219a96e2e2ecb5af688e
 pyjwt==1.7.1 \
     --hash=sha256:5c6eca3c2940464d106b99ba83b00c6add741c9becaec087fb7ccdefea71350e \
     --hash=sha256:8d59a976fb773f3e6a39c85636357c4f0e242707394cadadd9814f5cbaa20e96
@@ -595,8 +595,8 @@ six==1.12.0 \
     --hash=sha256:3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c \
     --hash=sha256:d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73 \
     # via bcrypt, cycler, h5py, mock, python-dateutil, python-multipart, tables, tenacity
-sqlalchemy==1.3.2 \
-    --hash=sha256:d5432832f91d200c3d8b473a266d59442d825f9ea744c467e68c5d9a9479fbce
+sqlalchemy==1.3.3 \
+    --hash=sha256:91c54ca8345008fceaec987e10924bf07dcab36c442925357e5a467b36a38319
 starlette==0.11.1 \
     --hash=sha256:9d48b35d1fc7521d59ae53c421297ab3878d3c7cd4b75266d77f6c73cccb78bb \
     # via fastapi

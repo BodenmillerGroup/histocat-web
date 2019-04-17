@@ -34,7 +34,7 @@ class Experiment(DirectoryModel, MetaMixin, CreatedAtMixin):
     #: absolute path to the directory where experiments are located
     root_directory = Column(String)
 
-    def __init__(self, name: str, root_directory: str, description: str = ''):
+    def __init__(self, name: str, root_directory: str, description: str = '', meta: dict = None):
         '''
         Parameters
         ----------
@@ -45,11 +45,13 @@ class Experiment(DirectoryModel, MetaMixin, CreatedAtMixin):
             be created in
         description: str, optional
             description of the experimental setup
-
+        meta: dict, optional
+            meta data of the experiment
         '''
         self.name = name
         self.description = description
         self.root_directory = root_directory
+        self.meta = meta
 
     @autocreate_directory_property
     def location(self):

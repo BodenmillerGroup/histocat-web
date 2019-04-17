@@ -5,35 +5,34 @@ from pydantic import BaseModel
 
 
 # Shared properties
-class ExperimentBaseModel(BaseModel):
+class ChannelBaseModel(BaseModel):
     id: int = None
+    acquisition_id: int = None
     name: Optional[str] = None
-    description: Optional[str] = None
-    root_directory: Optional[str] = None
+    metal: Optional[str] = None
     location: Optional[str] = None
     meta: Optional[dict] = None
 
 
 # Properties to receive via API on creation
-class ExperimentInCreateModel(BaseModel):
+class ChannelInCreateModel(BaseModel):
     name: str
-    description: Optional[str] = None
-    root_directory: str
+    metal: str
+    acquisition_id: int
     meta: Optional[dict] = None
 
 
 # Properties to receive via API on update
-class ExperimentInUpdateModel(BaseModel):
+class ChannelInUpdateModel(BaseModel):
     name: Optional[str] = None
-    description: Optional[str] = None
     meta: Optional[dict] = None
 
 
 # Additional properties to return via API
-class ExperimentModel(ExperimentBaseModel):
+class ChannelModel(ChannelBaseModel):
     pass
 
 
 # Additional properties stored in DB
-class ExperimentInDBModel(ExperimentBaseModel):
+class ChannelInDBModel(ChannelBaseModel):
     created_at: datetime

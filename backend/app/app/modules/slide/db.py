@@ -57,7 +57,7 @@ class Slide(DirectoryModel, MetaMixin, CreatedAtMixin):
         backref=backref('slides', cascade='all, delete-orphan')
     )
 
-    def __init__(self, name: str, experiment_id: int, description: str = ''):
+    def __init__(self, name: str, experiment_id: int, description: str = '', meta: dict = None):
         '''
         Parameters
         ----------
@@ -68,10 +68,13 @@ class Slide(DirectoryModel, MetaMixin, CreatedAtMixin):
             :class:`Experiment <tmlib.models.experiment.Experiment>`
         description: str, optional
             description of the slide
+        meta: dict, optional
+            meta data of the slide
         '''
         self.name = name
         self.description = description
         self.experiment_id = experiment_id
+        self.meta = meta
 
     @hybrid_property
     def location(self) -> str:
