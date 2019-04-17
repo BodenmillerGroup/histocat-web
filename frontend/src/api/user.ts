@@ -1,14 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IUserProfile, IUserProfileUpdate, IUserProfileCreate } from './interfaces';
-
-function authHeaders(token: string) {
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-}
+import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from '@/interfaces/user';
+import { authHeaders } from '@/utils';
 
 export const api = {
   async logInGetToken(username: string, password: string) {
@@ -27,8 +20,8 @@ export const api = {
   async getUsers(token: string) {
     return axios.get<IUserProfile[]>(`${apiUrl}/api/v1/users/`, authHeaders(token));
   },
-  async updateUser(token: string, userId: number, data: IUserProfileUpdate) {
-    return axios.put(`${apiUrl}/api/v1/users/${userId}`, data, authHeaders(token));
+  async updateUser(token: string, id: number, data: IUserProfileUpdate) {
+    return axios.put(`${apiUrl}/api/v1/users/${id}`, data, authHeaders(token));
   },
   async createUser(token: string, data: IUserProfileCreate) {
     return axios.post(`${apiUrl}/api/v1/users/`, data, authHeaders(token));

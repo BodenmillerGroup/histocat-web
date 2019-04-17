@@ -1,4 +1,4 @@
-import { api } from '@/api';
+import { api } from '@/api/user';
 import router from '@/router';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
 import { AxiosError } from 'axios';

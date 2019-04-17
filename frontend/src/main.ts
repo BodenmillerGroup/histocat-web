@@ -1,12 +1,12 @@
 // Import Component hooks before component definitions
-import './component-hooks';
+import '@/component-hooks';
 import Vue from 'vue';
-import './plugins/vuetify';
-import './plugins/vee-validate';
-import App from './App.vue';
-import router from './router';
+import '@/plugins/vuetify';
+import '@/plugins/vee-validate';
+import App from '@/App.vue';
+import router from '@/router';
 import store from '@/store';
-import './registerServiceWorker';
+import '@/registerServiceWorker';
 import 'vuetify/dist/vuetify.min.css';
 
 Vue.config.productionTip = false;

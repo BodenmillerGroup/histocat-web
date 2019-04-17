@@ -42,7 +42,7 @@ import {
   IUserProfile,
   IUserProfileUpdate,
   IUserProfileCreate,
-} from '@/interfaces';
+} from '@/interfaces/user';
 import { dispatchGetUsers, dispatchCreateUser } from '@/store/admin/actions';
 
 @Component
