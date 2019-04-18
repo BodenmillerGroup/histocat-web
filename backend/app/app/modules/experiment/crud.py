@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from .db import Experiment
 from .models import ExperimentInCreateModel, ExperimentInUpdateModel
 
+ROOT_DIRECTORY = '/experiments/'
+
 
 def get(db_session: Session, *, id: int) -> Optional[Experiment]:
     return db_session.query(Experiment).filter(Experiment.id == id).first()
@@ -21,8 +23,8 @@ def get_multi(db_session: Session, *, skip: int = 0, limit: int = 100) -> List[O
 
 def create(db_session: Session, *, params: ExperimentInCreateModel) -> Experiment:
     entity = Experiment(
+        root_directory=ROOT_DIRECTORY,
         name=params.name,
-        root_directory=params.root_directory,
         description=params.description,
         meta=params.meta
     )

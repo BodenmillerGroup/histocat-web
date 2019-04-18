@@ -143,19 +143,19 @@
 
     async submit() {
       if (await this.$validator.validateAll()) {
-        const updatedProfile: IUserProfileUpdate = {};
+        const data: IUserProfileUpdate = {};
         if (this.fullName) {
-          updatedProfile.full_name = this.fullName;
+          data.full_name = this.fullName;
         }
         if (this.email) {
-          updatedProfile.email = this.email;
+          data.email = this.email;
         }
-        updatedProfile.is_active = this.isActive;
-        updatedProfile.is_superuser = this.isSuperuser;
+        data.is_active = this.isActive;
+        data.is_superuser = this.isSuperuser;
         if (this.setPassword) {
-          updatedProfile.password = this.password1;
+          data.password = this.password1;
         }
-        await dispatchUpdateUser(this.$store, { id: this.user!.id, user: updatedProfile });
+        await dispatchUpdateUser(this.$store, { id: this.user!.id, user: data });
         this.$router.push('/main/admin/users');
       }
     }

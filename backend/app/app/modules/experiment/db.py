@@ -2,6 +2,7 @@ import logging
 import os
 
 from sqlalchemy import Column, String, Text
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.core.utils import remove_location_upon_delete, autocreate_directory_property
 from app.db.base import DirectoryModel, CreatedAtMixin, MetaMixin
@@ -54,6 +55,7 @@ class Experiment(DirectoryModel, MetaMixin, CreatedAtMixin):
         self.meta = meta
 
     @autocreate_directory_property
+    @hybrid_property
     def location(self):
         '''str: location of the experiment,
         e.g. absolute path to a directory on disk

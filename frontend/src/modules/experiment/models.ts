@@ -15,6 +15,5 @@ export interface IExperimentUpdate {
 
 export interface IExperimentCreate {
     name: string;
-    root_directory: string;
     description?: string;
 }

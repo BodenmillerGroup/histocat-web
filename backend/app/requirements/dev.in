@@ -9,5 +9,6 @@ isort
 jupyter
 mypy
 ptvsd
+pydevd-pycharm
 pytest
 vulture

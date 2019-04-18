@@ -18,7 +18,6 @@ class ExperimentBaseModel(BaseModel):
 class ExperimentInCreateModel(BaseModel):
     name: str
     description: Optional[str] = None
-    root_directory: str
     meta: Optional[dict] = None
 
 

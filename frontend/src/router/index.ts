@@ -70,19 +70,19 @@ export default new Router({
                 {
                   path: 'users/all',
                   component: () => import(
-                    /* webpackChunkName: "main-admin-users" */ '@/views/main/admin/AdminUsers.vue'),
+                    /* webpackChunkName: "main-admin-users" */ '@/views/main/admin/user/AdminUsers.vue'),
                 },
                 {
                   path: 'users/edit/:id',
                   name: 'main-admin-users-edit',
                   component: () => import(
-                    /* webpackChunkName: "main-admin-users-edit" */ '@/views/main/admin/EditUser.vue'),
+                    /* webpackChunkName: "main-admin-users-edit" */ '@/views/main/admin/user/EditUser.vue'),
                 },
                 {
                   path: 'users/create',
                   name: 'main-admin-users-create',
                   component: () => import(
-                    /* webpackChunkName: "main-admin-users-create" */ '@/views/main/admin/CreateUser.vue'),
+                    /* webpackChunkName: "main-admin-users-create" */ '@/views/main/admin/user/CreateUser.vue'),
                 },
                 {
                   path: 'experiments',
@@ -91,13 +91,19 @@ export default new Router({
                 {
                   path: 'experiments/all',
                   component: () => import(
-                    /* webpackChunkName: "main-admin-experiments" */ '@/views/main/admin/AdminExperiments.vue'),
+                    /* webpackChunkName: "main-admin-experiments" */ '@/views/main/admin/experiment/AdminExperiments.vue'),
                 },
                 {
                   path: 'experiments/create',
                   name: 'main-admin-experiments-create',
                   component: () => import(
-                    /* webpackChunkName: "main-admin-experiments-create" */ '@/views/main/admin/CreateExperiment.vue'),
+                    /* webpackChunkName: "main-admin-experiments-create" */ '@/views/main/admin/experiment/CreateExperiment.vue'),
+                },
+                {
+                  path: 'experiments/edit/:id',
+                  name: 'main-admin-experiments-edit',
+                  component: () => import(
+                    /* webpackChunkName: "main-admin-experiments-edit" */ '@/views/main/admin/experiment/EditExperiment.vue'),
                 },
               ],
             },

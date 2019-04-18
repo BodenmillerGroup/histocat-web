@@ -10,8 +10,6 @@
             <v-text-field label="Name" v-model="name" v-validate="'required'" data-vv-name="name"
                           :error-messages="errors.collect('name')" required></v-text-field>
             <v-text-field label="Description" v-model="description"></v-text-field>
-            <v-text-field label="Root Directory" v-model="root_directory" v-validate="'required'" data-vv-name="root_directory"
-                          :error-messages="errors.collect('root_directory')" required></v-text-field>
           </v-form>
         </template>
       </v-card-text>
@@ -37,7 +35,6 @@
     valid = false;
     name: string = '';
     description: string = '';
-    root_directory: string = '';
 
     async mounted() {
       await dispatchGetExperiments(this.$store);
@@ -47,7 +44,6 @@
     reset() {
       this.name = '';
       this.description = '';
-      this.root_directory = '';
       this.$validator.reset();
     }
 
@@ -59,7 +55,6 @@
       if (await this.$validator.validateAll()) {
         const params: IExperimentCreate = {
           name: this.name,
-          root_directory: this.root_directory
         };
         if (this.description) {
           params.description = this.description;
