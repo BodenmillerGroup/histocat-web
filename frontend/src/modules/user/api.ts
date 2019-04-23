@@ -9,7 +9,7 @@ export const api = {
     params.append('username', username);
     params.append('password', password);
 
-    return axios.post(`${apiUrl}/api/v1/login/access-token`, params);
+    return axios.post(`${apiUrl}/api/v1/auth/access-token`, params);
   },
   async getMe(token: string) {
     return axios.get<IUserProfile>(`${apiUrl}/api/v1/users/me`, authHeaders(token));
@@ -27,10 +27,10 @@ export const api = {
     return axios.post(`${apiUrl}/api/v1/users/`, data, authHeaders(token));
   },
   async passwordRecovery(email: string) {
-    return axios.post(`${apiUrl}/api/v1/password-recovery/${email}`);
+    return axios.post(`${apiUrl}/api/v1/auth/password-recovery/${email}`);
   },
   async resetPassword(password: string, token: string) {
-    return axios.post(`${apiUrl}/api/v1/reset-password/`, {
+    return axios.post(`${apiUrl}/api/v1/auth/reset-password/`, {
       new_password: password,
       token,
     });

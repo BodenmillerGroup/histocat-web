@@ -15,7 +15,7 @@ class SlideBaseModel(BaseModel):
 
 
 # Properties to receive via API on creation
-class SlideInCreateModel(BaseModel):
+class SlideCreateModel(BaseModel):
     name: str
     experiment_id: int
     description: Optional[str] = None
@@ -23,7 +23,7 @@ class SlideInCreateModel(BaseModel):
 
 
 # Properties to receive via API on update
-class SlideInUpdateModel(BaseModel):
+class SlideUpdateModel(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     meta: Optional[dict] = None

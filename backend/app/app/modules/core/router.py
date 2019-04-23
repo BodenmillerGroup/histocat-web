@@ -10,7 +10,7 @@ from .models import MsgModel
 router = APIRouter()
 
 
-@router.post("/test-celery/", tags=["utils"], response_model=MsgModel, status_code=201)
+@router.post("/test-celery/", response_model=MsgModel, status_code=201)
 def test_celery(
     msg: MsgModel, current_user: UserInDBModel = Depends(get_current_active_superuser)
 ):
@@ -21,7 +21,7 @@ def test_celery(
     return {"msg": "Word received"}
 
 
-@router.post("/test-email/", tags=["utils"], response_model=MsgModel, status_code=201)
+@router.post("/test-email/", response_model=MsgModel, status_code=201)
 def test_email(
     email_to: EmailStr, current_user: UserInDBModel = Depends(get_current_active_superuser)
 ):

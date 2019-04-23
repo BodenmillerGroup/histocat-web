@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash, verify_password
 from .db import User
-from .models import UserInCreateModel, UserInUpdateModel
+from .models import UserCreateModel, UserUpdateModel
 
 
 def get(db_session: Session, *, id: int) -> Optional[User]:
@@ -37,7 +37,7 @@ def get_multi(db_session: Session, *, skip=0, limit=100) -> List[Optional[User]]
     return db_session.query(User).offset(skip).limit(limit).all()
 
 
-def create(db_session: Session, *, params: UserInCreateModel) -> User:
+def create(db_session: Session, *, params: UserCreateModel) -> User:
     entity = User(
         email=params.email,
         hashed_password=get_password_hash(params.password),
@@ -50,7 +50,7 @@ def create(db_session: Session, *, params: UserInCreateModel) -> User:
     return entity
 
 
-def update(db_session: Session, *, item: User, params: UserInUpdateModel) -> User:
+def update(db_session: Session, *, item: User, params: UserUpdateModel) -> User:
     data = jsonable_encoder(item)
     for field in data:
         if field in params.fields:

@@ -7,12 +7,12 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.modules.user.db import User
 from . import crud
-from .models import ExperimentModel, ExperimentInCreateModel, ExperimentInUpdateModel
+from .models import ExperimentModel, ExperimentCreateModel, ExperimentUpdateModel
 
 router = APIRouter()
 
 
-@router.get("/experiments/", tags=["experiments"], response_model=List[ExperimentModel])
+@router.get("/", response_model=List[ExperimentModel])
 def read_experiments(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -26,11 +26,11 @@ def read_experiments(
     return items
 
 
-@router.post("/experiments/", tags=["experiments"], response_model=ExperimentModel)
+@router.post("/", response_model=ExperimentModel)
 def create_experiment(
     *,
     db: Session = Depends(get_db),
-    params: ExperimentInCreateModel,
+    params: ExperimentCreateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """
@@ -46,7 +46,7 @@ def create_experiment(
     return item
 
 
-@router.get("/experiments/{id}", tags=["experiments"], response_model=ExperimentModel)
+@router.get("/{id}", response_model=ExperimentModel)
 def read_experiment_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
@@ -59,12 +59,12 @@ def read_experiment_by_id(
     return item
 
 
-@router.put("/experiments/{id}", tags=["experiments"], response_model=ExperimentModel)
+@router.put("/{id}", response_model=ExperimentModel)
 def update_experiment(
     *,
     db: Session = Depends(get_db),
     id: int,
-    params: ExperimentInUpdateModel,
+    params: ExperimentUpdateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """

@@ -11,7 +11,7 @@ def test_get_access_token():
         "password": config.FIRST_SUPERUSER_PASSWORD,
     }
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/login/access-token", data=login_data
+        f"{server_api}{config.API_V1_STR}/auth/access-token", data=login_data
     )
     tokens = r.json()
     assert r.status_code == 200
@@ -22,7 +22,7 @@ def test_get_access_token():
 def test_use_access_token(superuser_token_headers):
     server_api = get_server_api()
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/login/test-token",
+        f"{server_api}{config.API_V1_STR}/auth/test-token",
         headers=superuser_token_headers,
     )
     result = r.json()

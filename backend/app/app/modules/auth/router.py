@@ -23,7 +23,7 @@ from .models import TokenModel
 router = APIRouter()
 
 
-@router.post("/login/access-token", response_model=TokenModel, tags=["login"])
+@router.post("/access-token", response_model=TokenModel)
 def login_access_token(
     db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
@@ -46,7 +46,7 @@ def login_access_token(
     }
 
 
-@router.post("/login/test-token", tags=["login"], response_model=UserModel)
+@router.post("/test-token", response_model=UserModel)
 def test_token(current_user: DBUser = Depends(get_current_user)):
     """
     Test access token
@@ -54,7 +54,7 @@ def test_token(current_user: DBUser = Depends(get_current_user)):
     return current_user
 
 
-@router.post("/password-recovery/{email}", tags=["login"], response_model=MsgModel)
+@router.post("/password-recovery/{email}", response_model=MsgModel)
 def recover_password(email: str, db: Session = Depends(get_db)):
     """
     Password Recovery
@@ -73,7 +73,7 @@ def recover_password(email: str, db: Session = Depends(get_db)):
     return {"msg": "Password recovery email sent"}
 
 
-@router.post("/reset-password/", tags=["login"], response_model=MsgModel)
+@router.post("/reset-password/", response_model=MsgModel)
 def reset_password(token: str, new_password: str, db: Session = Depends(get_db)):
     """
     Reset password

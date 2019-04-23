@@ -5,14 +5,15 @@ from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.modules.user.crud import is_superuser
 from app.modules.user.db import User
 from . import crud
-from .models import AcquisitionModel, AcquisitionInCreateModel, AcquisitionInUpdateModel
+from .models import AcquisitionModel, AcquisitionCreateModel, AcquisitionUpdateModel
 
 router = APIRouter()
 
 
-@router.get("/acquisitions/", tags=["acquisitions"], response_model=List[AcquisitionModel])
+@router.get("/", response_model=List[AcquisitionModel])
 def read_acquisitions(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -26,11 +27,11 @@ def read_acquisitions(
     return items
 
 
-@router.post("/acquisitions/", tags=["acquisitions"], response_model=AcquisitionModel)
+@router.post("/", response_model=AcquisitionModel)
 def create_acquisition(
     *,
     db: Session = Depends(get_db),
-    params: AcquisitionInCreateModel,
+    params: AcquisitionCreateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """
@@ -46,7 +47,7 @@ def create_acquisition(
     return item
 
 
-@router.get("/acquisitions/{id}", tags=["acquisitions"], response_model=AcquisitionModel)
+@router.get("/{id}", response_model=AcquisitionModel)
 def read_acquisition_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
@@ -59,12 +60,12 @@ def read_acquisition_by_id(
     return item
 
 
-@router.put("/acquisitions/{id}", tags=["acquisitions"], response_model=AcquisitionModel)
+@router.put("/{id}", response_model=AcquisitionModel)
 def update_acquisition(
     *,
     db: Session = Depends(get_db),
     id: int,
-    params: AcquisitionInUpdateModel,
+    params: AcquisitionUpdateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """
@@ -75,7 +76,9 @@ def update_acquisition(
     if not item:
         raise HTTPException(
             status_code=404,
-            detail="The acquisition with this id does not exist in the system",
+            detail="Item not found",
         )
+    if not is_superuser(current_user):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
     item = crud.update(db, item=item, params=params)
     return item

@@ -7,12 +7,12 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.modules.user.db import User
 from . import crud
-from .models import SlideModel, SlideInCreateModel, SlideInUpdateModel
+from .models import SlideModel, SlideCreateModel, SlideUpdateModel
 
 router = APIRouter()
 
 
-@router.get("/slides/", tags=["slides"], response_model=List[SlideModel])
+@router.get("/", response_model=List[SlideModel])
 def read_slides(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -26,11 +26,11 @@ def read_slides(
     return items
 
 
-@router.post("/slides/", tags=["slides"], response_model=SlideModel)
+@router.post("/", response_model=SlideModel)
 def create_slide(
     *,
     db: Session = Depends(get_db),
-    params: SlideInCreateModel,
+    params: SlideCreateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """
@@ -46,7 +46,7 @@ def create_slide(
     return item
 
 
-@router.get("/slides/{id}", tags=["slides"], response_model=SlideModel)
+@router.get("/{id}", response_model=SlideModel)
 def read_slide_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
@@ -59,12 +59,12 @@ def read_slide_by_id(
     return item
 
 
-@router.put("/slides/{id}", tags=["slides"], response_model=SlideModel)
+@router.put("/{id}", response_model=SlideModel)
 def update_slide(
     *,
     db: Session = Depends(get_db),
     id: int,
-    params: SlideInUpdateModel,
+    params: SlideUpdateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """

@@ -15,7 +15,7 @@ class ChannelBaseModel(BaseModel):
 
 
 # Properties to receive via API on creation
-class ChannelInCreateModel(BaseModel):
+class ChannelCreateModel(BaseModel):
     name: str
     metal: str
     acquisition_id: int
@@ -23,7 +23,7 @@ class ChannelInCreateModel(BaseModel):
 
 
 # Properties to receive via API on update
-class ChannelInUpdateModel(BaseModel):
+class ChannelUpdateModel(BaseModel):
     name: Optional[str] = None
     meta: Optional[dict] = None
 

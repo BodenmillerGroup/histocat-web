@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from .db import Acquisition
-from .models import AcquisitionInCreateModel, AcquisitionInUpdateModel
+from .models import AcquisitionCreateModel, AcquisitionUpdateModel
 
 
 def get(db_session: Session, *, id: int) -> Optional[Acquisition]:
@@ -19,27 +19,29 @@ def get_multi(db_session: Session, *, skip: int = 0, limit: int = 100) -> List[O
     return db_session.query(Acquisition).offset(skip).limit(limit).all()
 
 
-def create(db_session: Session, *, params: AcquisitionInCreateModel) -> Acquisition:
-    entity = Acquisition(
-        name=params.name,
-        slide_id=params.slide_id,
-        description=params.description,
-        meta=params.meta
-    )
+def create(db_session: Session, *, params: AcquisitionCreateModel) -> Acquisition:
+    data = jsonable_encoder(params)
+    entity = Acquisition(**data)
     db_session.add(entity)
     db_session.commit()
     db_session.refresh(entity)
     return entity
 
 
-def update(db_session: Session, *, item: Acquisition, params: AcquisitionInUpdateModel) -> Acquisition:
+def update(db_session: Session, *, item: Acquisition, params: AcquisitionUpdateModel) -> Acquisition:
     data = jsonable_encoder(item)
+    update_data = params.dict(skip_defaults=True)
     for field in data:
-        if field in params.fields:
-            value_in = getattr(params, field)
-            if value_in is not None:
-                setattr(item, field, value_in)
+        if field in update_data:
+            setattr(item, field, update_data[field])
     db_session.add(item)
     db_session.commit()
     db_session.refresh(item)
+    return item
+
+
+def remove(db_session: Session, *, id: int):
+    item = db_session.query(Acquisition).filter(Acquisition.id == id).first()
+    db_session.delete(item)
+    db_session.commit()
     return item

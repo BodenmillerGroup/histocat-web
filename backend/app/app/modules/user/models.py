@@ -14,13 +14,13 @@ class UserBaseModel(BaseModel):
 
 
 # Properties to receive via API on creation
-class UserInCreateModel(UserBaseModel):
+class UserCreateModel(UserBaseModel):
     email: str
     password: str
 
 
 # Properties to receive via API on update
-class UserInUpdateModel(UserBaseModel):
+class UserUpdateModel(UserBaseModel):
     password: Optional[str] = None
 
 

@@ -7,12 +7,12 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.modules.user.db import User
 from . import crud
-from .models import ChannelModel, ChannelInCreateModel, ChannelInUpdateModel
+from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel
 
 router = APIRouter()
 
 
-@router.get("/channels/", tags=["channels"], response_model=List[ChannelModel])
+@router.get("/", response_model=List[ChannelModel])
 def read_channels(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -26,11 +26,11 @@ def read_channels(
     return items
 
 
-@router.post("/channels/", tags=["channels"], response_model=ChannelModel)
+@router.post("/", response_model=ChannelModel)
 def create_channel(
     *,
     db: Session = Depends(get_db),
-    params: ChannelInCreateModel,
+    params: ChannelCreateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """
@@ -46,7 +46,7 @@ def create_channel(
     return item
 
 
-@router.get("/channels/{id}", tags=["channels"], response_model=ChannelModel)
+@router.get("/{id}", response_model=ChannelModel)
 def read_channel_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
@@ -59,12 +59,12 @@ def read_channel_by_id(
     return item
 
 
-@router.put("/channels/{id}", tags=["channels"], response_model=ChannelModel)
+@router.put("/{id}", response_model=ChannelModel)
 def update_channel(
     *,
     db: Session = Depends(get_db),
     id: int,
-    params: ChannelInUpdateModel,
+    params: ChannelUpdateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """

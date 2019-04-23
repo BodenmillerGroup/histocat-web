@@ -15,7 +15,7 @@ class AcquisitionBaseModel(BaseModel):
 
 
 # Properties to receive via API on creation
-class AcquisitionInCreateModel(BaseModel):
+class AcquisitionCreateModel(BaseModel):
     name: str
     slide_id: int
     description: Optional[str] = None
@@ -23,7 +23,7 @@ class AcquisitionInCreateModel(BaseModel):
 
 
 # Properties to receive via API on update
-class AcquisitionInUpdateModel(BaseModel):
+class AcquisitionUpdateModel(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     meta: Optional[dict] = None

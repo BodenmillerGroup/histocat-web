@@ -15,14 +15,14 @@ class ExperimentBaseModel(BaseModel):
 
 
 # Properties to receive via API on creation
-class ExperimentInCreateModel(BaseModel):
+class ExperimentCreateModel(BaseModel):
     name: str
     description: Optional[str] = None
     meta: Optional[dict] = None
 
 
 # Properties to receive via API on update
-class ExperimentInUpdateModel(BaseModel):
+class ExperimentUpdateModel(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     meta: Optional[dict] = None

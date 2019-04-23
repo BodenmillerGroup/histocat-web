@@ -11,12 +11,12 @@ from app.core import config
 from app.modules.user.db import User
 from app.utils import send_new_account_email
 from . import crud
-from .models import UserModel, UserInCreateModel, UserInDBModel, UserInUpdateModel
+from .models import UserModel, UserCreateModel, UserInDBModel, UserUpdateModel
 
 router = APIRouter()
 
 
-@router.get("/users/", tags=["users"], response_model=List[UserModel])
+@router.get("/", response_model=List[UserModel])
 def read_users(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -30,11 +30,11 @@ def read_users(
     return items
 
 
-@router.post("/users/", tags=["users"], response_model=UserModel)
+@router.post("/", response_model=UserModel)
 def create_user(
     *,
     db: Session = Depends(get_db),
-    params: UserInCreateModel,
+    params: UserCreateModel,
     current_user: User = Depends(get_current_active_superuser),
 ):
     """
@@ -54,7 +54,7 @@ def create_user(
     return item
 
 
-@router.put("/users/me", tags=["users"], response_model=UserModel)
+@router.put("/me", response_model=UserModel)
 def update_user_me(
     *,
     db: Session = Depends(get_db),
@@ -67,7 +67,7 @@ def update_user_me(
     Update own user
     """
     data = jsonable_encoder(current_user)
-    params = UserInUpdateModel(**data)
+    params = UserUpdateModel(**data)
     if password is not None:
         params.password = password
     if full_name is not None:
@@ -78,7 +78,7 @@ def update_user_me(
     return item
 
 
-@router.get("/users/me", tags=["users"], response_model=UserModel)
+@router.get("/me", response_model=UserModel)
 def read_user_me(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
@@ -89,7 +89,7 @@ def read_user_me(
     return current_user
 
 
-@router.post("/users/open", tags=["users"], response_model=UserModel)
+@router.post("/open", response_model=UserModel)
 def create_user_open(
     *,
     db: Session = Depends(get_db),
@@ -111,12 +111,12 @@ def create_user_open(
             status_code=400,
             detail="The user with this username already exists in the system",
         )
-    user_in = UserInCreateModel(password=password, email=email, full_name=full_name)
+    user_in = UserCreateModel(password=password, email=email, full_name=full_name)
     item = crud.create(db, params=user_in)
     return item
 
 
-@router.get("/users/{id}", tags=["users"], response_model=UserModel)
+@router.get("/{id}", response_model=UserModel)
 def read_user_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
@@ -135,12 +135,12 @@ def read_user_by_id(
     return user
 
 
-@router.put("/users/{id}", tags=["users"], response_model=UserModel)
+@router.put("/{id}", response_model=UserModel)
 def update_user(
     *,
     db: Session = Depends(get_db),
     id: int,
-    params: UserInUpdateModel,
+    params: UserUpdateModel,
     current_user: UserInDBModel = Depends(get_current_active_superuser),
 ):
     """

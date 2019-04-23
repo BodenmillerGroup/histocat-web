@@ -1,5 +1,5 @@
 from app.core import config
-from app.modules.user.models import UserInCreateModel
+from app.modules.user.models import UserCreateModel
 from app.modules.user import crud
 
 
@@ -11,7 +11,7 @@ def init_db(db_session):
 
     user = crud.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
-        user_in = UserInCreateModel(
+        user_in = UserCreateModel(
             email=config.FIRST_SUPERUSER,
             password=config.FIRST_SUPERUSER_PASSWORD,
             is_superuser=True,
