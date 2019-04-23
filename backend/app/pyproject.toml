@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "histocat"
+version = "0.1.0"
+description = ""
+authors = ["Anton Rau <anton.rau@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+alembic = "*"
+cached_property = "*"
+celery = "*"
+email-validator = "*"
+emails = "*"
+fastapi = "*"
+GeoAlchemy2 = "*"
+gunicorn = "*"
+h5py = "*"
+jinja2 = "*"
+lxml = "*"
+mahotas = "*"
+opencv-python-headless = "*"
+pandas = "*"
+psycopg2-binary = "*"
+pydantic = "*"
+pyjwt = "*"
+python-multipart = "*"
+PyYAML = "*"
+raven = "*"
+requests = "*"
+scikit-image = "*"
+Shapely = "*"
+sqlalchemy = "*"
+tables = "*"
+tenacity = "*"
+uvicorn = "*"
+imctools = { git = "https://github.com/BodenmillerGroup/imctools.git", branch = "master" }
+
+passlib = {version = "^1.7",extras = ["bcrypt"]}
+[tool.poetry.dev-dependencies]
+pytest = "^3.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
