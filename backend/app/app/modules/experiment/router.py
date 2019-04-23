@@ -1,13 +1,17 @@
+import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.io.mcd_loader import McdLoader
 from app.modules.user.db import User
 from . import crud
 from .models import ExperimentModel, ExperimentCreateModel, ExperimentUpdateModel
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -79,3 +83,10 @@ def update_experiment(
         )
     item = crud.update(db, item=item, params=params)
     return item
+
+
+@router.post("/{id}/upload_slide")
+async def upload_slide(id: int, file: UploadFile = File(None), db: Session = Depends(get_db)):
+    experiment = crud.get(db, id=id)
+    await McdLoader.load(file, db, experiment)
+    return {"filename": file.filename}

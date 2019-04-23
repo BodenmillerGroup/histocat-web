@@ -9,14 +9,20 @@
 
 <script lang="ts">
   import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
+  import { dispatchUploadSlide } from '@/modules/experiment/actions';
 
   @Component
   export default class UploadButton extends Vue {
+    @Prop(Number) id: number | undefined;
     @Prop(String) color: string | undefined;
     @Prop({ default: false }) multiple!: boolean;
 
     @Emit()
-    files(e): FileList {
+    async files(e): Promise<FileList> {
+      const formData = new FormData();
+      const file = e.target.files[0];
+      formData.append('file', file, file.name);
+      await dispatchUploadSlide(this.$store, { id: this.id, data: formData });
       return e.target.files;
     }
 

@@ -14,6 +14,7 @@
     "no-console": false,
     "member-access": [true, "no-public"],
     "no-empty-interface": false,
-    "whitespace": [true, "check-module"]
+    "whitespace": [true, "check-module"],
+    "object-literal-shorthand": false
   }
 }

@@ -14,4 +14,7 @@ export const api = {
   async createExperiment(token: string, data: IExperimentCreate) {
     return axios.post(`${apiUrl}/api/v1/experiments/`, data, authHeaders(token));
   },
+  async uploadSlide(token: string, id: number, data) {
+    return axios.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, data, authHeaders(token, 'multipart/form-data'));
+  },
 };

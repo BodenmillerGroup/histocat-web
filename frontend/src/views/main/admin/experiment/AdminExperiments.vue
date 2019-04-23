@@ -19,6 +19,7 @@
               <v-icon>edit</v-icon>
             </v-btn>
           </v-tooltip>
+          <UploadButton :id="props.item.id" />
         </td>
       </template>
     </v-data-table>
@@ -29,8 +30,11 @@
   import { Component, Vue } from 'vue-property-decorator';
   import { readAdminExperiments } from '@/modules/experiment/getters';
   import { dispatchGetExperiments } from '@/modules/experiment/actions';
+  import UploadButton from '@/components/UploadButton.vue';
 
-  @Component
+  @Component({
+    components: { UploadButton },
+  })
   export default class AdminExperiments extends Vue {
     headers = [
       {

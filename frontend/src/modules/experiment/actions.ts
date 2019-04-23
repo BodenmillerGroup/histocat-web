@@ -51,6 +51,23 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
+  async actionUploadSlide(context: MainContext, payload: { id: number | undefined, data: any }) {
+    if (!payload.id) {
+      return;
+    }
+    try {
+      const loadingNotification = {content: 'saving', showProgress: true};
+      commitAddNotification(context, loadingNotification);
+      const response = (await Promise.all([
+        api.uploadSlide(context.rootState.main.token, payload.id, payload.data),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+      ]))[0];
+      commitRemoveNotification(context, loadingNotification);
+      commitAddNotification(context, {content: 'File successfully uploaded', color: 'success'});
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
 };
 
 const {dispatch} = getStoreAccessors<ExperimentsState, State>('');
@@ -58,3 +75,4 @@ const {dispatch} = getStoreAccessors<ExperimentsState, State>('');
 export const dispatchCreateExperiment = dispatch(actions.actionCreateExperiment);
 export const dispatchGetExperiments = dispatch(actions.actionGetExperiments);
 export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment);
+export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);

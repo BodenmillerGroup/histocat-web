@@ -28,3 +28,4 @@ sqlalchemy
 tables
 tenacity
 uvicorn
+-e git+https://github.com/BodenmillerGroup/imctools.git

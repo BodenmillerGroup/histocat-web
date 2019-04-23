@@ -2,10 +2,12 @@ FROM python:3.7
 
 WORKDIR /app
 
+RUN pip install --no-cache pip-tools
+
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
 COPY /app/requirements/prod.txt /app/requirements.txt
-RUN pip install --no-cache -r requirements.txt
+RUN pip-sync requirements.txt
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:
