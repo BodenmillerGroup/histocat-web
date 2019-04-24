@@ -1,13 +1,15 @@
 FROM tiangolo/uvicorn-gunicorn:python3.7
 
-WORKDIR /app
+ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 
-RUN pip install --no-cache pip-tools
+# Install Poetry
+RUN pip install --no-cache poetry==0.12.12 && poetry config settings.virtualenvs.create false
 
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
-COPY /app/requirements/dev.txt /app/requirements.txt
-RUN pip-sync requirements.txt
+WORKDIR /app
+COPY /app/poetry.lock /app/pyproject.toml /app/
+RUN poetry install --no-interaction --no-dev
 
 # For development, Jupyter remote kernel, Hydrogen
 # Using inside the container:

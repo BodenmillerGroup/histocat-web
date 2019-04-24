@@ -1,20 +1,15 @@
 FROM python:3.7
 
-WORKDIR /app
+ENV PIP_DISABLE_PIP_VERSION_CHECK=on
 
-RUN pip install --no-cache pip-tools
+# Install Poetry
+RUN pip install --no-cache poetry==0.12.12 && poetry config settings.virtualenvs.create false
 
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
-COPY /app/requirements/dev.txt /app/requirements.txt
-RUN pip-sync requirements.txt
-
-# For development, Jupyter remote kernel, Hydrogen
-# Using inside the container:
-# jupyter notebook --ip=0.0.0.0 --allow-root
-ARG env=prod
-RUN bash -c "if [ $env == 'dev' ] ; then pip install jupyter ; fi"
-EXPOSE 8888
+WORKDIR /app
+COPY /app/poetry.lock /app/pyproject.toml /app/
+RUN poetry install --no-interaction
 
 COPY ./app /app
 
