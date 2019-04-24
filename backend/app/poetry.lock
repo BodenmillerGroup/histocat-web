@@ -652,7 +652,7 @@ description = "PyCharm Debugger (used in PyCharm and PyDev)"
 name = "pydevd-pycharm"
 optional = false
 python-versions = "*"
-version = "191.6605.12"
+version = "191.7141.3"
 
 [[package]]
 category = "dev"
@@ -939,8 +939,8 @@ python-versions = ">=3.4"
 version = "7.0"
 
 [metadata]
-content-hash = "65155065af44668fed599fb5888073eb92f8046544cc41465a6318b5173ee187"
-python-versions = "^3.7"
+content-hash = "323f48b7478a16037bb490e45acff009e0905965ee525baf7a3e9fb8df0c3595"
+python-versions = "3.7.3"
 
 [metadata.hashes]
 alembic = ["40b9a619aa5f25ea1e1508adcda88b33704ef28e02c9cfa6471e5c772ecf0829"]
@@ -1007,7 +1007,7 @@ py = ["64f65755aee5b381cea27766a3a147c3f15b9b6b9ac88676de66ba2ae36793fa", "dc639
 pycodestyle = ["95a2219d12372f05704562a14ec30bc76b05a5b297b21a5dfe3f6fac3491ae56", "e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c"]
 pycparser = ["a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"]
 pydantic = ["1205cd1213e8acee40a9ad7160b24de74484fd79ec3f09150b255896a3f506ab", "58b71804e9a6b4e1ccf8b3dbbca8c0f9cf4b494e5bea219a96e2e2ecb5af688e"]
-pydevd-pycharm = ["76713cd668483835c16305ac03419e92abde648b3ab5a720cb79c78cf2881c41"]
+pydevd-pycharm = ["6d9d5e1791f76a52684e6c1968eee80d5e39c28c172c5d9234cb0856ae9a6135"]
 pyflakes = ["17dbeb2e3f4d772725c777fabc446d5634d1038f234e77343108ce445ea69ce0", "d976835886f8c5b31d47970ed689944a0262b5f3afa00a5a7b4dc81e5449f8a2"]
 pyjwt = ["5c6eca3c2940464d106b99ba83b00c6add741c9becaec087fb7ccdefea71350e", "8d59a976fb773f3e6a39c85636357c4f0e242707394cadadd9814f5cbaa20e96"]
 pyparsing = ["1873c03321fc118f4e9746baf201ff990ceb915f433f23b395f5580d1840cb2a", "9b6323ef4ab914af344ba97510e966d64ba91055d6b9afa6b30799340e89cc03"]

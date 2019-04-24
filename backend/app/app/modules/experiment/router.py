@@ -3,6 +3,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
+from starlette.background import BackgroundTasks
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
@@ -86,7 +87,8 @@ def update_experiment(
 
 
 @router.post("/{id}/upload_slide")
-async def upload_slide(id: int, file: UploadFile = File(None), db: Session = Depends(get_db)):
+def upload_slide(id: int, background_tasks: BackgroundTasks, file: UploadFile = File(None), db: Session = Depends(get_db)):
     experiment = crud.get(db, id=id)
-    await McdLoader.load(file, db, experiment)
+    background_tasks.add_task(McdLoader.load, file, db, experiment)
+    # await McdLoader.load(file, db, experiment)
     return {"filename": file.filename}

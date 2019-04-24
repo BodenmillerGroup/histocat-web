@@ -40,12 +40,6 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
     #: str: description provided by the user
     description = Column(Text)
 
-    #: int: number of pixels along *x*-axis
-    width = Column(Integer)
-
-    #: int: number of pixels along *y*-axis
-    height = Column(Integer)
-
     #: int: ID of the parent slide
     slide_id = Column(
         Integer,

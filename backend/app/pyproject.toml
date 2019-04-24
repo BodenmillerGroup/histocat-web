@@ -5,7 +5,7 @@ description = "HistoCAT for Web"
 authors = ["Anton Rau <anton.rau@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "3.7.3"
 alembic = "^1.0"
 cached-property = "^1.5.1"
 celery = "^4.3.0"
