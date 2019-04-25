@@ -5,7 +5,7 @@ export interface IExperiment {
     root_directory: string;
     location: string;
     meta: object;
-    created_at: Date
+    created_at: string;
 }
 
 export interface IExperimentUpdate {

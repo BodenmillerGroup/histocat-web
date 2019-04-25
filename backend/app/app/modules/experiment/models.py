@@ -11,6 +11,7 @@ class ExperimentBaseModel(BaseModel):
     description: Optional[str] = None
     root_directory: Optional[str] = None
     meta: Optional[dict] = None
+    created_at: datetime
 
 
 # Properties to receive via API on creation
@@ -34,4 +35,4 @@ class ExperimentModel(ExperimentBaseModel):
 
 # Additional properties stored in DB
 class ExperimentInDBModel(ExperimentBaseModel):
-    created_at: datetime
+    pass

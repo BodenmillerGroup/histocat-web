@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import os
 
+import cv2
+import h5py
 from fastapi import UploadFile
 from imctools.io import mcdparser
 from sqlalchemy.orm import Session
@@ -63,3 +65,6 @@ class McdLoader:
                                     meta=meta
                                 )
                                 channel = channel_crud.create(db, params=channel_params)
+                                with h5py.File(os.path.join(channel.location, 'origin.h5'), 'w') as f:
+                                    dataset = f.create_dataset('array', data=img)
+                                cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)

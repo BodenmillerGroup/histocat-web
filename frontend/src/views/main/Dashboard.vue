@@ -1,36 +1,34 @@
 <template>
-  <v-container fluid>
-    <v-card class="ma-3 pa-3">
-      <v-card-title primary-title>
-        <div class="headline primary--text">Dashboard</div>
-      </v-card-title>
-      <v-card-text>
-        <div class="headline font-weight-light ma-5">Welcome {{greetedUser}}</div>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn to="/main/profile/view">View Profile</v-btn>
-        <v-btn to="/main/profile/edit">Edit Profile</v-btn>
-        <v-btn to="/main/profile/password">Change Password</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-container>
+  <masonry
+    :cols="3"
+    :gutter="30"
+  >
+    <ExperimentCard
+      v-for="experiment in experiments"
+      :experiment="experiment"
+      :key="experiment.id"
+    />
+  </masonry>
 </template>
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readUserProfile } from '@/modules/main/getters';
+  import { readAdminExperiments } from '@/modules/experiment/getters';
+  import { dispatchGetExperiments } from '@/modules/experiment/actions';
+  import ExperimentCard from '@/components/ExperimentCard.vue';
+  import '@/plugins/masonry-css.ts';
 
-  @Component
+  @Component({
+    components: { ExperimentCard },
+  })
   export default class Dashboard extends Vue {
-    get greetedUser() {
-      const userProfile = readUserProfile(this.$store);
-      if (userProfile && userProfile.full_name) {
-        if (userProfile.full_name) {
-          return userProfile.full_name;
-        } else {
-          return userProfile.email;
-        }
-      }
+
+    get experiments() {
+      return readAdminExperiments(this.$store);
+    }
+
+    async mounted() {
+      await dispatchGetExperiments(this.$store);
     }
   }
 </script>
