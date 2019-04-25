@@ -10,7 +10,6 @@ class ExperimentBaseModel(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     root_directory: Optional[str] = None
-    location: Optional[str] = None
     meta: Optional[dict] = None
 
 
@@ -30,7 +29,7 @@ class ExperimentUpdateModel(BaseModel):
 
 # Additional properties to return via API
 class ExperimentModel(ExperimentBaseModel):
-    pass
+    location: Optional[str] = None
 
 
 # Additional properties stored in DB

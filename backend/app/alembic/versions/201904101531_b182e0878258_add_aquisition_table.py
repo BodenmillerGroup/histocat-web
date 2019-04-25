@@ -21,6 +21,8 @@ def upgrade():
                     sa.Column('id', sa.Integer(), primary_key=True, index=True),
                     sa.Column('slide_id', sa.Integer(), index=True),
                     sa.Column('name', sa.String(), nullable=False, index=True),
+                    sa.Column('width', sa.Integer()),
+                    sa.Column('height', sa.Integer()),
                     sa.Column('description', sa.String()),
                     sa.Column('location', sa.String(4096)),
                     sa.Column('meta', JSONB()),

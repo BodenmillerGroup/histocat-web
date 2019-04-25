@@ -9,15 +9,20 @@ class SlideBaseModel(BaseModel):
     id: int = None
     experiment_id: int = None
     name: Optional[str] = None
+    filename: Optional[str] = None
+    width_um: Optional[int] = None
+    height_um: Optional[int] = None
     description: Optional[str] = None
-    location: Optional[str] = None
     meta: Optional[dict] = None
 
 
 # Properties to receive via API on creation
 class SlideCreateModel(BaseModel):
-    name: str
     experiment_id: int
+    name: str
+    filename: Optional[str] = None
+    width_um: Optional[int] = None
+    height_um: Optional[int] = None
     description: Optional[str] = None
     meta: Optional[dict] = None
 
@@ -31,7 +36,7 @@ class SlideUpdateModel(BaseModel):
 
 # Additional properties to return via API
 class SlideModel(SlideBaseModel):
-    pass
+    location: Optional[str] = None
 
 
 # Additional properties stored in DB

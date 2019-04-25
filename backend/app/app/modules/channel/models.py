@@ -10,15 +10,21 @@ class ChannelBaseModel(BaseModel):
     acquisition_id: int = None
     name: Optional[str] = None
     metal: Optional[str] = None
+    mass: Optional[int] = None
+    max_intensity: Optional[int] = None
+    min_intensity: Optional[int] = None
     location: Optional[str] = None
     meta: Optional[dict] = None
 
 
 # Properties to receive via API on creation
 class ChannelCreateModel(BaseModel):
+    acquisition_id: int
     name: str
     metal: str
-    acquisition_id: int
+    mass: int
+    max_intensity: int
+    min_intensity: int
     meta: Optional[dict] = None
 
 

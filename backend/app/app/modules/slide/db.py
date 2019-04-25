@@ -41,6 +41,15 @@ class Slide(DirectoryModel, MetaMixin, CreatedAtMixin):
     #: str: name given by user
     name = Column(String, index=True)
 
+    #: str: original slide filename
+    filename = Column(String(4096))
+
+    #: int: slide width in μm
+    width_um = Column(Integer)
+
+    #: int: slide height in μm
+    height_um = Column(Integer)
+
     #: str: description provided by user
     description = Column(Text)
 
@@ -57,23 +66,33 @@ class Slide(DirectoryModel, MetaMixin, CreatedAtMixin):
         backref=backref('slides', cascade='all, delete-orphan')
     )
 
-    def __init__(self, name: str, experiment_id: int, description: str = '', meta: dict = None):
+    def __init__(self, experiment_id: int, name: str, filename: str, width_um: int, height_um: int,
+                 description: str = '', meta: dict = None):
         '''
         Parameters
         ----------
-        name: str
-            name of the slide
         experiment_id: int
             ID of the parent
             :class:`Experiment <tmlib.models.experiment.Experiment>`
+        name: str
+            name of the slide
+        filename: str
+            name of the original slide file
+        width_um: int
+            slide width in μm
+        height_um: int
+            slide height in μm
         description: str, optional
             description of the slide
         meta: dict, optional
             meta data of the slide
         '''
-        self.name = name
-        self.description = description
         self.experiment_id = experiment_id
+        self.name = name
+        self.filename = filename
+        self.width_um = width_um
+        self.height_um = height_um
+        self.description = description
         self.meta = meta
 
     @hybrid_property

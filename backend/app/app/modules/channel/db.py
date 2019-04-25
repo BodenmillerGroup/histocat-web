@@ -38,15 +38,13 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
     #: str: metal name
     metal = Column(String, index=True)
 
-    #: int: number of bytes used to encode intensity
-    bit_depth = Column(Integer)
+    #: int: metal mass
+    mass = Column(Integer)
 
-    #: int: maximum intensity value at which images get clipped at original
-    #: bit depth before rescaling to 8-bit
+    #: int: maximum intensity value at which images get clipped at original bit depth before rescaling to 8-bit
     max_intensity = Column(Integer)
 
-    #: int: minimum intensity value at which images get clipped at original
-    #: bit depth before rescaling to 8-bit
+    #: int: minimum intensity value at which images get clipped at original bit depth before rescaling to 8-bit
     min_intensity = Column(Integer)
 
     #: int: ID of the parent acquisition
@@ -62,25 +60,32 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
         backref=backref('channels', cascade='all, delete-orphan')
     )
 
-    def __init__(self, name: str, metal: str, acquisition_id: int, bit_depth: int, meta: dict = None):
+    def __init__(self, acquisition_id: int, name: str, metal: str, mass: int, max_intensity: int, min_intensity: int, meta: dict = None):
         '''
         Parameters
         ----------
+        acquisition_id: int
+            ID of the parent
+            :class:`Experiment <tmlib.models.experiment.Experiment>`
         name: str
             name of the channel
         metal: str
             name of the metal
-        acquisition_id: int
-            ID of the parent
-            :class:`Experiment <tmlib.models.experiment.Experiment>`
-        bit_depth: int
-            number of bits used to indicate intensity of pixels
+        mass: int
+            mass of the metal
+        max_intensity: int
+            maximum intensity value
+        min_intensity: int
+            minimum intensity value
         meta: dict, optional
             meta data of the channel
         '''
-        self.name = name
-        self.bit_depth = bit_depth
         self.acquisition_id = acquisition_id
+        self.name = name
+        self.metal = metal
+        self.mass = mass
+        self.max_intensity = max_intensity
+        self.min_intensity = min_intensity
         self.meta = meta
 
     @hybrid_property

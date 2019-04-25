@@ -24,8 +24,11 @@ class McdLoader:
             file_name = os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
                 experiment_id=experiment.id,
-                name=file_name,
-                description=upload_file.filename,
+                name=slide_item.properties['Name'],
+                filename=slide_item.properties['Filename'],
+                width_um=slide_item.properties['WidthUm'],
+                height_um=slide_item.properties['HeightUm'],
+                description=slide_item.properties['Description'],
                 meta=slide_item.properties
             )
             slide = slide_crud.create(db, params=slide_params)
@@ -36,6 +39,8 @@ class McdLoader:
                             acquisition_params = AcquisitionCreateModel(
                                 slide_id=slide.id,
                                 name=acquisition_item.properties['Description'],
+                                width=acquisition_item.properties['MaxX'],
+                                height=acquisition_item.properties['MaxY'],
                                 description=acquisition_item.properties['Description'],
                                 meta=acquisition_item.properties
                             )
@@ -51,7 +56,10 @@ class McdLoader:
                                 channel_params = ChannelCreateModel(
                                     acquisition_id=acquisition.id,
                                     name=label,
-                                    description=meta['Metal'],
+                                    metal=meta['Metal'],
+                                    mass=meta['Mass'],
+                                    max_intensity=img.max(),
+                                    min_intensity=img.min(),
                                     meta=meta
                                 )
                                 channel = channel_crud.create(db, params=channel_params)

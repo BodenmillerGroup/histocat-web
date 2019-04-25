@@ -9,15 +9,18 @@ class AcquisitionBaseModel(BaseModel):
     id: int = None
     slide_id: int = None
     name: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
     description: Optional[str] = None
-    location: Optional[str] = None
     meta: Optional[dict] = None
 
 
 # Properties to receive via API on creation
 class AcquisitionCreateModel(BaseModel):
-    name: str
     slide_id: int
+    name: str
+    width: int
+    height: int
     description: Optional[str] = None
     meta: Optional[dict] = None
 
@@ -31,7 +34,7 @@ class AcquisitionUpdateModel(BaseModel):
 
 # Additional properties to return via API
 class AcquisitionModel(AcquisitionBaseModel):
-    pass
+    location: Optional[str] = None
 
 
 # Additional properties stored in DB

@@ -37,6 +37,12 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
     #: str: name given by the user
     name = Column(String, index=True)
 
+    #: int: acquisition width in pixels
+    width = Column(Integer)
+
+    #: int: acquisition height in pixels
+    height = Column(Integer)
+
     #: str: description provided by the user
     description = Column(Text)
 
@@ -53,23 +59,29 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
         backref=backref('acquisitions', cascade='all, delete-orphan')
     )
 
-    def __init__(self, name: str, slide_id: int, description: str = '', meta: dict = None):
+    def __init__(self, slide_id: int, name: str, width: int, height: int, description: str = '', meta: dict = None):
         '''
         Parameters
         ----------
-        name: str
-            name of the acquisition
         slide_id: int
             ID of the parent :class:`Slide <app.db_models.slide.Slide>`
+        name: str
+            name of the acquisition
+        width: int
+            width of the acquisition in pixels
+        height: int
+            height of the acquisition
         description: str, optional
             description of the acquisition
         meta: dict, optional
-            meta data of the aquisition
+            meta data of the acquisition
         '''
         # TODO: ensure that name is unique within slide
-        self.name = name
-        self.description = description
         self.slide_id = slide_id
+        self.name = name
+        self.width = width
+        self.height = height
+        self.description = description
         self.meta = meta
 
     @hybrid_property
