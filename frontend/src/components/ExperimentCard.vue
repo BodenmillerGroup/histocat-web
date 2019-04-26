@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-3 pa-3" tile hover max-width="400">
+  <v-card class="ma-3 pa-3" tile hover>
     <v-card-title>
       <v-layout column>
         <h5 class="headline">{{experiment.name}}</h5>
@@ -18,14 +18,13 @@
 <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import { IExperiment } from '@/modules/experiment/models';
-  import { DateTime } from 'luxon';
 
   @Component
   export default class ExperimentCard extends Vue {
     @Prop(Object) experiment?: IExperiment;
 
     get createdAt() {
-      return this.experiment && DateTime.fromISO(this.experiment.created_at).toFormat('yyyy-MM-dd HH:mm:ss');
+      return this.experiment && new Date(this.experiment.created_at).toLocaleString('de-ch', { timeZone: 'UTC' });
     }
   }
 </script>

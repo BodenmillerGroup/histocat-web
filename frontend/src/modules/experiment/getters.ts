@@ -10,9 +10,14 @@ export const getters = {
       return {...filteredExperiments[0]};
     }
   },
+  activeExperiment: (state: ExperimentsState) => {
+    const activeExperiment = state.experiments.find((experiment) => experiment.id === state.activeExperimentId);
+    return activeExperiment;
+  },
 };
 
 const {read} = getStoreAccessors<ExperimentsState, State>('');
 
 export const readAdminOneExperiment = read(getters.adminOneExperiment);
 export const readAdminExperiments = read(getters.adminExperiments);
+export const readActiveExperiment = read(getters.activeExperiment);
