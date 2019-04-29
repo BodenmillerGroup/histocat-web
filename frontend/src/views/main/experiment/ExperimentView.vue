@@ -2,7 +2,7 @@
   <LoadingView v-if="!experiment" text="Loading..."/>
   <v-container v-else fluid grid-list-md pa-2>
     <v-layout row wrap>
-      <v-flex d-flex md3>
+      <div v-if="showWorkspace" max-width="300px">
         <v-layout column wrap>
           <v-flex d-flex>
             <TreeView/>
@@ -11,41 +11,43 @@
             <InfoView/>
           </v-flex>
         </v-layout>
+      </div>
+      <v-flex grow>
+        <v-card flat tile>
+          <v-toolbar card dense>
+            <v-toolbar-side-icon></v-toolbar-side-icon>
+            <v-toolbar-title>Blend</v-toolbar-title>
+            <v-spacer/>
+            <v-btn-toggle v-model="toggleMultiple" multiple>
+              <v-btn flat value='showWorkspace'>
+                <v-icon>mdi-file-tree</v-icon>
+                <span>Workspace</span>
+              </v-btn>
+              <v-btn flat value='showChannels'>
+                <v-icon>mdi-format-list-checkbox</v-icon>
+                <span>Channels</span>
+              </v-btn>
+            </v-btn-toggle>
+          </v-toolbar>
+          <v-tabs v-model="active">
+            <v-tab ripple>
+              Blend
+            </v-tab>
+            <v-tab ripple>
+              Tiles
+            </v-tab>
+            <v-tab-item>
+              <BlendView/>
+            </v-tab-item>
+            <v-tab-item>
+              <TilesView/>
+            </v-tab-item>
+          </v-tabs>
+        </v-card>
       </v-flex>
-      <v-flex d-flex md6>
-        <v-tabs v-model="active">
-          <v-tab ripple>
-            Blend
-          </v-tab>
-          <v-tab ripple>
-            Tiles
-          </v-tab>
-          <v-spacer></v-spacer>
-          <v-btn-toggle v-model="toggle_multiple" multiple>
-            <v-btn flat>
-              <v-icon>format_bold</v-icon>
-            </v-btn>
-            <v-btn flat>
-              <v-icon>format_italic</v-icon>
-            </v-btn>
-            <v-btn flat>
-              <v-icon>format_underlined</v-icon>
-            </v-btn>
-            <v-btn flat>
-              <v-icon>format_color_fill</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-          <v-tab-item>
-            <BlendView/>
-          </v-tab-item>
-          <v-tab-item>
-            <TilesView/>
-          </v-tab-item>
-        </v-tabs>
-      </v-flex>
-      <v-flex d-flex md3>
+      <div v-if="showChannels" max-width="200px">
         <ChannelsView/>
-      </v-flex>
+      </div>
     </v-layout>
   </v-container>
 </template>
@@ -66,10 +68,18 @@
   })
   export default class ExperimentView extends Vue {
 
-    toggle_multiple = [];
+    toggleMultiple = ['showWorkspace', 'showChannels'];
 
     get experiment() {
       return readActiveExperiment(this.$store);
+    }
+
+    get showWorkspace() {
+      return this.toggleMultiple.includes('showWorkspace')
+    }
+
+    get showChannels() {
+      return this.toggleMultiple.includes('showChannels')
     }
 
     async mounted() {

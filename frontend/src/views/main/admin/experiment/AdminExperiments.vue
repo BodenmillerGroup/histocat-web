@@ -16,7 +16,7 @@
           <v-tooltip top>
             <span>Edit</span>
             <v-btn slot="activator" flat :to="{name: 'main-admin-experiments-edit', params: {id: props.item.id}}">
-              <v-icon>edit</v-icon>
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-tooltip>
           <UploadButton :id="props.item.id" />

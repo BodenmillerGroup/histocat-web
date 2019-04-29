@@ -26,7 +26,7 @@
           <v-icon
             v-if="item.children"
             v-text="`mdi-${item.id === 1 ? 'home-variant' : 'folder-network'}`"
-          ></v-icon>
+          />
         </template>
       </v-treeview>
     </v-card-text>

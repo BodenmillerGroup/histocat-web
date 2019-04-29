@@ -3,7 +3,7 @@
     <v-card-title>
       <v-layout column>
         <h5 class="headline">{{experiment.name}}</h5>
-        <span class="caption">{{createdAt}}</span>
+        <span class="caption"><v-icon small>mdi-calendar-outline</v-icon> {{createdAt}}</span>
       </v-layout>
     </v-card-title>
     <v-card-text>

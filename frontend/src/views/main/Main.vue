@@ -7,7 +7,7 @@
           <v-subheader>Main menu</v-subheader>
           <v-list-tile to="/main/dashboard">
             <v-list-tile-action>
-              <v-icon>web</v-icon>
+              <v-icon>mdi-view-dashboard-outline</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Dashboard</v-list-tile-title>
@@ -19,7 +19,7 @@
           <v-subheader>Admin</v-subheader>
           <v-list-tile to="/main/admin/users/all">
             <v-list-tile-action>
-              <v-icon>group</v-icon>
+              <v-icon>mdi-account-multiple-outline</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Manage Users</v-list-tile-title>
@@ -27,7 +27,7 @@
           </v-list-tile>
           <v-list-tile to="/main/admin/experiments/all">
             <v-list-tile-action>
-              <v-icon>group</v-icon>
+              <v-icon>mdi-folder-multiple-outline</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Manage Experiments</v-list-tile-title>
@@ -39,7 +39,7 @@
           <v-divider></v-divider>
           <v-list-tile @click="switchMiniDrawer">
             <v-list-tile-action>
-              <v-icon v-html="miniDrawer ? 'chevron_right' : 'chevron_left'"></v-icon>
+              <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"></v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Collapse</v-list-tile-title>
@@ -54,7 +54,7 @@
       <v-spacer></v-spacer>
       <v-menu bottom left offset-y>
         <v-btn slot="activator" icon>
-          <v-icon>more_vert</v-icon>
+          <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
         <v-list>
           <v-list-tile to="/main/profile">
@@ -62,7 +62,7 @@
               <v-list-tile-title>Profile</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-icon>person</v-icon>
+              <v-icon>mdi-account</v-icon>
             </v-list-tile-action>
           </v-list-tile>
           <v-list-tile @click="logout">
@@ -70,7 +70,7 @@
               <v-list-tile-title>Logout</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-icon>close</v-icon>
+              <v-icon>mdi-logout-variant</v-icon>
             </v-list-tile-action>
           </v-list-tile>
         </v-list>
