@@ -4,7 +4,7 @@ import os
 from sqlalchemy import Column, String, Integer, Text, ForeignKey
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 from app.core.file_upload_status import FileUploadStatus
 from app.core.utils import remove_location_upon_delete, autocreate_directory_property
@@ -60,11 +60,9 @@ class Slide(DirectoryModel, MetaMixin, CreatedAtMixin):
         index=True
     )
 
-    #: tmlib.models.experiment.Experiment: parent experiment
-    experiment = relationship(
-        'Experiment',
-        backref=backref('slides', cascade='all, delete-orphan')
-    )
+    experiment = relationship("Experiment", back_populates="slides")
+
+    acquisitions = relationship("Acquisition", back_populates="slide")
 
     def __init__(self, experiment_id: int, name: str, filename: str, width_um: int, height_um: int,
                  description: str = '', meta: dict = None):
@@ -135,6 +133,18 @@ class Slide(DirectoryModel, MetaMixin, CreatedAtMixin):
             return FileUploadStatus.COMPLETE
         else:
             return FileUploadStatus.WAITING
+
+    def json(self):
+        return {
+            'id': self.id,
+            'experiment_id': self.experiment_id,
+            'name': self.name,
+            'description': self.description,
+            'location': self.location,
+            'meta': self.meta,
+            'created_at': self.created_at,
+            'acquisitions': self.acquisitions
+        }
 
     def __repr__(self):
         return f'<Slide(id={self.id}, name={self.name})>'

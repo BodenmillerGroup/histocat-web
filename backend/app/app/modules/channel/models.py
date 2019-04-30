@@ -15,6 +15,7 @@ class ChannelBaseModel(BaseModel):
     min_intensity: Optional[int] = None
     location: Optional[str] = None
     meta: Optional[dict] = None
+    created_at: datetime
 
 
 # Properties to receive via API on creation
@@ -41,4 +42,4 @@ class ChannelModel(ChannelBaseModel):
 
 # Additional properties stored in DB
 class ChannelInDBModel(ChannelBaseModel):
-    created_at: datetime
+    pass

@@ -10,12 +10,13 @@
   import ImageLayer from 'ol/layer/Image';
   import Projection from 'ol/proj/Projection';
   import Static from 'ol/source/ImageStatic';
+  import { defaults as defaultControls, OverviewMap } from 'ol/control.js';
 
   // Map views always need a projection.  Here we just want to map image
   // coordinates directly to map coordinates, so we create a projection that uses
   // the image extent in pixels.
-  var extent = [0, 0, 1024, 968];
-  var projection = new Projection({
+  const extent = [0, 0, 1024, 968];
+  const projection = new Projection({
     code: 'xkcd-image',
     units: 'pixels',
     extent: extent,
@@ -23,6 +24,48 @@
 
   @Component
   export default class BlendView extends Vue {
+
+    mounted() {
+
+      const layer1 = new ImageLayer({
+        source: new Static({
+          attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
+          url: 'https://imgs.xkcd.com/comics/online_communities.png',
+          projection: projection,
+          imageExtent: extent,
+        }),
+      });
+
+      const layer2 = new ImageLayer({
+        source: new Static({
+          attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
+          url: 'https://imgs.xkcd.com/comics/online_communities.png',
+          projection: projection,
+          imageExtent: extent,
+        }),
+      });
+
+      const map = new Map({
+        layers: [
+          layer1,
+          layer2,
+        ],
+        controls: defaultControls().extend([
+          new OverviewMap(),
+        ]),
+        target: 'map',
+        view: new View({
+          projection: projection,
+          center: getCenter(extent),
+          zoom: 2,
+          maxZoom: 8,
+        }),
+      });
+
+      // Initially bind listeners
+      this.bindLayerListeners(layer1);
+      this.bindLayerListeners(layer2);
+    }
 
     /**
      * This method sets the globalCompositeOperation to the value of the select
@@ -66,44 +109,5 @@
       layer.un('precompose', this.setBlendModeFromSelect);
       layer.un('postcompose', this.resetBlendModeFromSelect);
     };
-
-    mounted() {
-
-      const layer1 = new ImageLayer({
-        source: new Static({
-          attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
-          url: 'https://imgs.xkcd.com/comics/online_communities.png',
-          projection: projection,
-          imageExtent: extent,
-        }),
-      });
-
-      const layer2 = new ImageLayer({
-        source: new Static({
-          attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
-          url: 'https://imgs.xkcd.com/comics/online_communities.png',
-          projection: projection,
-          imageExtent: extent,
-        }),
-      });
-
-      const map = new Map({
-        layers: [
-          layer1,
-          layer2,
-        ],
-        target: 'map',
-        view: new View({
-          projection: projection,
-          center: getCenter(extent),
-          zoom: 2,
-          maxZoom: 8,
-        }),
-      });
-
-      // Initially bind listeners
-      this.bindLayerListeners(layer1);
-      this.bindLayerListeners(layer2);
-    }
   }
 </script>

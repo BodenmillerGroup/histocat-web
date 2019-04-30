@@ -1,7 +1,9 @@
-from typing import Optional
-
 from datetime import datetime
+from typing import Optional, List
+
 from pydantic import BaseModel
+
+from app.modules.channel.models import ChannelModel
 
 
 # Shared properties
@@ -11,8 +13,10 @@ class AcquisitionBaseModel(BaseModel):
     name: Optional[str] = None
     width: Optional[int] = None
     height: Optional[int] = None
+    location: Optional[str] = None
     description: Optional[str] = None
     meta: Optional[dict] = None
+    created_at: datetime
 
 
 # Properties to receive via API on creation
@@ -34,9 +38,14 @@ class AcquisitionUpdateModel(BaseModel):
 
 # Additional properties to return via API
 class AcquisitionModel(AcquisitionBaseModel):
-    location: Optional[str] = None
+    pass
 
 
 # Additional properties stored in DB
 class AcquisitionInDBModel(AcquisitionBaseModel):
-    created_at: datetime
+    pass
+
+
+# Acquisition dataset with children items
+class AcquisitionDatasetModel(AcquisitionModel):
+    channels: Optional[List[ChannelModel]]

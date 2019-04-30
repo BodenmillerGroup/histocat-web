@@ -54,11 +54,7 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
         index=True
     )
 
-    #: tmlib.models.experiment.Experiment: parent experiment
-    acquisition = relationship(
-        'Acquisition',
-        backref=backref('channels', cascade='all, delete-orphan')
-    )
+    acquisition = relationship("Acquisition", back_populates="channels")
 
     def __init__(self, acquisition_id: int, name: str, metal: str, mass: int, max_intensity: int, min_intensity: int, meta: dict = None):
         '''
@@ -136,7 +132,7 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
         '''int: number of pixels along horizontal axis at highest resolution level
         '''
         logger.debug('retrieve channel "width" from parent acquisition')
-        width = self.channel.acquisition.width
+        width = self.acquisition.width
         if width is None:
             raise DataError('Channel width has not yet been calculated.')
         return width
@@ -146,7 +142,7 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
         '''int: number of pixels along vertical axis at highest resolution level
         '''
         logger.debug('retrieve channel "height" from parent acquisition')
-        height = self.channel.acquisition.height
+        height = self.acquisition.height
         if height is None:
             raise DataError('Channel height has not yet been calculated.')
         return height

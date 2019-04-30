@@ -53,11 +53,9 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
         index=True
     )
 
-    #: app.db_models.slide.Slide: slide to which the acquisition belongs
-    slide = relationship(
-        'Slide',
-        backref=backref('acquisitions', cascade='all, delete-orphan')
-    )
+    slide = relationship("Slide", back_populates="acquisitions")
+
+    channels = relationship("Channel", back_populates="acquisition")
 
     def __init__(self, slide_id: int, name: str, width: int, height: int, description: str = '', meta: dict = None):
         '''
@@ -141,6 +139,18 @@ class Acquisition(DirectoryModel, MetaMixin, CreatedAtMixin):
             'name': self.name,
             'description': self.description,
             'status': self.status
+        }
+
+    def json(self):
+        return {
+            'id': self.id,
+            'slide_id': self.slide_id,
+            'name': self.name,
+            'description': self.description,
+            'location': self.location,
+            'meta': self.meta,
+            'created_at': self.created_at,
+            'channels': self.channels
         }
 
     def __repr__(self):

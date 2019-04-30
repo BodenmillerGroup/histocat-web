@@ -2,6 +2,7 @@ import logging
 import os
 
 from sqlalchemy import Column, String, Text
+from sqlalchemy.orm import relationship
 
 from app.core.utils import remove_location_upon_delete, autocreate_directory_property
 from app.db.base import DirectoryModel, CreatedAtMixin, MetaMixin
@@ -33,6 +34,8 @@ class Experiment(DirectoryModel, MetaMixin, CreatedAtMixin):
 
     #: absolute path to the directory where experiments are located
     root_directory = Column(String)
+
+    slides = relationship("Slide", back_populates="experiment")
 
     def __init__(self, name: str, root_directory: str, description: str = '', meta: dict = None):
         '''
@@ -71,6 +74,18 @@ class Experiment(DirectoryModel, MetaMixin, CreatedAtMixin):
     def slides_location(self):
         '''str: location where slides data are stored'''
         return os.path.join(self.location, 'slides')
+
+    def json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'root_directory': self.root_directory,
+            'location': self.location,
+            'meta': self.meta,
+            'created_at': self.created_at,
+            'slides': self.slides
+        }
 
     def __repr__(self):
         return '<Experiment(id=%r, name=%r)>' % (self.id, self.name)

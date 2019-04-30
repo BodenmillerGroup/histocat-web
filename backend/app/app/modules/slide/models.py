@@ -1,7 +1,9 @@
-from typing import Optional
-
 from datetime import datetime
+from typing import Optional, List
+
 from pydantic import BaseModel
+
+from app.modules.acquisition.models import AcquisitionDatasetModel
 
 
 # Shared properties
@@ -12,8 +14,10 @@ class SlideBaseModel(BaseModel):
     filename: Optional[str] = None
     width_um: Optional[int] = None
     height_um: Optional[int] = None
+    location: Optional[str] = None
     description: Optional[str] = None
     meta: Optional[dict] = None
+    created_at: datetime
 
 
 # Properties to receive via API on creation
@@ -36,9 +40,14 @@ class SlideUpdateModel(BaseModel):
 
 # Additional properties to return via API
 class SlideModel(SlideBaseModel):
-    location: Optional[str] = None
+    pass
 
 
 # Additional properties stored in DB
 class SlideInDBModel(SlideBaseModel):
-    created_at: datetime
+    pass
+
+
+# Full slide dataset
+class SlideDatasetModel(SlideModel):
+    acquisitions: Optional[List[AcquisitionDatasetModel]]

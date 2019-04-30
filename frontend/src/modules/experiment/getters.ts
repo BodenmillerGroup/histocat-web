@@ -4,15 +4,17 @@ import { State } from '@/store/state';
 
 export const getters = {
   adminExperiments: (state: ExperimentsState) => state.experiments,
-  adminOneExperiment: (state: ExperimentsState) => (experimentId: number) => {
-    const filteredExperiments = state.experiments.filter((experiment) => experiment.id === experimentId);
-    if (filteredExperiments.length > 0) {
-      return {...filteredExperiments[0]};
-    }
+  adminOneExperiment: (state: ExperimentsState) => (id: number) => {
+    return state.experiments.find((item) => item.id === id);
   },
   activeExperiment: (state: ExperimentsState) => {
-    const activeExperiment = state.experiments.find((experiment) => experiment.id === state.activeExperimentId);
-    return activeExperiment;
+    return state.experiments.find((item) => item.id === state.activeExperimentId);
+  },
+  dataset: (state: ExperimentsState) => {
+    return state.dataset;
+  },
+  activeMeta: (state: ExperimentsState) => {
+    return state.activeMeta;
   },
 };
 
@@ -21,3 +23,5 @@ const {read} = getStoreAccessors<ExperimentsState, State>('');
 export const readAdminOneExperiment = read(getters.adminOneExperiment);
 export const readAdminExperiments = read(getters.adminExperiments);
 export const readActiveExperiment = read(getters.activeExperiment);
+export const readExperimentDataset = read(getters.dataset);
+export const readActiveMeta = read(getters.activeMeta);

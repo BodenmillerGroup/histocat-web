@@ -939,8 +939,8 @@ python-versions = ">=3.4"
 version = "7.0"
 
 [metadata]
-content-hash = "93863d7b259560fc57c604bbe6ff176e233a8a6b1b766888eb9cca1b4c2b2f94"
-python-versions = "3.7.3"
+content-hash = "37f4f5a50ce09a7979c0b67a8d83e0c7d372ec43fbe5c43a80c13b131759f182"
+python-versions = "3.7.*"
 
 [metadata.hashes]
 alembic = ["828dcaa922155a2b7166c4f36ec45268944e4055c86499bd14319b4c8c0094b7"]

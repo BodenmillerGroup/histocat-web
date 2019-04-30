@@ -10,7 +10,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.io.mcd_loader import McdLoader
 from app.modules.user.db import User
 from . import crud
-from .models import ExperimentModel, ExperimentCreateModel, ExperimentUpdateModel
+from .models import ExperimentModel, ExperimentCreateModel, ExperimentUpdateModel, ExperimentDatasetModel
 
 logger = logging.getLogger(__name__)
 
@@ -87,8 +87,26 @@ def update_experiment(
 
 
 @router.post("/{id}/upload_slide")
-def upload_slide(id: int, background_tasks: BackgroundTasks, file: UploadFile = File(None), db: Session = Depends(get_db)):
+def upload_slide(id: int, background_tasks: BackgroundTasks, file: UploadFile = File(None),
+                 db: Session = Depends(get_db)):
     experiment = crud.get(db, id=id)
     background_tasks.add_task(McdLoader.load, file, db, experiment)
     # await McdLoader.load(file, db, experiment)
     return {"filename": file.filename}
+
+
+@router.get("/{id}/dataset", response_model=ExperimentDatasetModel)
+def read_experiment_dataset(
+    id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get full experiment dataset
+    """
+    item = crud.get_dataset(db, id=id)
+    for slide in item.slides:
+        slide.acquisitions
+        for acquisition in slide.acquisitions:
+            acquisition.channels
+    return item.json()

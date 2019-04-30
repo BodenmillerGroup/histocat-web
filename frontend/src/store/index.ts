@@ -15,7 +15,7 @@ const storeOptions: StoreOptions<State> = {
   modules: {
     main: mainModule,
     user: userModule,
-    experiment: experimentModule
+    experiment: experimentModule,
   },
   strict: debug,
   plugins: debug ? [createLogger()] : [],

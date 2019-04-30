@@ -4,7 +4,12 @@ import { IExperimentCreate, IExperimentUpdate } from './models';
 import { State } from '@/store/state';
 import { ExperimentsState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { commitSetActiveExperimentId, commitSetExperiment, commitSetExperiments } from './mutations';
+import {
+  commitSetActiveExperimentId,
+  commitSetExperiment,
+  commitSetExperimentDataset,
+  commitSetExperiments,
+} from './mutations';
 import { dispatchCheckApiError } from '@/modules/main/actions';
 import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
 
@@ -81,6 +86,16 @@ export const actions = {
   async actionSetActiveExperimentId(context: MainContext, payload: { id: number }) {
     commitSetActiveExperimentId(context, payload);
   },
+  async actionGetExperimentDataset(context: MainContext, payload: { id: number }) {
+    try {
+      const response = await api.getExperimentDataset(context.rootState.main.token, payload.id);
+      if (response) {
+        commitSetExperimentDataset(context, response.data);
+      }
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
 };
 
 const {dispatch} = getStoreAccessors<ExperimentsState, State>('');
@@ -91,3 +106,4 @@ export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment)
 export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);
 export const dispatchGetExperiment = dispatch(actions.actionGetExperiment);
 export const dispatchSetActiveExperimentId = dispatch(actions.actionSetActiveExperimentId);
+export const dispatchGetExperimentDataset = dispatch(actions.actionGetExperimentDataset);

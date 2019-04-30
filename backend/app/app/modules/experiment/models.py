@@ -1,7 +1,9 @@
-from typing import Optional
-
 from datetime import datetime
+from typing import Optional, List
+
 from pydantic import BaseModel
+
+from app.modules.slide.models import SlideDatasetModel
 
 
 # Shared properties
@@ -36,3 +38,8 @@ class ExperimentModel(ExperimentBaseModel):
 # Additional properties stored in DB
 class ExperimentInDBModel(ExperimentBaseModel):
     pass
+
+
+# Full experiment dataset
+class ExperimentDatasetModel(ExperimentModel):
+    slides: Optional[List[SlideDatasetModel]]

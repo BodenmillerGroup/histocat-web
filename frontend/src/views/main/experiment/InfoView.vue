@@ -3,13 +3,9 @@
     <v-card-title><h4>Info</h4></v-card-title>
     <v-divider></v-divider>
     <v-list dense>
-      <v-list-tile>
-        <v-list-tile-content>Calories:</v-list-tile-content>
-        <v-list-tile-content class="align-end">x</v-list-tile-content>
-      </v-list-tile>
-      <v-list-tile>
-        <v-list-tile-content>Fat:</v-list-tile-content>
-        <v-list-tile-content class="align-end">xx</v-list-tile-content>
+      <v-list-tile v-for="item in items" :key="item.name">
+        <v-list-tile-content>{{item.name}}</v-list-tile-content>
+        <v-list-tile-content class="align-end">{{item.value}}</v-list-tile-content>
       </v-list-tile>
     </v-list>
   </v-card>
@@ -17,8 +13,25 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
+  import { readActiveMeta } from '@/modules/experiment/getters';
 
   @Component
   export default class InfoView extends Vue {
+
+    get meta() {
+      return readActiveMeta(this.$store)
+    }
+
+    get items() {
+      if (this.meta) {
+        const items = Object.entries(this.meta);
+      return items.map((item) => {
+        return {
+          name: item[0],
+          value: item[1]
+        }
+      });
+      }
+    }
   }
 </script>

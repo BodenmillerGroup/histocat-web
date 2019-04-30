@@ -9,24 +9,23 @@
         solo-inverted
         hide-details
         clearable
-        clear-icon="close"
-      ></v-text-field>
+      />
     </v-sheet>
     <v-card-text>
       <v-treeview
         :items="items"
         :search="search"
         :filter="filter"
-        :open.sync="open"
+        :active.sync="active"
         activatable
         open-on-click
         transition
+        return-object
       >
         <template v-slot:prepend="{ item }">
-          <v-icon
-            v-if="item.children"
-            v-text="`mdi-${item.id === 1 ? 'home-variant' : 'folder-network'}`"
-          />
+          <v-icon>
+            {{ icons[item.type] }}
+          </v-icon>
         </template>
       </v-treeview>
     </v-card-text>
@@ -34,82 +33,49 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+  import { IExperimentDataset } from '@/modules/experiment/models';
+  import { commitSetActiveMeta } from '@/modules/experiment/mutations';
 
   @Component
   export default class TreeView extends Vue {
 
-    open = [];
+    @Prop(Object) dataset?: IExperimentDataset;
+
+    @Watch('selected')
+    onActiveChanged(item: object) {
+      commitSetActiveMeta(this.$store, item['meta'])
+    }
+
     search = null;
-    items = [
-      {
-        id: 1,
-        name: 'Vuetify Human Resources',
-        children: [
-          {
-            id: 2,
-            name: 'Core team',
-            children: [
-              {
-                id: 201,
-                name: 'John',
-              },
-              {
-                id: 202,
-                name: 'Kael',
-              },
-              {
-                id: 203,
-                name: 'Nekosaur',
-              },
-              {
-                id: 204,
-                name: 'Jacek',
-              },
-              {
-                id: 205,
-                name: 'Andrew',
-              },
-            ],
-          },
-          {
-            id: 3,
-            name: 'Administrators',
-            children: [
-              {
-                id: 301,
-                name: 'Ranee',
-              },
-              {
-                id: 302,
-                name: 'Rachel',
-              },
-            ],
-          },
-          {
-            id: 4,
-            name: 'Contributors',
-            children: [
-              {
-                id: 401,
-                name: 'Phlow',
-              },
-              {
-                id: 402,
-                name: 'Brandon',
-              },
-              {
-                id: 403,
-                name: 'Sean',
-              },
-            ],
-          },
-        ],
-      },
-    ];
+    open = [];
+    active = [];
+
+    icons = {
+      slide: 'mdi-folder-outline',
+      acquisition: 'mdi-film',
+    };
 
     get filter() {
       return (item, search, textKey) => item[textKey].indexOf(search) > -1;
+    }
+
+    get items() {
+      if (this.dataset) {
+        return this.dataset.slides.map((slide) => {
+          const acquisitions = slide.acquisitions.map((acquisition) => {
+            return Object.assign({}, acquisition, { type: 'acquisition' });
+          });
+          return Object.assign({}, slide, { type: 'slide', children: acquisitions });
+        });
+      }
+    }
+
+    get selected() {
+      if (!this.active.length) {
+        return undefined;
+      }
+      return this.active[0];
     }
   }
 </script>

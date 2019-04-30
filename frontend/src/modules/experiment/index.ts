@@ -5,6 +5,9 @@ import { ExperimentsState } from './state';
 
 const defaultState: ExperimentsState = {
   experiments: [],
+  dataset: undefined,
+  activeExperimentId: undefined,
+  activeMeta: undefined,
 };
 
 export const experimentModule = {
