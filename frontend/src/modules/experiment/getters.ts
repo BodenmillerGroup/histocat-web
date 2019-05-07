@@ -7,21 +7,33 @@ export const getters = {
   adminOneExperiment: (state: ExperimentsState) => (id: number) => {
     return state.experiments.find((item) => item.id === id);
   },
-  activeExperiment: (state: ExperimentsState) => {
-    return state.experiments.find((item) => item.id === state.activeExperimentId);
+  selectedExperiment: (state: ExperimentsState) => {
+    return state.experiments.find((item) => item.id === state.selectedExperimentId);
   },
   dataset: (state: ExperimentsState) => {
     return state.dataset;
   },
-  activeMeta: (state: ExperimentsState) => {
-    return state.activeMeta;
+  selectedMeta: (state: ExperimentsState) => {
+    return state.selectedMeta;
+  },
+  channels: (state: ExperimentsState) => {
+    return state.channels;
+  },
+  selectedAcquisition: (state: ExperimentsState) => {
+    return state.selectedAcquisition;
+  },
+  selectedMetals: (state: ExperimentsState) => {
+    return state.selectedMetals;
   },
 };
 
-const {read} = getStoreAccessors<ExperimentsState, State>('');
+const { read } = getStoreAccessors<ExperimentsState, State>('');
 
 export const readAdminOneExperiment = read(getters.adminOneExperiment);
 export const readAdminExperiments = read(getters.adminExperiments);
-export const readActiveExperiment = read(getters.activeExperiment);
+export const readSelectedExperiment = read(getters.selectedExperiment);
 export const readExperimentDataset = read(getters.dataset);
-export const readActiveMeta = read(getters.activeMeta);
+export const readSelectedMeta = read(getters.selectedMeta);
+export const readChannels = read(getters.channels);
+export const readSelectedAcquisition = read(getters.selectedAcquisition);
+export const readSelectedMetals = read(getters.selectedMetals);

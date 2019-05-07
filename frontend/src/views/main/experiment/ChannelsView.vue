@@ -39,7 +39,10 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
+  import { readChannels } from '@/modules/experiment/getters';
+  import { IChannel } from '@/modules/experiment/models';
+  import { commitSetSelectedMetals } from '@/modules/experiment/mutations';
 
   @Component
   export default class ChannelsView extends Vue {
@@ -69,10 +72,13 @@
     ];
 
     get channels() {
-      return [
-        { name: 'xxx', metal: 'edwdd', mass: 333 },
-        { name: 'qqq', metal: 'ssss', mass: 111 },
-      ];
+      return readChannels(this.$store);
+    }
+
+    @Watch('selected')
+    onSelectedChanged(items: IChannel[]) {
+      const selectedMetals = items.map(item => item.metal);
+      commitSetSelectedMetals(this.$store, selectedMetals);
     }
   }
 </script>

@@ -1,8 +1,11 @@
-import { IExperiment, IExperimentDataset } from './models';
+import { IAcquisition, IChannel, IExperiment, IExperimentDataset } from './models';
 
 export interface ExperimentsState {
-    experiments: IExperiment[];
-    activeExperimentId?: number;
-    dataset?: IExperimentDataset;
-    activeMeta?: object;
+  experiments: IExperiment[];
+  selectedExperimentId?: number;
+  dataset?: IExperimentDataset;
+  selectedMeta?: object;
+  channels: IChannel[];
+  selectedAcquisition?: IAcquisition;
+  selectedMetals: string[];
 }

@@ -16,7 +16,7 @@
         <v-card flat tile>
           <v-toolbar card dense>
             <v-toolbar-side-icon></v-toolbar-side-icon>
-            <v-toolbar-title>Blend</v-toolbar-title>
+            <v-toolbar-title>Image View</v-toolbar-title>
             <v-spacer/>
             <v-btn-toggle v-model="toggleMultiple" multiple>
               <v-btn flat value='showWorkspace'>
@@ -54,14 +54,15 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readActiveExperiment, readExperimentDataset } from '@/modules/experiment/getters';
-  import { dispatchGetExperimentDataset, dispatchSetActiveExperimentId } from '@/modules/experiment/actions';
+  import { readExperimentDataset } from '@/modules/experiment/getters';
+  import { dispatchGetExperimentDataset } from '@/modules/experiment/actions';
   import LoadingView from '@/components/LoadingView.vue';
   import TreeView from '@/views/main/experiment/TreeView.vue';
   import InfoView from '@/views/main/experiment/InfoView.vue';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
   import BlendView from '@/views/main/experiment/BlendView.vue';
   import TilesView from '@/views/main/experiment/TilesView.vue';
+  import { commitSetSelectedExperimentId } from '@/modules/experiment/mutations';
 
   @Component({
     components: { ChannelsView, TilesView, BlendView, InfoView, TreeView, LoadingView },
@@ -70,10 +71,6 @@
 
     active = undefined;
     toggleMultiple = ['showWorkspace', 'showChannels'];
-
-    get experiment() {
-      return readActiveExperiment(this.$store);
-    }
 
     get dataset() {
       return readExperimentDataset(this.$store);
@@ -89,7 +86,7 @@
 
     async mounted() {
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
-      await dispatchSetActiveExperimentId(this.$store, { id: experimentId });
+      commitSetSelectedExperimentId(this.$store, { id: experimentId });
       await dispatchGetExperimentDataset(this.$store, { id: experimentId });
     }
   }

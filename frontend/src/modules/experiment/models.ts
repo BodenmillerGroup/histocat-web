@@ -55,7 +55,10 @@ export interface IChannel {
   id: number;
   acquisition_id: number;
   name: string;
-  description: string;
+  metal: string;
+  mass: number;
+  max_intensity: number;
+  min_intensity: number;
   location: string;
   meta: object;
   created_at: string;

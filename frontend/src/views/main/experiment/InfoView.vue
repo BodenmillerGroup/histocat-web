@@ -13,24 +13,24 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readActiveMeta } from '@/modules/experiment/getters';
+  import { readSelectedMeta } from '@/modules/experiment/getters';
 
   @Component
   export default class InfoView extends Vue {
 
     get meta() {
-      return readActiveMeta(this.$store)
+      return readSelectedMeta(this.$store);
     }
 
     get items() {
       if (this.meta) {
         const items = Object.entries(this.meta);
-      return items.map((item) => {
-        return {
-          name: item[0],
-          value: item[1]
-        }
-      });
+        return items.map((item) => {
+          return {
+            name: item[0],
+            value: item[1],
+          };
+        });
       }
     }
   }

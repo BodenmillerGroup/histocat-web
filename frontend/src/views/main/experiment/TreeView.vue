@@ -34,18 +34,17 @@
 
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-  import { IExperimentDataset } from '@/modules/experiment/models';
-  import { commitSetActiveMeta } from '@/modules/experiment/mutations';
+  import { IAcquisition, IExperimentDataset } from '@/modules/experiment/models';
+  import {
+    commitSetChannels,
+    commitSetSelectedAcquisition,
+    commitSetSelectedMeta,
+  } from '@/modules/experiment/mutations';
 
   @Component
   export default class TreeView extends Vue {
 
     @Prop(Object) dataset?: IExperimentDataset;
-
-    @Watch('selected')
-    onActiveChanged(item: object) {
-      commitSetActiveMeta(this.$store, item['meta'])
-    }
 
     search = null;
     open = [];
@@ -55,6 +54,17 @@
       slide: 'mdi-folder-outline',
       acquisition: 'mdi-film',
     };
+
+    @Watch('selected')
+    onActiveChanged(item: object) {
+      if (item.hasOwnProperty('meta')) {
+        commitSetSelectedMeta(this.$store, item['meta']);
+      }
+      if (item.hasOwnProperty('channels')) {
+        commitSetSelectedAcquisition(this.$store, item as IAcquisition);
+        commitSetChannels(this.$store, item['channels']);
+      }
+    }
 
     get filter() {
       return (item, search, textKey) => item[textKey].indexOf(search) > -1;
