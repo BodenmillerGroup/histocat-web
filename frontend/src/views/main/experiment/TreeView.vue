@@ -21,6 +21,7 @@
         open-on-click
         transition
         return-object
+        class="scroll-y local-height"
       >
         <template v-slot:prepend="{ item }">
           <v-icon>
@@ -89,3 +90,9 @@
     }
   }
 </script>
+
+<style scoped>
+  .local-height {
+    max-height: 40vh;
+  }
+</style>

@@ -43,3 +43,8 @@ class ChannelModel(ChannelBaseModel):
 # Additional properties stored in DB
 class ChannelInDBModel(ChannelBaseModel):
     pass
+
+
+# Channel image model
+class ChannelImageModel(BaseModel):
+    pass

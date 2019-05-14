@@ -1,17 +1,15 @@
 <template>
   <LoadingView v-if="!dataset" text="Loading..."/>
   <v-container v-else fluid grid-list-md pa-2>
-    <v-layout row wrap>
-      <div v-if="showWorkspace" max-width="200px">
-        <v-layout column wrap>
-          <v-flex d-flex>
-            <TreeView :dataset="dataset"/>
-          </v-flex>
-          <v-flex d-flex>
-            <InfoView/>
-          </v-flex>
-        </v-layout>
-      </div>
+    <v-layout row>
+      <v-flex v-if="showWorkspace" md3>
+        <v-flex>
+          <TreeView :dataset="dataset"/>
+        </v-flex>
+        <v-flex>
+          <InfoView/>
+        </v-flex>
+      </v-flex>
       <v-flex grow>
         <v-card flat tile>
           <v-toolbar card dense>
@@ -45,9 +43,9 @@
           </v-tabs>
         </v-card>
       </v-flex>
-      <div v-if="showChannels" max-width="200px">
+      <v-flex v-if="showChannels" md3>
         <ChannelsView/>
-      </div>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>

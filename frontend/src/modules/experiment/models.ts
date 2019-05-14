@@ -46,6 +46,8 @@ export interface IAcquisition {
   name: string;
   description: string;
   location: string;
+  width: number;
+  height: number;
   meta: object;
   created_at: string;
   channels: IChannel[];

@@ -10,7 +10,7 @@ const defaultState: ExperimentsState = {
   selectedMeta: undefined,
   channels: [],
   selectedAcquisition: undefined,
-  selectedMetals: [],
+  selectedMetals: []
 };
 
 export const experimentModule = {

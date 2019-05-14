@@ -25,6 +25,14 @@ export const getters = {
   selectedMetals: (state: ExperimentsState) => {
     return state.selectedMetals;
   },
+  selectedChannels: (state: ExperimentsState) => {
+    const channels = state.channels.filter((channel) => {
+      if (state.selectedMetals.includes(channel.metal)) {
+        return channel;
+      }
+    });
+    return channels;
+  },
 };
 
 const { read } = getStoreAccessors<ExperimentsState, State>('');
@@ -37,3 +45,4 @@ export const readSelectedMeta = read(getters.selectedMeta);
 export const readChannels = read(getters.channels);
 export const readSelectedAcquisition = read(getters.selectedAcquisition);
 export const readSelectedMetals = read(getters.selectedMetals);
+export const readSelectedChannels = read(getters.selectedChannels);

@@ -1,13 +1,18 @@
+import os
+from io import BytesIO
 from typing import List
 
+import cv2
+import h5py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.modules.user.db import User
 from . import crud
-from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel
+from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelImageModel
 
 router = APIRouter()
 
@@ -79,3 +84,28 @@ def update_channel(
         )
     item = crud.update(db, item=item, params=params)
     return item
+
+
+async def stream_image(record: bytes, chunk_size: int = 4096):
+    with BytesIO(record) as stream:
+        data = stream.read(chunk_size)
+        while data:
+            yield data
+            data = stream.read(chunk_size)
+
+
+@router.get("/{id}/image", response_model=ChannelImageModel)
+async def read_channel_image(
+    id: int,
+    # current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get a specific channel by id
+    """
+    item = crud.get(db, id=id)
+    with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
+        dataset = f['array']
+        png = cv2.imencode('.png', dataset[()])[1]
+        response = StreamingResponse(stream_image(png), media_type="image/png")
+        return response
