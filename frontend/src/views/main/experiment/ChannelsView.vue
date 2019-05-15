@@ -21,7 +21,7 @@
       select-all
       disable-initial-sort
       hide-actions
-      class="scroll-y half-height"
+      class="scroll-y local-height"
     >
       <template slot="items" slot-scope="props">
         <td>
@@ -85,7 +85,7 @@
 </script>
 
 <style scoped>
-  .half-height {
-    max-height: 50vh;
+  .local-height {
+    max-height: 39vh;
   }
 </style>

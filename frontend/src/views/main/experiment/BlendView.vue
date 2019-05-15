@@ -1,6 +1,6 @@
 <template>
-  <div id="map">
-  </div>
+  <v-flex id="map" fill-height>
+  </v-flex>
 </template>
 
 <script lang="ts">

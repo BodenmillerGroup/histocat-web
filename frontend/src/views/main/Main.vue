@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-navigation-drawer persistent :mini-variant="miniDrawer" :clipped="$vuetify.breakpoint.lgAndUp"
-                         v-model="showDrawer" fixed app>
+                         v-model="showDrawer" fixed app width="250">
       <v-layout column fill-height>
         <v-list>
           <v-subheader>Main menu</v-subheader>

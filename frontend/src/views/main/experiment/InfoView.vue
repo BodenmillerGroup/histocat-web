@@ -38,6 +38,6 @@
 
 <style scoped>
   .local-height {
-    max-height: 46vh;
+    max-height: 35vh;
   }
 </style>

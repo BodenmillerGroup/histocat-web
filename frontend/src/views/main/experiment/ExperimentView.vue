@@ -11,40 +11,30 @@
         </v-flex>
       </v-flex>
       <v-flex grow>
-        <v-card flat tile>
-          <v-toolbar card dense>
-            <v-toolbar-side-icon></v-toolbar-side-icon>
-            <v-toolbar-title>Image View</v-toolbar-title>
-            <v-spacer/>
-            <v-btn-toggle v-model="toggleMultiple" multiple>
-              <v-btn flat value='showWorkspace'>
-                <v-icon>mdi-file-tree</v-icon>
-                <span>Workspace</span>
-              </v-btn>
-              <v-btn flat value='showChannels'>
-                <v-icon>mdi-format-list-checkbox</v-icon>
-                <span>Channels</span>
-              </v-btn>
-            </v-btn-toggle>
-          </v-toolbar>
-          <v-tabs v-model="active">
-            <v-tab ripple>
-              Blend
-            </v-tab>
-            <v-tab ripple>
-              Tiles
-            </v-tab>
-            <v-tab-item>
-              <BlendView/>
-            </v-tab-item>
-            <v-tab-item>
-              <TilesView/>
-            </v-tab-item>
-          </v-tabs>
-        </v-card>
+        <v-toolbar card dense>
+          <v-toolbar-side-icon></v-toolbar-side-icon>
+          <v-toolbar-title>Image View</v-toolbar-title>
+          <v-spacer/>
+          <v-btn-toggle v-model="toggleMultiple" multiple>
+            <v-btn flat value='showWorkspace'>
+              <v-icon>mdi-file-tree</v-icon>
+              <span>Workspace</span>
+            </v-btn>
+            <v-btn flat value='showChannels'>
+              <v-icon>mdi-format-list-checkbox</v-icon>
+              <span>Channels</span>
+            </v-btn>
+          </v-btn-toggle>
+        </v-toolbar>
+        <BlendView/>
       </v-flex>
       <v-flex v-if="showChannels" md3>
-        <ChannelsView/>
+        <v-flex>
+          <ChannelsView/>
+        </v-flex>
+        <v-flex>
+          <SettingsView/>
+        </v-flex>
       </v-flex>
     </v-layout>
   </v-container>
@@ -58,16 +48,16 @@
   import TreeView from '@/views/main/experiment/TreeView.vue';
   import InfoView from '@/views/main/experiment/InfoView.vue';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
+  import SettingsView from '@/views/main/experiment/SettingsView.vue';
   import BlendView from '@/views/main/experiment/BlendView.vue';
   import TilesView from '@/views/main/experiment/TilesView.vue';
   import { commitSetSelectedExperimentId } from '@/modules/experiment/mutations';
 
   @Component({
-    components: { ChannelsView, TilesView, BlendView, InfoView, TreeView, LoadingView },
+    components: { ChannelsView, TilesView, BlendView, InfoView, TreeView, LoadingView, SettingsView },
   })
   export default class ExperimentView extends Vue {
 
-    active = undefined;
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
     get dataset() {
