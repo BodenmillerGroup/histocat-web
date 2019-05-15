@@ -61,17 +61,8 @@
         });
       });
 
-      const existingLayers = this.map.getLayers();
-      existingLayers.forEach((layer) => {
-        this.unbindLayerListeners(layer);
-      });
-      existingLayers.clear();
-
-      for (const layer of layers) {
-        this.map.addLayer(layer);
-        // Initially bind listeners
-        this.bindLayerListeners(layer);
-      }
+      this.map.getLayers().clear();
+      this.map.getLayers().extend(layers);
     }
 
     mounted() {
@@ -81,56 +72,20 @@
         ]),
         target: 'map',
       });
+
+      this.map.on('precompose', this.precompose);
     }
 
     beforeDestroy() {
-      // Finally unbind listeners
-      this.map.getLayers().forEach((layer) => {
-        this.unbindLayerListeners(layer);
-      });
+      this.map.un('precompose', this.precompose);
     }
 
-    /**
-     * This method sets the globalCompositeOperation to the value of the select
-     * field and it is bound to the precompose event of the layers.
-     *
-     * @param {module:ol/render/Event~RenderEvent} evt The render event.
-     */
-    private setBlendModeFromSelect(evt) {
+    private precompose(evt) {
+      evt.context.imageSmoothingEnabled = false;
+      evt.context.webkitImageSmoothingEnabled = false;
+      evt.context.mozImageSmoothingEnabled = false;
+      evt.context.msImageSmoothingEnabled = false;
       evt.context.globalCompositeOperation = 'screen';
-    };
-
-
-    /**
-     * This method resets the globalCompositeOperation to the default value of
-     * 'source-over' and it is bound to the postcompose event of the layers.
-     *
-     * @param {module:ol/render/Event~RenderEvent} evt The render event.
-     */
-    private resetBlendModeFromSelect(evt) {
-      evt.context.globalCompositeOperation = 'source-over';
-    };
-
-
-    /**
-     * Bind the pre- and postcompose handlers to the passed layer.
-     *
-     * @param {module:ol/layer/Vector} layer The layer to bind the handlers to.
-     */
-    private bindLayerListeners(layer) {
-      layer.on('precompose', this.setBlendModeFromSelect);
-      layer.on('postcompose', this.resetBlendModeFromSelect);
-    };
-
-
-    /**
-     * Unind the pre- and postcompose handlers to the passed layers.
-     *
-     * @param {module:ol/layer/Vector} layer The layer to unbind the handlers from.
-     */
-    private unbindLayerListeners(layer) {
-      layer.un('precompose', this.setBlendModeFromSelect);
-      layer.un('postcompose', this.resetBlendModeFromSelect);
     };
   }
 </script>
