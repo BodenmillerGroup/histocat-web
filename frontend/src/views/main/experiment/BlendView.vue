@@ -1,5 +1,5 @@
 <template>
-  <v-flex id="map" fill-height>
+  <v-flex id="map">
   </v-flex>
 </template>
 
@@ -12,8 +12,8 @@
   import Projection from 'ol/proj/Projection';
   import Static from 'ol/source/ImageStatic';
   import { defaults as defaultControls, OverviewMap } from 'ol/control.js';
-  import { readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
-  import { IChannel } from '@/modules/experiment/models';
+  import { readMetalColorMap, readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
+  import { IAcquisition, IChannel } from '@/modules/experiment/models';
 
   @Component
   export default class BlendView extends Vue {
@@ -24,9 +24,16 @@
       return readSelectedChannels(this.$store);
     }
 
-    @Watch('selectedChannels')
-    onSelectedChannelsChanged(channels: IChannel[]) {
-      const acquisition = readSelectedAcquisition(this.$store);
+    get metalColorMap() {
+      return readMetalColorMap(this.$store);
+    }
+
+    get selectedAcquisition() {
+      return readSelectedAcquisition(this.$store);
+    }
+
+    @Watch('selectedAcquisition')
+    onSelectedAcquisitionChanged(acquisition: IAcquisition) {
       if (!acquisition) {
         return;
       }
@@ -49,12 +56,25 @@
       });
 
       this.map.setView(view);
+    }
 
-      const layers = channels.map((channel) => {
+    @Watch('metalColorMap')
+    onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
+      this.onSelectedChannelsChanged([]);
+    }
+
+    @Watch('selectedChannels')
+    onSelectedChannelsChanged(channels: IChannel[]) {
+      const view = this.map.getView();
+      const projection = view.getProjection();
+      const extent = projection.getExtent();
+      const colorMap = this.metalColorMap;
+      const layers = this.selectedChannels.map((channel) => {
+        const color = channel.metal in colorMap ? colorMap[channel.metal] : '';
         return new ImageLayer({
           source: new Static({
             attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
-            url: `http://localhost/api/v1/channels/${channel.id}/image`,
+            url: `http://localhost/api/v1/channels/${channel.id}/image?color=${color}`,
             projection: projection,
             imageExtent: extent,
           }),

@@ -8,4 +8,5 @@ export interface ExperimentsState {
   channels: IChannel[];
   selectedAcquisition?: IAcquisition;
   selectedMetals: string[];
+  metalColorMap: { [metal: string]: string }
 }

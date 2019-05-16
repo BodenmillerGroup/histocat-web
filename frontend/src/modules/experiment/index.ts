@@ -10,7 +10,8 @@ const defaultState: ExperimentsState = {
   selectedMeta: undefined,
   channels: [],
   selectedAcquisition: undefined,
-  selectedMetals: []
+  selectedMetals: [],
+  metalColorMap: {}
 };
 
 export const experimentModule = {

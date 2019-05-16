@@ -10,6 +10,7 @@ from starlette.responses import StreamingResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.core.utils import colorize, Color
 from app.modules.user.db import User
 from . import crud
 from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelImageModel
@@ -97,6 +98,7 @@ async def stream_image(record: bytes, chunk_size: int = 4096):
 @router.get("/{id}/image", response_model=ChannelImageModel)
 async def read_channel_image(
     id: int,
+    color: str = None,
     # current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -105,7 +107,9 @@ async def read_channel_image(
     """
     item = crud.get(db, id=id)
     with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
-        dataset = f['array']
-        png = cv2.imencode('.png', dataset[()])[1]
+        dataset = f['image']
+        clr = Color[color] if color else None
+        img = colorize(dataset[()], clr) if clr else dataset[()]
+        png = cv2.imencode('.png', img)[1]
         response = StreamingResponse(stream_image(png), media_type="image/png")
         return response

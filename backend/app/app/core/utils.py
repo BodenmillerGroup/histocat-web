@@ -22,9 +22,12 @@ import logging
 import os
 import re
 import time
+from enum import unique, Enum
 from functools import wraps
 from shutil import rmtree
 
+import cv2
+import numpy as np
 import sqlalchemy
 from decorator import decorator
 
@@ -599,3 +602,19 @@ def remove_location_upon_delete(cls):
 
     sqlalchemy.event.listen(cls, 'after_delete', after_delete_callback)
     return cls
+
+
+@unique
+class Color(Enum):
+    r = (0, 0, 1)  # red
+    g = (0, 1, 0)  # green
+    b = (1, 0, 0)  # blue
+    y = (0, 1, 1)  # yellow
+    c = (1, 1, 0)  # cyan
+    m = (1, 0, 1)  # magenta
+
+
+def colorize(image: np.ndarray, color: Color):
+    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    image = image * color.value
+    return image

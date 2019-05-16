@@ -11,7 +11,7 @@
         <template v-slot:header>
           <div>{{channel.name}}</div>
         </template>
-        <ChannelSettingsView/>
+        <ChannelSettingsView :channel="channel"/>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-card>

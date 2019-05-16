@@ -66,5 +66,5 @@ class McdLoader:
                                 )
                                 channel = channel_crud.create(db, params=channel_params)
                                 with h5py.File(os.path.join(channel.location, 'origin.h5'), 'w') as f:
-                                    dataset = f.create_dataset('array', data=img)
+                                    dataset = f.create_dataset('image', data=img)
                                 cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)

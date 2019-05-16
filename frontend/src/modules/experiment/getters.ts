@@ -33,6 +33,9 @@ export const getters = {
     });
     return channels;
   },
+  metalColorMap: (state: ExperimentsState) => {
+    return state.metalColorMap;
+  },
 };
 
 const { read } = getStoreAccessors<ExperimentsState, State>('');
@@ -46,3 +49,4 @@ export const readChannels = read(getters.channels);
 export const readSelectedAcquisition = read(getters.selectedAcquisition);
 export const readSelectedMetals = read(getters.selectedMetals);
 export const readSelectedChannels = read(getters.selectedChannels);
+export const readMetalColorMap = read(getters.metalColorMap);

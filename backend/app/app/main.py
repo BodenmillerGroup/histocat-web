@@ -19,7 +19,10 @@ if os.environ.get('ENV') == 'dev':
     except Exception as e:
         logger.error(e)
 
-app = FastAPI(title=config.PROJECT_NAME, openapi_url="/api/v1/openapi.json")
+app = FastAPI(
+    title=config.PROJECT_NAME,
+    openapi_url=f"{config.API_V1_STR}/openapi.json"
+)
 
 # CORS
 origins = []

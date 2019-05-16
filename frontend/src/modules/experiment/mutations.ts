@@ -30,6 +30,10 @@ export const mutations = {
   setSelectedMetals(state: ExperimentsState, payload: string[]) {
     state.selectedMetals = payload;
   },
+  setMetalColor(state: ExperimentsState, payload: { metal: string, color: string }) {
+    state.metalColorMap[payload.metal] = payload.color;
+    state.metalColorMap = Object.assign({}, state.metalColorMap);
+  },
 };
 
 const { commit } = getStoreAccessors<ExperimentsState, State>('');
@@ -42,3 +46,4 @@ export const commitSetSelectedMeta = commit(mutations.setSelectedMeta);
 export const commitSetChannels = commit(mutations.setChannels);
 export const commitSetSelectedAcquisition = commit(mutations.setSelectedAcquisition);
 export const commitSetSelectedMetals = commit(mutations.setSelectedMetals);
+export const commitSetMetalColor = commit(mutations.setMetalColor);
