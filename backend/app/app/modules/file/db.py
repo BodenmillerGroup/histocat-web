@@ -25,7 +25,7 @@ from sqlalchemy.orm import relationship, backref
 from app.core.file_upload_status import FileUploadStatus
 from app.core.image import ChannelImage, IllumstatsImage, IllumstatsContainer
 from app.core.metadata import ChannelImageMetadata, IllumstatsImageMetadata
-from app.core.utils import notimplemented, assert_type, remove_location_upon_delete
+from app.core.utils import notimplemented, remove_location_upon_delete
 from app.db.base import FileModel, CreatedAtMixin
 from app.io.readers import DatasetReader
 from app.io.writers import DatasetWriter
@@ -336,7 +336,6 @@ class ChannelImageFile(FileModel, CreatedAtMixin):
 
         return ChannelImage(array, metadata)
 
-    @assert_type(image=ChannelImage)
     def put(self, image: ChannelImage):
         '''Puts image to storage.
 
@@ -421,8 +420,7 @@ class IllumstatsFile(FileModel, CreatedAtMixin):
             percentiles = dict(zip(keys, values))
         return IllumstatsContainer(mean, std, percentiles).smooth()
 
-    @assert_type(data=IllumstatsContainer)
-    def put(self, data):
+    def put(self, data: IllumstatsContainer):
         '''Put illumination statistics images to store.
 
         Parameters

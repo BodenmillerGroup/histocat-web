@@ -23,7 +23,6 @@ import os
 import re
 import time
 from enum import unique, Enum
-from functools import wraps
 from shutil import rmtree
 
 import cv2
@@ -314,109 +313,6 @@ def missing_elements(data, start=None, end=None):
     if not consecutive_high:
         for e in missing_elements(data, index, end):
             yield e
-
-
-def assert_type(**expected):
-    '''Decorator function that asserts that the type of function arguments.
-
-    Parameters
-    ----------
-    expected: Dict[str, str or List[str]], optional
-        key-value pairs of names and expected types
-        of each argument that should be checked
-
-    Raises
-    ------
-    ValueError
-        when a name is provided that is not an argument of the function
-    TypeError
-        when type of the function argument doesn't match the expected type or
-        when `expected` is not provided in the correct type
-
-    Note
-    ----
-    Custom types will by dynamically imported. To this end, they have to be
-    provided with the full name, i.e. including package and module names.
-    The same is true for special built-in types, such as `types.NoneType`.
-
-    Examples
-    --------
-    .. code:: python
-
-        from tmlib.utils import assert_type
-
-        class TypeCheckExample(object):
-
-            @assert_type(value1=str, value2=[int, float, types.NoneType])
-            def test(self, value1, value2=None):
-                print 'value1: "%s"' % value1
-                if value2:
-                    print 'value2: %d' % value2
-
-        example = TypeCheckExample()
-        example.test('blabla', 2)
-        example.test('blabla', 2.0)
-        example.test('blabla', None)
-        example.test('blabla')
-        example.test('blabla', '2')  # raises TypeError
-
-    '''
-
-    # this function returns a decorator which does the actual work
-    def deco(fn):
-        argnames, _, _, _ = inspect.getargspec(fn)
-        checks = []
-        for expected_name, expected_types in expected.iteritems():
-            try:
-                index = argnames.index(expected_name)
-            except ValueError:
-                raise ValueError(
-                    "Function {funcname} has no argument named `{argname}`"
-                        .format(funcname=fn.__name__, argname=expected_name))
-            if not isinstance(expected_types, (list, tuple)):
-                expected_types = [expected_types]
-            expected_types = tuple(expected_types)
-            checks.append((expected_name, index, expected_types))
-
-        # define the wrapped function with typechecking capability
-        @wraps(fn)
-        def wrapper(*args, **kwargs):
-            # perform checks
-            for name, index, expected_types in checks:
-                if index < len(args):
-                    value = args[index]
-                elif name in kwargs:
-                    value = kwargs[name]
-                else:
-                    # parameter was not explicitly given, skip checks
-                    continue
-                if not isinstance(value, expected_types):
-                    raise TypeError(
-                        "Argument `{0}` to function {1} must have type {2};"
-                        " gotten {3} {4} instead"
-                            .format(
-                            name, fn.__name__,
-                            ' or '.join(t.__name__ for t in expected_types),
-                            value, type(value)))
-            return fn(*args, **kwargs)
-
-        return wrapper
-
-    return deco
-
-
-def add_assert_type(cls, name, **expected):
-    """
-    Decorate method *name* of class *cls*, with `assert_type`.
-
-    The *expected* key/value set is passed unchanged to
-    `assert_type`:func: (which see).
-
-    This is provided for the cases where a method has to force some
-    arguments to be of the same class that is being defined.
-    """
-    setattr(cls, name,
-            assert_type(**expected)(getattr(cls, name)))
 
 
 def assert_path_exists(*expected):

@@ -21,7 +21,7 @@
       select-all
       disable-initial-sort
       hide-actions
-      class="scroll-y local-height"
+      class="scroll-y channels-table"
     >
       <template slot="items" slot-scope="props">
         <td>
@@ -57,18 +57,21 @@
         sortable: true,
         value: 'name',
         align: 'left',
+        width: '50%',
       },
       {
         text: 'Metal',
         sortable: true,
         value: 'metal',
         align: 'left',
+        width: '20%',
       },
       {
         text: 'Mass',
         sortable: true,
         value: 'mass',
         align: 'left',
+        width: '20%',
       },
     ];
 
@@ -85,7 +88,17 @@
 </script>
 
 <style scoped>
-  .local-height {
+  .channels-table {
     max-height: 39vh;
+  }
+
+  table.v-table tbody td, table.v-table tbody th {
+    height: 35px;
+  }
+</style>
+
+<style>
+  .channels-table table {
+    table-layout: fixed;
   }
 </style>

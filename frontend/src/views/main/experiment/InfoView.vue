@@ -2,8 +2,8 @@
   <v-card tile>
     <v-card-title><h4>Info</h4></v-card-title>
     <v-divider></v-divider>
-    <v-list dense class="scroll-y local-height">
-      <v-list-tile v-for="item in items" :key="item.name">
+    <v-list dense class="scroll-y info-list">
+      <v-list-tile v-for="item in items" :key="item.name" class="info-list-tile">
         <v-list-tile-content>{{item.name}}</v-list-tile-content>
         <v-list-tile-content class="align-end">{{item.value}}</v-list-tile-content>
       </v-list-tile>
@@ -37,7 +37,11 @@
 </script>
 
 <style scoped>
-  .local-height {
+  .info-list {
     max-height: 35vh;
+  }
+
+  .info-list-tile {
+    height: 25px;
   }
 </style>

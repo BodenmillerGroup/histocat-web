@@ -1,6 +1,6 @@
 <template>
   <v-card tile>
-    <v-sheet class="pa-3 primary lighten-2">
+    <v-sheet class="pa-1 primary lighten-2">
       <v-text-field
         v-model="search"
         label="Search"
@@ -21,7 +21,7 @@
         open-on-click
         transition
         return-object
-        class="scroll-y local-height"
+        class="scroll-y workspace-tree"
       >
         <template v-slot:prepend="{ item }">
           <v-icon>
@@ -92,7 +92,7 @@
 </script>
 
 <style scoped>
-  .local-height {
+  .workspace-tree {
     max-height: 37vh;
   }
 </style>

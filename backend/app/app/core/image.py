@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import logging
-import types
 
 import cv2
 import mahotas as mh
@@ -28,7 +27,6 @@ import skimage.measure
 from geoalchemy2.shape import to_shape
 
 from app.core.metadata import ImageMetadata, SegmentationImageMetadata, PyramidTileMetadata, IllumstatsImageMetadata
-from app.core.utils import add_assert_type, assert_type
 
 logger = logging.getLogger(__name__)
 
@@ -462,11 +460,6 @@ class Image:
             return new_object
 
 
-add_assert_type(Image, 'insert', image=Image)
-add_assert_type(Image, 'merge', image=Image)
-add_assert_type(Image, 'join', image=Image)
-
-
 class SegmentationImage(Image):
     '''Class for a segmentation image: a labeled image where each segmented
     object is encoded by a unique one-based identifier value.
@@ -704,10 +697,7 @@ class PyramidTile(Image):
 
     TILE_SIZE = 256
 
-    @assert_type(
-        metadata=[PyramidTileMetadata, types.NoneType]
-    )
-    def __init__(self, array, metadata=None):
+    def __init__(self, array, metadata: PyramidTileMetadata = None):
         '''
         Parameters
         ----------
@@ -871,10 +861,7 @@ class IllumstatsImage(Image):
     single band and data type float.
     '''
 
-    @assert_type(
-        metadata=[IllumstatsImageMetadata, types.NoneType]
-    )
-    def __init__(self, array, metadata=None):
+    def __init__(self, array, metadata: IllumstatsImageMetadata = None):
         '''
         Parameters
         ----------
@@ -920,10 +907,7 @@ class IllumstatsContainer(object):
            Computer vision for image-based transcriptomics. Methods.
     '''
 
-    @assert_type(
-        mean=IllumstatsImage, std=IllumstatsImage
-    )
-    def __init__(self, mean, std, percentiles):
+    def __init__(self, mean: IllumstatsImage, std: IllumstatsImage, percentiles):
         '''
         Parameters
         ----------
@@ -1158,8 +1142,7 @@ class ChannelImage(Image):
         # Cast back to original type.
         return img.astype(img_type)
 
-    @assert_type(stats=IllumstatsContainer)
-    def correct(self, stats, inplace=True):
+    def correct(self, stats: IllumstatsContainer, inplace=True):
         '''Corrects the image for illumination artifacts.
 
         Parameters
