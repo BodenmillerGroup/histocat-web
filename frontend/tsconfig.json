@@ -2,11 +2,10 @@
   "compilerOptions": {
     "target": "es6",
     "module": "esnext",
+    "moduleResolution": "node",
     "strict": true,
     "noImplicitAny": false,
-    "jsx": "preserve",
     "importHelpers": true,
-    "moduleResolution": "node",
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -14,7 +13,8 @@
     "baseUrl": ".",
     "types": ["webpack-env", "jest"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "ol": ["node_modules/@hanreev/types-ol/ol"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },

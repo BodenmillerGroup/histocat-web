@@ -1,6 +1,6 @@
 <template>
-  <v-flex id="map">
-  </v-flex>
+  <div id="map" class="map">
+  </div>
 </template>
 
 <script lang="ts">
@@ -18,7 +18,8 @@
   @Component
   export default class BlendView extends Vue {
 
-    map: Map;
+    // TODO: check for a better solution
+    map!: Map;
 
     get selectedChannels() {
       return readSelectedChannels(this.$store);
@@ -43,7 +44,7 @@
       // the image extent in pixels.
       const extent = [0, 0, acquisition.width, acquisition.height];
       const projection = new Projection({
-        code: 'xkcd-image',
+        code: 'pixel',
         units: 'pixels',
         extent: extent,
       });
@@ -53,6 +54,7 @@
         center: getCenter(extent),
         zoom: 2,
         maxZoom: 8,
+        enableRotation: false,
       });
 
       this.map.setView(view);
@@ -109,3 +111,10 @@
     };
   }
 </script>
+
+<style scoped>
+  .map {
+    height: 100%;
+    width: 100%;
+  }
+</style>

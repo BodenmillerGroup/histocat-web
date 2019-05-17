@@ -26,7 +26,7 @@ class McdLoader:
             file_name = os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
                 experiment_id=experiment.id,
-                name=slide_item.properties['Name'],
+                name=slide_item.properties['Name'] if 'Name' in slide_item.properties else slide_item.properties['Description'],
                 filename=slide_item.properties['Filename'],
                 width_um=slide_item.properties['WidthUm'],
                 height_um=slide_item.properties['HeightUm'],
