@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from datetime import datetime
 from pydantic import BaseModel
@@ -48,3 +48,9 @@ class ChannelInDBModel(ChannelBaseModel):
 # Channel image model
 class ChannelImageModel(BaseModel):
     pass
+
+
+# Channel stats model
+class ChannelStatsModel(BaseModel):
+    hist: List[int]
+    bins: List[float]

@@ -53,8 +53,9 @@
       const view = new View({
         projection: projection,
         center: getCenter(extent),
-        zoom: 2,
-        maxZoom: 8,
+        zoom: 4,
+        zoomFactor: 1.25,
+        maxZoom: 16,
         enableRotation: false,
       });
 

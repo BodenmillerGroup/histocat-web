@@ -65,3 +65,8 @@ export interface IChannel {
   meta: object;
   created_at: string;
 }
+
+export interface IChannelStats {
+  hist: number[];
+  bins: number[];
+}

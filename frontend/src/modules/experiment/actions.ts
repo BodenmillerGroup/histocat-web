@@ -81,9 +81,14 @@ export const actions = {
   async actionGetChannelImage(context: MainContext, payload: { id: number }) {
     try {
       const response = await api.getChannelImage(context.rootState.main.token, payload.id);
-      if (response) {
-        console.log(response);
-      }
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
+  async actionGetChannelStats(context: MainContext, payload: { id: number }) {
+    try {
+      const response = await api.getChannelStats(context.rootState.main.token, payload.id);
+      return response.data;
     } catch (error) {
       await dispatchCheckApiError(context, error);
     }
@@ -98,3 +103,4 @@ export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment)
 export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);
 export const dispatchGetExperimentDataset = dispatch(actions.actionGetExperimentDataset);
 export const dispatchGetChannelImage = dispatch(actions.actionGetChannelImage);
+export const dispatchGetChannelStats = dispatch(actions.actionGetChannelStats);

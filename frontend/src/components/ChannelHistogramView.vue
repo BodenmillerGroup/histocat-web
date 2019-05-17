@@ -3,17 +3,27 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Prop, Vue } from 'vue-property-decorator';
   import * as d3 from 'd3';
+  import { IChannel } from '@/modules/experiment/models';
+  import { dispatchGetChannelStats } from '@/modules/experiment/actions';
 
   @Component
   export default class ChannelHistogramView extends Vue {
-    mounted() {
-      const randomX = d3.randomUniform(0, 10);
-      const randomY = d3.randomNormal(0.5, 0.12);
-      const data = d3.range(800).map(() => {
-        return [randomX(), randomY()];
+
+    @Prop(Object) channel!: IChannel;
+
+    async mounted() {
+      const stats = await dispatchGetChannelStats(this.$store, { id: this.channel.id });
+      if (!stats) {
+        return;
+      }
+
+      const data = stats.hist.map((hist, index) => {
+        return [stats.bins[index], hist];
       });
+      const xMax = Math.max(...stats.bins);
+      const yMax = Math.max(...stats.hist);
 
       const svg = d3.select(this.$refs.svg as any);
       const margin = { top: 0, right: 10, bottom: 20, left: 10 };
@@ -22,10 +32,11 @@
       const g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       const x = d3.scaleLinear()
-        .domain([0, 10])
+        .domain([0, xMax])
         .range([0, width]);
 
       const y = d3.scaleLinear()
+        .domain([0, yMax])
         .range([height, 0]);
 
       const brush = d3.brushX()
@@ -40,11 +51,11 @@
         .attr('transform', (d) => {
           return 'translate(' + x(d[0]) + ',' + y(d[1]) + ')';
         })
-        .attr('r', 3.5);
+        .attr('r', 1);
 
       g.append('g')
         .call(brush)
-        .call(brush.move, [3, 5].map(x))
+        .call(brush.move, [0, width].map(x))
         .selectAll('.overlay')
         .each((d: any) => {
           d.type = 'selection';

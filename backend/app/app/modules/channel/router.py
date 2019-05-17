@@ -4,6 +4,7 @@ from typing import List
 
 import cv2
 import h5py
+import numpy as np
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
@@ -13,7 +14,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.core.utils import colorize, Color
 from app.modules.user.db import User
 from . import crud
-from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelImageModel
+from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelImageModel, ChannelStatsModel
 
 router = APIRouter()
 
@@ -95,7 +96,7 @@ async def stream_image(record: bytes, chunk_size: int = 4096):
             data = stream.read(chunk_size)
 
 
-@router.get("/{id}/image", response_model=ChannelImageModel)
+@router.get("/{id}/image", response_model=ChannelImageModel, responses={200: {"content": {"image/png": {}}}})
 async def read_channel_image(
     id: int,
     color: str = None,
@@ -107,9 +108,28 @@ async def read_channel_image(
     """
     item = crud.get(db, id=id)
     with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
-        dataset = f['image']
+        data = f['image'][()]
         clr = Color[color] if color else None
-        img = colorize(dataset[()], clr) if clr else dataset[()]
+        img = colorize(data, clr) if clr else data
         png = cv2.imencode('.png', img)[1]
         response = StreamingResponse(stream_image(png), media_type="image/png")
         return response
+
+
+@router.get("/{id}/stats", response_model=ChannelStatsModel)
+async def read_channel_stats(
+    id: int,
+    # current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get a specific channel by id
+    """
+    item = crud.get(db, id=id)
+    with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
+        data = f['image'][()]
+        hist, bins = np.histogram(data.ravel(), bins='auto')
+        return {
+            'hist': hist.tolist(),
+            'bins': bins.tolist()
+        }

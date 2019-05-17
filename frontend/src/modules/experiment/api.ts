@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiUrl } from '@/env';
-import { IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
+import { IChannelStats, IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
 import { authHeaders } from '@/utils';
 
 
@@ -25,5 +25,8 @@ export const api = {
   },
   async getChannelImage(token: string, id: number) {
     return axios.get<any>(`${apiUrl}/api/v1/channels/${id}/image`, authHeaders(token));
+  },
+  async getChannelStats(token: string, id: number) {
+    return axios.get<IChannelStats>(`${apiUrl}/api/v1/channels/${id}/stats`, authHeaders(token));
   },
 };
