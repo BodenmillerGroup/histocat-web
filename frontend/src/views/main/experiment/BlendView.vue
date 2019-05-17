@@ -5,13 +5,14 @@
 
 <script lang="ts">
   import { Component, Vue, Watch } from 'vue-property-decorator';
-  import { Map, View } from 'ol';
+  import Map from 'ol/Map';
+  import View from 'ol/View';
   import 'ol/ol.css';
   import { getCenter } from 'ol/extent';
   import ImageLayer from 'ol/layer/Image';
   import Projection from 'ol/proj/Projection';
   import Static from 'ol/source/ImageStatic';
-  import { defaults as defaultControls, OverviewMap } from 'ol/control.js';
+  import { defaults as defaultControls, OverviewMap } from 'ol/control';
   import { readMetalColorMap, readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
 

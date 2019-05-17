@@ -11,10 +11,17 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "jest"],
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/@hanreev/types-ol"
+    ],
+    "types": [
+      "ol",
+      "webpack-env",
+      "jest"
+    ],
     "paths": {
-      "@/*": ["src/*"],
-      "ol": ["node_modules/@hanreev/types-ol/ol"]
+      "@/*": ["src/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
