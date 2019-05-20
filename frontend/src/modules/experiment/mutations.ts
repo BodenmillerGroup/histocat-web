@@ -34,6 +34,13 @@ export const mutations = {
     state.metalColorMap[payload.metal] = payload.color;
     state.metalColorMap = Object.assign({}, state.metalColorMap);
   },
+  setChannelLevels(state: ExperimentsState, payload: { id: number, levels?: { min: number, max: number } }) {
+    let channel = state.channels.find((item) => item.id === payload.id);
+    if (!channel) {
+      return;
+    }
+    channel = { ...channel, levels: payload.levels }
+  },
 };
 
 const { commit } = getStoreAccessors<ExperimentsState, State>('');
@@ -47,3 +54,4 @@ export const commitSetChannels = commit(mutations.setChannels);
 export const commitSetSelectedAcquisition = commit(mutations.setSelectedAcquisition);
 export const commitSetSelectedMetals = commit(mutations.setSelectedMetals);
 export const commitSetMetalColor = commit(mutations.setMetalColor);
+export const commitSetChannelLevels = commit(mutations.setChannelLevels);

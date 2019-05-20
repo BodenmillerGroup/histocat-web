@@ -75,10 +75,12 @@
       const colorMap = this.metalColorMap;
       const layers = this.selectedChannels.map((channel) => {
         const color = channel.metal in colorMap ? colorMap[channel.metal] : '';
+        const min = channel.levels ? channel.levels.min : '';
+        const max = channel.levels ? channel.levels.max : '';
         return new ImageLayer({
           source: new Static({
             attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
-            url: `http://localhost/api/v1/channels/${channel.id}/image?color=${color}`,
+            url: `http://localhost/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
             projection: projection,
             imageExtent: extent,
           }),

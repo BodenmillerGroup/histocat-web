@@ -14,7 +14,7 @@
 
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-  import ChannelHistogramView from '@/components/ChannelHistogramView.vue';
+  import ChannelHistogramView from '@/views/main/experiment/ChannelHistogramView.vue';
   import { IChannel } from '@/modules/experiment/models';
   import { readMetalColorMap } from '@/modules/experiment/getters';
   import { commitSetMetalColor } from '@/modules/experiment/mutations';

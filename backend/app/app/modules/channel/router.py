@@ -11,7 +11,7 @@ from starlette.responses import StreamingResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.utils import colorize, Color
+from app.core.utils import colorize, Color, scale_image
 from app.modules.user.db import User
 from . import crud
 from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelImageModel, ChannelStatsModel
@@ -100,6 +100,8 @@ async def stream_image(record: bytes, chunk_size: int = 4096):
 async def read_channel_image(
     id: int,
     color: str = None,
+    min: int = None,
+    max: int = None,
     # current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -109,6 +111,8 @@ async def read_channel_image(
     item = crud.get(db, id=id)
     with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
         data = f['image'][()]
+        if min is not None and max is not None:
+            data = scale_image(data, item.max_intensity, (min, max))
         clr = Color[color] if color else None
         img = colorize(data, clr) if clr else data
         png = cv2.imencode('.png', img)[1]

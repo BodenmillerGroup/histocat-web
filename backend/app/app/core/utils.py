@@ -24,6 +24,7 @@ import re
 import time
 from enum import unique, Enum
 from shutil import rmtree
+from typing import Tuple
 
 import cv2
 import numpy as np
@@ -514,3 +515,11 @@ def colorize(image: np.ndarray, color: Color):
     image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
     image = image * color.value
     return image
+
+
+def scale_image(image: np.ndarray, scale: float, levels: Tuple[float, float]):
+    minL, maxL = levels
+    if maxL <= minL:
+        return image
+    result = image * (scale / (maxL - minL))
+    return result
