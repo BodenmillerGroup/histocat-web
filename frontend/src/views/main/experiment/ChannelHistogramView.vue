@@ -24,10 +24,13 @@
         return [stats.bins[index], hist];
       });
       const xMax = Math.max(...stats.bins);
-      const yMax = Math.max(...stats.hist);
+      const yMax = Math.max(...stats.hist.slice(1));
 
       // find svg container
       const div = d3.select(this.$refs.svg as any);
+      if (div.empty()) {
+        return;
+      }
 
       // set the dimensions and margins of the graph
       const margin = { top: 10, right: 10, bottom: 20, left: 50 };
@@ -55,7 +58,9 @@
         .domain([0, yMax])
         .range([height, 0]);
       svg.append('g')
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y)
+          .ticks(7)
+          .tickFormat(d3.format('.0s')));
 
       // Add a clipPath: everything out of this area won't be drawn.
       const clip = svg.append('defs').append('svg:clipPath')
@@ -79,11 +84,13 @@
           x.domain([0, xMax]);
           commitSetChannelLevels(this.$store, { id: this.channel.id, levels: undefined });
         } else {
+          const min = x.invert(extent[0]);
+          const max = x.invert(extent[1]);
           commitSetChannelLevels(this.$store, {
             id: this.channel.id,
-            levels: { min: Math.round(extent[0]), max: Math.round(extent[1]) },
+            levels: { min: Math.round(min), max: Math.round(max) },
           });
-          x.domain([x.invert(extent[0]), x.invert(extent[1])]);
+          x.domain([min, max]);
           scatter.select('.brush').call(brush.move as any, null); // This remove the grey brush area as soon as the selection has been done
         }
 
@@ -101,7 +108,7 @@
       };
 
       // Add brushing
-      const brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+      const brush = d3.brushX() // Add the brush feature using the d3.brush function
         .extent([[0, 0], [width, height]]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
         .on('end', updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
 

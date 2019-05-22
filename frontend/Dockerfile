@@ -21,7 +21,7 @@ RUN yarn build
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1.15.12-alpine
+FROM nginx:1.16.0-alpine
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 

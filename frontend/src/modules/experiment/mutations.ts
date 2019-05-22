@@ -35,11 +35,12 @@ export const mutations = {
     state.metalColorMap = Object.assign({}, state.metalColorMap);
   },
   setChannelLevels(state: ExperimentsState, payload: { id: number, levels?: { min: number, max: number } }) {
-    let channel = state.channels.find((item) => item.id === payload.id);
+    const channel = state.channels.find((item) => item.id === payload.id);
     if (!channel) {
       return;
     }
-    channel = { ...channel, levels: payload.levels }
+    channel.levels = payload.levels;
+    state.channels = state.channels.slice();
   },
 };
 
