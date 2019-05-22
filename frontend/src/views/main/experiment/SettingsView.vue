@@ -7,7 +7,7 @@
       expand
       class="scroll-y local-height"
     >
-      <v-expansion-panel-content v-for="channel in selectedChannels" :key="channel.id">
+      <v-expansion-panel-content v-for="channel in selectedChannels" :key="channel.id" lazy>
         <template v-slot:header>
           <div>{{channel.name}}</div>
         </template>

@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="map">
+  <div id="map" class="blend-view">
   </div>
 </template>
 
@@ -15,6 +15,7 @@
   import { defaults as defaultControls, OverviewMap } from 'ol/control';
   import { readMetalColorMap, readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import { DragPan, MouseWheelZoom } from 'ol/interaction';
 
   @Component
   export default class BlendView extends Vue {
@@ -38,6 +39,21 @@
     onSelectedAcquisitionChanged(acquisition: IAcquisition) {
       if (!acquisition) {
         return;
+      }
+
+      if (!this.map) {
+        this.map = new Map({
+          controls: defaultControls().extend([
+            new OverviewMap(),
+          ]),
+          interactions: [
+            new DragPan({ kinetic: false }),
+            new MouseWheelZoom({ duration: 0 }),
+          ],
+          target: 'map',
+        });
+
+        this.map.on('precompose', this.precompose);
       }
 
       // Map views always need a projection.  Here we just want to map image
@@ -92,14 +108,7 @@
     }
 
     mounted() {
-      this.map = new Map({
-        controls: defaultControls().extend([
-          new OverviewMap(),
-        ]),
-        target: 'map',
-      });
 
-      this.map.on('precompose', this.precompose);
     }
 
     beforeDestroy() {
@@ -117,7 +126,7 @@
 </script>
 
 <style scoped>
-  .map {
+  .blend-view {
     height: 100%;
     width: 100%;
   }

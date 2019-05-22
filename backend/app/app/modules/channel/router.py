@@ -6,8 +6,9 @@ import cv2
 import h5py
 import numpy as np
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, JSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
@@ -96,7 +97,7 @@ async def stream_image(record: bytes, chunk_size: int = 4096):
             data = stream.read(chunk_size)
 
 
-@router.get("/{id}/image", response_model=ChannelImageModel, responses={200: {"content": {"image/png": {}}}})
+@router.get("/{id}/image", response_model=ChannelImageModel)
 async def read_channel_image(
     id: int,
     color: str = None,
@@ -116,14 +117,14 @@ async def read_channel_image(
         clr = Color[color] if color else None
         img = colorize(data, clr) if clr else data
         png = cv2.imencode('.png', img)[1]
-        response = StreamingResponse(stream_image(png), media_type="image/png")
-        return response
+        return StreamingResponse(stream_image(png), media_type="image/png",
+                                 headers={"Cache-Control": "private"})
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
 async def read_channel_stats(
     id: int,
-    # current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -133,7 +134,8 @@ async def read_channel_stats(
     with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
         data = f['image'][()]
         hist, bins = np.histogram(data.ravel(), bins='auto')
-        return {
+        json = jsonable_encoder({
             'hist': hist.tolist(),
             'bins': bins.tolist()
-        }
+        })
+        return JSONResponse(content=json, headers={"Cache-Control": "private"})

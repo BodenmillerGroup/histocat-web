@@ -1,5 +1,5 @@
 <template>
-  <div ref="svg" height="100" width="300"></div>
+  <svg ref="svg" height="100" width="300" shape-rendering="optimizeSpeed"></svg>
 </template>
 
 <script lang="ts">
@@ -27,19 +27,18 @@
       const yMax = Math.max(...stats.hist.slice(1));
 
       // find svg container
-      const div = d3.select(this.$refs.svg as any);
-      if (div.empty()) {
+      let svg = d3.select(this.$refs.svg as any);
+      if (svg.empty()) {
         return;
       }
 
       // set the dimensions and margins of the graph
-      const margin = { top: 10, right: 10, bottom: 20, left: 50 };
-      const width = +div.attr('width') - margin.left - margin.right;
-      const height = +div.attr('height') - margin.top - margin.bottom;
+      const margin = { top: 10, right: 10, bottom: 20, left: 30 };
+      const width = +svg.attr('width') - margin.left - margin.right;
+      const height = +svg.attr('height') - margin.top - margin.bottom;
 
       // append the svg object to the body of the page
-      const svg = div
-        .append('svg')
+      svg = svg
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
         .append('g')
@@ -59,7 +58,7 @@
         .range([height, 0]);
       svg.append('g')
         .call(d3.axisLeft(y)
-          .ticks(7)
+          .ticks(6)
           .tickFormat(d3.format('.0s')));
 
       // Add a clipPath: everything out of this area won't be drawn.
@@ -95,10 +94,10 @@
         }
 
         // Update axis and circle position
-        xAxis.transition().duration(1000).call(d3.axisBottom(x));
+        xAxis.transition().duration(500).call(d3.axisBottom(x));
         scatter
           .selectAll('line')
-          .transition().duration(1000)
+          .transition().duration(500)
           .attr('x1', (d) => {
             return x(d[0]);
           })
