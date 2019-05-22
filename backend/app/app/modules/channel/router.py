@@ -15,7 +15,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.core.utils import colorize, Color, scale_image
 from app.modules.user.db import User
 from . import crud
-from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelImageModel, ChannelStatsModel
+from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelStatsModel
 
 router = APIRouter()
 
@@ -97,7 +97,7 @@ async def stream_image(record: bytes, chunk_size: int = 4096):
             data = stream.read(chunk_size)
 
 
-@router.get("/{id}/image", response_model=ChannelImageModel)
+@router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
 async def read_channel_image(
     id: int,
     color: str = None,

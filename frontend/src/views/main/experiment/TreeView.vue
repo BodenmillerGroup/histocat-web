@@ -58,6 +58,9 @@
 
     @Watch('selected')
     onActiveChanged(item: object) {
+      if (!item) {
+        return;
+      }
       if (item.hasOwnProperty('meta')) {
         commitSetSelectedMeta(this.$store, item['meta']);
       }
