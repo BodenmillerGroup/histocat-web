@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 
-import cv2
 import h5py
 from fastapi import UploadFile
 from imctools.io import mcdparser
@@ -26,7 +25,8 @@ class McdLoader:
             file_name = os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
                 experiment_id=experiment.id,
-                name=slide_item.properties['Name'] if 'Name' in slide_item.properties else slide_item.properties['Description'],
+                name=slide_item.properties['Name'] if 'Name' in slide_item.properties else slide_item.properties[
+                    'Description'],
                 filename=slide_item.properties['Filename'],
                 width_um=slide_item.properties['WidthUm'],
                 height_um=slide_item.properties['HeightUm'],
@@ -66,5 +66,5 @@ class McdLoader:
                                 )
                                 channel = channel_crud.create(db, params=channel_params)
                                 with h5py.File(os.path.join(channel.location, 'origin.h5'), 'w') as f:
-                                    dataset = f.create_dataset('image', data=img)
+                                    f.create_dataset('image', data=img)
                                 # cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)

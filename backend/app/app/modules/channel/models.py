@@ -45,11 +45,6 @@ class ChannelInDBModel(ChannelBaseModel):
     pass
 
 
-# Channel image model
-class ChannelImageModel(BaseModel):
-    pass
-
-
 # Channel stats model
 class ChannelStatsModel(BaseModel):
     hist: List[int]

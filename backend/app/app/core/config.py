@@ -33,6 +33,9 @@ SQLALCHEMY_DATABASE_URI = (
     f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}/{POSTGRES_DB}"
 )
 
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = os.getenv("REDIS_PORT")
+
 SMTP_TLS = getenv_boolean("SMTP_TLS", True)
 SMTP_PORT = None
 _SMTP_PORT = os.getenv("SMTP_PORT")

@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
@@ -8,6 +9,7 @@ from starlette.background import BackgroundTasks
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.io.mcd_loader import McdLoader
+from app.io.ome_tiff_loader import OmeTiffLoader
 from app.modules.user.db import User
 from . import crud
 from .models import ExperimentModel, ExperimentCreateModel, ExperimentUpdateModel, ExperimentDatasetModel
@@ -90,8 +92,16 @@ def update_experiment(
 def upload_slide(id: int, background_tasks: BackgroundTasks, file: UploadFile = File(None),
                  db: Session = Depends(get_db)):
     experiment = crud.get(db, id=id)
-    background_tasks.add_task(McdLoader.load, file, db, experiment)
-    # await McdLoader.load(file, db, experiment)
+    filename, file_extension = os.path.splitext(file.filename)
+    file_extension = file_extension.lower()
+    if file_extension == '.mcd':
+        background_tasks.add_task(McdLoader.load, file, db, experiment)
+        # await McdLoader.load(file, db, experiment)
+    elif file_extension == '.tiff' or file_extension == '.tif':
+        if filename.endswith('.ome'):
+            background_tasks.add_task(OmeTiffLoader.load, file, db, experiment)
+    elif file_extension == '.txt':
+        pass
     return {"filename": file.filename}
 
 

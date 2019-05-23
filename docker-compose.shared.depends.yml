@@ -3,7 +3,9 @@ services:
   backend:
     depends_on: 
       - db
+      - redis
   celeryworker:
     depends_on: 
       - db
       - queue
+      - redis
