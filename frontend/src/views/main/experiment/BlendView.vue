@@ -16,6 +16,7 @@
   import { readMetalColorMap, readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
+  import { equals } from 'ramda';
 
   @Component
   export default class BlendView extends Vue {
@@ -42,6 +43,25 @@
       }
 
       if (!this.map) {
+        // Map views always need a projection.  Here we just want to map image
+        // coordinates directly to map coordinates, so we create a projection that uses
+        // the image extent in pixels.
+        const extent = [0, 0, acquisition.width, acquisition.height];
+        const projection = new Projection({
+          code: 'pixel',
+          units: 'pixels',
+          extent: extent,
+        });
+
+        const view = new View({
+          projection: projection,
+          center: getCenter(extent),
+          zoom: 4,
+          zoomFactor: 1.25,
+          maxZoom: 16,
+          enableRotation: false,
+        });
+
         this.map = new Map({
           controls: defaultControls().extend([
             new OverviewMap(),
@@ -50,32 +70,18 @@
             new DragPan({ kinetic: false }),
             new MouseWheelZoom({ duration: 0 }),
           ],
+          view: view,
           target: 'map',
         });
 
         this.map.on('precompose', this.precompose);
       }
 
-      // Map views always need a projection.  Here we just want to map image
-      // coordinates directly to map coordinates, so we create a projection that uses
-      // the image extent in pixels.
-      const extent = [0, 0, acquisition.width, acquisition.height];
-      const projection = new Projection({
-        code: 'pixel',
-        units: 'pixels',
-        extent: extent,
-      });
-
-      const view = new View({
-        projection: projection,
-        center: getCenter(extent),
-        zoom: 4,
-        zoomFactor: 1.25,
-        maxZoom: 16,
-        enableRotation: false,
-      });
-
-      this.map.setView(view);
+      const existingExtent = this.map.getView().getProjection().getExtent();
+      const newExtent = [0, 0, acquisition.width, acquisition.height];
+      if (!equals(existingExtent, newExtent)) {
+        this.map.getView().getProjection().setExtent(newExtent);
+      }
     }
 
     @Watch('metalColorMap')
