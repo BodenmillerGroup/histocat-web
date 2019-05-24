@@ -15,11 +15,15 @@ def get_by_name(session: Session, *, name: str) -> Optional[Slide]:
     return session.query(Slide).filter(Slide.name == name).first()
 
 
-def get_by_experiment_id(session: Session, *, experimentId: int) -> List[Optional[Slide]]:
+def get_by_experiment_id(
+    session: Session, *, experimentId: int
+) -> List[Optional[Slide]]:
     return session.query(Slide).filter(Slide.experiment_id == experimentId).all()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Slide]]:
+def get_multi(
+    session: Session, *, skip: int = 0, limit: int = 100
+) -> List[Optional[Slide]]:
     return session.query(Slide).offset(skip).limit(limit).all()
 
 

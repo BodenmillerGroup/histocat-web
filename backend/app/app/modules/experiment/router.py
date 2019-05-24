@@ -95,18 +95,22 @@ def update_experiment(
 
 
 @router.post("/{id}/upload_slide")
-def upload_slide(id: int, background_tasks: BackgroundTasks, file: UploadFile = File(None),
-                 db: Session = Depends(get_db)):
+def upload_slide(
+    id: int,
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(None),
+    db: Session = Depends(get_db),
+):
     experiment = crud.get(db, id=id)
     filename, file_extension = os.path.splitext(file.filename)
     file_extension = file_extension.lower()
-    if file_extension == '.mcd':
+    if file_extension == ".mcd":
         background_tasks.add_task(McdLoader.load, file, db, experiment)
         # await McdLoader.load(file, db, experiment)
-    elif file_extension == '.tiff' or file_extension == '.tif':
-        if filename.endswith('.ome'):
+    elif file_extension == ".tiff" or file_extension == ".tif":
+        if filename.endswith(".ome"):
             background_tasks.add_task(OmeTiffLoader.load, file, db, experiment)
-    elif file_extension == '.txt':
+    elif file_extension == ".txt":
         pass
     return {"filename": file.filename}
 

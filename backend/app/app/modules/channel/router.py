@@ -26,7 +26,7 @@ from .models import (
     ChannelUpdateModel,
 )
 
-r = redis.Redis(host='redis')
+r = redis.Redis(host="redis")
 
 router = APIRouter()
 
@@ -121,14 +121,18 @@ async def read_channel_image(
     Get a specific channel by id
     """
     item = crud.get(db, id=id)
-    with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
-        data = f['image'][()]
+    with h5py.File(os.path.join(item.location, "origin.h5"), "r") as f:
+        data = f["image"][()]
         if min is not None and max is not None:
             data = scale_image(data, item.max_intensity, (min, max))
         clr = Color[color] if color else None
         img = colorize(data, clr) if clr else data
-        png = cv2.imencode('.png', img)[1]
-        return StreamingResponse(stream_image(png), media_type="image/png", headers={"Cache-Control": "private"})
+        png = cv2.imencode(".png", img)[1]
+        return StreamingResponse(
+            stream_image(png),
+            media_type="image/png",
+            headers={"Cache-Control": "private"},
+        )
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
@@ -143,15 +147,14 @@ async def read_channel_stats(
     """
     content = r.get(request.url.path)
     if content:
-        return JSONResponse(content=json.loads(content), headers={"Cache-Control": "private"})
+        return JSONResponse(
+            content=json.loads(content), headers={"Cache-Control": "private"}
+        )
 
     item = crud.get(db, id=id)
-    with h5py.File(os.path.join(item.location, 'origin.h5'), 'r') as f:
-        data = f['image'][()]
-        hist, bins = np.histogram(data.ravel(), bins='auto')
-        content = jsonable_encoder({
-            'hist': hist.tolist(),
-            'bins': bins.tolist()
-        })
+    with h5py.File(os.path.join(item.location, "origin.h5"), "r") as f:
+        data = f["image"][()]
+        hist, bins = np.histogram(data.ravel(), bins="auto")
+        content = jsonable_encoder({"hist": hist.tolist(), "bins": bins.tolist()})
         r.set(request.url.path, json.dumps(content))
         return JSONResponse(content=content, headers={"Cache-Control": "private"})

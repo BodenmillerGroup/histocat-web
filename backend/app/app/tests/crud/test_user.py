@@ -20,9 +20,7 @@ def test_authenticate_user():
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password)
     user = crud.create(db_session, params=user_in)
-    authenticated_user = crud.authenticate(
-        db_session, email=email, password=password
-    )
+    authenticated_user = crud.authenticate(db_session, email=email, password=password)
     assert authenticated_user
     assert user.email == authenticated_user.email
 

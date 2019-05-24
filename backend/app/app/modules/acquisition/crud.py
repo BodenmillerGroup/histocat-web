@@ -15,7 +15,9 @@ def get_by_name(session: Session, *, name: str) -> Optional[Acquisition]:
     return session.query(Acquisition).filter(Acquisition.name == name).first()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Acquisition]]:
+def get_multi(
+    session: Session, *, skip: int = 0, limit: int = 100
+) -> List[Optional[Acquisition]]:
     return session.query(Acquisition).offset(skip).limit(limit).all()
 
 
@@ -28,7 +30,9 @@ def create(session: Session, *, params: AcquisitionCreateModel) -> Acquisition:
     return entity
 
 
-def update(session: Session, *, item: Acquisition, params: AcquisitionUpdateModel) -> Acquisition:
+def update(
+    session: Session, *, item: Acquisition, params: AcquisitionUpdateModel
+) -> Acquisition:
     data = jsonable_encoder(item)
     update_data = params.dict(skip_defaults=True)
     for field in data:

@@ -24,7 +24,8 @@ def test_celery(
 
 @router.post("/test-email/", response_model=MsgModel, status_code=201)
 def test_email(
-    email_to: EmailStr, current_user: UserInDBModel = Depends(get_current_active_superuser)
+    email_to: EmailStr,
+    current_user: UserInDBModel = Depends(get_current_active_superuser),
 ):
     """
     Test emails

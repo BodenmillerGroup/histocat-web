@@ -75,10 +75,7 @@ def update_acquisition(
     item = crud.get(db, id=id)
 
     if not item:
-        raise HTTPException(
-            status_code=404,
-            detail="Item not found",
-        )
+        raise HTTPException(status_code=404, detail="Item not found")
     if not is_superuser(current_user):
         raise HTTPException(status_code=400, detail="Not enough permissions")
     item = crud.update(db, item=item, params=params)

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from .db import Experiment
 from .models import ExperimentCreateModel, ExperimentUpdateModel
 
-ROOT_DIRECTORY = '/experiments/'
+ROOT_DIRECTORY = "/experiments/"
 
 
 def get(session: Session, *, id: int) -> Optional[Experiment]:
@@ -17,7 +17,9 @@ def get_by_name(session: Session, *, name: str) -> Optional[Experiment]:
     return session.query(Experiment).filter(Experiment.name == name).first()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Experiment]]:
+def get_multi(
+    session: Session, *, skip: int = 0, limit: int = 100
+) -> List[Optional[Experiment]]:
     items = session.query(Experiment).offset(skip).limit(limit).all()
     # TODO: hack to get location property value in API response
     for i in items:
@@ -30,7 +32,7 @@ def create(session: Session, *, params: ExperimentCreateModel) -> Experiment:
         root_directory=ROOT_DIRECTORY,
         name=params.name,
         description=params.description,
-        meta=params.meta
+        meta=params.meta,
     )
     session.add(entity)
     session.commit()
@@ -38,7 +40,9 @@ def create(session: Session, *, params: ExperimentCreateModel) -> Experiment:
     return entity
 
 
-def update(session: Session, *, item: Experiment, params: ExperimentUpdateModel) -> Experiment:
+def update(
+    session: Session, *, item: Experiment, params: ExperimentUpdateModel
+) -> Experiment:
     data = jsonable_encoder(item)
     update_data = params.dict(skip_defaults=True)
     for field in data:

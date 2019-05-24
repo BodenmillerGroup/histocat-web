@@ -13,15 +13,14 @@ from app.debug import init_debug
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-if os.environ.get('ENV') == 'dev':
+if os.environ.get("ENV") == "dev":
     try:
         init_debug()
     except Exception as e:
         logger.error(e)
 
 app = FastAPI(
-    title=config.PROJECT_NAME,
-    openapi_url=f"{config.API_V1_STR}/openapi.json"
+    title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json"
 )
 
 # CORS

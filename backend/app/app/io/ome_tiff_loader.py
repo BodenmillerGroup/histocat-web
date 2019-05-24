@@ -18,7 +18,6 @@ from app.modules.slide.models import SlideCreateModel
 
 
 class OmeTiffLoader:
-
     @classmethod
     def load(cls, upload_file: UploadFile, db: Session, experiment: Experiment):
         with NamedTemporaryFile() as file:
@@ -29,10 +28,10 @@ class OmeTiffLoader:
             slide_meta = ome.meta_dict
             slide_params = SlideCreateModel(
                 experiment_id=experiment.id,
-                name=slide_meta['image_ID'],
+                name=slide_meta["image_ID"],
                 filename=file_name,
                 description=ome.origin,
-                meta=slide_meta
+                meta=slide_meta,
             )
             slide = slide_crud.create(db, params=slide_params)
 
@@ -45,30 +44,32 @@ class OmeTiffLoader:
 
             acquisition_params = AcquisitionCreateModel(
                 slide_id=slide.id,
-                name=slide_meta['image_ID'],
+                name=slide_meta["image_ID"],
                 width=imc_acquisition.shape[0],
                 height=imc_acquisition.shape[1],
                 description=acquisition_meta["ImageDescription"],
-                meta=acquisition_meta
+                meta=acquisition_meta,
             )
             acquisition = acquisition_crud.create(db, params=acquisition_params)
 
             for i in range(imc_acquisition.n_channels):
-                img = imc_acquisition.get_img_by_label(imc_acquisition.channel_labels[i])
+                img = imc_acquisition.get_img_by_label(
+                    imc_acquisition.channel_labels[i]
+                )
                 channel_meta = dict()
-                channel_meta['Label'] = imc_acquisition.channel_labels[i]
-                channel_meta['Metal'] = imc_acquisition.channel_metals[i]
-                channel_meta['Mass'] = imc_acquisition.channel_mass[i]
+                channel_meta["Label"] = imc_acquisition.channel_labels[i]
+                channel_meta["Metal"] = imc_acquisition.channel_metals[i]
+                channel_meta["Mass"] = imc_acquisition.channel_mass[i]
                 channel_params = ChannelCreateModel(
                     acquisition_id=acquisition.id,
-                    name=channel_meta['Label'],
-                    metal=channel_meta['Metal'],
-                    mass=channel_meta['Mass'],
+                    name=channel_meta["Label"],
+                    metal=channel_meta["Metal"],
+                    mass=channel_meta["Mass"],
                     max_intensity=img.max(),
                     min_intensity=img.min(),
-                    meta=channel_meta
+                    meta=channel_meta,
                 )
                 channel = channel_crud.create(db, params=channel_params)
-                with h5py.File(os.path.join(channel.location, 'origin.h5'), 'w') as f:
-                    f.create_dataset('image', data=img)
+                with h5py.File(os.path.join(channel.location, "origin.h5"), "w") as f:
+                    f.create_dataset("image", data=img)
                 # cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)

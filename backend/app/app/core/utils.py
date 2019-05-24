@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 def create_directory(location):
-    '''Creates a directory on disk in a safe way.
+    """Creates a directory on disk in a safe way.
 
     Parameters
     ----------
     location: str
         absolute path to the directory that should be created
-    '''
+    """
     try:
         os.makedirs(location)
     except OSError as err:
@@ -27,7 +27,7 @@ def create_directory(location):
 
 
 class autocreate_directory_property(object):
-    '''Decorator class that acts like a property.
+    """Decorator class that acts like a property.
     The value represents a path to a directory on disk. The directory is
     automatically created when it doesn't exist. Once created, the value
     is cached, so that there is no reattempt to create the directory.
@@ -53,7 +53,7 @@ class autocreate_directory_property(object):
 
         foo = Foo()
         foo.my_new_directory
-    '''
+    """
 
     def __init__(self, func):
         self.__doc__ = func.__doc__
@@ -70,25 +70,24 @@ class autocreate_directory_property(object):
             )
         if not value:
             raise ValueError(
-                'Value of property "%s" cannot be empty.'
-                % self.func.__name__
+                'Value of property "%s" cannot be empty.' % self.func.__name__
             )
         if not os.path.exists(value):
-            logger.debug('create directory: %s', value)
+            logger.debug("create directory: %s", value)
             create_directory(value)
         return value
 
 
 def delete_location(path: str):
-    '''Deletes a location on disk.
+    """Deletes a location on disk.
 
     Parameters
     ----------
     path: str
         absolute path to directory or file
-    '''
+    """
     if os.path.exists(path):
-        logger.debug('remove location: %s', path)
+        logger.debug("remove location: %s", path)
         if os.path.isdir(path):
             rmtree(path)
         elif os.path.isfile(path):
@@ -96,7 +95,7 @@ def delete_location(path: str):
 
 
 def remove_location_upon_delete(cls):
-    '''Decorator function for an database model class that
+    """Decorator function for an database model class that
     automatically removes the `location` that represents an instance of the
     class on the filesystem once the corresponding row is deleted from the
     database table.
@@ -110,30 +109,30 @@ def remove_location_upon_delete(cls):
     ------
     AttributeError
         when decorated class doesn't have a "location" attribute
-    '''
+    """
 
     def after_delete_callback(mapper, connection, target):
         delete_location(target.location)
 
-    sqlalchemy.event.listen(cls, 'after_delete', after_delete_callback)
+    sqlalchemy.event.listen(cls, "after_delete", after_delete_callback)
     return cls
 
 
 @unique
 class FileUploadStatus(Enum):
-    '''Upload status of a file.'''
+    """Upload status of a file."""
 
     #: The file is registered, but upload not yet started
-    WAITING = 'WAITING'
+    WAITING = "WAITING"
 
     #: Upload is ongoing
-    UPLOADING = 'UPLOADING'
+    UPLOADING = "UPLOADING"
 
     #: Upload is complete
-    COMPLETE = 'COMPLETE'
+    COMPLETE = "COMPLETE"
 
     #: Upload has failed
-    FAILED = 'FAILED'
+    FAILED = "FAILED"
 
 
 @unique

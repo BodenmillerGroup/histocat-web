@@ -1,4 +1,5 @@
 from app.core import config
+
 # make sure all SQL Alchemy models are imported before initializing DB
 # otherwise, SQL Alchemy might fail to initialize properly relationships
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
