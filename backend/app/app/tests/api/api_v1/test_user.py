@@ -2,10 +2,10 @@ import requests
 
 from app.core import config
 from app.db.session import db_session
+from app.modules.user import crud
 from app.modules.user.models import UserCreateModel
 from app.tests.utils.user import user_authentication_headers
 from app.tests.utils.utils import get_server_api, random_lower_string
-from app.modules.user import crud
 
 
 def test_get_users_superuser_me(superuser_token_headers):

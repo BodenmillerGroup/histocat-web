@@ -8,9 +8,9 @@ from starlette.status import HTTP_403_FORBIDDEN
 from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
-from app.modules.user.db import User
 from app.modules.auth.models import TokenPayloadModel
-from app.modules.user.crud import is_active, get, is_superuser
+from app.modules.user.crud import get, is_active, is_superuser
+from app.modules.user.db import User
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/login/access-token")
 

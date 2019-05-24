@@ -1,6 +1,6 @@
 import logging
 import os
-from abc import abstractproperty, abstractmethod
+from abc import abstractmethod, abstractproperty
 
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
@@ -87,7 +87,6 @@ class FileSystemModel(IdMixin, Base):
         Devired classes must implement `location` and decorate it with
         :func:`sqlalchemy.ext.hybrid.hyprid_property`.
         '''
-        pass
 
     @location.setter
     def location(self, value: str):
@@ -117,9 +116,7 @@ class FileModel(FileSystemModel):
     @abstractmethod
     def get(self):
         '''Gets the file content.'''
-        pass
 
     @abstractmethod
     def put(self, data):
         '''Puts `data` to the file.'''
-        pass

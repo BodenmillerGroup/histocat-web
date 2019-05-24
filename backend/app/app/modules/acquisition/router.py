@@ -7,8 +7,9 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.modules.user.crud import is_superuser
 from app.modules.user.db import User
+
 from . import crud
-from .models import AcquisitionModel, AcquisitionCreateModel, AcquisitionUpdateModel
+from .models import AcquisitionCreateModel, AcquisitionModel, AcquisitionUpdateModel
 
 router = APIRouter()
 

@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash, verify_password
+
 from .db import User
 from .models import UserCreateModel, UserUpdateModel
 

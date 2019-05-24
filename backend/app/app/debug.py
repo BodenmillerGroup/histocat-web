@@ -13,5 +13,3 @@ def init_debug():
 
     # import pydevd_pycharm
     # pydevd_pycharm.settrace('130.60.106.83', port=5679, stdoutToServer=True, stderrToServer=True)
-
-    pass

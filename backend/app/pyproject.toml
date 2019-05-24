@@ -6,37 +6,30 @@ authors = ["Anton Rau <anton.rau@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "3.7.*"
+aiofiles = "^0.4.0"
 alembic = "^1.0"
-cached-property = "^1.5.1"
 celery = "^4.3.0"
 email-validator = "^1.0"
 emails = "^0.5.15"
 fastapi = "^0.23.0"
-GeoAlchemy2 = "^0.6.1"
 gunicorn = "^19.9"
 h5py = "^2.9"
+hiredis = "^1.0"
 imctools = { git = "https://github.com/BodenmillerGroup/imctools.git", branch = "master" }
 jinja2 = "^2.10"
-lxml = "^4.3"
-mahotas = "^1.4"
 opencv-python-headless = "^4.1"
-pandas = "^0.24.2"
 psycopg2-binary = "^2.8"
 passlib = {version = "^1.7",extras = ["bcrypt"]}
 pyjwt = "^1.7"
 python-multipart = "^0.0.5"
 PyYAML = "^5.1"
 raven = "^6.10"
-requests = "^2.21"
-scikit-image = "^0.15.0"
-Shapely = "^1.6"
-sqlalchemy = "^1.3"
-tables = "^3.5"
-tenacity = "^5.0"
-uvicorn = "^0.7.0"
-aiofiles = "^0.4.0"
 redis = "^3.2"
-hiredis = "^1.0"
+requests = "^2.21"
+sqlalchemy = "^1.3"
+tenacity = "^5.0"
+ujson = "^1.35"
+uvicorn = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
@@ -47,7 +40,8 @@ vulture = "^1.0"
 mypy = "^0.701.0"
 autoflake = "^1.3"
 isort = "^4.3"
+black = { version = "^19.3-alpha.0", allows-prereleases = true }
 
 [build-system]
-requires = ["poetry>=0.12.14"]
+requires = ["poetry>=0.12.16"]
 build-backend = "poetry.masonry.api"

@@ -22,7 +22,7 @@ class McdLoader:
     async def load(cls, upload_file: UploadFile, db: Session, experiment: Experiment):
         with mcdparser.McdParser(upload_file.filename, filehandle=upload_file.file) as mcd:
             slide_item = mcd.meta.objects['Slide']['0']
-            file_name = os.path.basename(upload_file.filename)
+            os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
                 experiment_id=experiment.id,
                 name=slide_item.properties['Name'] if 'Name' in slide_item.properties else slide_item.properties[

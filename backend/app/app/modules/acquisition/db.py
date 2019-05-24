@@ -1,13 +1,16 @@
 import logging
 import os
 
-from sqlalchemy import Column, String, Integer, Text, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship, backref, Session
+from sqlalchemy.orm import Session, relationship
 
-from app.core.file_upload_status import FileUploadStatus
-from app.core.utils import remove_location_upon_delete, autocreate_directory_property
-from app.db.base import DirectoryModel, MetaMixin, CreatedAtMixin
+from app.core.utils import (
+    FileUploadStatus,
+    autocreate_directory_property,
+    remove_location_upon_delete,
+)
+from app.db.base import CreatedAtMixin, DirectoryModel, MetaMixin
 from app.modules.channel.db import Channel
 
 logger = logging.getLogger(__name__)

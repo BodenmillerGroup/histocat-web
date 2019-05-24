@@ -1,3 +1,4 @@
+import json
 import os
 from io import BytesIO
 from typing import List
@@ -6,20 +7,24 @@ import cv2
 import h5py
 import numpy as np
 import redis
-import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, JSONResponse
+from starlette.responses import JSONResponse, StreamingResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core import config
-from app.core.utils import colorize, Color, scale_image
+from app.core.utils import Color, colorize, scale_image
 from app.modules.user.db import User
+
 from . import crud
-from .models import ChannelModel, ChannelCreateModel, ChannelUpdateModel, ChannelStatsModel
+from .models import (
+    ChannelCreateModel,
+    ChannelModel,
+    ChannelStatsModel,
+    ChannelUpdateModel,
+)
 
 r = redis.Redis(host='redis')
 

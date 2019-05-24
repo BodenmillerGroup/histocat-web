@@ -2,8 +2,8 @@ import requests
 
 from app.core import config
 from app.db.session import db_session
-from app.modules.user.models import UserCreateModel
 from app.modules.user import crud
+from app.modules.user.models import UserCreateModel
 from app.tests.utils.utils import random_lower_string
 
 

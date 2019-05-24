@@ -9,15 +9,16 @@ from app.api.utils.security import get_current_user
 from app.core import config
 from app.core.jwt import create_access_token
 from app.core.security import get_password_hash
-from app.modules.user.db import User as DBUser
 from app.modules.core.models import MsgModel
 from app.modules.user import crud
+from app.modules.user.db import User as DBUser
 from app.modules.user.models import UserModel
 from app.utils import (
     generate_password_reset_token,
     send_reset_password_email,
     verify_password_reset_token,
 )
+
 from .models import TokenModel
 
 router = APIRouter()

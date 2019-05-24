@@ -10,8 +10,9 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.core import config
 from app.modules.user.db import User
 from app.utils import send_new_account_email
+
 from . import crud
-from .models import UserModel, UserCreateModel, UserInDBModel, UserUpdateModel
+from .models import UserCreateModel, UserInDBModel, UserModel, UserUpdateModel
 
 router = APIRouter()
 

@@ -1,9 +1,9 @@
 from fastapi.encoders import jsonable_encoder
 
 from app.db.session import db_session
+from app.modules.user import crud
 from app.modules.user.models import UserCreateModel
 from app.tests.utils.utils import random_lower_string
-from app.modules.user import crud
 
 
 def test_create_user():

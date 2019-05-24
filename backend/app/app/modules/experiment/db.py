@@ -4,8 +4,8 @@ import os
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship
 
-from app.core.utils import remove_location_upon_delete, autocreate_directory_property
-from app.db.base import DirectoryModel, CreatedAtMixin, MetaMixin
+from app.core.utils import autocreate_directory_property, remove_location_upon_delete
+from app.db.base import CreatedAtMixin, DirectoryModel, MetaMixin
 
 logger = logging.getLogger(__name__)
 

@@ -2,14 +2,17 @@ import logging
 import os
 from shutil import rmtree
 
-from cached_property import cached_property
-from sqlalchemy import Column, Integer, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 
 from app.core.errors import DataError
-from app.core.utils import remove_location_upon_delete, create_directory, autocreate_directory_property
-from app.db.base import DirectoryModel, MetaMixin, CreatedAtMixin
+from app.core.utils import (
+    autocreate_directory_property,
+    create_directory,
+    remove_location_upon_delete,
+)
+from app.db.base import CreatedAtMixin, DirectoryModel, MetaMixin
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +130,6 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
         '''str: location where illumination statistics files are stored'''
         return os.path.join(self.location, 'illumstats')
 
-    @cached_property
     def width(self) -> int:
         '''int: number of pixels along horizontal axis at highest resolution level
         '''
@@ -137,7 +139,6 @@ class Channel(DirectoryModel, MetaMixin, CreatedAtMixin):
             raise DataError('Channel width has not yet been calculated.')
         return width
 
-    @cached_property
     def height(self) -> int:
         '''int: number of pixels along vertical axis at highest resolution level
         '''
