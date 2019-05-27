@@ -16,11 +16,11 @@
           <v-toolbar-title>Image View</v-toolbar-title>
           <v-spacer/>
           <v-btn-toggle v-model="toggleMultiple" multiple>
-            <v-btn flat value='showWorkspace'>
+            <v-btn small flat value='showWorkspace'>
               <v-icon>mdi-file-tree</v-icon>
               <span>Workspace</span>
             </v-btn>
-            <v-btn flat value='showChannels'>
+            <v-btn small flat value='showChannels'>
               <v-icon>mdi-format-list-checkbox</v-icon>
               <span>Channels</span>
             </v-btn>
