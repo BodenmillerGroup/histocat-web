@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import os
 
-import h5py
+import numpy as np
 from fastapi import UploadFile
 from imctools.io import mcdparser
 from sqlalchemy.orm import Session
 
+from app.core.utils import timeit
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.acquisition.models import AcquisitionCreateModel
 from app.modules.channel import crud as channel_crud
@@ -18,10 +19,9 @@ from app.modules.slide.models import SlideCreateModel
 
 class McdLoader:
     @classmethod
-    async def load(cls, upload_file: UploadFile, db: Session, experiment: Experiment):
-        with mcdparser.McdParser(
-            upload_file.filename, filehandle=upload_file.file
-        ) as mcd:
+    @timeit
+    def load(cls, upload_file: UploadFile, db: Session, experiment: Experiment):
+        with mcdparser.McdParser(upload_file.filename, filehandle=upload_file.file) as mcd:
             slide_item = mcd.meta.objects["Slide"]["0"]
             os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
@@ -75,8 +75,5 @@ class McdLoader:
                                     meta=meta,
                                 )
                                 channel = channel_crud.create(db, params=channel_params)
-                                with h5py.File(
-                                    os.path.join(channel.location, "origin.h5"), "w"
-                                ) as f:
-                                    f.create_dataset("image", data=img)
+                                np.save(os.path.join(channel.location, "origin.npy"), img)
                                 # cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)

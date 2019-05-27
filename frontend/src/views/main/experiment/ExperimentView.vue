@@ -10,7 +10,7 @@
           <InfoView/>
         </v-flex>
       </v-flex>
-      <v-flex grow>
+      <v-flex :class="viewerClass">
         <v-toolbar card dense>
           <v-toolbar-side-icon></v-toolbar-side-icon>
           <v-toolbar-title>Image View</v-toolbar-title>
@@ -70,6 +70,16 @@
 
     get showChannels() {
       return this.toggleMultiple.includes('showChannels');
+    }
+
+    get viewerClass() {
+      if (this.showWorkspace && this.showChannels) {
+        return 'md6';
+      }
+      if (this.showWorkspace || this.showChannels) {
+        return 'md9';
+      }
+      return 'md12';
     }
 
     async mounted() {

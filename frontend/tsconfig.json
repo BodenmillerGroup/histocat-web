@@ -11,14 +11,9 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "typeRoots": [
-      "node_modules/@types",
-      "node_modules/@hanreev/types-ol"
-    ],
     "types": [
       "webpack-env",
-      "jest",
-      "ol"
+      "jest"
     ],
     "paths": {
       "@/*": [

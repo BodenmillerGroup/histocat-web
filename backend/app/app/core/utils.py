@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from enum import Enum, unique
 from shutil import rmtree
 from typing import Tuple
@@ -157,3 +158,19 @@ def scale_image(image: np.ndarray, scale: float, levels: Tuple[float, float]):
         return image
     result = image * (scale / (maxL - minL))
     return result
+
+
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            print('%r  %2.2f ms' % \
+                  (method.__name__, (te - ts) * 1000))
+        return result
+
+    return timed

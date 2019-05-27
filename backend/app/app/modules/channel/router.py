@@ -1,23 +1,20 @@
-import json
 import os
 from io import BytesIO
 from typing import List
 
 import cv2
-import h5py
 import numpy as np
 import redis
+import ujson
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import JSONResponse, StreamingResponse
+from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core.utils import Color, colorize, scale_image
 from app.modules.user.db import User
-
 from . import crud
 from .models import (
     ChannelCreateModel,
@@ -121,18 +118,18 @@ async def read_channel_image(
     Get a specific channel by id
     """
     item = crud.get(db, id=id)
-    with h5py.File(os.path.join(item.location, "origin.h5"), "r") as f:
-        data = f["image"][()]
-        if min is not None and max is not None:
-            data = scale_image(data, item.max_intensity, (min, max))
-        clr = Color[color] if color else None
-        img = colorize(data, clr) if clr else data
-        png = cv2.imencode(".png", img)[1]
-        return StreamingResponse(
-            stream_image(png),
-            media_type="image/png",
-            headers={"Cache-Control": "private"},
-        )
+
+    data = np.load(os.path.join(item.location, "origin.npy"))
+    if min is not None and max is not None:
+        data = scale_image(data, item.max_intensity, (min, max))
+    clr = Color[color] if color else None
+    img = colorize(data, clr) if clr else data
+    png = cv2.imencode(".png", img)[1]
+    return StreamingResponse(
+        stream_image(png),
+        media_type="image/png",
+        headers={"Cache-Control": "private"},
+    )
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
@@ -147,14 +144,14 @@ async def read_channel_stats(
     """
     content = r.get(request.url.path)
     if content:
-        return JSONResponse(
-            content=json.loads(content), headers={"Cache-Control": "private"}
+        return UJSONResponse(
+            content=ujson.loads(content), headers={"Cache-Control": "private"}
         )
 
     item = crud.get(db, id=id)
-    with h5py.File(os.path.join(item.location, "origin.h5"), "r") as f:
-        data = f["image"][()]
-        hist, bins = np.histogram(data.ravel(), bins="auto")
-        content = jsonable_encoder({"hist": hist.tolist(), "bins": bins.tolist()})
-        r.set(request.url.path, json.dumps(content))
-        return JSONResponse(content=content, headers={"Cache-Control": "private"})
+
+    data = np.load(os.path.join(item.location, "origin.npy"))
+    hist, bins = np.histogram(data.ravel(), bins="auto")
+    content = {"hist": hist.tolist(), "bins": bins.tolist()}
+    r.set(request.url.path, ujson.dumps(content))
+    return UJSONResponse(content=content, headers={"Cache-Control": "private"})

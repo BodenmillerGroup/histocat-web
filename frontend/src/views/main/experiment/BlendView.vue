@@ -12,7 +12,7 @@
   import ImageLayer from 'ol/layer/Image';
   import Projection from 'ol/proj/Projection';
   import Static from 'ol/source/ImageStatic';
-  import { defaults as defaultControls, OverviewMap } from 'ol/control';
+  import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { readMetalColorMap, readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
@@ -47,10 +47,19 @@
         // coordinates directly to map coordinates, so we create a projection that uses
         // the image extent in pixels.
         const extent = [0, 0, acquisition.width, acquisition.height];
+
         const projection = new Projection({
-          code: 'pixel',
+          code: 'NONE',
           units: 'pixels',
           extent: extent,
+          getPointResolution: function(pixelRes, point) {
+            /*
+             * DICOM pixel spacing has millimeter unit while the projection has has meter unit.
+             */
+            const spacing = 0.0001 / 10 ** 3;
+            const res = pixelRes * spacing;
+            return (res);
+          },
         });
 
         const view = new View({
@@ -64,10 +73,16 @@
 
         this.map = new Map({
           controls: defaultControls().extend([
-            new OverviewMap(),
+            new OverviewMap({
+              view: new View({
+                projection: projection,
+              }),
+            }),
+            new ScaleLine(),
+            new FullScreen(),
           ]),
           interactions: [
-            new DragPan({ kinetic: false }),
+            new DragPan({ kinetic: undefined }),
             new MouseWheelZoom({ duration: 0 }),
           ],
           view: view,
@@ -101,7 +116,6 @@
         const max = channel.levels ? channel.levels.max : '';
         return new ImageLayer({
           source: new Static({
-            attributions: '© <a href="http://xkcd.com/license.html">xkcd</a>',
             url: `http://localhost/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
             projection: projection,
             imageExtent: extent,
@@ -114,11 +128,12 @@
     }
 
     mounted() {
-
     }
 
     beforeDestroy() {
-      this.map.un('precompose', this.precompose);
+      if (this.map) {
+        this.map.un('precompose', this.precompose);
+      }
     }
 
     private precompose(evt) {
@@ -134,6 +149,15 @@
 <style scoped>
   .blend-view {
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
+  }
+</style>
+
+<style>
+  .ol-scale-line {
+    bottom: 8px;
+    left: 12em;
+    padding: 2px;
+    position: absolute;
   }
 </style>
