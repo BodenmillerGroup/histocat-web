@@ -16,7 +16,6 @@
   import { readAdminExperiments } from '@/modules/experiment/getters';
   import { dispatchGetExperiments } from '@/modules/experiment/actions';
   import ExperimentCard from '@/components/ExperimentCard.vue';
-  import '@/plugins/masonry-css.ts';
 
   @Component({
     components: { ExperimentCard },

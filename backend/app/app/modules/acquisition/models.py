@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, DirectoryPath
 
 from app.modules.channel.models import ChannelModel
 
@@ -13,7 +13,7 @@ class AcquisitionBaseModel(BaseModel):
     name: Optional[str] = None
     width: Optional[int] = None
     height: Optional[int] = None
-    location: Optional[str] = None
+    location: Optional[DirectoryPath] = None
     description: Optional[str] = None
     meta: Optional[dict] = None
     created_at: datetime

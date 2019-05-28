@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, DirectoryPath
 
 
 # Shared properties
@@ -13,7 +13,7 @@ class ChannelBaseModel(BaseModel):
     mass: Optional[int] = None
     max_intensity: Optional[int] = None
     min_intensity: Optional[int] = None
-    location: Optional[str] = None
+    location: Optional[DirectoryPath] = None
     meta: Optional[dict] = None
     created_at: datetime
 

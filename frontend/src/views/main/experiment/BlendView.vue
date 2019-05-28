@@ -52,7 +52,7 @@
           code: 'NONE',
           units: 'pixels',
           extent: extent,
-          getPointResolution: function(pixelRes, point) {
+          getPointResolution: (pixelRes, point) => {
             /*
              * DICOM pixel spacing has millimeter unit while the projection has has meter unit.
              */
@@ -125,9 +125,6 @@
 
       this.map.getLayers().clear();
       this.map.getLayers().extend(layers);
-    }
-
-    mounted() {
     }
 
     beforeDestroy() {

@@ -29,7 +29,7 @@ def init():
 def main():
     logger.info("Initializing service")
     init()
-    logger.info("Service finished initializing")
+    logger.info("Service initialized")
 
 
 if __name__ == "__main__":
