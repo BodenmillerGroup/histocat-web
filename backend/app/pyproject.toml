@@ -37,7 +37,7 @@ uvicorn = "^0.7.0"
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
 ptvsd = "^4.2"
-pydevd-pycharm = "^191.6605"
+pydevd-pycharm = "^192.*"
 pytest = "^4.4"
 vulture = "^1.0"
 mypy = "^0.701.0"
