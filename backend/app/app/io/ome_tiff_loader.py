@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from tempfile import NamedTemporaryFile
 
-import h5py
+import numpy as np
 from fastapi import UploadFile
 from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
@@ -70,6 +70,5 @@ class OmeTiffLoader:
                     meta=channel_meta,
                 )
                 channel = channel_crud.create(db, params=channel_params)
-                with h5py.File(os.path.join(channel.location, "origin.h5"), "w") as f:
-                    f.create_dataset("image", data=img)
+                np.save(os.path.join(channel.location, "origin.npy"), img)
                 # cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)
