@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, DirectoryPath
+from pydantic import BaseModel
 
 from app.modules.slide.models import SlideDatasetModel
 
@@ -11,7 +11,7 @@ class ExperimentBaseModel(BaseModel):
     id: int = None
     name: Optional[str] = None
     description: Optional[str] = None
-    root_directory: Optional[DirectoryPath] = None
+    root_directory: Optional[str] = None
     meta: Optional[dict] = None
     created_at: datetime
 
@@ -32,7 +32,7 @@ class ExperimentUpdateModel(BaseModel):
 
 # Additional properties to return via API
 class ExperimentModel(ExperimentBaseModel):
-    location: Optional[DirectoryPath] = None
+    location: Optional[str] = None
 
 
 # Additional properties stored in DB

@@ -16,12 +16,12 @@ class UserBaseModel(BaseModel):
 # Properties to receive via API on creation
 class UserCreateModel(UserBaseModel):
     email: EmailStr
-    password: SecretStr
+    password: str
 
 
 # Properties to receive via API on update
 class UserUpdateModel(UserBaseModel):
-    password: Optional[SecretStr] = None
+    password: str = None
 
 
 # Additional properties to return via API
