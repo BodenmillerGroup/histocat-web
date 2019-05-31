@@ -98,10 +98,10 @@
         scatter
           .selectAll('line')
           .transition().duration(500)
-          .attr('x1', (d) => {
+          .attr('x1', (d: any) => {
             return x(d[0]);
           })
-          .attr('x2', (d) => {
+          .attr('x2', (d: any) => {
             return x(d[0]);
           });
       };
