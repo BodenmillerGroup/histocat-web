@@ -12,6 +12,10 @@ export const mutations = {
     items.push(payload);
     state.experiments = items;
   },
+  deleteExperiment(state: ExperimentsState, id: number) {
+    const items = state.experiments.filter((item: IExperiment) => item.id !== id);
+    state.experiments = items;
+  },
   setSelectedExperimentId(state: ExperimentsState, payload: { id: number }) {
     state.selectedExperimentId = payload.id;
   },
@@ -48,6 +52,7 @@ const { commit } = getStoreAccessors<ExperimentsState, State>('');
 
 export const commitSetExperiment = commit(mutations.setExperiment);
 export const commitSetExperiments = commit(mutations.setExperiments);
+export const commitDeleteExperiment = commit(mutations.deleteExperiment);
 export const commitSetSelectedExperimentId = commit(mutations.setSelectedExperimentId);
 export const commitSetExperimentDataset = commit(mutations.setExperimentDataset);
 export const commitSetSelectedMeta = commit(mutations.setSelectedMeta);

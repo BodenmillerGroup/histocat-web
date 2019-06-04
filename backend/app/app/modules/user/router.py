@@ -81,7 +81,8 @@ def update_user_me(
 
 @router.get("/me", response_model=UserModel)
 def read_user_me(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
 ):
     """
     Get current user

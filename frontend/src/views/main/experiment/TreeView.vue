@@ -1,16 +1,19 @@
 <template>
   <v-card tile>
-    <v-sheet class="pa-1 primary lighten-2">
+    <v-card-title class="card-title">
+      <h4>Workspace</h4>
+      <v-spacer/>
       <v-text-field
         v-model="search"
+        append-icon="mdi-magnify"
         label="Search"
-        dark
-        flat
-        solo-inverted
+        single-line
         hide-details
         clearable
+        solo-inverted
+        flat
       />
-    </v-sheet>
+    </v-card-title>
     <v-card-text>
       <v-treeview
         :items="items"
@@ -95,7 +98,25 @@
 </script>
 
 <style scoped>
+  .card-title {
+    padding-bottom: 0px;
+  }
+
   .workspace-tree {
     max-height: 37vh;
+  }
+</style>
+
+<style>
+  .v-treeview-node__label {
+    font-size: 1em;
+  }
+
+  .v-treeview-node__root {
+    min-height: 24px;
+  }
+
+  .v-text-field.v-text-field--solo .v-input__control {
+    min-height: 28px;
   }
 </style>

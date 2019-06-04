@@ -31,7 +31,7 @@ def read_experiments(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Retrieve experiments
@@ -70,6 +70,19 @@ def read_experiment_by_id(
     Get a specific experiment by id
     """
     item = crud.get(db, id=id)
+    return item
+
+
+@router.delete("/{id}", response_model=ExperimentModel)
+def delete_experiment_by_id(
+    id: int,
+    current_user: User = Depends(get_current_active_superuser),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete a specific experiment by id
+    """
+    item = crud.remove(db, id=id)
     return item
 
 

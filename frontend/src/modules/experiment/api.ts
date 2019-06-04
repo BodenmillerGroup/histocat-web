@@ -17,6 +17,9 @@ export const api = {
   async uploadSlide(token: string, id: number, data) {
     return axios.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, data, authHeaders(token, 'multipart/form-data'));
   },
+  async deleteExperiment(token: string, id: number) {
+    return axios.delete(`${apiUrl}/api/v1/experiments/${id}`, authHeaders(token));
+  },
   async getExperiment(token: string, id: number) {
     return axios.get<IExperiment>(`${apiUrl}/api/v1/experiments/${id}`, authHeaders(token));
   },

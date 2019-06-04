@@ -1,10 +1,11 @@
 <template>
-  <div>
-    <v-btn :color="color" @click="trigger">
-      <slot>Choose File</slot>
+  <v-tooltip top>
+    <span>Upload Slide</span>
+    <v-btn slot="activator" flat @click="trigger">
+      <v-icon>mdi-cloud-upload</v-icon>
     </v-btn>
     <input :multiple="multiple" class="visually-hidden" type="file" v-on:change="files" ref="fileInput">
-  </div>
+  </v-tooltip>
 </template>
 
 <script lang="ts">

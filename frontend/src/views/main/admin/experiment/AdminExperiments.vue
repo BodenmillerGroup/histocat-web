@@ -19,7 +19,13 @@
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </v-tooltip>
-          <UploadButton :id="props.item.id" />
+          <v-tooltip top>
+            <span>Delete</span>
+            <v-btn slot="activator" flat v-on:click="deleteExperiment($event, props.item.id)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-tooltip>
+          <UploadButton :id="props.item.id"/>
         </td>
       </template>
     </v-data-table>
@@ -29,7 +35,7 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
   import { readAdminExperiments } from '@/modules/experiment/getters';
-  import { dispatchGetExperiments } from '@/modules/experiment/actions';
+  import { dispatchDeleteExperiment, dispatchGetExperiments } from '@/modules/experiment/actions';
   import UploadButton from '@/components/UploadButton.vue';
 
   @Component({
@@ -67,6 +73,13 @@
 
     async mounted() {
       await dispatchGetExperiments(this.$store);
+    }
+
+    async deleteExperiment(event, id: number) {
+      const res = await this.$confirm('Do you really want to delete experiment?', { title: 'Warning' });
+      if (res) {
+        await dispatchDeleteExperiment(this.$store, id);
+      }
     }
   }
 </script>

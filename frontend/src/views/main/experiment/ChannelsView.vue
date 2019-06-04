@@ -1,6 +1,6 @@
 <template>
   <v-card tile>
-    <v-card-title>
+    <v-card-title class="card-title">
       <h4>Channels</h4>
       <v-spacer/>
       <v-text-field
@@ -10,6 +10,8 @@
         single-line
         hide-details
         clearable
+        solo-inverted
+        flat
       />
     </v-card-title>
     <v-data-table
@@ -88,6 +90,10 @@
 </script>
 
 <style scoped>
+  .card-title {
+    padding-bottom: 4px;
+  }
+
   .channels-table {
     max-height: 39vh;
   }
