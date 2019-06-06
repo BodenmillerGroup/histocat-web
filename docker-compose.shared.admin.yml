@@ -7,7 +7,7 @@ services:
     env_file:
       - env-pgadmin.env
   proxy:
-    image: traefik:v1.7.11-alpine
+    image: traefik:v1.7.12-alpine
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   flower:
