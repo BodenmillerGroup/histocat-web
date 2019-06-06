@@ -253,7 +253,7 @@ description = "FastAPI framework, high performance, easy to learn, fast to code,
 name = "fastapi"
 optional = false
 python-versions = ">=3.6"
-version = "0.28.0"
+version = "0.29.0"
 
 [package.dependencies]
 pydantic = "0.26"
@@ -954,7 +954,7 @@ python-versions = ">=2.7"
 version = "0.5.1"
 
 [metadata]
-content-hash = "6f0f32f78ed998dd7fe24c691afbbcd1267ef93fad2db46ec3e8f0a71f523cd7"
+content-hash = "756d3d18540be86fbf59c2b634185c37b7b9b602bf9b40472c2ea79d8c9659d8"
 python-versions = "3.7.*"
 
 [metadata.hashes]
@@ -983,7 +983,7 @@ dnspython = ["36c5e8e38d4369a08b6780b7f27d790a292b2b08eea01607865bf0936c558e01",
 email-validator = ["79966e318d6d68fed359c90f8f19d242bcc178b724011f1c07145bd093da6cc7"]
 emails = ["2d93bb09539d65a16cf1f68db4ffd0f7f45067633e950866e8a4ef89a7c290ec", "fcc02567a528eae6b66d2a5c20ce7a0326e4f6b201bc8ae302f89413164db06a"]
 entrypoints = ["589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19", "c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"]
-fastapi = ["5909d699706f94089964ca54407149c095ec14d53c93241ec3b2ffb26bf139fe", "f7105ffb18d001e62a83fd012344f20b3d783f0870f4dbfd0d32708aa87bc7bc"]
+fastapi = ["3cdf549f5c72c747cc957f488a63817eeeb268fcea8b8146281ba34552b3a562", "b377440eabd105e9a350d7ee24774314a61dfe8c7d045f3db29fdddbc27c21de"]
 flake8 = ["859996073f341f2670741b51ec1e67a01da142831aa1fdc6242dbf88dffbe661", "a796a115208f5c03b18f332f7c11729812c8c3ded6c46319c59b53efd3819da8"]
 gunicorn = ["aa8e0b40b4157b36a5df5e599f45c9c76d6af43845ba3b3b0efe2c70473c2471", "fa2662097c66f920f53f70621c6c58ca4a3c4d3434205e608e121b5b3b71f4f3"]
 h11 = ["acca6a44cb52a32ab442b1779adf0875c443c689e9e028f8d831a3769f9c5208", "f2b1ca39bfed357d1f19ac732913d5f9faa54a5062eca7d2ec3a916cfb7ae4c7"]

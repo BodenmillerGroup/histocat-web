@@ -15,6 +15,7 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core.utils import Color, colorize, scale_image
 from app.modules.user.db import User
+
 from . import crud
 from .models import (
     ChannelCreateModel,
@@ -126,9 +127,7 @@ async def read_channel_image(
     img = colorize(data, clr) if clr else data
     png = cv2.imencode(".png", img)[1]
     return StreamingResponse(
-        stream_image(png),
-        media_type="image/png",
-        headers={"Cache-Control": "private"},
+        stream_image(png), media_type="image/png", headers={"Cache-Control": "private"}
     )
 
 

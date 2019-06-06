@@ -21,7 +21,9 @@ class McdLoader:
     @classmethod
     @timeit
     def load(cls, upload_file: UploadFile, db: Session, experiment: Experiment):
-        with mcdparser.McdParser(upload_file.filename, filehandle=upload_file.file) as mcd:
+        with mcdparser.McdParser(
+            upload_file.filename, filehandle=upload_file.file
+        ) as mcd:
             slide_item = mcd.meta.objects["Slide"]["0"]
             os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
@@ -75,5 +77,7 @@ class McdLoader:
                                     meta=meta,
                                 )
                                 channel = channel_crud.create(db, params=channel_params)
-                                np.save(os.path.join(channel.location, "origin.npy"), img)
+                                np.save(
+                                    os.path.join(channel.location, "origin.npy"), img
+                                )
                                 # cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)
