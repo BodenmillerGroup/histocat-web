@@ -7,7 +7,7 @@ from app.tests.utils.utils import random_lower_string
 
 
 def test_create_user():
-    email = random_lower_string()
+    email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password)
     user = crud.create(db_session, params=user_in)
@@ -16,7 +16,7 @@ def test_create_user():
 
 
 def test_authenticate_user():
-    email = random_lower_string()
+    email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password)
     user = crud.create(db_session, params=user_in)
@@ -26,14 +26,14 @@ def test_authenticate_user():
 
 
 def test_not_authenticate_user():
-    email = random_lower_string()
+    email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user = crud.authenticate(db_session, email=email, password=password)
     assert user is None
 
 
 def test_check_if_user_is_active():
-    email = random_lower_string()
+    email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password)
     user = crud.create(db_session, params=user_in)
@@ -42,7 +42,7 @@ def test_check_if_user_is_active():
 
 
 def test_check_if_user_is_active_inactive():
-    email = random_lower_string()
+    email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password, disabled=True)
     print(user_in)
@@ -54,7 +54,7 @@ def test_check_if_user_is_active_inactive():
 
 
 def test_check_if_user_is_superuser():
-    email = random_lower_string()
+    email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password, is_superuser=True)
     user = crud.create(db_session, params=user_in)
@@ -63,7 +63,7 @@ def test_check_if_user_is_superuser():
 
 
 def test_check_if_user_is_superuser_normal_user():
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=username, password=password)
     user = crud.create(db_session, params=user_in)
@@ -73,7 +73,7 @@ def test_check_if_user_is_superuser_normal_user():
 
 def test_get_user():
     password = random_lower_string()
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     user_in = UserCreateModel(email=username, password=password, is_superuser=True)
     user = crud.create(db_session, params=user_in)
     user_2 = crud.get(db_session, id=user.id)

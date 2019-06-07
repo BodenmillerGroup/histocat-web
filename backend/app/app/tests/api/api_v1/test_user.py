@@ -22,7 +22,7 @@ def test_get_users_superuser_me(superuser_token_headers):
 
 def test_create_user_new_email(superuser_token_headers):
     server_api = get_server_api()
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     data = {"email": username, "password": password}
     r = requests.post(
@@ -38,7 +38,7 @@ def test_create_user_new_email(superuser_token_headers):
 
 def test_get_existing_user(superuser_token_headers):
     server_api = get_server_api()
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=username, password=password)
     user = crud.create(db_session, params=user_in)
@@ -55,7 +55,7 @@ def test_get_existing_user(superuser_token_headers):
 
 def test_create_user_existing_username(superuser_token_headers):
     server_api = get_server_api()
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     # username = email
     password = random_lower_string()
     user_in = UserCreateModel(email=username, password=password)
@@ -73,7 +73,7 @@ def test_create_user_existing_username(superuser_token_headers):
 
 def test_create_user_by_normal_user():
     server_api = get_server_api()
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=username, password=password)
     user = crud.create(db_session, params=user_in)
@@ -87,12 +87,12 @@ def test_create_user_by_normal_user():
 
 def test_retrieve_users(superuser_token_headers):
     server_api = get_server_api()
-    username = random_lower_string()
+    username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=username, password=password)
     user = crud.create(db_session, params=user_in)
 
-    username2 = random_lower_string()
+    username2 = f"{random_lower_string()}@test.com"
     password2 = random_lower_string()
     user_in2 = UserCreateModel(email=username2, password=password2)
     user2 = crud.create(db_session, params=user_in2)
