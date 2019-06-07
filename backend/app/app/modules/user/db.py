@@ -14,6 +14,5 @@ class User(IdMixin, Base, CreatedAtMixin, UpdatedAtMixin):
 
     def __repr__(self):
         return (
-            f"<User(id={self.id}, full_name={self.full_name}, email={self.email}, is_active={self.is_active},"
-            f" is_superuser={self.is_superuser})>"
+            f"<User(id={self.id}, full_name={self.full_name}, email={self.email}, is_active={self.is_active}, is_superuser={self.is_superuser})>"
         )

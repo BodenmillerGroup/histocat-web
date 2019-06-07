@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import redis
 import ujson
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
@@ -17,11 +17,7 @@ from app.core.utils import Color, colorize, scale_image
 from app.modules.user.db import User
 
 from . import crud
-from .models import (
-    ChannelCreateModel,
-    ChannelModel,
-    ChannelStatsModel,
-)
+from .models import ChannelModel, ChannelStatsModel
 
 r = redis.Redis(host="redis")
 
@@ -40,26 +36,6 @@ def read_channels(
     """
     items = crud.get_multi(db, skip=skip, limit=limit)
     return items
-
-
-@router.post("/", response_model=ChannelModel)
-def create_channel(
-    *,
-    db: Session = Depends(get_db),
-    params: ChannelCreateModel,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    """
-    Create new channel
-    """
-    item = crud.get_by_name(db, name=params.name)
-    if item:
-        raise HTTPException(
-            status_code=400,
-            detail="The channel with this name already exists in the system.",
-        )
-    item = crud.create(db, params=params)
-    return item
 
 
 @router.get("/{id}", response_model=ChannelModel)

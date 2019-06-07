@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
@@ -8,7 +8,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.modules.user.db import User
 
 from . import crud
-from .models import SlideCreateModel, SlideModel
+from .models import SlideModel
 
 router = APIRouter()
 
@@ -25,26 +25,6 @@ def read_slides(
     """
     items = crud.get_multi(db, skip=skip, limit=limit)
     return items
-
-
-@router.post("/", response_model=SlideModel)
-def create_slide(
-    *,
-    db: Session = Depends(get_db),
-    params: SlideCreateModel,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    """
-    Create new slide
-    """
-    item = crud.get_by_name(db, name=params.name)
-    if item:
-        raise HTTPException(
-            status_code=400,
-            detail="The slide with this name already exists in the system.",
-        )
-    item = crud.create(db, params=params)
-    return item
 
 
 @router.get("/{id}", response_model=SlideModel)
