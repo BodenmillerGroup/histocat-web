@@ -21,7 +21,6 @@ from .models import (
     ChannelCreateModel,
     ChannelModel,
     ChannelStatsModel,
-    ChannelUpdateModel,
 )
 
 r = redis.Redis(host="redis")
@@ -76,28 +75,6 @@ def read_channel_by_id(
     return item
 
 
-@router.put("/{id}", response_model=ChannelModel)
-def update_channel(
-    *,
-    db: Session = Depends(get_db),
-    id: int,
-    params: ChannelUpdateModel,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    """
-    Update a channel
-    """
-    item = crud.get(db, id=id)
-
-    if not item:
-        raise HTTPException(
-            status_code=404,
-            detail="The channel with this id does not exist in the system",
-        )
-    item = crud.update(db, item=item, params=params)
-    return item
-
-
 async def stream_image(record: bytes, chunk_size: int = 65536):
     with BytesIO(record) as stream:
         data = stream.read(chunk_size)
@@ -116,7 +93,7 @@ async def read_channel_image(
     db: Session = Depends(get_db),
 ):
     """
-    Get a specific channel by id
+    Get channel image by id
     """
     item = crud.get(db, id=id)
 
@@ -139,7 +116,7 @@ async def read_channel_stats(
     db: Session = Depends(get_db),
 ):
     """
-    Get a specific channel by id
+    Get channel stats by id
     """
     content = r.get(request.url.path)
     if content:

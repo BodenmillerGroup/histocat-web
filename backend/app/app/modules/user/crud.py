@@ -44,6 +44,7 @@ def create(session: Session, *, params: UserCreateModel) -> User:
         hashed_password=get_password_hash(params.password),
         full_name=params.full_name,
         is_superuser=params.is_superuser,
+        is_active=params.is_active,
     )
     session.add(entity)
     session.commit()

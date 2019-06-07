@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from .db import Channel
-from .models import ChannelCreateModel, ChannelUpdateModel
+from .models import ChannelCreateModel
 
 
 def get(session: Session, *, id: int) -> Optional[Channel]:
@@ -28,18 +28,6 @@ def create(session: Session, *, params: ChannelCreateModel) -> Channel:
     session.commit()
     session.refresh(entity)
     return entity
-
-
-def update(session: Session, *, item: Channel, params: ChannelUpdateModel) -> Channel:
-    data = jsonable_encoder(item)
-    update_data = params.dict(skip_defaults=True)
-    for field in data:
-        if field in update_data:
-            setattr(item, field, update_data[field])
-    session.add(item)
-    session.commit()
-    session.refresh(item)
-    return item
 
 
 def remove(session: Session, *, id: int):

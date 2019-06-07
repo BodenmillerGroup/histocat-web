@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from .db import Acquisition
-from .models import AcquisitionCreateModel, AcquisitionUpdateModel
+from .models import AcquisitionCreateModel
 
 
 def get(session: Session, *, id: int) -> Optional[Acquisition]:
@@ -28,20 +28,6 @@ def create(session: Session, *, params: AcquisitionCreateModel) -> Acquisition:
     session.commit()
     session.refresh(entity)
     return entity
-
-
-def update(
-    session: Session, *, item: Acquisition, params: AcquisitionUpdateModel
-) -> Acquisition:
-    data = jsonable_encoder(item)
-    update_data = params.dict(skip_defaults=True)
-    for field in data:
-        if field in update_data:
-            setattr(item, field, update_data[field])
-    session.add(item)
-    session.commit()
-    session.refresh(item)
-    return item
 
 
 def remove(session: Session, *, id: int):

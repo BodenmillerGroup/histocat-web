@@ -6,20 +6,6 @@ from pydantic import BaseModel
 from app.modules.acquisition.models import AcquisitionDatasetModel
 
 
-# Shared properties
-class SlideBaseModel(BaseModel):
-    id: int = None
-    experiment_id: int = None
-    name: Optional[str] = None
-    filename: Optional[str] = None
-    width_um: Optional[int] = None
-    height_um: Optional[int] = None
-    location: Optional[str] = None
-    description: Optional[str] = None
-    meta: Optional[dict] = None
-    created_at: datetime
-
-
 # Properties to receive via API on creation
 class SlideCreateModel(BaseModel):
     experiment_id: int
@@ -31,21 +17,18 @@ class SlideCreateModel(BaseModel):
     meta: Optional[dict] = None
 
 
-# Properties to receive via API on update
-class SlideUpdateModel(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    meta: Optional[dict] = None
-
-
-# Additional properties to return via API
-class SlideModel(SlideBaseModel):
-    pass
-
-
-# Additional properties stored in DB
-class SlideInDBModel(SlideBaseModel):
-    pass
+# Shared properties
+class SlideModel(BaseModel):
+    id: int
+    experiment_id: int
+    name: str
+    filename: Optional[str]
+    width_um: Optional[int]
+    height_um: Optional[int]
+    location: Optional[str]
+    description: Optional[str]
+    meta: Optional[dict]
+    created_at: datetime
 
 
 # Full slide dataset

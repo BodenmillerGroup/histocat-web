@@ -1,4 +1,4 @@
-# HistoCAT
+# HistoCAT for Web
 
 ## Backend Requirements
 

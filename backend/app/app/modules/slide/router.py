@@ -8,7 +8,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.modules.user.db import User
 
 from . import crud
-from .models import SlideCreateModel, SlideModel, SlideUpdateModel
+from .models import SlideCreateModel, SlideModel
 
 router = APIRouter()
 
@@ -57,26 +57,4 @@ def read_slide_by_id(
     Get a specific slide by id
     """
     item = crud.get(db, id=id)
-    return item
-
-
-@router.put("/{id}", response_model=SlideModel)
-def update_slide(
-    *,
-    db: Session = Depends(get_db),
-    id: int,
-    params: SlideUpdateModel,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    """
-    Update a slide
-    """
-    item = crud.get(db, id=id)
-
-    if not item:
-        raise HTTPException(
-            status_code=404,
-            detail="The slide with this id does not exist in the system",
-        )
-    item = crud.update(db, item=item, params=params)
     return item

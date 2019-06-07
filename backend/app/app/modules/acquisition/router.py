@@ -5,11 +5,10 @@ from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.modules.user.crud import is_superuser
 from app.modules.user.db import User
 
 from . import crud
-from .models import AcquisitionCreateModel, AcquisitionModel, AcquisitionUpdateModel
+from .models import AcquisitionCreateModel, AcquisitionModel
 
 router = APIRouter()
 
@@ -58,25 +57,4 @@ def read_acquisition_by_id(
     Get a specific acquisition by id
     """
     item = crud.get(db, id=id)
-    return item
-
-
-@router.put("/{id}", response_model=AcquisitionModel)
-def update_acquisition(
-    *,
-    db: Session = Depends(get_db),
-    id: int,
-    params: AcquisitionUpdateModel,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    """
-    Update a slide
-    """
-    item = crud.get(db, id=id)
-
-    if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
-    if not is_superuser(current_user):
-        raise HTTPException(status_code=400, detail="Not enough permissions")
-    item = crud.update(db, item=item, params=params)
     return item

@@ -23,9 +23,9 @@ default_context:
   traefik_public_constraint_tag: 'traefik-public'
   flower_auth: 'admin:changethis'
   sentry_dsn: ''
-  docker_image_prefix: 'hc-'
-  docker_image_backend: 'hc-backend'
-  docker_image_celeryworker: 'hc-celeryworker'
-  docker_image_frontend: 'hc-frontend'
+  docker_image_prefix: 'plankter/histocat-'
+  docker_image_backend: 'plankter/histocat-backend'
+  docker_image_celeryworker: 'plankter/histocat-celeryworker'
+  docker_image_frontend: 'plankter/histocat-frontend'
   _copy_without_render: [frontend/src/**/*.html, frontend/src/**/*.vue, frontend/node_modules/*, backend/app/app/email-templates/**]
   _template: ./
