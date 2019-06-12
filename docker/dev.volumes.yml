@@ -2,10 +2,10 @@ version: '3.7'
 services:
   backend:
     volumes:
-      - ./backend/app:/app
+      - ../backend/app:/app
   celeryworker:
     volumes:
-      - ./backend/app:/app
+      - ../backend/app:/app
   backend-tests:
     volumes:
-      - ./backend/app:/app
+      - ../backend/app:/app

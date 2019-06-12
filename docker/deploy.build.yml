@@ -2,14 +2,14 @@ version: '3.7'
 services:
   backend:
     build: 
-      context: ./backend
+      context: ../backend
       dockerfile: backend.dockerfile
   celeryworker:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: celeryworker.dockerfile
   frontend:
     build: 
-      context: ./frontend
+      context: ../frontend
       args:
           FRONTEND_ENV: ${FRONTEND_ENV-production}

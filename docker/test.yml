@@ -2,7 +2,7 @@ version: '3.7'
 services:
   backend-tests:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: tests.dockerfile
     command: bash -c "while true; do sleep 1; done"
     env_file:

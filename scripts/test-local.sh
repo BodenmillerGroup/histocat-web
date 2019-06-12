@@ -9,17 +9,17 @@ if [ $(uname -s) = "Linux" ]; then
 fi
 
 docker-compose \
-    -f docker-compose.test.yml \
-    -f docker-compose.shared.admin.yml \
-    -f docker-compose.shared.base-images.yml \
-    -f docker-compose.shared.depends.yml \
-    -f docker-compose.shared.env.yml \
-    -f docker-compose.dev.build.yml \
-    -f docker-compose.dev.env.yml \
-    -f docker-compose.dev.labels.yml \
-    -f docker-compose.dev.networks.yml \
-    -f docker-compose.dev.ports.yml \
-    -f docker-compose.dev.volumes.yml \
+    -f docker/test.yml \
+    -f docker/shared.admin.yml \
+    -f docker/shared.base-images.yml \
+    -f docker/shared.depends.yml \
+    -f docker/shared.env.yml \
+    -f docker/dev.build.yml \
+    -f docker/dev.env.yml \
+    -f docker/dev.labels.yml \
+    -f docker/dev.networks.yml \
+    -f docker/dev.ports.yml \
+    -f docker/dev.volumes.yml \
     config > docker-stack.yml
 
 #    -f docker-compose.dev.command.yml \
