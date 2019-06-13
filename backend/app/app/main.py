@@ -13,7 +13,7 @@ from app.debug import init_debug
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-if os.environ.get("ENV") == "dev":
+if os.environ.get("BACKEND_ENV") == "dev":
     try:
         init_debug()
     except Exception as e:

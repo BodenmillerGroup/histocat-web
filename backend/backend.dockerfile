@@ -2,6 +2,9 @@ FROM tiangolo/uvicorn-gunicorn:python3.7
 
 LABEL maintainer="anton.rau@gmail.com"
 
+ARG BACKEND_ENV=production
+ARG WEB_CONCURRENCY=2
+
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
@@ -9,7 +12,8 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=0.12.16 \
-  ENV=dev
+  BACKEND_ENV=${BACKEND_ENV} \
+  WEB_CONCURRENCY=${WEB_CONCURRENCY}
 
 # Install Poetry
 RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config settings.virtualenvs.create false

@@ -2,7 +2,7 @@ version: '3.7'
 services:
   db:
     volumes:
-      - app-db-data:/var/lib/postgresql/data/pgdata
+      - app-db-data:/var/lib/postgresql/data
     deploy:
       placement:
         constraints:
@@ -13,5 +13,14 @@ services:
         constraints:
           - node.role == manager
 
+  portainer:
+    volumes:
+      - portainer-data:/data
+    deploy:
+      placement:
+        constraints:
+          - node.labels.${STACK_NAME}.portainer_data == true
+
 volumes:
   app-db-data:
+  portainer-data:

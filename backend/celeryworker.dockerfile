@@ -2,13 +2,16 @@ FROM python:3.7.3
 
 LABEL maintainer="anton.rau@gmail.com"
 
+ARG BACKEND_ENV=production
+
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=0.12.16
+  POETRY_VERSION=0.12.16 \
+  BACKEND_ENV=${BACKEND_ENV}
 
 # Install Poetry
 RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config settings.virtualenvs.create false

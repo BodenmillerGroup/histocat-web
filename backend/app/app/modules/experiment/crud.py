@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from .db import Experiment
 from .models import ExperimentCreateModel, ExperimentUpdateModel
 
-ROOT_DIRECTORY = "/experiments/"
+ROOT_DIRECTORY = "/data/experiments/"
 
 
 def get(session: Session, *, id: int) -> Optional[Experiment]:

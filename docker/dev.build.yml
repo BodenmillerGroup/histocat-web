@@ -5,19 +5,19 @@ services:
       context: ../backend
       dockerfile: backend.dockerfile
       args: 
-        env: dev
+        BACKEND_ENV: dev
   celeryworker:
     build:
       context: ../backend
       dockerfile: celeryworker.dockerfile
       args: 
-        env: dev
+        BACKEND_ENV: dev
   backend-tests:
     build:
       context: ../backend
       dockerfile: tests.dockerfile
       args: 
-        env: dev
+        BACKEND_ENV: dev
   frontend:
     build: 
       context: ../frontend

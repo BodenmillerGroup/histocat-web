@@ -1,8 +1,6 @@
 PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
-.PHONY: clean
-
 init:
 	cd backend/app && poetry install
 	cd frontend && yarn install
@@ -10,20 +8,29 @@ init:
 deploy:
 	docker-compose up -d
 
-docker-build:
-	docker-compose build
+deploy-prod:
+	docker-compose -f docker/prod.yml up -d
+
+build:
+	./scripts/build.sh
+
+build-push:
+	./scripts/build-push.sh
 
 serve:
 	cd frontend && yarn serve
 
 clean:
-	rm -rf build
+	sudo find . -type d -name __pycache__ -exec rm -r {} \+
+	sudo find . -type d -name .pytest_cache -exec rm -r {} \+
 
 update-frontend:
 	cd frontend && ncu -u && yarn install
 
 update-backend:
 	cd backend/app && poetry update
+
+update: update-frontend update-backend
 
 mypy:
 	cd backend/app && mypy app
