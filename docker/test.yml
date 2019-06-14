@@ -1,16 +1,17 @@
 version: '3.7'
 services:
   backend-tests:
+    restart: "no"
     build:
       context: ../backend
       dockerfile: tests.dockerfile
+      args:
+        BACKEND_ENV: development
     command: bash -c "while true; do sleep 1; done"
     env_file:
       - env-backend.env
       - env-postgres.env
     environment:
       - SERVER_NAME=backend
-#  backend:
-#    environment:
-#      # Don't send emails during testing
-#      - SMTP_HOST=
+    volumes:
+      - ../backend/app:/app

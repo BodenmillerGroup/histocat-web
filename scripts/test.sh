@@ -5,10 +5,8 @@ set -e
 
 DOMAIN=backend \
 docker-compose \
--f docker/shared.base-images.yml \
--f docker/shared.env.yml \
--f docker/shared.depends.yml \
--f docker/deploy.build.yml \
+-f docker/shared.yml \
+-f docker/prod.yml \
 -f docker/test.yml \
 config > docker-stack.yml
 

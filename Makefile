@@ -6,10 +6,10 @@ init:
 	cd frontend && yarn install
 
 deploy:
-	docker-compose up -d
+	./scripts/deploy.sh
 
 deploy-prod:
-	docker-compose -f docker/prod.yml up -d
+	./scripts/deploy-prod.sh
 
 build:
 	./scripts/build.sh
@@ -23,6 +23,7 @@ serve:
 clean:
 	sudo find . -type d -name __pycache__ -exec rm -r {} \+
 	sudo find . -type d -name .pytest_cache -exec rm -r {} \+
+	rm docker-stack.yml
 
 update-frontend:
 	cd frontend && ncu -u && yarn install

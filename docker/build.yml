@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  backend:
+    image: '${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
+    build:
+      context: ../backend
+      dockerfile: backend.dockerfile
+      args:
+        BACKEND_ENV: production
+
+  celeryworker:
+    image: '${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}'
+    build:
+      context: ../backend
+      dockerfile: celeryworker.dockerfile
+      args:
+        BACKEND_ENV: production
+
+  frontend:
+    image: '${DOCKER_IMAGE_FRONTEND}:${TAG-latest}'
+    build:
+      context: ../frontend
+      args:
+        FRONTEND_ENV: production

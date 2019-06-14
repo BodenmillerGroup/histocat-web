@@ -9,20 +9,10 @@ if [ $(uname -s) = "Linux" ]; then
 fi
 
 docker-compose \
+    -f docker/shared.yml \
+    -f docker/prod.yml \
     -f docker/test.yml \
-    -f docker/shared.admin.yml \
-    -f docker/shared.base-images.yml \
-    -f docker/shared.depends.yml \
-    -f docker/shared.env.yml \
-    -f docker/dev.build.yml \
-    -f docker/dev.env.yml \
-    -f docker/dev.labels.yml \
-    -f docker/dev.networks.yml \
-    -f docker/dev.ports.yml \
-    -f docker/dev.volumes.yml \
     config > docker-stack.yml
-
-#    -f docker-compose.dev.command.yml \
 
 docker-compose -f docker-stack.yml build
 docker-compose -f docker-stack.yml down -v --remove-orphans # Remove possibly previous broken stacks left hanging after an error

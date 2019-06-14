@@ -20,8 +20,8 @@
     "url": "https://github.com/plankter/histocat.git/issues"
   },
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "serve": "FRONTEND_ENV=development && VUE_APP_ENV=development && vue-cli-service serve",
+    "build": "FRONTEND_ENV=production && VUE_APP_ENV=production && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },

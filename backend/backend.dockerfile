@@ -3,7 +3,7 @@ FROM tiangolo/uvicorn-gunicorn:python3.7
 LABEL maintainer="anton.rau@gmail.com"
 
 ARG BACKEND_ENV=production
-ARG WEB_CONCURRENCY=2
+ARG WEB_CONCURRENCY=4
 
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \

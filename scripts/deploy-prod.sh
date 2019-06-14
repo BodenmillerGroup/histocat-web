@@ -3,13 +3,12 @@
 # Exit in case of error
 set -e
 
-DOMAIN=localhost \
-BACKEND_ENV=development \
-FRONTEND_ENV=development \
-VUE_APP_ENV=development \
+BACKEND_ENV=production \
+FRONTEND_ENV=production \
+VUE_APP_ENV=production \
 docker-compose \
 -f docker/shared.yml \
--f docker/dev.yml \
+-f docker/prod.yml \
 config > docker-stack.yml
 
 docker-compose -f docker-stack.yml up -d

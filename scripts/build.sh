@@ -9,11 +9,8 @@ if [ $(uname -s) = "Linux" ]; then
 fi
 
 TAG=${TAG-latest} \
-BACKEND_ENV=${BACKEND_ENV-production} \
-FRONTEND_ENV=${FRONTEND_ENV-production} \
 docker-compose \
--f docker/deploy.build.yml \
--f docker/deploy.images.yml \
+-f docker/build.yml \
 config > docker-stack.yml
 
 docker-compose -f docker-stack.yml build

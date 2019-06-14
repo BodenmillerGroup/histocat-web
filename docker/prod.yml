@@ -1,89 +1,18 @@
 version: '3.7'
 services:
   backend:
+    restart: always
     image: ${DOCKER_IMAGE_BACKEND}:${TAG-latest}
-    env_file:
-      - env-postgres.env
-      - env-backend.env
-    environment:
-      - SERVER_NAME=${DOMAIN}
-      - SERVER_HOST=https://${DOMAIN}
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - app-data:/data
-    labels:
-      - traefik.frontend.rule=PathPrefix:/api,/docs,/redoc
-      - traefik.enable=true
-      - traefik.port=80
-      - traefik.tags=${TRAEFIK_TAG}
-    networks:
-      default:
-        aliases:
-          - ${DOMAIN}
 
   celeryworker:
+    restart: always
     image: ${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}
-    env_file:
-      - env-postgres.env
-      - env-backend.env
-    environment:
-      - SERVER_HOST=https://${DOMAIN}
-    depends_on:
-      - db
-      - queue
-      - redis
-    volumes:
-      - app-data:/data
 
   frontend:
+    restart: always
     image: ${DOCKER_IMAGE_FRONTEND}:${TAG-latest}
-    labels:
-      - traefik.frontend.rule=PathPrefix:/
-      - traefik.enable=true
-      - traefik.port=80
-      - traefik.tags=${TRAEFIK_TAG}
-
-  db:
-    image: postgres:11.3-alpine
-    env_file:
-      - env-postgres.env
-    environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
-    volumes:
-      - app-db-data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-
-  queue:
-    image: rabbitmq:3.7.15-alpine
-    volumes:
-      - queue-data:/var/lib/rabbitmq
-
-  redis:
-    image: redis:5.0.5-alpine3.9
-    env_file:
-      - env-redis.env
-    volumes:
-      - redis-data:/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    depends_on:
-      - db
-    env_file:
-      - env-pgadmin.env
-    ports:
-      - 5050:5050
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
 
   proxy:
-    image: traefik:v1.7.12-alpine
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     command: --docker \
       --docker.watch \
       --docker.exposedbydefault=false \
@@ -91,32 +20,3 @@ services:
       --logLevel=INFO \
       --accessLog \
       --api
-    ports:
-      - 80:80
-      - 443:443
-      - 8090:8080
-
-  flower:
-    image: totem/celery-flower-docker
-    env_file:
-      - env-flower.env
-    ports:
-      - 5555:5555
-
-  portainer:
-    image: portainer/portainer:1.21.0
-    command: -H unix:///var/run/docker.sock
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer-data:/data
-    ports:
-      - 9000:9000
-
-volumes:
-  app-data:
-  app-db-data:
-  portainer-data:
-  redis-data:
-  queue-data:
-  pgadmin-data:
