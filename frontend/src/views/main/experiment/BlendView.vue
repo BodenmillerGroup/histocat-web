@@ -17,6 +17,7 @@
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
   import { equals } from 'ramda';
+  import { apiUrl } from '@/env';
 
   @Component
   export default class BlendView extends Vue {
@@ -116,7 +117,7 @@
         const max = channel.levels ? channel.levels.max : '';
         return new ImageLayer({
           source: new Static({
-            url: `http://localhost/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
+            url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
             projection: projection,
             imageExtent: extent,
           }),
