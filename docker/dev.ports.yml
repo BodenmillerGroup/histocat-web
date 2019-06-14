@@ -15,7 +15,6 @@ services:
       - 5555:5555
   backend:
     ports:
-      - 8888:8888
       - 5678:5678
   portainer:
     ports:

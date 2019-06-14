@@ -15,7 +15,7 @@ services:
     env_file:
       - env-flower.env
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer:1.21.0
     command: -H unix:///var/run/docker.sock
     restart: always
     volumes:

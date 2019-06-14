@@ -22,8 +22,6 @@ services:
       default:
         aliases:
           - ${DOMAIN}
-    ports:
-      - 8888:8888
 
   celeryworker:
     image: ${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}
@@ -83,6 +81,7 @@ services:
 
   proxy:
     image: traefik:v1.7.12-alpine
+    restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --docker \
@@ -91,13 +90,10 @@ services:
       --constraints=tag==${TRAEFIK_TAG} \
       --logLevel=INFO \
       --accessLog \
-      --web
-    labels:
-      - traefik.frontend.rule=Host:${DOMAIN}
-      - traefik.enable=true
-      - traefik.port=80
+      --api
     ports:
       - 80:80
+      - 443:443
       - 8090:8080
 
   flower:
@@ -108,7 +104,7 @@ services:
       - 5555:5555
 
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer:1.21.0
     command: -H unix:///var/run/docker.sock
     restart: always
     volumes:

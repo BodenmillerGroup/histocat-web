@@ -7,6 +7,6 @@ services:
       --constraints=tag==${TRAEFIK_TAG} \
       --logLevel=DEBUG \
       --accessLog \
-      --web
+      --api
   backend:
     command: /start-reload.sh

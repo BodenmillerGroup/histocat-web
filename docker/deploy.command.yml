@@ -8,4 +8,4 @@ services:
       --constraints=tag==${TRAEFIK_TAG} \
       --logLevel=INFO \
       --accessLog \
-      --web
+      --api
