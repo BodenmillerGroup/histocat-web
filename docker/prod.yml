@@ -3,10 +3,14 @@ services:
   backend:
     restart: always
     image: ${DOCKER_IMAGE_BACKEND}:${TAG-latest}
+    environment:
+      - SMTP_PASSWORD
 
   celeryworker:
     restart: always
     image: ${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}
+    environment:
+      - SMTP_PASSWORD
 
   frontend:
     restart: always
