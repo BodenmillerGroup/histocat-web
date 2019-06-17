@@ -1,6 +1,6 @@
 FROM python:3.7.3
 
-LABEL maintainer="anton.rau@gmail.com"
+LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
 ARG BACKEND_ENV=production
 
@@ -16,17 +16,17 @@ ENV PYTHONFAULTHANDLER=1 \
 # Install Poetry
 RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config settings.virtualenvs.create false
 
+WORKDIR /app
+
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
-WORKDIR /app
 COPY /app/poetry.lock /app/pyproject.toml /app/
 RUN poetry install --no-interaction
 
 COPY ./app /app
+RUN chmod +x /app/bin/tests-start.sh
 
 ENV PYTHONPATH=/app
-
-RUN chmod +x /app/tests-start.sh
 
 # This will make the container wait, doing nothing, but alive
 CMD ["bash", "-c", "while true; do sleep 1; done"]

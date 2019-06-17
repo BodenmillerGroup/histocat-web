@@ -11,19 +11,19 @@ authors = ["Anton Rau <anton.rau@gmail.com>"]
 [tool.poetry.dependencies]
 python = "3.7.*"
 aiofiles = "^0.4.0"
-alembic = "^1.0"
+alembic = { version = "^1.0", optional = true }
 celery = "^4.3.0"
 email-validator = "^1.0"
 emails = "^0.5.15"
-fastapi = "^0.29.1"
-gunicorn = "^19.9"
+fastapi = { version = "^0.29.1", optional = true }
+gunicorn = { version = "^19.9", optional = true }
 h5py = "^2.9"
 hiredis = "^1.0"
 imctools = { git = "https://github.com/BodenmillerGroup/imctools.git", branch = "master" }
 jinja2 = "^2.10"
 opencv-python-headless = "^4.1"
 psycopg2-binary = "^2.8"
-passlib = {version = "^1.7",extras = ["bcrypt"]}
+passlib = { version = "^1.7", extras = ["bcrypt"] }
 pyjwt = "^1.7"
 python-multipart = "^0.0.5"
 PyYAML = "^5.1"
@@ -32,7 +32,7 @@ requests = "^2.21"
 sqlalchemy = "^1.3"
 tenacity = "^5.0"
 ujson = "^1.35"
-uvicorn = "^0.7.0"
+uvicorn = { version = "^0.7.0", optional = true }
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
@@ -45,6 +45,9 @@ autoflake = "^1.3"
 isort = "^4.3"
 black = { version = "^19.3-alpha.0", allows-prereleases = true }
 
+[tool.poetry.extras]
+backend = [ "alembic", "fastapi", "gunicorn", "uvicorn" ]
+
 [tool.black]
-line-length = 88
-target-version = [ 'py37' ]
+line-length = 120
+target-version = [ "py37" ]

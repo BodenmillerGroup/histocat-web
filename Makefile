@@ -2,7 +2,7 @@ PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
 init:
-	cd backend/app && poetry install
+	cd backend/app && poetry install --extras backend
 	cd frontend && yarn install
 
 deploy:

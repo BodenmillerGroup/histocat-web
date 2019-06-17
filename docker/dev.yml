@@ -7,7 +7,7 @@ services:
       dockerfile: backend.dockerfile
       args:
         BACKEND_ENV: development
-    command: /start-reload.sh
+    command: /app/bin/start-reload.sh
     volumes:
       - ../backend/app:/app
 

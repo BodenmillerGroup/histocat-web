@@ -9,7 +9,7 @@ RUN yarn install --non-interactive
 
 COPY ./ /app/
 
-ARG FRONTEND_ENV=production
+ARG FRONTEND_ENV
 
 ENV VUE_APP_ENV=${FRONTEND_ENV}
 
@@ -22,6 +22,8 @@ RUN yarn build
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
 FROM nginx:1.16.0-alpine
+
+LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
 COPY --from=build-stage /app/dist/ /usr/share/nginx/html
 
