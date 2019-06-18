@@ -17,18 +17,19 @@ depends_on = None
 
 
 def upgrade():
-    op.create_table('channel',
-                    sa.Column('id', sa.Integer(), primary_key=True, index=True),
-                    sa.Column('acquisition_id', sa.Integer(), index=True),
-                    sa.Column('name', sa.String(), nullable=False, index=True),
-                    sa.Column('metal', sa.String(), nullable=False, index=True),
-                    sa.Column('mass', sa.Integer()),
-                    sa.Column('max_intensity', sa.Integer()),
-                    sa.Column('min_intensity', sa.Integer()),
-                    sa.Column('location', sa.String(4096)),
-                    sa.Column('meta', JSONB()),
-                    sa.Column('created_at', sa.DateTime(), nullable=False),
-                    )
+    op.create_table(
+        'channel',
+        sa.Column('id', sa.Integer(), primary_key=True, index=True),
+        sa.Column('acquisition_id', sa.Integer(), index=True),
+        sa.Column('name', sa.String(), nullable=False, index=True),
+        sa.Column('metal', sa.String(), nullable=False, index=True),
+        sa.Column('mass', sa.Integer()),
+        sa.Column('max_intensity', sa.Integer()),
+        sa.Column('min_intensity', sa.Integer()),
+        sa.Column('location', sa.String(4096)),
+        sa.Column('meta', JSONB()),
+        sa.Column('created_at', sa.DateTime(), nullable=False),
+    )
     op.create_foreign_key(
         'fk_channel_acquisition',
         'channel', 'acquisition',

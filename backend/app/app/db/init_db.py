@@ -2,7 +2,16 @@ from app.core import config
 # make sure all SQL Alchemy models are imported before initializing DB
 # otherwise, SQL Alchemy might fail to initialize properly relationships
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
+
 from app.db.base import Base  # noqa
+from app.modules.user.db import User  # noqa
+from app.modules.experiment.db import Experiment  # noqa
+from app.modules.slide.db import Slide  # noqa
+from app.modules.acquisition.db import Acquisition  # noqa
+from app.modules.channel.db import Channel  # noqa
+from app.modules.submission.db import Submission  # noqa
+from app.modules.task.db import Task  # noqa
+
 from app.modules.user import crud
 from app.modules.user.models import UserCreateModel
 

@@ -21,18 +21,14 @@ class ExperimentUpdateModel(BaseModel):
 
 
 # Shared properties
-class ExperimentBaseModel(BaseModel):
+class ExperimentModel(BaseModel):
     id: int
+    user_id: int
     name: Optional[str]
     description: Optional[str]
-    root_directory: str
+    location: Optional[str]
     meta: Optional[dict]
     created_at: datetime
-
-
-# Additional properties to return via API
-class ExperimentModel(ExperimentBaseModel):
-    location: Optional[str]
 
 
 # Full experiment dataset

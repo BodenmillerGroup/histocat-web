@@ -8,6 +8,8 @@ services:
       args:
         BACKEND_ENV: development
     command: /app/bin/start-reload.sh
+    ports:
+      - 5678:5678
     volumes:
       - ../backend/app:/app
 

@@ -17,18 +17,19 @@ depends_on = None
 
 
 def upgrade():
-    op.create_table('slide',
-                    sa.Column('id', sa.Integer(), primary_key=True, index=True),
-                    sa.Column('experiment_id', sa.Integer(), index=True),
-                    sa.Column('name', sa.String(), nullable=False, index=True),
-                    sa.Column('filename', sa.String(4096)),
-                    sa.Column('description', sa.String()),
-                    sa.Column('width_um', sa.Integer()),
-                    sa.Column('height_um', sa.Integer()),
-                    sa.Column('location', sa.String(4096)),
-                    sa.Column('meta', JSONB()),
-                    sa.Column('created_at', sa.DateTime(), nullable=False),
-                    )
+    op.create_table(
+        'slide',
+        sa.Column('id', sa.Integer(), primary_key=True, index=True),
+        sa.Column('experiment_id', sa.Integer(), index=True),
+        sa.Column('name', sa.String(), nullable=False, index=True),
+        sa.Column('filename', sa.String(4096)),
+        sa.Column('description', sa.String()),
+        sa.Column('width_um', sa.Integer()),
+        sa.Column('height_um', sa.Integer()),
+        sa.Column('location', sa.String(4096)),
+        sa.Column('meta', JSONB()),
+        sa.Column('created_at', sa.DateTime(), nullable=False),
+    )
     op.create_foreign_key(
         'fk_slide_experiment',
         'slide', 'experiment',

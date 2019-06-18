@@ -44,7 +44,7 @@ def send_test_email(email_to: str):
     )
 
 
-def send_reset_password_email(email_to: str, email: str, token: str):
+def send_reset_password_email(email_to: str, email: str, token):
     project_name = config.PROJECT_NAME
     subject = f"{project_name} - Password recovery for user {email}"
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "reset_password.html") as f:

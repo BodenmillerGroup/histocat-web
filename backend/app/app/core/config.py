@@ -11,6 +11,9 @@ def getenv_boolean(var_name: str, default_value=False):
 
 API_V1_STR = "/api/v1"
 
+#: absolute path to the directory where experiments are located
+ROOT_DATA_DIRECTORY = os.getenv("ROOT_DATA_DIRECTORY", "/data/experiments/")
+
 SECRET_KEY = os.getenvb(b"SECRET_KEY")
 if not SECRET_KEY:
     SECRET_KEY = os.urandom(32)

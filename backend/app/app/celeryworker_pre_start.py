@@ -27,9 +27,9 @@ def init():
 
 
 def main():
-    logger.info("Initializing service")
+    logger.info("Initializing worker")
     init()
-    logger.info("Service initialized")
+    logger.info("Worker initialized")
 
 
 if __name__ == "__main__":

@@ -56,7 +56,7 @@ def create_experiment(
             status_code=400,
             detail="The experiment with this name already exists in the system.",
         )
-    item = crud.create(db, params=params)
+    item = crud.create(db, user_id=current_user.id, params=params)
     return item
 
 

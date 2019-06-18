@@ -1,10 +1,14 @@
+import logging
+import os
 from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from .db import Acquisition
+from .db import Acquisition, ACQUISITION_LOCATION_FORMAT
 from .models import AcquisitionCreateModel
+
+logger = logging.getLogger(__name__)
 
 
 def get(session: Session, *, id: int) -> Optional[Acquisition]:
@@ -15,9 +19,7 @@ def get_by_name(session: Session, *, name: str) -> Optional[Acquisition]:
     return session.query(Acquisition).filter(Acquisition.name == name).first()
 
 
-def get_multi(
-    session: Session, *, skip: int = 0, limit: int = 100
-) -> List[Optional[Acquisition]]:
+def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Acquisition]]:
     return session.query(Acquisition).offset(skip).limit(limit).all()
 
 
@@ -27,6 +29,18 @@ def create(session: Session, *, params: AcquisitionCreateModel) -> Acquisition:
     session.add(entity)
     session.commit()
     session.refresh(entity)
+
+    entity.location = os.path.join(
+        entity.slide.acquisitions_location,
+        ACQUISITION_LOCATION_FORMAT.format(id=entity.id),
+    )
+    if not os.path.exists(entity.location):
+        logger.debug(f'Create location for acquisition {entity.id}: {entity.location}')
+        os.makedirs(entity.location)
+
+    session.commit()
+    session.refresh(entity)
+
     return entity
 
 

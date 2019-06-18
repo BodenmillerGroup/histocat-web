@@ -120,23 +120,6 @@ def remove_location_upon_delete(cls):
 
 
 @unique
-class FileUploadStatus(Enum):
-    """Upload status of a file."""
-
-    #: The file is registered, but upload not yet started
-    WAITING = "WAITING"
-
-    #: Upload is ongoing
-    UPLOADING = "UPLOADING"
-
-    #: Upload is complete
-    COMPLETE = "COMPLETE"
-
-    #: Upload has failed
-    FAILED = "FAILED"
-
-
-@unique
 class Color(Enum):
     r = (0, 0, 1)  # red
     g = (0, 1, 0)  # green
