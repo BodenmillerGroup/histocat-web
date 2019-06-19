@@ -241,7 +241,7 @@ version = "0.3"
 category = "main"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 name = "fastapi"
-optional = true
+optional = false
 python-versions = ">=3.6"
 version = "0.29.1"
 
@@ -672,7 +672,7 @@ version = "2.19"
 category = "main"
 description = "Data validation and settings management using python 3.6 type hinting"
 name = "pydantic"
-optional = true
+optional = false
 python-versions = ">=3.6"
 version = "0.26"
 
@@ -857,7 +857,7 @@ version = "1.3.5"
 category = "main"
 description = "The little ASGI library that shines."
 name = "starlette"
-optional = true
+optional = false
 python-versions = ">=3.6"
 version = "0.12.0"
 
@@ -1000,10 +1000,10 @@ python-versions = ">=2.7"
 version = "0.5.1"
 
 [extras]
-backend = ["alembic", "fastapi", "gunicorn", "uvicorn"]
+backend = ["alembic", "gunicorn", "uvicorn"]
 
 [metadata]
-content-hash = "83d2e2bc82ddcbf0b126092b6b88da2215a719bdf5947fc58383e38be5d6555a"
+content-hash = "8eba08f6fcb6f31eb89a2f97ec8e4fd1cf785fc014b3bd20ce2a58edaa1a1bf0"
 python-versions = "3.7.*"
 
 [metadata.hashes]

@@ -14,7 +14,6 @@ import numpy as np
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
 
-import app.worker as worker
 from app.core import config
 
 password_reset_jwt_subject = "preset"
@@ -173,6 +172,7 @@ def send_test_email(email_to: str):
     subject = f"{project_name} - Test email"
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
         template_str = f.read()
+    from app import worker
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -192,6 +192,7 @@ def send_reset_password_email(email_to: str, email: str, token):
         use_token = token
     server_host = config.SERVER_HOST
     link = f"{server_host}/reset-password?token={use_token}"
+    from app import worker
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -212,6 +213,7 @@ def send_new_account_email(email_to: str, username: str, password: str):
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "new_account.html") as f:
         template_str = f.read()
     link = config.SERVER_HOST
+    from app import worker
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,

@@ -11,6 +11,9 @@ def getenv_boolean(var_name: str, default_value=False):
 
 API_V1_STR = "/api/v1"
 
+#: absolute path to the directory where uploaded files are stored before import
+INBOX_DIRECTORY = os.getenv("INBOX_DIRECTORY", "/data/inbox/")
+
 #: absolute path to the directory where experiments are located
 ROOT_DATA_DIRECTORY = os.getenv("ROOT_DATA_DIRECTORY", "/data/experiments/")
 

@@ -4,13 +4,11 @@ from typing import List
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
-from starlette.background import BackgroundTasks
 
 import app.worker as worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.io.mcd_loader import McdLoader
-from app.io.ome_tiff_loader import OmeTiffLoader
+from app.core import config
 from app.modules.user.db import User
 from . import crud
 from .models import (
@@ -110,23 +108,15 @@ def update_experiment(
 @router.post("/{id}/upload_slide")
 def upload_slide(
     id: int,
-    background_tasks: BackgroundTasks,
     file: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
-    experiment = crud.get(db, id=id)
-    filename, file_extension = os.path.splitext(file.filename)
-    file_extension = file_extension.lower()
-    if file_extension == ".mcd":
-        # TODO: implement slide import as a worker task
-        worker.import_slide.send(id, file.filename)
-        background_tasks.add_task(McdLoader.load, file, db, experiment)
-        # await McdLoader.load(file, db, experiment)
-    elif file_extension == ".tiff" or file_extension == ".tif":
-        if filename.endswith(".ome"):
-            background_tasks.add_task(OmeTiffLoader.load, file, db, experiment)
-    elif file_extension == ".txt":
-        pass
+    if not os.path.exists(config.INBOX_DIRECTORY):
+        os.makedirs(config.INBOX_DIRECTORY)
+    uri = os.path.join(config.INBOX_DIRECTORY, file.filename)
+    with open(uri, 'wb') as f:
+        f.write(file.file.read())
+    worker.import_slide.send(uri, id)
     return {"filename": file.filename}
 
 

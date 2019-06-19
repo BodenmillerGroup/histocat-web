@@ -3,8 +3,7 @@ from __future__ import annotations
 import os
 
 import numpy as np
-from fastapi import UploadFile
-from imctools.io import mcdparser
+from imctools.io.mcdparser import McdParser
 from sqlalchemy.orm import Session
 
 from app.core.utils import timeit
@@ -12,7 +11,6 @@ from app.modules.acquisition import crud as acquisition_crud
 from app.modules.acquisition.models import AcquisitionCreateModel
 from app.modules.channel import crud as channel_crud
 from app.modules.channel.models import ChannelCreateModel
-from app.modules.experiment.db import Experiment
 from app.modules.slide import crud as slide_crud
 from app.modules.slide.models import SlideCreateModel
 
@@ -20,17 +18,12 @@ from app.modules.slide.models import SlideCreateModel
 class McdLoader:
     @classmethod
     @timeit
-    def load(cls, upload_file: UploadFile, db: Session, experiment: Experiment):
-        with mcdparser.McdParser(
-            upload_file.filename, filehandle=upload_file.file
-        ) as mcd:
+    def load(cls, db: Session, uri: str, experiment_id: int):
+        with McdParser(uri) as mcd:
             slide_item = mcd.meta.objects["Slide"]["0"]
-            os.path.basename(upload_file.filename)
             slide_params = SlideCreateModel(
-                experiment_id=experiment.id,
-                name=slide_item.properties["Name"]
-                if "Name" in slide_item.properties
-                else slide_item.properties["Description"],
+                experiment_id=experiment_id,
+                name=slide_item.properties["Name"] if "Name" in slide_item.properties else slide_item.properties["Description"],
                 filename=slide_item.properties["Filename"],
                 width_um=slide_item.properties["WidthUm"],
                 height_um=slide_item.properties["HeightUm"],
@@ -77,6 +70,4 @@ class McdLoader:
                                     meta=meta,
                                 )
                                 channel = channel_crud.create(db, params=channel_params)
-                                np.save(
-                                    os.path.join(channel.location, "origin.npy"), img
-                                )
+                                np.save(os.path.join(channel.location, "origin.npy"), img)
