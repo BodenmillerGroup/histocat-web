@@ -80,4 +80,3 @@ class McdLoader:
                                 np.save(
                                     os.path.join(channel.location, "origin.npy"), img
                                 )
-                                # cv2.imwrite(os.path.join(channel.location, 'thumbnail.png'), img)

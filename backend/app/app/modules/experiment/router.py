@@ -6,13 +6,12 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from starlette.background import BackgroundTasks
 
+import app.worker as worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.celery_app import celery_app
 from app.io.mcd_loader import McdLoader
 from app.io.ome_tiff_loader import OmeTiffLoader
 from app.modules.user.db import User
-
 from . import crud
 from .models import (
     ExperimentCreateModel,
@@ -119,8 +118,8 @@ def upload_slide(
     filename, file_extension = os.path.splitext(file.filename)
     file_extension = file_extension.lower()
     if file_extension == ".mcd":
-        # TODO: implement slide import as a Celery task
-        celery_app.send_task("app.worker.import_slide", args=[id, file.filename])
+        # TODO: implement slide import as a worker task
+        worker.import_slide.send(id, file.filename)
         background_tasks.add_task(McdLoader.load, file, db, experiment)
         # await McdLoader.load(file, db, experiment)
     elif file_extension == ".tiff" or file_extension == ".tif":

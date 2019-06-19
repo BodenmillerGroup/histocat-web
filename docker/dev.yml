@@ -13,15 +13,13 @@ services:
     volumes:
       - ../backend/app:/app
 
-  celeryworker:
+  worker:
     restart: "no"
     build:
       context: ../backend
-      dockerfile: celeryworker.dockerfile
+      dockerfile: worker.dockerfile
       args:
         BACKEND_ENV: development
-    environment:
-      - RUN=celery worker -A app.worker -l info -Q main-queue -c 1
     volumes:
       - ../backend/app:/app
 

@@ -11,8 +11,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=0.12.16 \
-  BACKEND_ENV=${BACKEND_ENV} \
-  C_FORCE_ROOT=1
+  BACKEND_ENV=${BACKEND_ENV}
 
 # Install Poetry
 RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config settings.virtualenvs.create false

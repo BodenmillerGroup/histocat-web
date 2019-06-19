@@ -21,11 +21,10 @@ default_context:
   traefik_constraint_tag_staging: 'staging.histocat.net'
   traefik_public_network: 'traefik-public'
   traefik_public_constraint_tag: 'traefik-public'
-  flower_auth: 'admin:changethis'
   sentry_dsn: ''
   docker_image_prefix: 'plankter/histocat-'
   docker_image_backend: 'plankter/histocat-backend'
-  docker_image_celeryworker: 'plankter/histocat-celeryworker'
+  docker_image_worker: 'plankter/histocat-worker'
   docker_image_frontend: 'plankter/histocat-frontend'
   _copy_without_render: [frontend/src/**/*.html, frontend/src/**/*.vue, frontend/node_modules/*, backend/app/app/email-templates/**]
   _template: ./

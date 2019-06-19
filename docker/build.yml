@@ -8,11 +8,11 @@ services:
       args:
         BACKEND_ENV: production
 
-  celeryworker:
-    image: '${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}'
+  worker:
+    image: '${DOCKER_IMAGE_WORKER}:${TAG-latest}'
     build:
       context: ../backend
-      dockerfile: celeryworker.dockerfile
+      dockerfile: worker.dockerfile
       args:
         BACKEND_ENV: production
 

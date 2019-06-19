@@ -29,8 +29,6 @@ Alternative automatic documentation with ReDoc (from the OpenAPI backend): http:
 
 PGAdmin, PostgreSQL web administration: http://localhost:5050
 
-Flower, administration of Celery tasks: http://localhost:5555
-
 Traefik UI, to see how the routes are being handled by the proxy: http://localhost:8090
 
 **Note**: The first time you start your stack, it might take a minute for it to be ready. While the backend waits for the database to be ready and configures everything. You can check the logs to monitor it.
@@ -57,9 +55,9 @@ Open your editor at `./backend/app/` (instead of the project root: `./`), so tha
 
 Modify or add SQLAlchemy models in `./backend/app/app/db_models/`, Pydantic models in `./backend/app/app/models/`, API endpoints in `./backend/app/app/api/`, CRUD (Create, Read, Update, Delete) utils in `./backend/app/app/crud/`. The easiest might be to copy the ones for Items (models, endpoints, and CRUD utils) and update them to your needs.
 
-Add and modify tasks to the Celery worker in `./backend/app/app/worker.py`. 
+Add and modify tasks to the worker in `./backend/app/app/worker.py`. 
 
-If you need to install any additional package to the worker, add it to the file `./backend/app/celeryworker.dockerfile`.
+If you need to install any additional package to the worker, add it to the file `./backend/app/worker.dockerfile`.
 
 There is an `.env` file that has some Docker Compose default values that allow you to just run `docker-compose up -d` and start working, while still being able to use and share the same Docker Compose files for deployment, avoiding repetition of code and configuration as much as possible.
 
@@ -661,8 +659,6 @@ Automatic Alternative Docs (ReDoc): https://{{cookiecutter.domain_main}}/redoc
 
 PGAdmin: https://pgadmin.{{cookiecutter.domain_main}}
 
-Flower: https://flower.{{cookiecutter.domain_main}}
-
 ### Staging
 
 Staging URLs, from the branch `master`.
@@ -676,8 +672,6 @@ Automatic Interactive Docs (Swagger UI): https://{{cookiecutter.domain_staging}}
 Automatic Alternative Docs (ReDoc): https://{{cookiecutter.domain_staging}}/redoc
 
 PGAdmin: https://pgadmin.{{cookiecutter.domain_staging}}
-
-Flower: https://flower.{{cookiecutter.domain_staging}}
     
 ### Development
 
@@ -692,8 +686,6 @@ Automatic Interactive Docs (Swagger UI): https://localhost/docs
 Automatic Alternative Docs (ReDoc): https://localhost/redoc
 
 PGAdmin: http://localhost:5050
-
-Flower: http://localhost:5555
 
 Traefik UI: http://localhost:8090
 
@@ -711,8 +703,6 @@ Automatic Alternative Docs (ReDoc): https://local.dockertoolbox.tiangolo.com/red
 
 PGAdmin: http://local.dockertoolbox.tiangolo.com:5050
 
-Flower: http://local.dockertoolbox.tiangolo.com:5555
-
 Traefik UI: http://local.dockertoolbox.tiangolo.com:8090
 
 ### Development with a custom IP
@@ -729,8 +719,6 @@ Automatic Alternative Docs (ReDoc): https://dev.{{cookiecutter.domain_main}}/red
 
 PGAdmin: http://dev.{{cookiecutter.domain_main}}:5050
 
-Flower: http://dev.{{cookiecutter.domain_main}}:5555
-
 Traefik UI: http://dev.{{cookiecutter.domain_main}}:8090
 
 ### Development in localhost with a custom domain
@@ -746,8 +734,6 @@ Automatic Interactive Docs (Swagger UI): https://localhost.tiangolo.com/docs
 Automatic Alternative Docs (ReDoc): https://localhost.tiangolo.com/redoc
 
 PGAdmin: http://localhost.tiangolo.com:5050
-
-Flower: http://localhost.tiangolo.com:5555
 
 Traefik UI: http://localhost.tiangolo.com:8090
 

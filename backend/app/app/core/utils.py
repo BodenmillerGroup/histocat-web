@@ -1,13 +1,23 @@
 import logging
 import os
 import time
+from datetime import datetime, timedelta
 from enum import Enum, unique
+from pathlib import Path
 from shutil import rmtree
+from typing import Optional
 from typing import Tuple
 
 import cv2
+import jwt
 import numpy as np
 import sqlalchemy
+from jwt.exceptions import InvalidTokenError
+
+import app.worker as worker
+from app.core import config
+
+password_reset_jwt_subject = "preset"
 
 logger = logging.getLogger(__name__)
 
@@ -156,3 +166,83 @@ def timeit(method):
         return result
 
     return timed
+
+
+def send_test_email(email_to: str):
+    project_name = config.PROJECT_NAME
+    subject = f"{project_name} - Test email"
+    with open(Path(config.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
+        template_str = f.read()
+    worker.send_email.send(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={"project_name": config.PROJECT_NAME, "email": email_to},
+    )
+
+
+def send_reset_password_email(email_to: str, email: str, token):
+    project_name = config.PROJECT_NAME
+    subject = f"{project_name} - Password recovery for user {email}"
+    with open(Path(config.EMAIL_TEMPLATES_DIR) / "reset_password.html") as f:
+        template_str = f.read()
+    if hasattr(token, "decode"):
+        use_token = token.decode()
+    else:
+        use_token = token
+    server_host = config.SERVER_HOST
+    link = f"{server_host}/reset-password?token={use_token}"
+    worker.send_email.send(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": config.PROJECT_NAME,
+            "username": email,
+            "email": email_to,
+            "valid_hours": config.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+            "link": link,
+        },
+    )
+
+
+def send_new_account_email(email_to: str, username: str, password: str):
+    project_name = config.PROJECT_NAME
+    subject = f"{project_name} - New account for user {username}"
+    with open(Path(config.EMAIL_TEMPLATES_DIR) / "new_account.html") as f:
+        template_str = f.read()
+    link = config.SERVER_HOST
+    worker.send_email.send(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": config.PROJECT_NAME,
+            "username": username,
+            "password": password,
+            "email": email_to,
+            "link": link,
+        },
+    )
+
+
+def generate_password_reset_token(email):
+    delta = timedelta(hours=config.EMAIL_RESET_TOKEN_EXPIRE_HOURS)
+    now = datetime.utcnow()
+    expires = now + delta
+    exp = expires.timestamp()
+    encoded_jwt = jwt.encode(
+        {"exp": exp, "nbf": now, "sub": password_reset_jwt_subject, "email": email},
+        config.SECRET_KEY,
+        algorithm="HS256",
+    )
+    return encoded_jwt
+
+
+def verify_password_reset_token(token) -> Optional[str]:
+    try:
+        decoded_token = jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
+        assert decoded_token["sub"] == password_reset_jwt_subject
+        return decoded_token["email"]
+    except InvalidTokenError:
+        return None

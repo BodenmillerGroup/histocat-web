@@ -10,9 +10,9 @@ services:
         - traefik.port=80
         - traefik.tags=${TRAEFIK_TAG}
 
-  celeryworker:
+  worker:
     restart: always
-    image: ${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}
+    image: ${DOCKER_IMAGE_WORKER}:${TAG-latest}
 
   frontend:
     restart: always
@@ -29,23 +29,6 @@ services:
       placement:
         constraints:
           - node.labels.${STACK_NAME}.app-db-data == true
-
-  flower:
-    networks:
-      - ${TRAEFIK_PUBLIC_NETWORK}
-      - default
-    deploy:
-      labels:
-        - traefik.frontend.rule=Host:flower.${DOMAIN}
-        - traefik.enable=true
-        - traefik.port=5555
-        - traefik.tags=${TRAEFIK_PUBLIC_TAG}
-        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK}
-        # Traefik service that listens to HTTP
-        - traefik.redirectorservice.frontend.entryPoints=http
-        - traefik.redirectorservice.frontend.redirect.entryPoint=https
-        # Traefik service that listens to HTTPS
-        - traefik.webservice.frontend.entryPoints=https
 
   pgadmin:
     networks:

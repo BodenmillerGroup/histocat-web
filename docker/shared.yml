@@ -9,7 +9,7 @@ services:
       - SERVER_HOST=${PROTOCOL}://${DOMAIN}
     depends_on:
       - db
-      - queue
+      - rabbitmq
       - redis
     volumes:
       - app-data:/data
@@ -23,7 +23,7 @@ services:
         aliases:
           - ${DOMAIN}
 
-  celeryworker:
+  worker:
     env_file:
       - env-postgres.env
       - env-backend.env
@@ -31,7 +31,7 @@ services:
       - SERVER_HOST=${PROTOCOL}://${DOMAIN}
     depends_on:
       - db
-      - queue
+      - rabbitmq
       - redis
     volumes:
       - app-data:/data
@@ -55,11 +55,11 @@ services:
     ports:
       - 5432:5432
 
-  queue:
+  rabbitmq:
     restart: always
     image: rabbitmq:3.7.15-alpine
     volumes:
-      - queue-data:/var/lib/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
 
   redis:
     restart: always
@@ -80,14 +80,6 @@ services:
       - 5050:5050
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-
-  flower:
-    restart: always
-    image: totem/celery-flower-docker
-    env_file:
-      - env-flower.env
-    ports:
-      - 5555:5555
 
   portainer:
     restart: always
@@ -114,5 +106,5 @@ volumes:
   app-db-data:
   portainer-data:
   redis-data:
-  queue-data:
+  rabbitmq-data:
   pgadmin-data:

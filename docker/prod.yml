@@ -6,9 +6,9 @@ services:
     environment:
       - SMTP_PASSWORD
 
-  celeryworker:
+  worker:
     restart: always
-    image: ${DOCKER_IMAGE_CELERYWORKER}:${TAG-latest}
+    image: ${DOCKER_IMAGE_WORKER}:${TAG-latest}
     environment:
       - SMTP_PASSWORD
 
