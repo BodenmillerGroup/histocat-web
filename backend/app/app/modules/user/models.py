@@ -31,7 +31,10 @@ class UserModel(BaseModel):
     full_name: Optional[str]
     created_at: datetime
 
+    class Config:
+        orm_mode = True
+
 
 # Additional properties stored in DB
-class UserInDBModel(UserModel):
+class UserDBModel(UserModel):
     hashed_password: SecretStr

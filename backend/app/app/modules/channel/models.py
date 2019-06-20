@@ -28,6 +28,9 @@ class ChannelModel(BaseModel):
     meta: Optional[dict]
     created_at: datetime
 
+    class Config:
+        orm_mode = True
+
 
 # Channel stats model
 class ChannelStatsModel(BaseModel):

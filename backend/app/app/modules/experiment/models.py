@@ -30,7 +30,13 @@ class ExperimentModel(BaseModel):
     meta: Optional[dict]
     created_at: datetime
 
+    class Config:
+        orm_mode = True
+
 
 # Full experiment dataset
 class ExperimentDatasetModel(ExperimentModel):
     slides: Optional[List[SlideDatasetModel]]
+
+    class Config:
+        orm_mode = True

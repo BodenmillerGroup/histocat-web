@@ -130,8 +130,4 @@ def read_experiment_dataset(
     Get full experiment dataset
     """
     item = crud.get_dataset(db, id=id)
-    for slide in item.slides:
-        slide.acquisitions
-        for acquisition in slide.acquisitions:
-            acquisition.channels
-    return item.json()
+    return item

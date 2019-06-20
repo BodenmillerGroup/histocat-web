@@ -28,7 +28,13 @@ class AcquisitionModel(BaseModel):
     meta: Optional[dict]
     created_at: datetime
 
+    class Config:
+        orm_mode = True
+
 
 # Acquisition dataset with children items
 class AcquisitionDatasetModel(AcquisitionModel):
     channels: Optional[List[ChannelModel]]
+
+    class Config:
+        orm_mode = True

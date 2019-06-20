@@ -30,7 +30,13 @@ class SlideModel(BaseModel):
     meta: Optional[dict]
     created_at: datetime
 
+    class Config:
+        orm_mode = True
+
 
 # Full slide dataset
 class SlideDatasetModel(SlideModel):
     acquisitions: Optional[List[AcquisitionDatasetModel]]
+
+    class Config:
+        orm_mode = True
