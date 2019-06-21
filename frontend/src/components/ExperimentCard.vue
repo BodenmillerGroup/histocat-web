@@ -1,5 +1,10 @@
 <template>
-  <v-card class="ma-3 pa-3" tile hover>
+  <v-card
+    tile
+    hover
+    :to="{name: 'main-experiment', params: {id: experiment.id}}"
+    class="ma-3 pa-3"
+  >
     <v-card-title>
       <v-layout column>
         <h5 class="headline">{{experiment.name}}</h5>
@@ -10,7 +15,14 @@
       {{experiment.description}}
     </v-card-text>
     <v-card-actions>
-      <v-btn :to="{name: 'main-experiment', params: {id: experiment.id}}">View</v-btn>
+      <v-chip
+        :key="item"
+        v-for="item in experiment.tags"
+        label
+        small
+      >
+        <v-icon left>mdi-tag-outline</v-icon>{{ item }}
+      </v-chip>
     </v-card-actions>
   </v-card>
 </template>
