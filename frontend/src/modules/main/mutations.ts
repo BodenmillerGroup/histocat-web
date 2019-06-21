@@ -1,7 +1,7 @@
 import { IUserProfile } from '@/modules/user/models';
 import { AppNotification, MainState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { State } from '@/store/state';
+import { RootState } from '@/store/state';
 
 
 export const mutations = {
@@ -31,7 +31,7 @@ export const mutations = {
   },
 };
 
-const { commit } = getStoreAccessors<MainState | any, State>('');
+const { commit } = getStoreAccessors<MainState | any, RootState>('');
 
 export const commitSetDashboardMiniDrawer = commit(mutations.setDashboardMiniDrawer);
 export const commitSetDashboardShowDrawer = commit(mutations.setDashboardShowDrawer);

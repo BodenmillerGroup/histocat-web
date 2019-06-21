@@ -1,7 +1,7 @@
 import { api } from './api';
 import { ActionContext } from 'vuex';
 import { IExperimentCreate, IExperimentUpdate } from './models';
-import { State } from '@/store/state';
+import { RootState } from '@/store/state';
 import { ExperimentsState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import {
@@ -13,10 +13,10 @@ import {
 import { dispatchCheckApiError } from '@/modules/main/actions';
 import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
 
-type MainContext = ActionContext<ExperimentsState, State>;
+type ExperimentContext = ActionContext<ExperimentsState, RootState>;
 
 export const actions = {
-  async actionGetExperiments(context: MainContext) {
+  async actionGetExperiments(context: ExperimentContext) {
     try {
       const response = await api.getExperiments(context.rootState.main.token);
       if (response) {
@@ -26,7 +26,7 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionUpdateExperiment(context: MainContext, payload: { id: number, data: IExperimentUpdate }) {
+  async actionUpdateExperiment(context: ExperimentContext, payload: { id: number, data: IExperimentUpdate }) {
     try {
       const notification = { content: 'saving', showProgress: true };
       commitAddNotification(context, notification);
@@ -41,7 +41,7 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionDeleteExperiment(context: MainContext, id: number) {
+  async actionDeleteExperiment(context: ExperimentContext, id: number) {
     try {
       const notification = { content: 'deleting', showProgress: true };
       commitAddNotification(context, notification);
@@ -56,7 +56,7 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionCreateExperiment(context: MainContext, payload: IExperimentCreate) {
+  async actionCreateExperiment(context: ExperimentContext, payload: IExperimentCreate) {
     try {
       const notification = { content: 'saving', showProgress: true };
       commitAddNotification(context, notification);
@@ -71,7 +71,7 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionUploadSlide(context: MainContext, payload: { id: number | undefined, data: any }) {
+  async actionUploadSlide(context: ExperimentContext, payload: { id: number | undefined, data: any }) {
     if (!payload.id) {
       return;
     }
@@ -88,7 +88,7 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetExperimentDataset(context: MainContext, payload: { id: number }) {
+  async actionGetExperimentDataset(context: ExperimentContext, payload: { id: number }) {
     try {
       const response = await api.getExperimentDataset(context.rootState.main.token, payload.id);
       if (response) {
@@ -98,14 +98,14 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetChannelImage(context: MainContext, payload: { id: number }) {
+  async actionGetChannelImage(context: ExperimentContext, payload: { id: number }) {
     try {
       const response = await api.getChannelImage(context.rootState.main.token, payload.id);
     } catch (error) {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetChannelStats(context: MainContext, payload: { id: number }) {
+  async actionGetChannelStats(context: ExperimentContext, payload: { id: number }) {
     try {
       const response = await api.getChannelStats(context.rootState.main.token, payload.id);
       return response.data;
@@ -115,7 +115,7 @@ export const actions = {
   },
 };
 
-const { dispatch } = getStoreAccessors<ExperimentsState, State>('');
+const { dispatch } = getStoreAccessors<ExperimentsState, RootState>('');
 
 export const dispatchCreateExperiment = dispatch(actions.actionCreateExperiment);
 export const dispatchGetExperiments = dispatch(actions.actionGetExperiments);

@@ -1,7 +1,7 @@
 import { IAcquisition, IChannel, IExperiment, IExperimentDataset } from './models';
 import { ExperimentsState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { State } from '@/store/state';
+import { RootState } from '@/store/state';
 
 export const mutations = {
   setExperiments(state: ExperimentsState, payload: IExperiment[]) {
@@ -48,7 +48,7 @@ export const mutations = {
   },
 };
 
-const { commit } = getStoreAccessors<ExperimentsState, State>('');
+const { commit } = getStoreAccessors<ExperimentsState, RootState>('');
 
 export const commitSetExperiment = commit(mutations.setExperiment);
 export const commitSetExperiments = commit(mutations.setExperiments);

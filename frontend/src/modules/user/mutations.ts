@@ -1,7 +1,7 @@
 import { IUserProfile } from './models';
 import { UserState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { State } from '@/store/state';
+import { RootState } from '@/store/state';
 
 export const mutations = {
   setUsers(state: UserState, payload: IUserProfile[]) {
@@ -14,7 +14,7 @@ export const mutations = {
   },
 };
 
-const { commit } = getStoreAccessors<UserState, State>('');
+const { commit } = getStoreAccessors<UserState, RootState>('');
 
 export const commitSetUser = commit(mutations.setUser);
 export const commitSetUsers = commit(mutations.setUsers);

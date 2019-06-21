@@ -4,7 +4,7 @@ import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
 import { AxiosError } from 'axios';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
-import { State } from '@/store/state';
+import { RootState } from '@/store/state';
 import {
   commitAddNotification,
   commitRemoveNotification,
@@ -15,7 +15,7 @@ import {
 } from './mutations';
 import { AppNotification, MainState } from './state';
 
-type MainContext = ActionContext<MainState, State>;
+type MainContext = ActionContext<MainState, RootState>;
 
 export const actions = {
   async actionLogIn(context: MainContext, payload: { username: string; password: string }) {
@@ -156,7 +156,7 @@ export const actions = {
   },
 };
 
-const { dispatch } = getStoreAccessors<MainState | any, State>('');
+const { dispatch } = getStoreAccessors<MainState | any, RootState>('');
 
 export const dispatchCheckApiError = dispatch(actions.actionCheckApiError);
 export const dispatchCheckLoggedIn = dispatch(actions.actionCheckLoggedIn);

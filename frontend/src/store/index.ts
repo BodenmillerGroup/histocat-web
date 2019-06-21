@@ -3,7 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import createLogger from 'vuex/dist/logger';
 
 import { mainModule } from '@/modules/main';
-import { State } from './state';
+import { RootState } from './state';
 import { userModule } from '@/modules/user';
 import { experimentModule } from '@/modules/experiment';
 
@@ -11,7 +11,7 @@ Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
 
-const storeOptions: StoreOptions<State> = {
+const storeOptions: StoreOptions<RootState> = {
   modules: {
     main: mainModule,
     user: userModule,
@@ -21,6 +21,6 @@ const storeOptions: StoreOptions<State> = {
   plugins: debug ? [createLogger()] : [],
 };
 
-export const store = new Vuex.Store<State>(storeOptions);
+export const store = new Vuex.Store<RootState>(storeOptions);
 
 export default store;
