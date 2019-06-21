@@ -79,7 +79,7 @@
     <v-content>
       <router-view></router-view>
     </v-content>
-    <v-footer class="pa-3" fixed app>
+    <v-footer class="pa-3" app>
       <v-spacer></v-spacer>
       <span>&copy; {{appName}}</span>
     </v-footer>

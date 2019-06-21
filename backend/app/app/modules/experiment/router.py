@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List
+from typing import List, Set
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
@@ -15,8 +15,7 @@ from .models import (
     ExperimentCreateModel,
     ExperimentDatasetModel,
     ExperimentModel,
-    ExperimentUpdateModel,
-)
+    ExperimentUpdateModel)
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +33,18 @@ def read_experiments(
     Retrieve experiments
     """
     items = crud.get_multi(db, skip=skip, limit=limit)
+    return items
+
+
+@router.get("/tags", response_model=Set[str])
+def read_tags(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Retrieve tags
+    """
+    items = crud.get_tags(db)
     return items
 
 

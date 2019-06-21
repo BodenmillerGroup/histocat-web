@@ -9,15 +9,17 @@ from app.modules.slide.models import SlideDatasetModel
 # Properties to receive via API on creation
 class ExperimentCreateModel(BaseModel):
     name: str
-    description: Optional[str] = None
-    meta: Optional[dict] = None
+    description: Optional[str]
+    meta: Optional[dict]
+    tags: Optional[List[str]]
 
 
 # Properties to receive via API on update
 class ExperimentUpdateModel(BaseModel):
     name: str
-    description: Optional[str] = None
-    meta: Optional[dict] = None
+    description: Optional[str]
+    meta: Optional[dict]
+    tags: Optional[List[str]]
 
 
 # Shared properties
@@ -28,6 +30,7 @@ class ExperimentModel(BaseModel):
     description: Optional[str]
     location: Optional[str]
     meta: Optional[dict]
+    tags: Optional[List[str]]
     created_at: datetime
 
     class Config:

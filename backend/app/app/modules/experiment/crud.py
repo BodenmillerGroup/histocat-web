@@ -1,8 +1,9 @@
 import logging
 import os
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.config import ROOT_DATA_DIRECTORY
@@ -25,12 +26,18 @@ def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Opti
     return items
 
 
+def get_tags(session: Session) -> Set[str]:
+    items = session.query(func.unnest(Experiment.tags)).distinct().all()
+    return {e[0] for e in items}
+
+
 def create(session: Session, *, user_id: int, params: ExperimentCreateModel) -> Experiment:
     entity = Experiment(
         user_id=user_id,
         name=params.name,
         description=params.description,
         meta=params.meta,
+        tags=params.tags
     )
     session.add(entity)
     session.commit()

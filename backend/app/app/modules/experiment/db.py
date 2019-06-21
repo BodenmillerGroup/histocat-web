@@ -1,9 +1,10 @@
 import logging
 import os
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, DateTime
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.functions import now
 
@@ -38,16 +39,18 @@ class Experiment(Base):
     #: experiment description
     description: str = Column(Text)
     meta: dict = Column(JSONB)
+    tags: List[str] = Column(ARRAY(String(64)))
     created_at: datetime = Column(DateTime, default=now(), nullable=False)
 
     user = relationship("User", back_populates="experiments")
     slides = relationship("Slide", back_populates="experiment")
 
-    def __init__(self, name: str, user_id: int, description: str = "", meta: dict = None):
+    def __init__(self, name: str, user_id: int, description: str = "", meta: dict = None, tags: List[str] = None):
         self.name = name
         self.user_id = user_id
         self.description = description
         self.meta = meta
+        self.tags = tags
 
     @autocreate_directory_property
     def slides_location(self) -> str:
@@ -63,6 +66,7 @@ class Experiment(Base):
             "description": self.description,
             "location": self.location,
             "meta": self.meta,
+            "tags": self.tags,
             "user_id": self.user_id,
             "created_at": self.created_at,
             "slides": self.slides,

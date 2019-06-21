@@ -7,6 +7,9 @@ export const mutations = {
   setExperiments(state: ExperimentsState, payload: IExperiment[]) {
     state.experiments = payload;
   },
+  setTags(state: ExperimentsState, payload: string[]) {
+    state.tags = payload;
+  },
   setExperiment(state: ExperimentsState, payload: IExperiment) {
     const items = state.experiments.filter((item: IExperiment) => item.id !== payload.id);
     items.push(payload);
@@ -52,6 +55,7 @@ const { commit } = getStoreAccessors<ExperimentsState, RootState>('');
 
 export const commitSetExperiment = commit(mutations.setExperiment);
 export const commitSetExperiments = commit(mutations.setExperiments);
+export const commitSetTags = commit(mutations.setTags);
 export const commitDeleteExperiment = commit(mutations.deleteExperiment);
 export const commitSetSelectedExperimentId = commit(mutations.setSelectedExperimentId);
 export const commitSetExperimentDataset = commit(mutations.setExperimentDataset);

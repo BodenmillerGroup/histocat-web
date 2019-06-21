@@ -7,6 +7,7 @@ import { RootState } from '@/store/state';
 
 const defaultState: ExperimentsState = {
   experiments: [],
+  tags: [],
   dataset: undefined,
   selectedExperimentId: undefined,
   selectedMeta: undefined,

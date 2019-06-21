@@ -7,7 +7,7 @@ Create Date: 2019-04-10 15:30:11.616899
 """
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 
 # revision identifiers, used by Alembic.
 
@@ -26,6 +26,7 @@ def upgrade():
         sa.Column('description', sa.String()),
         sa.Column('location', sa.String(4096)),
         sa.Column('meta', JSONB()),
+        sa.Column('tags', ARRAY(sa.String(64)), index=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
     )
     op.create_foreign_key(

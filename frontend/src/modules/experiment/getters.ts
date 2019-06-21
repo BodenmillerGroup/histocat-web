@@ -36,6 +36,9 @@ export const getters = {
   metalColorMap: (state: ExperimentsState) => {
     return state.metalColorMap;
   },
+  tags: (state: ExperimentsState) => {
+    return state.tags;
+  },
 };
 
 const { read } = getStoreAccessors<ExperimentsState, RootState>('');
@@ -44,6 +47,7 @@ export const readAdminOneExperiment = read(getters.adminOneExperiment);
 export const readAdminExperiments = read(getters.adminExperiments);
 export const readSelectedExperiment = read(getters.selectedExperiment);
 export const readExperimentDataset = read(getters.dataset);
+export const readTags = read(getters.tags);
 export const readSelectedMeta = read(getters.selectedMeta);
 export const readChannels = read(getters.channels);
 export const readSelectedAcquisition = read(getters.selectedAcquisition);

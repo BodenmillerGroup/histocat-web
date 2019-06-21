@@ -9,6 +9,7 @@ import {
   commitSetExperiment,
   commitSetExperimentDataset,
   commitSetExperiments,
+  commitSetTags,
 } from './mutations';
 import { dispatchCheckApiError } from '@/modules/main/actions';
 import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
@@ -21,6 +22,16 @@ export const actions = {
       const response = await api.getExperiments(context.rootState.main.token);
       if (response) {
         commitSetExperiments(context, response.data);
+      }
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
+  async actionGetTags(context: ExperimentContext) {
+    try {
+      const response = await api.getTags(context.rootState.main.token);
+      if (response) {
+        commitSetTags(context, response.data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
@@ -119,6 +130,7 @@ const { dispatch } = getStoreAccessors<ExperimentsState, RootState>('');
 
 export const dispatchCreateExperiment = dispatch(actions.actionCreateExperiment);
 export const dispatchGetExperiments = dispatch(actions.actionGetExperiments);
+export const dispatchGetTags = dispatch(actions.actionGetTags);
 export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment);
 export const dispatchDeleteExperiment = dispatch(actions.actionDeleteExperiment);
 export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);

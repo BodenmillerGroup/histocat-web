@@ -2,6 +2,7 @@ import { IAcquisition, IChannel, IExperiment, IExperimentDataset } from './model
 
 export interface ExperimentsState {
   experiments: IExperiment[];
+  tags: string[];
   selectedExperimentId?: number;
   dataset?: IExperimentDataset;
   selectedMeta?: object;

@@ -8,6 +8,9 @@ export const api = {
   async getExperiments(token: string) {
     return axios.get<IExperiment[]>(`${apiUrl}/api/v1/experiments/`, authHeaders(token));
   },
+  async getTags(token: string) {
+    return axios.get<string[]>(`${apiUrl}/api/v1/experiments/tags`, authHeaders(token));
+  },
   async updateExperiment(token: string, id: number, data: IExperimentUpdate) {
     return axios.put(`${apiUrl}/api/v1/experiments/${id}`, data, authHeaders(token));
   },
