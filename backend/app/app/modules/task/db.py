@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta, datetime
 
-from sqlalchemy import Column, Integer, String, Interval, Boolean, BigInteger, LargeBinary, DateTime
+from sqlalchemy import Column, Integer, String, Interval, Boolean, BigInteger, LargeBinary, DateTime, ForeignKey
 from sqlalchemy.sql.functions import now
 
 from app.db.base import Base
@@ -45,7 +45,7 @@ class Task(Base):
     #: "Pickled" Python `gc3libs.Task` object
     data = Column(LargeBinary)
     #: ID of parent submission
-    submission_id: int = Column(BigInteger, index=True)
+    submission_id: int = Column(BigInteger, ForeignKey("submission.id", ondelete="CASCADE"), index=True)
     created_at: datetime = Column(DateTime, default=now(), nullable=False)
     updated_at: datetime = Column(DateTime, default=now(), onupdate=now(), nullable=False)
 

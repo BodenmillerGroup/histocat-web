@@ -23,13 +23,13 @@ class Submission(Base):
     #: ID of the parent experiment
     experiment_id: int = Column(
         Integer,
-        ForeignKey("experiment.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("experiment.id", ondelete="CASCADE"),
         index=True,
     )
     #: ID of the submitting user
     user_id: int = Column(
         Integer,
-        ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("user.id", ondelete="CASCADE"),
         index=True,
     )
     # TODO: make top_task_id a foreign key and create a relationship

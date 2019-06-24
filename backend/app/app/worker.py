@@ -6,16 +6,33 @@ import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
 
-import app.db.init_db  # noqa
 from app.core import config
 from app.db.session import db_session
 from app.io.mcd_loader import McdLoader
 from app.io.ome_tiff_loader import OmeTiffLoader
+from app.io.text_loader import TextLoader
 
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
 dramatiq.set_broker(rabbitmq_broker)
 
 logger = logging.getLogger(__name__)
+
+if os.environ.get("BACKEND_ENV") == "development":
+    try:
+        # VS Code Debugging
+
+        # Allow other computers to attach to ptvsd at this IP address and port.
+        import ptvsd
+
+        ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
+
+        # PyCharm Debugging
+
+        # import pydevd_pycharm
+        # TODO: Don't forget to modify IP address!!
+        # pydevd_pycharm.settrace('130.60.106.83', port=5679, stdoutToServer=True, stderrToServer=True)
+    except Exception as e:
+        logger.error(e)
 
 
 @dramatiq.actor(queue_name='default')
@@ -56,6 +73,6 @@ def import_slide(uri: str, experiment_id: int):
         if filename.endswith(".ome"):
             OmeTiffLoader.load(db_session, uri, experiment_id)
     elif file_extension == ".txt":
-        pass
+        TextLoader.load(db_session, uri, experiment_id)
 
     os.remove(uri)

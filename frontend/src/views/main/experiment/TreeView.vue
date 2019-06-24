@@ -51,7 +51,6 @@
     @Prop(Object) dataset?: IExperimentDataset;
 
     search = null;
-    open = [];
     active = [];
 
     icons = {
@@ -59,11 +58,12 @@
       acquisition: 'mdi-film',
     };
 
-    @Watch('selected')
+    @Watch('active')
     onActiveChanged(item: object) {
-      if (!item) {
+      if (this.active.length === 0 || !item) {
         return;
       }
+      item = item[0];
       if (item.hasOwnProperty('meta')) {
         commitSetSelectedMeta(this.$store, item['meta']);
       }
@@ -79,27 +79,21 @@
 
     get items() {
       if (this.dataset) {
-        return this.dataset.slides.map((slide) => {
+        const items = this.dataset.slides.map((slide) => {
           const acquisitions = slide.acquisitions.map((acquisition) => {
             return Object.assign({}, acquisition, { type: 'acquisition' });
           });
           return Object.assign({}, slide, { type: 'slide', children: acquisitions });
         });
+        return items;
       }
-    }
-
-    get selected() {
-      if (!this.active.length) {
-        return undefined;
-      }
-      return this.active[0];
     }
   }
 </script>
 
 <style scoped>
   .card-title {
-    padding-bottom: 0px;
+    padding-bottom: 0;
   }
 
   .workspace-tree {

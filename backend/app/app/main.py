@@ -18,15 +18,12 @@ if os.environ.get("BACKEND_ENV") == "development":
 
         # Allow other computers to attach to ptvsd at this IP address and port.
         import ptvsd
-
-        ptvsd.enable_attach(redirect_output=True)
-        # Pause the program until a remote debugger is attached
-        # ptvsd.wait_for_attach()
+        ptvsd.enable_attach(address=('0.0.0.0', 5678), redirect_output=True)
 
         # PyCharm Debugging
-        # TODO: Don't forget to modify IP address!!
 
         # import pydevd_pycharm
+        # TODO: Don't forget to modify IP address!!
         # pydevd_pycharm.settrace('130.60.106.83', port=5679, stdoutToServer=True, stderrToServer=True)
     except Exception as e:
         logger.error(e)

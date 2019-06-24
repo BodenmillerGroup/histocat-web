@@ -20,24 +20,12 @@ def upgrade():
         'submission',
         sa.Column('id', sa.BigInteger(), primary_key=True, index=True),
         sa.Column('program', sa.String(), nullable=False, index=True),
-        sa.Column('experiment_id', sa.Integer(), index=True),
-        sa.Column('user_id', sa.Integer(), index=True),
+        sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True),
         sa.Column('top_task_id', sa.BigInteger(), index=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
-    )
-    op.create_foreign_key(
-        'fk_submission_experiment',
-        'submission', 'experiment',
-        ['experiment_id'], ['id'],
-    )
-    op.create_foreign_key(
-        'fk_submission_user',
-        'submission', 'user',
-        ['user_id'], ['id'],
     )
 
 
 def downgrade():
-    op.drop_constraint('fk_submission_experiment')
-    op.drop_constraint('fk_submission_user')
     op.drop_table('submission')

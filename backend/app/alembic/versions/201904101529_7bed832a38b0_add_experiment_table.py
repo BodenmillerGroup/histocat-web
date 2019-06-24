@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'experiment',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('user_id', sa.Integer(), index=True),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
         sa.Column('description', sa.String()),
         sa.Column('location', sa.String(4096)),
@@ -29,13 +29,7 @@ def upgrade():
         sa.Column('tags', ARRAY(sa.String(64)), index=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
     )
-    op.create_foreign_key(
-        'fk_experiment_user',
-        'experiment', 'user',
-        ['user_id'], ['id'],
-    )
 
 
 def downgrade():
-    op.drop_constraint('fk_experiment_user')
     op.drop_table('experiment')

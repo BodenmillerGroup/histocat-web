@@ -5,9 +5,8 @@ Revises: 485aa67ca586
 Create Date: 2019-06-18 16:38:03.448708
 
 """
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '639adf01602f'
@@ -30,17 +29,11 @@ def upgrade():
         sa.Column('is_collection', sa.Boolean(), index=True),
         sa.Column('parent_id', sa.BigInteger(), index=True),
         sa.Column('data', sa.LargeBinary()),
-        sa.Column('submission_id', sa.BigInteger(), index=True),
+        sa.Column('submission_id', sa.BigInteger(), sa.ForeignKey("submission.id", ondelete="CASCADE"), index=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), nullable=False, onupdate=sa.func.now()),
-    )
-    op.create_foreign_key(
-        'fk_task_submission',
-        'task', 'submission',
-        ['submission_id'], ['id'],
     )
 
 
 def downgrade():
-    op.drop_constraint('fk_task_submission')
     op.drop_table('task')

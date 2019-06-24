@@ -20,6 +20,8 @@ services:
       dockerfile: worker.dockerfile
       args:
         BACKEND_ENV: development
+    ports:
+      - 5688:5688
     volumes:
       - ../backend/app:/app
 

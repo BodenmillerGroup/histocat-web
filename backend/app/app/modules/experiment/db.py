@@ -29,7 +29,7 @@ class Experiment(Base):
     #: ID of the user
     user_id: int = Column(
         Integer,
-        ForeignKey("user.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("user.id", ondelete="CASCADE"),
         index=True,
     )
     #: location of the experiment, e.g. absolute path to a directory on disk
@@ -43,7 +43,7 @@ class Experiment(Base):
     created_at: datetime = Column(DateTime, default=now(), nullable=False)
 
     user = relationship("User", back_populates="experiments")
-    slides = relationship("Slide", back_populates="experiment")
+    slides = relationship("Slide", back_populates="experiment", cascade="all, delete, delete-orphan")
 
     def __init__(self, name: str, user_id: int, description: str = "", meta: dict = None, tags: List[str] = None):
         self.name = name

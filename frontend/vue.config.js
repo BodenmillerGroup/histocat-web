@@ -5,4 +5,8 @@ module.exports = {
   pwa: {
     name: 'HistoCAT',
   },
+
+  configureWebpack: {
+    devtool: 'source-map'
+  }
 };

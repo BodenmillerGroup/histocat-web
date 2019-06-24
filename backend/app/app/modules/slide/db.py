@@ -29,7 +29,7 @@ class Slide(Base):
     #: ID of parent experiment
     experiment_id: int = Column(
         Integer,
-        ForeignKey("experiment.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("experiment.id", ondelete="CASCADE"),
         index=True,
     )
     #: location of the slide, e.g. absolute path to a directory on disk
@@ -48,7 +48,7 @@ class Slide(Base):
     created_at: datetime = Column(DateTime, default=now(), nullable=False)
 
     experiment = relationship("Experiment", back_populates="slides")
-    acquisitions = relationship("Acquisition", back_populates="slide")
+    acquisitions = relationship("Acquisition", back_populates="slide", cascade="all, delete, delete-orphan")
 
     def __init__(
         self,

@@ -20,7 +20,7 @@ def upgrade():
     op.create_table(
         'acquisition',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('slide_id', sa.Integer(), index=True),
+        sa.Column('slide_id', sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True),
         sa.Column('width', sa.Integer()),
         sa.Column('height', sa.Integer()),
@@ -29,13 +29,7 @@ def upgrade():
         sa.Column('meta', JSONB()),
         sa.Column('created_at', sa.DateTime(), nullable=False),
     )
-    op.create_foreign_key(
-        'fk_acquisition_slide',
-        'acquisition', 'slide',
-        ['slide_id'], ['id'],
-    )
 
 
 def downgrade():
-    op.drop_constraint('fk_acquisition_slide')
     op.drop_table('acquisition')

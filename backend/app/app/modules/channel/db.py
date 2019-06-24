@@ -34,7 +34,7 @@ class Channel(Base):
     #: ID of the parent acquisition
     acquisition_id: int = Column(
         Integer,
-        ForeignKey("acquisition.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("acquisition.id", ondelete="CASCADE"),
         index=True,
     )
     #: location of the channel, e.g. absolute path to a directory on disk

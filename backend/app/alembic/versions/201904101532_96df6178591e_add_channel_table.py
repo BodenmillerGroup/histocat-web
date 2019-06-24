@@ -20,7 +20,7 @@ def upgrade():
     op.create_table(
         'channel',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('acquisition_id', sa.Integer(), index=True),
+        sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True),
         sa.Column('metal', sa.String(), nullable=False, index=True),
         sa.Column('mass', sa.Integer()),
@@ -30,13 +30,7 @@ def upgrade():
         sa.Column('meta', JSONB()),
         sa.Column('created_at', sa.DateTime(), nullable=False),
     )
-    op.create_foreign_key(
-        'fk_channel_acquisition',
-        'channel', 'acquisition',
-        ['acquisition_id'], ['id'],
-    )
 
 
 def downgrade():
-    op.drop_constraint('fk_channel_acquisition')
     op.drop_table('channel')

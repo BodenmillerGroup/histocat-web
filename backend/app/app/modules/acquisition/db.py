@@ -29,7 +29,7 @@ class Acquisition(Base):
     #: ID of the parent slide
     slide_id: int = Column(
         Integer,
-        ForeignKey("slide.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("slide.id", ondelete="CASCADE"),
         index=True,
     )
     #: location of the acquisition, e.g. absolute path to a directory on disk
@@ -46,7 +46,7 @@ class Acquisition(Base):
     created_at: datetime = Column(DateTime, default=now(), nullable=False)
 
     slide = relationship("Slide", back_populates="acquisitions")
-    channels = relationship("Channel", back_populates="acquisition")
+    channels = relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
 
     def __init__(
         self,
