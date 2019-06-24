@@ -20,6 +20,7 @@
         :search="search"
         :filter="filter"
         :active.sync="active"
+        item-key="name"
         activatable
         open-on-click
         transition
@@ -79,13 +80,12 @@
 
     get items() {
       if (this.dataset) {
-        const items = this.dataset.slides.map((slide) => {
+        return this.dataset.slides.map((slide) => {
           const acquisitions = slide.acquisitions.map((acquisition) => {
             return Object.assign({}, acquisition, { type: 'acquisition' });
           });
           return Object.assign({}, slide, { type: 'slide', children: acquisitions });
         });
-        return items;
       }
     }
   }

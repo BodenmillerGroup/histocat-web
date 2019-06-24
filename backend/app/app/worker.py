@@ -12,6 +12,8 @@ from app.io.mcd_loader import McdLoader
 from app.io.ome_tiff_loader import OmeTiffLoader
 from app.io.text_loader import TextLoader
 
+import app.db.init_db
+
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
 dramatiq.set_broker(rabbitmq_broker)
 
