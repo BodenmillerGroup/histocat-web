@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[UserModel])
-def read_users(
+def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
@@ -31,7 +31,7 @@ def read_users(
 
 
 @router.post("/", response_model=UserModel)
-def create_user(
+def create(
     *,
     db: Session = Depends(get_db),
     params: UserCreateModel,
@@ -55,7 +55,7 @@ def create_user(
 
 
 @router.put("/me", response_model=UserModel)
-def update_user_me(
+def update_me(
     *,
     db: Session = Depends(get_db),
     password: str = Body(None),
@@ -79,7 +79,7 @@ def update_user_me(
 
 
 @router.get("/me", response_model=UserModel)
-def read_user_me(
+def read_me(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
@@ -90,7 +90,7 @@ def read_user_me(
 
 
 @router.post("/open", response_model=UserModel)
-def create_user_open(
+def create_open(
     *,
     db: Session = Depends(get_db),
     password: str = Body(...),
@@ -117,7 +117,7 @@ def create_user_open(
 
 
 @router.get("/{id}", response_model=UserModel)
-def read_user_by_id(
+def read_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -136,7 +136,7 @@ def read_user_by_id(
 
 
 @router.put("/{id}", response_model=UserModel)
-def update_user(
+def update(
     *,
     db: Session = Depends(get_db),
     id: int,

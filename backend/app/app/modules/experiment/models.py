@@ -28,9 +28,9 @@ class ExperimentModel(BaseModel):
     user_id: int
     name: Optional[str]
     description: Optional[str]
-    location: Optional[str]
     meta: Optional[dict]
     tags: Optional[List[str]]
+    location: Optional[str]
     created_at: datetime
 
     class Config:

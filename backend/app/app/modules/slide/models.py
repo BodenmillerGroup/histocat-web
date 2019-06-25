@@ -9,25 +9,33 @@ from app.modules.acquisition.models import AcquisitionDatasetModel
 # Properties to receive via API on creation
 class SlideCreateModel(BaseModel):
     experiment_id: int
-    name: str
-    filename: Optional[str] = None
-    width_um: Optional[int] = None
-    height_um: Optional[int] = None
-    description: Optional[str] = None
-    meta: Optional[dict] = None
+    uid: Optional[str]
+    description: Optional[str]
+    filename: Optional[str]
+    slide_type: Optional[str]
+    width_um: Optional[int]
+    height_um: Optional[int]
+    image_end_offset: Optional[int]
+    image_start_offset: Optional[int]
+    image_file: Optional[str]
+    meta: Optional[dict]
 
 
 # Shared properties
 class SlideModel(BaseModel):
     id: int
     experiment_id: int
-    name: str
+    uid: Optional[str]
+    description: Optional[str]
     filename: Optional[str]
+    slide_type: Optional[str]
     width_um: Optional[int]
     height_um: Optional[int]
-    location: Optional[str]
-    description: Optional[str]
+    image_end_offset: Optional[int]
+    image_start_offset: Optional[int]
+    image_file: Optional[str]
     meta: Optional[dict]
+    location: Optional[str]
     created_at: datetime
 
     class Config:

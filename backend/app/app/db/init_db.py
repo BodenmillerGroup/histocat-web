@@ -6,6 +6,9 @@ from app.db.base import Base  # noqa
 from app.modules.user.db import User  # noqa
 from app.modules.experiment.db import Experiment  # noqa
 from app.modules.slide.db import Slide  # noqa
+from app.modules.panorama.db import Panorama  # noqa
+from app.modules.roi.db import ROI  # noqa
+from app.modules.roi_point.db import ROIPoint  # noqa
 from app.modules.acquisition.db import Acquisition  # noqa
 from app.modules.channel.db import Channel  # noqa
 from app.modules.submission.db import Submission  # noqa

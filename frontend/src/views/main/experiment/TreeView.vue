@@ -21,6 +21,7 @@
         :filter="filter"
         :active.sync="active"
         item-key="uid"
+        item-text="description"
         activatable
         open-on-click
         transition
@@ -84,7 +85,7 @@
           const acquisitions = slide.acquisitions.map((acquisition) => {
             return Object.assign({}, acquisition, { type: 'acquisition', uid: Math.random() });
           });
-          return Object.assign({}, slide, { type: 'slide', children: acquisitions, uid: Math.random()  });
+          return Object.assign({}, slide, { type: 'slide', children: acquisitions, uid: Math.random() });
         });
       }
     }

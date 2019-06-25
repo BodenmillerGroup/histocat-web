@@ -2,7 +2,7 @@
 
 Revision ID: 96df6178591e
 Revises: b182e0878258
-Create Date: 2019-04-10 15:32:17.364696
+Create Date: 2019-04-10 15:56:17.364696
 
 """
 import sqlalchemy as sa
@@ -21,14 +21,15 @@ def upgrade():
         'channel',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"), index=True),
-        sa.Column('name', sa.String(), nullable=False, index=True),
-        sa.Column('metal', sa.String(), nullable=False, index=True),
+        sa.Column('channel_name', sa.String(), index=True),
+        sa.Column('channel_label', sa.String(), index=True),
+        sa.Column('order_number', sa.Integer()),
         sa.Column('mass', sa.Integer()),
         sa.Column('max_intensity', sa.Integer()),
         sa.Column('min_intensity', sa.Integer()),
-        sa.Column('location', sa.String(4096)),
         sa.Column('meta', JSONB()),
-        sa.Column('created_at', sa.DateTime(), nullable=False),
+        sa.Column('location', sa.String(4096)),
+        sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 
 
