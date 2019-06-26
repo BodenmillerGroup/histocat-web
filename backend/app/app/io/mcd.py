@@ -122,17 +122,16 @@ def _import_acquisition(db: Session, meta: dict, roi_id: int):
     return acquisition
 
 
-def _import_channel(db: Session, acquisition_id: int, imc_acquisition, index: int):
+def _import_channel(db: Session, acquisition_id: int, index: int, imc_acquisition, acquisition_item):
     label = imc_acquisition.channel_labels[index]
     metal = imc_acquisition.channel_metals[index]
     mass = imc_acquisition.channel_mass[index]
     img = imc_acquisition.get_img_by_label(label)
     params = ChannelCreateModel(
         acquisition_id=acquisition_id,
-        channel_name=metal,
-        channel_label=label,
+        metal=metal,
+        label=label,
         mass=mass,
-        order_number=index,
         max_intensity=img.max(),
         min_intensity=img.min(),
     )
@@ -162,4 +161,4 @@ def import_mcd(db: Session, uri: str, experiment_id: int):
 
                         imc_acquisition = mcd.get_imc_acquisition(acquisition_item.properties["ID"])
                         for i in range(imc_acquisition.n_channels):
-                            channel = _import_channel(db, acquisition.id, imc_acquisition, i)
+                            channel = _import_channel(db, acquisition.id, i, imc_acquisition, acquisition_item)

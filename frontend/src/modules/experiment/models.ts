@@ -128,9 +128,8 @@ export interface IAcquisition {
 export interface IChannel {
   id: number;
   acquisition_id: number;
-  channel_name: string;
-  channel_label: string;
-  order_number: number;
+  metal: string;
+  label: string;
   mass: number;
   max_intensity: number;
   min_intensity: number;

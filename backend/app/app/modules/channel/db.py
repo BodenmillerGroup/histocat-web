@@ -25,9 +25,8 @@ class Channel(Base):
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     acquisition_id: int = sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"),
                                     index=True)
-    channel_name: str = sa.Column('channel_name', sa.String(), index=True)
-    channel_label: str = sa.Column('channel_label', sa.String(), index=True)
-    order_number: int = sa.Column('order_number', sa.Integer())
+    metal: str = sa.Column('metal', sa.String(), index=True)
+    label: str = sa.Column('label', sa.String(), index=True)
     mass: int = sa.Column('mass', sa.Integer())
     max_intensity: int = sa.Column('max_intensity', sa.Integer())
     min_intensity: int = sa.Column('min_intensity', sa.Integer())
@@ -38,4 +37,4 @@ class Channel(Base):
     acquisition = relationship("Acquisition", back_populates="channels")
 
     def __repr__(self):
-        return f"<Channel(id={self.id}, channel_name={self.channel_name}, channel_label={self.channel_label})>"
+        return f"<Channel(id={self.id}, metal={self.metal}, label={self.label})>"

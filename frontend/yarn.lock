@@ -8539,10 +8539,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typesafe-vuex@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/typesafe-vuex/-/typesafe-vuex-3.1.1.tgz#b9d4de823bf4ca0feb71b9c0892a48770e2479df"
-  integrity sha512-eckied4/Ogk/YMqLu2dsySOI5y4julBFMewtqaqSRPHMR3Q/uQWpy2p6llABDG4Y+dM5JOAr9tp8lxQJspriRQ==
+typesafe-vuex@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/typesafe-vuex/-/typesafe-vuex-3.1.2.tgz#a86d6e56b66d393f25fd362322f016c105910c37"
+  integrity sha512-bIA6eJQ+8ykpoKXHkdLWUVX0AVjCbS+Qt/PvwEbPCHmapi3osjli8vV2FvWT+qJALrk5Dy1wrZscynkCeYVEDA==
 
 typescript@3.5.2:
   version "3.5.2"

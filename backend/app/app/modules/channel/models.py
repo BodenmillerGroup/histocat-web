@@ -7,9 +7,8 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ChannelCreateModel(BaseModel):
     acquisition_id: int
-    channel_name: Optional[str]
-    channel_label: Optional[str]
-    order_number: Optional[int]
+    metal: Optional[str]
+    label: Optional[str]
     mass: Optional[int]
     max_intensity: Optional[int]
     min_intensity: Optional[int]
@@ -20,9 +19,8 @@ class ChannelCreateModel(BaseModel):
 class ChannelModel(BaseModel):
     id: int
     acquisition_id: int
-    channel_name: Optional[str]
-    channel_label: Optional[str]
-    order_number: Optional[int]
+    metal: Optional[str]
+    label: Optional[str]
     mass: Optional[int]
     max_intensity: Optional[int]
     min_intensity: Optional[int]

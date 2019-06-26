@@ -39,7 +39,7 @@ class ExperimentModel(BaseModel):
 
 # Full experiment dataset
 class ExperimentDatasetModel(ExperimentModel):
-    slides: Optional[List[SlideDatasetModel]]
+    slides: List[SlideDatasetModel]
 
     class Config:
         orm_mode = True

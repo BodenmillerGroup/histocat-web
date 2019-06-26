@@ -82,10 +82,16 @@
     get items() {
       if (this.dataset) {
         return this.dataset.slides.map((slide) => {
-          const acquisitions = slide.acquisitions.map((acquisition) => {
-            return Object.assign({}, acquisition, { type: 'acquisition', uid: Math.random() });
+          const panoramas = slide.panoramas.map((panorama) => {
+            const rois = panorama.rois.map((roi) => {
+              const acquisitions = roi.acquisitions.map((acquisition) => {
+                return Object.assign({}, acquisition, { type: 'acquisition', uid: Math.random() });
+              });
+              return Object.assign({}, roi, { type: 'roi', uid: Math.random(), children: acquisitions });
+            });
+            return Object.assign({}, panorama, { type: 'panorama', uid: Math.random(), children: rois });
           });
-          return Object.assign({}, slide, { type: 'slide', children: acquisitions, uid: Math.random() });
+          return Object.assign({}, slide, { type: 'slide', children: panoramas, uid: Math.random() });
         });
       }
     }

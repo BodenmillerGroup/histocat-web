@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from app.modules.acquisition.models import AcquisitionDatasetModel
+from app.modules.panorama.models import PanoramaDatasetModel
 
 
 # Properties to receive via API on creation
@@ -44,7 +44,7 @@ class SlideModel(BaseModel):
 
 # Full slide dataset
 class SlideDatasetModel(SlideModel):
-    acquisitions: Optional[List[AcquisitionDatasetModel]]
+    panoramas: List[PanoramaDatasetModel]
 
     class Config:
         orm_mode = True

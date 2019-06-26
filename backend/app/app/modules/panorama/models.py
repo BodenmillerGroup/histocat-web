@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
+
+from app.modules.roi.models import ROIDatasetModel
 
 
 # Properties to receive via API on creation
@@ -47,6 +49,14 @@ class PanoramaModel(BaseModel):
     meta: Optional[dict]
     location: Optional[str]
     created_at: datetime
+
+    class Config:
+        orm_mode = True
+
+
+# Full panorama dataset
+class PanoramaDatasetModel(PanoramaModel):
+    rois: List[ROIDatasetModel]
 
     class Config:
         orm_mode = True
