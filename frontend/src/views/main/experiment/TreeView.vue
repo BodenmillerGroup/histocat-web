@@ -23,15 +23,35 @@
         item-key="uid"
         item-text="description"
         activatable
-        open-on-click
         transition
         return-object
-        class="scroll-y workspace-tree"
+        open-on-click
+
       >
         <template v-slot:prepend="{ item }">
-          <v-icon>
+          <v-icon small>
             {{ icons[item.type] }}
           </v-icon>
+        </template>
+        <template v-slot:append="{ item }">
+          <v-menu
+            :close-on-content-click="false"
+            :nudge-width="200"
+            offset-x
+            open-on-hover
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn
+                flat
+                icon
+                color="grey"
+                v-on="on"
+              >
+                <v-icon small>mdi-information-outline</v-icon>
+              </v-btn>
+            </template>
+            <InfoCard :node="{ item }"></InfoCard>
+          </v-menu>
         </template>
       </v-treeview>
     </v-card-text>
@@ -41,13 +61,12 @@
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
   import { IAcquisition, IExperimentDataset } from '@/modules/experiment/models';
-  import {
-    commitSetChannels,
-    commitSetSelectedAcquisition,
-    commitSetSelectedMeta,
-  } from '@/modules/experiment/mutations';
+  import { commitSetChannels, commitSetSelectedAcquisition } from '@/modules/experiment/mutations';
+  import InfoCard from '@/components/InfoCard.vue';
 
-  @Component
+  @Component({
+    components: { InfoCard },
+  })
   export default class TreeView extends Vue {
 
     @Prop(Object) dataset?: IExperimentDataset;
@@ -57,7 +76,9 @@
 
     icons = {
       slide: 'mdi-folder-outline',
-      acquisition: 'mdi-film',
+      panorama: 'mdi-apps',
+      roi: 'mdi-blur',
+      acquisition: 'mdi-buffer',
     };
 
     @Watch('active')
@@ -66,9 +87,6 @@
         return;
       }
       item = item[0];
-      if (item.hasOwnProperty('meta')) {
-        commitSetSelectedMeta(this.$store, item['meta']);
-      }
       if (item.hasOwnProperty('channels')) {
         commitSetSelectedAcquisition(this.$store, item as IAcquisition);
         commitSetChannels(this.$store, item['channels']);
@@ -87,7 +105,12 @@
               const acquisitions = roi.acquisitions.map((acquisition) => {
                 return Object.assign({}, acquisition, { type: 'acquisition', uid: Math.random() });
               });
-              return Object.assign({}, roi, { type: 'roi', uid: Math.random(), children: acquisitions });
+              return Object.assign({}, roi, {
+                type: 'roi',
+                description: `ROI [${roi.roi_type}]`,
+                uid: Math.random(),
+                children: acquisitions,
+              });
             });
             return Object.assign({}, panorama, { type: 'panorama', uid: Math.random(), children: rois });
           });
@@ -102,19 +125,20 @@
   .card-title {
     padding-bottom: 0;
   }
-
-  .workspace-tree {
-    max-height: 37vh;
-  }
 </style>
 
 <style>
+  .v-treeview-node__content {
+    max-height: 24px;
+  }
+
   .v-treeview-node__label {
-    font-size: 1em;
+    font-size: 10pt;
   }
 
   .v-treeview-node__root {
     min-height: 24px;
+    font-size: 10pt;
   }
 
   .v-text-field.v-text-field--solo .v-input__control {

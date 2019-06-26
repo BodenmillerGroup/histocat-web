@@ -1,7 +1,14 @@
 <template>
   <div>
-    <v-navigation-drawer persistent :mini-variant="miniDrawer" :clipped="$vuetify.breakpoint.lgAndUp"
-                         v-model="showDrawer" fixed app width="250">
+    <v-navigation-drawer
+      persistent
+      :mini-variant="miniDrawer"
+      :clipped="$vuetify.breakpoint.lgAndUp"
+      v-model="showDrawer"
+      fixed
+      app
+      width="250"
+    >
       <v-layout column fill-height>
         <v-list>
           <v-subheader>Main menu</v-subheader>
@@ -48,7 +55,13 @@
         </v-list>
       </v-layout>
     </v-navigation-drawer>
-    <v-toolbar dark color="primary" app :clipped-left="$vuetify.breakpoint.lgAndUp" dense>
+    <v-toolbar
+      dark
+      color="primary"
+      app
+      :clipped-left="$vuetify.breakpoint.lgAndUp"
+      dense
+    >
       <v-toolbar-side-icon @click.stop="switchShowDrawer"></v-toolbar-side-icon>
       <v-toolbar-title v-text="appName"></v-toolbar-title>
       <v-spacer></v-spacer>
@@ -79,10 +92,6 @@
     <v-content>
       <router-view></router-view>
     </v-content>
-    <v-footer class="pa-3" app>
-      <v-spacer></v-spacer>
-      <span>&copy; {{appName}}</span>
-    </v-footer>
   </div>
 </template>
 

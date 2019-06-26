@@ -1,19 +1,8 @@
 <template>
-  <v-card tile>
+  <v-card tile class="scroll-y">
     <v-card-title><h4>Settings</h4></v-card-title>
     <v-divider></v-divider>
-    <v-expansion-panel
-      v-model="panel"
-      expand
-      class="scroll-y local-height"
-    >
-      <v-expansion-panel-content v-for="channel in selectedChannels" :key="channel.id" lazy>
-        <template v-slot:header>
-          <div>{{channel.name}}</div>
-        </template>
-        <ChannelSettingsView :channel="channel"/>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+    <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>
   </v-card>
 </template>
 
@@ -42,9 +31,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .local-height {
-    max-height: 35vh;
-  }
-</style>

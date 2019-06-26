@@ -127,6 +127,7 @@ def _import_channel(db: Session, acquisition_id: int, index: int, imc_acquisitio
     metal = imc_acquisition.channel_metals[index]
     mass = imc_acquisition.channel_mass[index]
     img = imc_acquisition.get_img_by_label(label)
+    # metas = [a for a in acquisition_item.childs["AcquisitionChannel"].values() if label in a.properties["ChannelLabel"]]
     params = ChannelCreateModel(
         acquisition_id=acquisition_id,
         metal=metal,
@@ -134,6 +135,7 @@ def _import_channel(db: Session, acquisition_id: int, index: int, imc_acquisitio
         mass=mass,
         max_intensity=img.max(),
         min_intensity=img.min(),
+        # meta=metas[0].properties if len(metas) > 0 else None
     )
     channel = channel_crud.create(db, params=params)
     np.save(os.path.join(channel.location, "origin.npy"), img)
