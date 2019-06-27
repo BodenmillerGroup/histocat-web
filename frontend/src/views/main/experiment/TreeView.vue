@@ -26,7 +26,7 @@
         transition
         return-object
         open-on-click
-
+        open-all
       >
         <template v-slot:prepend="{ item }">
           <v-icon small>

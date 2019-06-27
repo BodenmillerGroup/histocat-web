@@ -11,12 +11,11 @@
   import { readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
   import { IChannel } from '@/modules/experiment/models';
   import ChannelSettingsView from '@/views/main/experiment/ChannelSettingsView.vue';
+
   @Component({
     components: { ChannelSettingsView },
   })
   export default class SettingsView extends Vue {
-
-    panel = [];
 
     get selectedChannels() {
       return readSelectedChannels(this.$store);
