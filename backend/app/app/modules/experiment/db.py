@@ -3,10 +3,9 @@ import os
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Column, String, Text, Integer, ForeignKey, DateTime
+import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.functions import now
 
 from app.core.utils import autocreate_directory_property, remove_location_upon_delete
 from app.db.base import Base
@@ -25,32 +24,17 @@ class Experiment(Base):
 
     __tablename__ = "experiment"
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    #: ID of the user
-    user_id: int = Column(
-        Integer,
-        ForeignKey("user.id", ondelete="CASCADE"),
-        index=True,
-    )
-    #: location of the experiment, e.g. absolute path to a directory on disk
-    location: str = Column("location", String(4096))
-    #: experiment name
-    name: str = Column(String, index=True)
-    #: experiment description
-    description: str = Column(Text)
-    meta: dict = Column(JSONB)
-    tags: List[str] = Column(ARRAY(String(64)))
-    created_at: datetime = Column(DateTime, default=now(), nullable=False)
+    id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
+    user_id: int = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
+    name: str = sa.Column(sa.String(), index=True)
+    description: str = sa.Column(sa.Text())
+    meta: dict = sa.Column(JSONB())
+    tags: List[str] = sa.Column(ARRAY(sa.String(64)))
+    location: str = sa.Column("location", sa.String(4096))
+    created_at: datetime = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     user = relationship("User", back_populates="experiments")
     slides = relationship("Slide", back_populates="experiment", cascade="all, delete, delete-orphan")
-
-    def __init__(self, name: str, user_id: int, description: str = "", meta: dict = None, tags: List[str] = None):
-        self.name = name
-        self.user_id = user_id
-        self.description = description
-        self.meta = meta
-        self.tags = tags
 
     @autocreate_directory_property
     def slides_location(self) -> str:
@@ -58,19 +42,6 @@ class Experiment(Base):
         Location where slides data are stored
         """
         return os.path.join(self.location, "slides")
-
-    def json(self) -> dict:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "description": self.description,
-            "location": self.location,
-            "meta": self.meta,
-            "tags": self.tags,
-            "user_id": self.user_id,
-            "created_at": self.created_at,
-            "slides": self.slides,
-        }
 
     def __repr__(self):
         return f"<Experiment(id={self.id}, name={self.name})>"

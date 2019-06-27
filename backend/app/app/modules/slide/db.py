@@ -2,10 +2,9 @@ import logging
 import os
 from datetime import datetime
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, UniqueConstraint, DateTime
-from sqlalchemy.dialects.postgresql import JSONB
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.functions import now
 
 from app.core.utils import autocreate_directory_property, remove_location_upon_delete
 from app.db.base import Base
@@ -19,73 +18,35 @@ SLIDE_LOCATION_FORMAT = "slide_{id}"
 @remove_location_upon_delete
 class Slide(Base):
     """
-    Experiment slide
+    Slide
     """
 
     __tablename__ = "slide"
-    __table_args__ = (UniqueConstraint("name"),)
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    #: ID of parent experiment
-    experiment_id: int = Column(
-        Integer,
-        ForeignKey("experiment.id", ondelete="CASCADE"),
-        index=True,
-    )
-    #: location of the slide, e.g. absolute path to a directory on disk
-    location: str = Column("location", String(4096))
-    #: name given by user
-    name: str = Column(String, index=True)
-    #: original slide filename
-    filename: str = Column(String(4096))
-    #: slide width in μm
-    width_um: int = Column(Integer)
-    #: slide height in μm
-    height_um: int = Column(Integer)
-    #: description provided by user
-    description: str = Column(Text)
-    meta: dict = Column(JSONB)
-    created_at: datetime = Column(DateTime, default=now(), nullable=False)
+    id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
+    experiment_id: int = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
+    uid: str = sa.Column('uid', UUID(), index=True)
+    description: str = sa.Column('description', sa.String())
+    filename: str = sa.Column('filename', sa.String(4096))
+    slide_type: str = sa.Column('slide_type', sa.String())
+    width_um: int = sa.Column('width_um', sa.Integer())
+    height_um: int = sa.Column('height_um', sa.Integer())
+    image_end_offset: int = sa.Column('image_end_offset', sa.BigInteger())
+    image_start_offset: int = sa.Column('image_start_offset', sa.BigInteger())
+    image_file: str = sa.Column('image_file', sa.String(4096))
+    meta: dict = sa.Column('meta', JSONB())
+    location: str = sa.Column('location', sa.String(4096))
+    created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     experiment = relationship("Experiment", back_populates="slides")
-    acquisitions = relationship("Acquisition", back_populates="slide", cascade="all, delete, delete-orphan")
-
-    def __init__(
-        self,
-        experiment_id: int,
-        name: str,
-        filename: str,
-        width_um: int,
-        height_um: int,
-        description: str = "",
-        meta: dict = None,
-    ):
-        self.experiment_id = experiment_id
-        self.name = name
-        self.filename = filename
-        self.width_um = width_um
-        self.height_um = height_um
-        self.description = description
-        self.meta = meta
+    panoramas = relationship("Panorama", back_populates="slide", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
-    def acquisitions_location(self) -> str:
+    def panoramas_location(self) -> str:
         """
-        Location where acquisitions are stored
+        Location where panoramas are stored
         """
-        return os.path.join(self.location, "acquisitions")
-
-    def json(self):
-        return {
-            "id": self.id,
-            "experiment_id": self.experiment_id,
-            "name": self.name,
-            "description": self.description,
-            "location": self.location,
-            "meta": self.meta,
-            "created_at": self.created_at,
-            "acquisitions": self.acquisitions,
-        }
+        return os.path.join(self.location, "panoramas")
 
     def __repr__(self):
-        return f"<Slide(id={self.id}, name={self.name})>"
+        return f"<Slide(id={self.id}, description={self.description})>"

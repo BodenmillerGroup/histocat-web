@@ -352,10 +352,10 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
   integrity sha512-f5j5b/Gf71L+dbqxIpQ4Z2WlmI/mPJ0fOkGGmFgtb6sAu97EPczzbS3/tJKxmcYDj55OX6ssqwDAWOHIYDRDGA==
 
-"@types/ol@5.3.0":
-  version "5.3.0"
-  resolved "https://registry.yarnpkg.com/@types/ol/-/ol-5.3.0.tgz#52cd073425f137cd0c7fb38bd7143c72103d6134"
-  integrity sha512-BXEDOp6LZD0W6I7DJnjwCufbypGFDyXv+g19pE2wdgxFa4DYff5nDadWET2ooHqBkOIBqRPS9eCaJYhoSBTjXw==
+"@types/ol@5.3.2":
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/@types/ol/-/ol-5.3.2.tgz#6aee00568725c02c249e05002ecfdd927595fbf5"
+  integrity sha512-pXrfXLml/zVv2adnccpWXcsF2kOIwcFEWj2XbYI+h6dkjVaeeXpjWxTXnUSQnZagSHYm4RadkPS4hrd+7odTCA==
   dependencies:
     "@types/arcgis-rest-api" "*"
     "@types/geojson" "*"
@@ -2572,10 +2572,10 @@ d3-zoom@1:
     d3-selection "1"
     d3-transition "1"
 
-d3@5.9.2:
-  version "5.9.2"
-  resolved "https://registry.yarnpkg.com/d3/-/d3-5.9.2.tgz#64e8a7e9c3d96d9e6e4999d2c8a2c829767e67f5"
-  integrity sha512-ydrPot6Lm3nTWH+gJ/Cxf3FcwuvesYQ5uk+j/kXEH/xbuYWYWTMAHTJQkyeuG8Y5WM5RSEYB41EctUrXQQytRQ==
+d3@5.9.4:
+  version "5.9.4"
+  resolved "https://registry.yarnpkg.com/d3/-/d3-5.9.4.tgz#d85ce1f4c7ddc7825d56c51ace089f78bb877e6c"
+  integrity sha512-iMLfEVd2Cg3YEfOdUvQ9gJtZs4YJG0T5Nvz+A3j4sIyBwscncVheaRtwg/g6g69qwS/gl0gqlIt7CUeO/BVNbQ==
   dependencies:
     d3-array "1"
     d3-axis "1"
@@ -8539,10 +8539,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typesafe-vuex@3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/typesafe-vuex/-/typesafe-vuex-3.1.1.tgz#b9d4de823bf4ca0feb71b9c0892a48770e2479df"
-  integrity sha512-eckied4/Ogk/YMqLu2dsySOI5y4julBFMewtqaqSRPHMR3Q/uQWpy2p6llABDG4Y+dM5JOAr9tp8lxQJspriRQ==
+typesafe-vuex@3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/typesafe-vuex/-/typesafe-vuex-3.2.0.tgz#869042ad733a2c636ef8dd3eecfa6ac12bdfd3f1"
+  integrity sha512-K52fnbPRLVwxC+3PjauVmQzNpuw1HBWv3r5dNdbhO6ciLb0MlzPtCAKn/odJJ8g3qw88bq7i1V+QADgIZczjEA==
 
 typescript@3.5.2:
   version "3.5.2"

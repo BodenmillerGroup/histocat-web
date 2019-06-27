@@ -3,12 +3,7 @@
   <v-container v-else fluid grid-list-md pa-2>
     <v-layout row>
       <v-flex v-if="showWorkspace" md3>
-        <v-flex>
-          <TreeView :dataset="dataset"/>
-        </v-flex>
-        <v-flex>
-          <InfoView/>
-        </v-flex>
+        <TreeView :dataset="dataset" class="workspace-tree"/>
       </v-flex>
       <v-flex :class="viewerClass">
         <v-toolbar card dense>
@@ -30,10 +25,10 @@
       </v-flex>
       <v-flex v-if="showChannels" md3>
         <v-flex>
-          <ChannelsView/>
+          <ChannelsView class="channels-view"/>
         </v-flex>
         <v-flex>
-          <SettingsView/>
+          <SettingsView class="settings-view"/>
         </v-flex>
       </v-flex>
     </v-layout>
@@ -46,7 +41,6 @@
   import { dispatchGetExperimentDataset } from '@/modules/experiment/actions';
   import LoadingView from '@/components/LoadingView.vue';
   import TreeView from '@/views/main/experiment/TreeView.vue';
-  import InfoView from '@/views/main/experiment/InfoView.vue';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
   import SettingsView from '@/views/main/experiment/SettingsView.vue';
   import BlendView from '@/views/main/experiment/BlendView.vue';
@@ -54,7 +48,7 @@
   import { commitSetSelectedExperimentId } from '@/modules/experiment/mutations';
 
   @Component({
-    components: { ChannelsView, TilesView, BlendView, InfoView, TreeView, LoadingView, SettingsView },
+    components: { ChannelsView, TilesView, BlendView, TreeView, LoadingView, SettingsView },
   })
   export default class ExperimentView extends Vue {
 
@@ -89,3 +83,17 @@
     }
   }
 </script>
+
+<style scoped>
+  .workspace-tree {
+    height: calc(100vh - 65px);
+  }
+
+  .channels-view {
+    height: calc(50vh - 50px);
+  }
+
+  .settings-view {
+    height: calc(50vh - 60px);
+  }
+</style>

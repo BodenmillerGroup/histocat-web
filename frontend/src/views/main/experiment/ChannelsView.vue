@@ -19,7 +19,7 @@
       :items="channels"
       :search="search"
       v-model="selected"
-      item-key="name"
+      item-key="label"
       select-all
       disable-initial-sort
       hide-actions
@@ -33,7 +33,7 @@
             hide-details
           ></v-checkbox>
         </td>
-        <td>{{ props.item.name }}</td>
+        <td>{{ props.item.label }}</td>
         <td>{{ props.item.metal }}</td>
         <td>{{ props.item.mass }}</td>
       </template>
@@ -94,12 +94,12 @@
     padding-bottom: 4px;
   }
 
-  .channels-table {
-    max-height: 39vh;
-  }
-
   table.v-table tbody td, table.v-table tbody th {
     height: 35px;
+  }
+
+  .channels-table {
+    height: calc(50vh - 100px);
   }
 </style>
 

@@ -8,7 +8,7 @@ from emails.template import JinjaTemplate
 
 from app.core import config
 from app.db.session import db_session
-from app.io.mcd_loader import McdLoader
+from app.io.mcd import import_mcd
 from app.io.ome_tiff_loader import OmeTiffLoader
 from app.io.text_loader import TextLoader
 
@@ -25,7 +25,6 @@ if os.environ.get("BACKEND_ENV") == "development":
 
         # Allow other computers to attach to ptvsd at this IP address and port.
         import ptvsd
-
         ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
 
         # PyCharm Debugging
@@ -70,7 +69,7 @@ def import_slide(uri: str, experiment_id: int):
     file_extension = file_extension.lower()
 
     if file_extension == ".mcd":
-        McdLoader.load(db_session, uri, experiment_id)
+        import_mcd(db_session, uri, experiment_id)
     elif file_extension == ".tiff" or file_extension == ".tif":
         if filename.endswith(".ome"):
             OmeTiffLoader.load(db_session, uri, experiment_id)

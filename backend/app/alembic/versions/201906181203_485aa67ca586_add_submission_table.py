@@ -23,7 +23,7 @@ def upgrade():
         sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
         sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True),
         sa.Column('top_task_id', sa.BigInteger(), index=True),
-        sa.Column('created_at', sa.DateTime(), nullable=False),
+        sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 
 

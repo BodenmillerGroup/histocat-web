@@ -47,7 +47,7 @@
         // Map views always need a projection.  Here we just want to map image
         // coordinates directly to map coordinates, so we create a projection that uses
         // the image extent in pixels.
-        const extent = [0, 0, acquisition.width, acquisition.height];
+        const extent = [0, 0, acquisition.max_x, acquisition.max_y];
 
         const projection = new Projection({
           code: 'NONE',
@@ -94,7 +94,7 @@
       }
 
       const existingExtent = this.map.getView().getProjection().getExtent();
-      const newExtent = [0, 0, acquisition.width, acquisition.height];
+      const newExtent = [0, 0, acquisition.max_x, acquisition.max_y];
       if (!equals(existingExtent, newExtent)) {
         this.map.getView().getProjection().setExtent(newExtent);
       }
@@ -146,7 +146,7 @@
 
 <style scoped>
   .blend-view {
-    height: 100%;
+    height: 95%;
     /*width: 100%;*/
   }
 </style>

@@ -23,7 +23,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[ExperimentModel])
-def read_experiments(
+def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
@@ -49,7 +49,7 @@ def read_tags(
 
 
 @router.post("/", response_model=ExperimentModel)
-def create_experiment(
+def create(
     *,
     db: Session = Depends(get_db),
     params: ExperimentCreateModel,
@@ -69,7 +69,7 @@ def create_experiment(
 
 
 @router.get("/{id}", response_model=ExperimentModel)
-def read_experiment_by_id(
+def read_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -82,7 +82,7 @@ def read_experiment_by_id(
 
 
 @router.delete("/{id}", response_model=ExperimentModel)
-def delete_experiment_by_id(
+def delete_by_id(
     id: int,
     current_user: User = Depends(get_current_active_superuser),
     db: Session = Depends(get_db),
@@ -95,7 +95,7 @@ def delete_experiment_by_id(
 
 
 @router.put("/{id}", response_model=ExperimentModel)
-def update_experiment(
+def update(
     *,
     db: Session = Depends(get_db),
     id: int,
@@ -132,7 +132,7 @@ def upload_slide(
 
 
 @router.get("/{id}/dataset", response_model=ExperimentDatasetModel)
-def read_experiment_dataset(
+def read_dataset(
     id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),

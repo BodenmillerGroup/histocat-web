@@ -94,7 +94,7 @@
         }
 
         // Update axis and circle position
-        xAxis.transition().duration(500).call(d3.axisBottom(x));
+        xAxis.call(d3.axisBottom(x));
         scatter
           .selectAll('line')
           .transition().duration(500)

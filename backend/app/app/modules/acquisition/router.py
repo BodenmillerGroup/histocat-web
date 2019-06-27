@@ -14,7 +14,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=List[AcquisitionModel])
-def read_acquisitions(
+def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
@@ -28,7 +28,7 @@ def read_acquisitions(
 
 
 @router.get("/{id}", response_model=AcquisitionModel)
-def read_acquisition_by_id(
+def read_by_id(
     id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),

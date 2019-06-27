@@ -24,10 +24,10 @@ def upgrade():
         sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
         sa.Column('description', sa.String()),
-        sa.Column('location', sa.String(4096)),
         sa.Column('meta', JSONB()),
         sa.Column('tags', ARRAY(sa.String(64)), index=True),
-        sa.Column('created_at', sa.DateTime(), nullable=False),
+        sa.Column('location', sa.String(4096)),
+        sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 
 

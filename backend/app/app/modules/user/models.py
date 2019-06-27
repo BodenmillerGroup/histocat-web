@@ -10,7 +10,7 @@ class UserCreateModel(BaseModel):
     password: str
     is_active: Optional[bool] = True
     is_superuser: Optional[bool] = False
-    full_name: Optional[str] = None
+    full_name: Optional[str]
 
 
 # Properties to receive via API on update

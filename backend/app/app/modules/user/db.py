@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, String, Integer, DateTime
+import sqlalchemy as sa
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.functions import now
 
 from app.db.base import Base
 
@@ -10,14 +9,14 @@ from app.db.base import Base
 class User(Base):
     __tablename__ = "user"
 
-    id: int = Column(Integer, primary_key=True, index=True)
-    full_name: str = Column(String, index=True)
-    email: str = Column(String, unique=True, index=True, nullable=False)
-    hashed_password: str = Column(String)
-    is_active: bool = Column(Boolean, default=True, nullable=False)
-    is_superuser: bool = Column(Boolean, default=False, nullable=False)
-    created_at: datetime = Column(DateTime, default=now(), nullable=False)
-    updated_at: datetime = Column(DateTime, default=now(), onupdate=now(), nullable=False)
+    id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
+    full_name: str = sa.Column(sa.String(), index=True)
+    email: str = sa.Column(sa.String(), unique=True, index=True, nullable=False)
+    hashed_password: str = sa.Column(sa.String())
+    is_active: bool = sa.Column(sa.Boolean(), default=True, nullable=False)
+    is_superuser: bool = sa.Column(sa.Boolean(), default=False, nullable=False)
+    created_at: datetime = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    updated_at: datetime = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
     experiments = relationship("Experiment", back_populates="user", cascade="all, delete, delete-orphan")
 

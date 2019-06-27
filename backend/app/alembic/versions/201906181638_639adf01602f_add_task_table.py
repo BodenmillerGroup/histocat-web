@@ -30,8 +30,8 @@ def upgrade():
         sa.Column('parent_id', sa.BigInteger(), index=True),
         sa.Column('data', sa.LargeBinary()),
         sa.Column('submission_id', sa.BigInteger(), sa.ForeignKey("submission.id", ondelete="CASCADE"), index=True),
-        sa.Column('created_at', sa.DateTime(), nullable=False),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, onupdate=sa.func.now()),
+        sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
+        sa.Column('updated_at', sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False),
     )
 
 
