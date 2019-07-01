@@ -15,11 +15,11 @@ alembic = { version = "^1.0", optional = true }
 dramatiq = { version = "^1.6", extras = ["rabbitmq", "watch"] }
 email-validator = "^1.0"
 emails = "^0.5.15"
-fastapi = "^0.30"
+fastapi = "^0.30.1"
 gunicorn = { version = "^19.9", optional = true }
 h5py = "^2.9"
 hiredis = "^1.0"
-imctools = { git = "https://github.com/BodenmillerGroup/imctools.git", branch = "master" }
+imctools = "^1.0.3"
 jinja2 = "^2.10"
 opencv-python-headless = "^4.1"
 psycopg2-binary = "^2.8"
@@ -38,7 +38,7 @@ uvicorn = { version = "^0.8", optional = true }
 flake8 = "^3.7"
 ptvsd = "^4.2"
 pydevd-pycharm = "^192.*"
-pytest = "^4.4"
+pytest = "*"
 vulture = "^1.0"
 mypy = "*"
 autoflake = "^1.3"
