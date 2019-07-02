@@ -121,13 +121,13 @@
         .data(data)
         .enter()
         .append('line')
-        .attr('x1', (d) => {
+        .attr('x1', (d: any) => {
           return x(d[0]);
         })
-        .attr('x2', (d) => {
+        .attr('x2', (d: any) => {
           return x(d[0]);
         })
-        .attr('y1', (d) => {
+        .attr('y1', (d: any) => {
           return y(d[1]);
         })
         .attr('y2', y(0))

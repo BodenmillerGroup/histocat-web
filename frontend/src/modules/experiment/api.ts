@@ -1,6 +1,6 @@
 import ky from 'ky';
 import { apiUrl } from '@/env';
-import { IChannelStats, IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
+import { IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
 
 
 export const api = {
@@ -72,10 +72,19 @@ export const api = {
     }).json();
   },
   async getChannelStats(token: string, id: number) {
-    return ky.get(`${apiUrl}/api/v1/channels/${id}/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).json<IChannelStats>();
+    const url = `${apiUrl}/api/v1/channels/${id}/stats`;
+    const cache = await caches.open('stats');
+    const found = await cache.match(url);
+    if (found) {
+      return found.json();
+    } else {
+      const response = await ky.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await cache.put(url, response);
+      return response.json();
+    }
   },
 };
