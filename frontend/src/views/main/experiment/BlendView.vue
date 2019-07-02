@@ -117,6 +117,9 @@
         const max = channel.levels ? channel.levels.max : '';
         return new ImageLayer({
           source: new Static({
+            imageLoadFunction: (image, src) => {
+              (image.getImage() as any).src = src;
+            },
             url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
             projection: projection,
             imageExtent: extent,

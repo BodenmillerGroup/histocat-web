@@ -13,9 +13,9 @@ type UserContext = ActionContext<UserState, RootState>;
 export const actions = {
   async actionGetUsers(context: UserContext) {
     try {
-      const response = await api.getUsers(context.rootState.main.token);
-      if (response) {
-        commitSetUsers(context, response.data);
+      const data = await api.getUsers(context.rootState.main.token);
+      if (data) {
+        commitSetUsers(context, data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
@@ -25,11 +25,11 @@ export const actions = {
     try {
       const loadingNotification = { content: 'saving', showProgress: true };
       commitAddNotification(context, loadingNotification);
-      const response = (await Promise.all([
+      const data = (await Promise.all([
         api.updateUser(context.rootState.main.token, payload.id, payload.user),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetUser(context, response.data);
+      commitSetUser(context, data as any);
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, { content: 'User successfully updated', color: 'success' });
     } catch (error) {
@@ -40,11 +40,11 @@ export const actions = {
     try {
       const loadingNotification = { content: 'saving', showProgress: true };
       commitAddNotification(context, loadingNotification);
-      const response = (await Promise.all([
+      const data = (await Promise.all([
         api.createUser(context.rootState.main.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetUser(context, response.data);
+      commitSetUser(context, data as any);
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, { content: 'User successfully created', color: 'success' });
     } catch (error) {

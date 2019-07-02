@@ -1,7 +1,6 @@
 import { api } from '@/modules/user/api';
 import router from '@/router';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
-import { AxiosError } from 'axios';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
 import { RootState } from '@/store/state';
@@ -20,8 +19,8 @@ type MainContext = ActionContext<MainState, RootState>;
 export const actions = {
   async actionLogIn(context: MainContext, payload: { username: string; password: string }) {
     try {
-      const response = await api.logInGetToken(payload.username, payload.password);
-      const token = response.data.access_token;
+      const data: any = await api.logInGetToken(payload.username, payload.password);
+      const token = data.access_token;
       if (token) {
         saveLocalToken(token);
         commitSetToken(context, token);
@@ -40,9 +39,9 @@ export const actions = {
   },
   async actionGetUserProfile(context: MainContext) {
     try {
-      const response = await api.getMe(context.state.token);
-      if (response.data) {
-        commitSetUserProfile(context, response.data);
+      const data = await api.getMe(context.state.token);
+      if (data) {
+        commitSetUserProfile(context, data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
@@ -52,11 +51,11 @@ export const actions = {
     try {
       const loadingNotification = { content: 'saving', showProgress: true };
       commitAddNotification(context, loadingNotification);
-      const response = (await Promise.all([
+      const data = (await Promise.all([
         api.updateMe(context.state.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetUserProfile(context, response.data);
+      commitSetUserProfile(context, data);
       commitRemoveNotification(context, loadingNotification);
       commitAddNotification(context, { content: 'Profile successfully updated', color: 'success' });
     } catch (error) {
@@ -75,9 +74,9 @@ export const actions = {
       }
       if (token) {
         try {
-          const response = await api.getMe(token);
+          const data = await api.getMe(token);
           commitSetLoggedIn(context, true);
-          commitSetUserProfile(context, response.data);
+          commitSetUserProfile(context, data);
         } catch (error) {
           await dispatchRemoveLogIn(context);
         }
@@ -104,7 +103,7 @@ export const actions = {
       router.push('/login');
     }
   },
-  async actionCheckApiError(context: MainContext, payload: AxiosError) {
+  async actionCheckApiError(context: MainContext, payload) {
     if (payload.response!.status === 401) {
       await dispatchLogOut(context);
     }

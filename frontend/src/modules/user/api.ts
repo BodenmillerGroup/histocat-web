@@ -1,7 +1,6 @@
-import axios from 'axios';
+import ky from 'ky';
 import { apiUrl } from '@/env';
 import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from './models';
-import { authHeaders } from '@/utils';
 
 export const api = {
   async logInGetToken(username: string, password: string) {
@@ -9,30 +8,55 @@ export const api = {
     params.append('username', username);
     params.append('password', password);
 
-    return axios.post(`${apiUrl}/api/v1/auth/access-token`, params);
+    return ky.post(`${apiUrl}/api/v1/auth/access-token`, { searchParams: params }).json();
   },
   async getMe(token: string) {
-    return axios.get<IUserProfile>(`${apiUrl}/api/v1/users/me`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IUserProfile>();
   },
   async updateMe(token: string, data: IUserProfileUpdate) {
-    return axios.put<IUserProfile>(`${apiUrl}/api/v1/users/me`, data, authHeaders(token));
+    return ky.put(`${apiUrl}/api/v1/users/me`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IUserProfile>();
   },
   async getUsers(token: string) {
-    return axios.get<IUserProfile[]>(`${apiUrl}/api/v1/users/`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/users/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IUserProfile[]>();
   },
   async updateUser(token: string, id: number, data: IUserProfileUpdate) {
-    return axios.put(`${apiUrl}/api/v1/users/${id}`, data, authHeaders(token));
+    return ky.put(`${apiUrl}/api/v1/users/${id}`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
   },
   async createUser(token: string, data: IUserProfileCreate) {
-    return axios.post(`${apiUrl}/api/v1/users/`, data, authHeaders(token));
+    return ky.post(`${apiUrl}/api/v1/users/`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
   },
   async passwordRecovery(email: string) {
-    return axios.post(`${apiUrl}/api/v1/auth/password-recovery/${email}`);
+    return ky.post(`${apiUrl}/api/v1/auth/password-recovery/${email}`).json();
   },
   async resetPassword(password: string, token: string) {
-    return axios.post(`${apiUrl}/api/v1/auth/reset-password/`, {
-      new_password: password,
-      token,
-    });
+    return ky.post(`${apiUrl}/api/v1/auth/reset-password/`, {
+      json: {
+        new_password: password,
+        token,
+      },
+    }).json();
   },
 };

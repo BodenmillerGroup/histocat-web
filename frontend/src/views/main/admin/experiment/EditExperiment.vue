@@ -168,7 +168,7 @@
 
     @Watch('tags')
     onModelChange(val: any[], prev: any[]) {
-      if (val.length === prev.length) {
+      if (!val || val.length === prev.length) {
         return;
       }
 
@@ -214,7 +214,7 @@
         if (this.description) {
           data.description = this.description;
         }
-        if (this.tags.length > 0) {
+        if (this.tags && this.tags.length > 0) {
           data.tags = this.tags.map(tag => tag.text);
         }
         await dispatchUpdateExperiment(this.$store, { id: this.experiment!.id, data: data });

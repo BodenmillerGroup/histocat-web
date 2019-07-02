@@ -19,9 +19,9 @@ type ExperimentContext = ActionContext<ExperimentsState, RootState>;
 export const actions = {
   async actionGetExperiments(context: ExperimentContext) {
     try {
-      const response = await api.getExperiments(context.rootState.main.token);
-      if (response) {
-        commitSetExperiments(context, response.data);
+      const data = await api.getExperiments(context.rootState.main.token);
+      if (data) {
+        commitSetExperiments(context, data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
@@ -29,9 +29,9 @@ export const actions = {
   },
   async actionGetTags(context: ExperimentContext) {
     try {
-      const response = await api.getTags(context.rootState.main.token);
-      if (response) {
-        commitSetTags(context, response.data);
+      const data = await api.getTags(context.rootState.main.token);
+      if (data) {
+        commitSetTags(context, data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
@@ -41,11 +41,12 @@ export const actions = {
     try {
       const notification = { content: 'saving', showProgress: true };
       commitAddNotification(context, notification);
-      const response = (await Promise.all([
+      const data = (await Promise.all([
         api.updateExperiment(context.rootState.main.token, payload.id, payload.data),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetExperiment(context, response.data);
+      console.log(data)
+      commitSetExperiment(context, data as any);
       commitRemoveNotification(context, notification);
       commitAddNotification(context, { content: 'Experiment successfully updated', color: 'success' });
     } catch (error) {
@@ -56,7 +57,7 @@ export const actions = {
     try {
       const notification = { content: 'deleting', showProgress: true };
       commitAddNotification(context, notification);
-      const response = (await Promise.all([
+      const data = (await Promise.all([
         api.deleteExperiment(context.rootState.main.token, id),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
@@ -71,11 +72,11 @@ export const actions = {
     try {
       const notification = { content: 'saving', showProgress: true };
       commitAddNotification(context, notification);
-      const response = (await Promise.all([
+      const data = (await Promise.all([
         api.createExperiment(context.rootState.main.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetExperiment(context, response.data);
+      commitSetExperiment(context, data as any);
       commitRemoveNotification(context, notification);
       commitAddNotification(context, { content: 'Experiment successfully created', color: 'success' });
     } catch (error) {
@@ -101,9 +102,9 @@ export const actions = {
   },
   async actionGetExperimentDataset(context: ExperimentContext, payload: { id: number }) {
     try {
-      const response = await api.getExperimentDataset(context.rootState.main.token, payload.id);
-      if (response) {
-        commitSetExperimentDataset(context, response.data);
+      const data = await api.getExperimentDataset(context.rootState.main.token, payload.id);
+      if (data) {
+        commitSetExperimentDataset(context, data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
@@ -111,15 +112,15 @@ export const actions = {
   },
   async actionGetChannelImage(context: ExperimentContext, payload: { id: number }) {
     try {
-      const response = await api.getChannelImage(context.rootState.main.token, payload.id);
+      const data = await api.getChannelImage(context.rootState.main.token, payload.id);
     } catch (error) {
       await dispatchCheckApiError(context, error);
     }
   },
   async actionGetChannelStats(context: ExperimentContext, payload: { id: number }) {
     try {
-      const response = await api.getChannelStats(context.rootState.main.token, payload.id);
-      return response.data;
+      const data = await api.getChannelStats(context.rootState.main.token, payload.id);
+      return data;
     } catch (error) {
       await dispatchCheckApiError(context, error);
     }

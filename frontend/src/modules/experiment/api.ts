@@ -1,38 +1,81 @@
-import axios from 'axios';
+import ky from 'ky';
 import { apiUrl } from '@/env';
 import { IChannelStats, IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
-import { authHeaders } from '@/utils';
 
 
 export const api = {
   async getExperiments(token: string) {
-    return axios.get<IExperiment[]>(`${apiUrl}/api/v1/experiments/`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/experiments/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IExperiment[]>();
   },
   async getTags(token: string) {
-    return axios.get<string[]>(`${apiUrl}/api/v1/experiments/tags`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/experiments/tags`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<string[]>();
   },
   async updateExperiment(token: string, id: number, data: IExperimentUpdate) {
-    return axios.put(`${apiUrl}/api/v1/experiments/${id}`, data, authHeaders(token));
+    return ky.put(`${apiUrl}/api/v1/experiments/${id}`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
   },
   async createExperiment(token: string, data: IExperimentCreate) {
-    return axios.post(`${apiUrl}/api/v1/experiments/`, data, authHeaders(token));
+    return ky.post(`${apiUrl}/api/v1/experiments/`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
   },
   async uploadSlide(token: string, id: number, data) {
-    return axios.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, data, authHeaders(token, 'multipart/form-data'));
+    return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    }).json();
   },
   async deleteExperiment(token: string, id: number) {
-    return axios.delete(`${apiUrl}/api/v1/experiments/${id}`, authHeaders(token));
+    return ky.delete(`${apiUrl}/api/v1/experiments/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
   },
   async getExperiment(token: string, id: number) {
-    return axios.get<IExperiment>(`${apiUrl}/api/v1/experiments/${id}`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/experiments/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IExperiment>();
   },
   async getExperimentDataset(token: string, id: number) {
-    return axios.get<IExperimentDataset>(`${apiUrl}/api/v1/experiments/${id}/dataset`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/experiments/${id}/dataset`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IExperimentDataset>();
   },
   async getChannelImage(token: string, id: number) {
-    return axios.get<any>(`${apiUrl}/api/v1/channels/${id}/image`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/channels/${id}/image`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
   },
   async getChannelStats(token: string, id: number) {
-    return axios.get<IChannelStats>(`${apiUrl}/api/v1/channels/${id}/stats`, authHeaders(token));
+    return ky.get(`${apiUrl}/api/v1/channels/${id}/stats`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IChannelStats>();
   },
 };
