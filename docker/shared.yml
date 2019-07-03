@@ -22,6 +22,11 @@ services:
       default:
         aliases:
           - ${DOMAIN}
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+        tag: backend
 
   worker:
     env_file:
@@ -35,6 +40,11 @@ services:
       - redis
     volumes:
       - app-data:/data
+    logging:
+      driver: gelf
+      options:
+        gelf-address: udp://localhost:12201
+        tag: worker
 
   frontend:
     labels:
@@ -101,9 +111,52 @@ services:
       - 443:443
       - 8090:8080
 
+  # MongoDB: https://hub.docker.com/_/mongo/
+  mongo:
+    image: mongo:3.6.13
+    volumes:
+      - mongo-data:/data/db
+
+  # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/6.6/docker.html
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.1
+    env_file:
+      - env-elasticsearch.env
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  # Graylog: https://hub.docker.com/r/graylog/graylog/
+  graylog:
+    image: graylog/graylog:3.0.2
+    env_file:
+      - env-graylog.env
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9001:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    volumes:
+      - graylog-data:/usr/share/graylog/data/journal
+
 volumes:
   app-data:
   app-db-data:
+  elasticsearch-data:
+  graylog-data:
+  mongo-data:
   portainer-data:
   redis-data:
   rabbitmq-data:

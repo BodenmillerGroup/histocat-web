@@ -35,7 +35,7 @@ services:
   proxy:
     command: --docker \
       --docker.watch \
-      --docker.exposedbydefault=false \
+      --docker.exposedbydefault=true \
       --constraints=tag==${TRAEFIK_TAG} \
       --logLevel=DEBUG \
       --accessLog \
