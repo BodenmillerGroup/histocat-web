@@ -104,7 +104,7 @@ export const actions = {
     }
   },
   async actionCheckApiError(context: MainContext, payload) {
-    if (payload.response!.status === 401) {
+    if (payload.response.status === 401) {
       await dispatchLogOut(context);
     }
   },

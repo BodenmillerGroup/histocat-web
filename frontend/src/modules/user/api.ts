@@ -8,7 +8,7 @@ export const api = {
     params.append('username', username);
     params.append('password', password);
 
-    return ky.post(`${apiUrl}/api/v1/auth/access-token`, { searchParams: params }).json();
+    return ky.post(`${apiUrl}/api/v1/auth/access-token`, { body: params }).json();
   },
   async getMe(token: string) {
     return ky.get(`${apiUrl}/api/v1/users/me`, {

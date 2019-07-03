@@ -28,6 +28,7 @@
   "dependencies": {
     "d3": "5.9.7",
     "ky": "0.11.1",
+    "localforage": "1.7.3",
     "ol": "5.3.3",
     "ramda": "0.26.1",
     "register-service-worker": "1.6.2",
@@ -37,7 +38,7 @@
     "vue": "2.6.10",
     "vue-class-component": "7.1.0",
     "vue-property-decorator": "8.2.1",
-    "vue-router": "3.0.6",
+    "vue-router": "3.0.7",
     "vuetify": "1.5.16",
     "vuetify-confirm": "0.2.6",
     "vuex": "3.1.1"

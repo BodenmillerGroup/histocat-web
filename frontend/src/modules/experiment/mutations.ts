@@ -25,9 +25,6 @@ export const mutations = {
   setExperimentDataset(state: ExperimentsState, payload: IExperimentDataset) {
     state.dataset = payload;
   },
-  setSelectedMeta(state: ExperimentsState, payload: object) {
-    state.selectedMeta = payload;
-  },
   setChannels(state: ExperimentsState, payload: IChannel[]) {
     state.channels = payload;
   },
@@ -59,7 +56,6 @@ export const commitSetTags = commit(mutations.setTags);
 export const commitDeleteExperiment = commit(mutations.deleteExperiment);
 export const commitSetSelectedExperimentId = commit(mutations.setSelectedExperimentId);
 export const commitSetExperimentDataset = commit(mutations.setExperimentDataset);
-export const commitSetSelectedMeta = commit(mutations.setSelectedMeta);
 export const commitSetChannels = commit(mutations.setChannels);
 export const commitSetSelectedAcquisition = commit(mutations.setSelectedAcquisition);
 export const commitSetSelectedMetals = commit(mutations.setSelectedMetals);
