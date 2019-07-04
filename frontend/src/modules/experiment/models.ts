@@ -134,11 +134,6 @@ export interface IChannel {
   meta: object;
   location: string;
   created_at: string;
-
-  levels?: {
-    min: number,
-    max: number
-  }
 }
 
 export interface IChannelStats {

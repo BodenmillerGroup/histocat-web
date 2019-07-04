@@ -1,21 +1,30 @@
+import { experimentModule, ExperimentsState } from '@/modules/experiment';
+import { mainModule, MainState } from '@/modules/main';
+import { settingsModule, SettingsState } from '@/modules/settings';
+import { userModule, UserState } from '@/modules/user';
+import localforage from 'localforage';
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import createLogger from 'vuex/dist/logger';
 import VuexPersistence from 'vuex-persist';
-import localforage from 'localforage';
-
-import { mainModule } from '@/modules/main';
-import { RootState } from './state';
-import { userModule } from '@/modules/user';
-import { experimentModule } from '@/modules/experiment';
+import createLogger from 'vuex/dist/logger';
 
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
 
+export interface RootState {
+  main: MainState;
+  user: UserState;
+  experiment: ExperimentsState;
+  settings: SettingsState;
+}
+
 const vuexStorage = new VuexPersistence<RootState>({
   storage: localforage,
   asyncStorage: true,
+  modules: [
+    'settings'
+  ]
 });
 
 const storeOptions: StoreOptions<RootState> = {
@@ -23,6 +32,7 @@ const storeOptions: StoreOptions<RootState> = {
     main: mainModule,
     user: userModule,
     experiment: experimentModule,
+    settings: settingsModule,
   },
   strict: debug,
   plugins: debug ? [

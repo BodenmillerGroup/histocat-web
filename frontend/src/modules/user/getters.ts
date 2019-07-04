@@ -1,6 +1,6 @@
-import { UserState } from './state';
+import { RootState } from '@/store';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { RootState } from '@/store/state';
+import { UserState } from '.';
 
 export const getters = {
   adminUsers: (state: UserState) => state.users,

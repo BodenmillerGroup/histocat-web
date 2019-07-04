@@ -61,7 +61,7 @@
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
   import { IExperiment } from '@/modules/experiment/models';
-  import { commitSetChannels, commitSetSelectedAcquisitionId } from '@/modules/experiment/mutations';
+  import { commitSetSelectedAcquisitionId } from '@/modules/experiment/mutations';
   import InfoCard from '@/components/InfoCard.vue';
 
   @Component({
@@ -89,7 +89,6 @@
       item = item[0];
       if (item.hasOwnProperty('channels')) {
         commitSetSelectedAcquisitionId(this.$store, item['id']);
-        commitSetChannels(this.$store, item['channels']);
       }
     }
 

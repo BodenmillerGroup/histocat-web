@@ -1,17 +1,17 @@
-import { api } from './api';
-import { ActionContext } from 'vuex';
-import { IExperimentCreate, IExperimentUpdate } from './models';
-import { RootState } from '@/store/state';
-import { ExperimentsState } from './state';
+import { dispatchCheckApiError } from '@/modules/main/actions';
+import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
+import { RootState } from '@/store';
 import { getStoreAccessors } from 'typesafe-vuex';
+import { ActionContext } from 'vuex';
+import { ExperimentsState } from '.';
+import { api } from './api';
+import { IExperimentCreate, IExperimentUpdate } from './models';
 import {
   commitDeleteExperiment,
   commitSetExperiment,
   commitSetExperiments,
   commitSetTags,
 } from './mutations';
-import { dispatchCheckApiError } from '@/modules/main/actions';
-import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
 
 type ExperimentContext = ActionContext<ExperimentsState, RootState>;
 
@@ -108,17 +108,9 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetChannelImage(context: ExperimentContext, id: number) {
-    try {
-      const data = await api.getChannelImage(context.rootState.main.token, id);
-    } catch (error) {
-      await dispatchCheckApiError(context, error);
-    }
-  },
   async actionGetChannelStats(context: ExperimentContext, id: number) {
     try {
-      const data = await api.getChannelStats(context.rootState.main.token, id);
-      return data;
+      return await api.getChannelStats(context.rootState.main.token, id);
     } catch (error) {
       await dispatchCheckApiError(context, error);
     }
@@ -134,5 +126,4 @@ export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment)
 export const dispatchDeleteExperiment = dispatch(actions.actionDeleteExperiment);
 export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);
 export const dispatchGetExperimentDataset = dispatch(actions.actionGetExperimentDataset);
-export const dispatchGetChannelImage = dispatch(actions.actionGetChannelImage);
 export const dispatchGetChannelStats = dispatch(actions.actionGetChannelStats);

@@ -1,9 +1,13 @@
-import { mutations } from './mutations';
-import { getters } from './getters';
-import { actions } from './actions';
-import { UserState } from './state';
+import { RootState } from '@/store';
 import { Module } from 'vuex';
-import { RootState } from '@/store/state';
+import { actions } from './actions';
+import { getters } from './getters';
+import { IUserProfile } from './models';
+import { mutations } from './mutations';
+
+export interface UserState {
+  users: IUserProfile[];
+}
 
 const defaultState: UserState = {
   users: [],

@@ -1,7 +1,7 @@
-import { IUserProfile } from './models';
-import { UserState } from './state';
+import { RootState } from '@/store';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { RootState } from '@/store/state';
+import { UserState } from '.';
+import { IUserProfile } from './models';
 
 export const mutations = {
   setUsers(state: UserState, payload: IUserProfile[]) {

@@ -16,12 +16,12 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-  import ChannelHistogramView from '@/views/main/experiment/ChannelHistogramView.vue';
   import { IChannel } from '@/modules/experiment/models';
-  import { readMetalColorMap } from '@/modules/experiment/getters';
-  import { commitSetMetalColor } from '@/modules/experiment/mutations';
+  import { readMetalColorMap } from '@/modules/settings/getters';
+  import { commitSetMetalColor } from '@/modules/settings/mutations';
   import { convertColorToIndex, convertIndexToColor } from '@/utils';
+  import ChannelHistogramView from '@/views/main/experiment/ChannelHistogramView.vue';
+  import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
   @Component({
     components: { ChannelHistogramView },
@@ -32,7 +32,8 @@
 
     get metalColor() {
       const colorMap = readMetalColorMap(this.$store);
-      return colorMap[this.channel.metal];
+      const color = colorMap.get(this.channel.metal);
+      return color ? color : '';
     }
 
     colorIndex = this.channel ? convertColorToIndex(this.metalColor) : -1;

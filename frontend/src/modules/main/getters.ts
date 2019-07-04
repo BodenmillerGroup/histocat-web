@@ -1,6 +1,6 @@
-import { MainState } from './state';
+import { RootState } from '@/store';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { RootState } from '@/store/state';
+import { MainState } from '.';
 
 export const getters = {
   hasAdminAccess: (state: MainState) => {
