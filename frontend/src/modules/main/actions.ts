@@ -1,9 +1,11 @@
 import { api } from '@/modules/user/api';
 import router from '@/router';
+import { RootState } from '@/store';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
-import { RootState } from '@/store/state';
+import { MainState } from '.';
+import { AppNotification } from './models';
 import {
   commitAddNotification,
   commitRemoveNotification,
@@ -12,7 +14,6 @@ import {
   commitSetToken,
   commitSetUserProfile,
 } from './mutations';
-import { AppNotification, MainState } from './state';
 
 type MainContext = ActionContext<MainState, RootState>;
 
@@ -104,7 +105,8 @@ export const actions = {
     }
   },
   async actionCheckApiError(context: MainContext, payload) {
-    if (payload.response.status === 401) {
+    console.log('API error: ', payload);
+    if (payload.response && payload.response.status === 401) {
       await dispatchLogOut(context);
     }
   },

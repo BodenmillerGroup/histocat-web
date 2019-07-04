@@ -1,7 +1,8 @@
 import { IUserProfile } from '@/modules/user/models';
-import { AppNotification, MainState } from './state';
+import { RootState } from '@/store';
 import { getStoreAccessors } from 'typesafe-vuex';
-import { RootState } from '@/store/state';
+import { MainState } from '.';
+import { AppNotification } from './models';
 
 
 export const mutations = {

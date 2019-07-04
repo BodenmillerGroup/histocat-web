@@ -1,6 +1,6 @@
 import ky from 'ky';
 import { apiUrl } from '@/env';
-import { IChannelStats, IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
+import { IChannelStats, IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
 
 
 export const api = {
@@ -36,12 +36,12 @@ export const api = {
   },
   async uploadSlide(token: string, id: number, data) {
     return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, {
-      json: data,
+      body: data,
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
       },
-    }).json();
+      timeout: false
+    });
   },
   async deleteExperiment(token: string, id: number) {
     return ky.delete(`${apiUrl}/api/v1/experiments/${id}`, {
@@ -62,7 +62,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json<IExperimentDataset>();
+    }).json<IExperiment>();
   },
   async getChannelImage(token: string, id: number) {
     return ky.get(`${apiUrl}/api/v1/channels/${id}/image`, {

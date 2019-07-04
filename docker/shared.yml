@@ -22,11 +22,6 @@ services:
       default:
         aliases:
           - ${DOMAIN}
-    logging:
-      driver: gelf
-      options:
-        gelf-address: udp://localhost:12201
-        tag: backend
 
   worker:
     env_file:
@@ -40,11 +35,6 @@ services:
       - redis
     volumes:
       - app-data:/data
-    logging:
-      driver: gelf
-      options:
-        gelf-address: udp://localhost:12201
-        tag: worker
 
   frontend:
     labels:
@@ -55,7 +45,7 @@ services:
 
   db:
     restart: always
-    image: postgres:11.3-alpine
+    image: postgres:11.4-alpine
     env_file:
       - env-postgres.env
     environment:

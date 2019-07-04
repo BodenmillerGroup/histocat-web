@@ -7,9 +7,8 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Watch } from 'vue-property-decorator';
-  import { readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
-  import { IChannel } from '@/modules/experiment/models';
+  import { Component, Vue } from 'vue-property-decorator';
+  import { readSelectedChannels } from '@/modules/experiment/getters';
   import ChannelSettingsView from '@/views/main/experiment/ChannelSettingsView.vue';
 
   @Component({
@@ -19,14 +18,6 @@
 
     get selectedChannels() {
       return readSelectedChannels(this.$store);
-    }
-
-    @Watch('selectedChannels')
-    onSelectedChannelsChanged(channels: IChannel[]) {
-      const acquisition = readSelectedAcquisition(this.$store);
-      if (!acquisition) {
-        return;
-      }
     }
   }
 </script>

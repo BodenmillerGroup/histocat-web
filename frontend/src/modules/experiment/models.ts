@@ -7,6 +7,8 @@ export interface IExperiment {
   tags: string[];
   location: string;
   created_at: string;
+
+  slides?: ISlide[];
 }
 
 export interface IExperimentUpdate {
@@ -19,10 +21,6 @@ export interface IExperimentCreate {
   name: string;
   description?: string;
   tags?: string[];
-}
-
-export interface IExperimentDataset extends IExperiment {
-  slides: ISlide[];
 }
 
 export interface ISlide {
@@ -136,11 +134,6 @@ export interface IChannel {
   meta: object;
   location: string;
   created_at: string;
-
-  levels?: {
-    min: number,
-    max: number
-  }
 }
 
 export interface IChannelStats {

@@ -1,20 +1,24 @@
-import { mutations } from './mutations';
-import { getters } from './getters';
-import { actions } from './actions';
-import { ExperimentsState } from './state';
+import { IExperiment } from '@/modules/experiment/models';
+import { RootState } from '@/store';
 import { Module } from 'vuex';
-import { RootState } from '@/store/state';
+import { actions } from './actions';
+import { getters } from './getters';
+import { mutations } from './mutations';
+
+export interface ExperimentsState {
+  experiments: IExperiment[];
+  tags: string[];
+  selectedExperimentId?: number;
+  selectedAcquisitionId?: number;
+  selectedMetals: string[];
+}
 
 const defaultState: ExperimentsState = {
   experiments: [],
   tags: [],
-  dataset: undefined,
   selectedExperimentId: undefined,
-  selectedMeta: undefined,
-  channels: [],
-  selectedAcquisition: undefined,
+  selectedAcquisitionId: undefined,
   selectedMetals: [],
-  metalColorMap: {}
 };
 
 export const experimentModule: Module<ExperimentsState, RootState> = {

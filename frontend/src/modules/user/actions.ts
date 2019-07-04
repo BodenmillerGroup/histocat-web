@@ -1,12 +1,12 @@
-import { api } from './api';
-import { ActionContext } from 'vuex';
-import { IUserProfileCreate, IUserProfileUpdate } from './models';
-import { RootState } from '@/store/state';
-import { UserState } from './state';
-import { getStoreAccessors } from 'typesafe-vuex';
-import { commitSetUser, commitSetUsers } from './mutations';
 import { dispatchCheckApiError } from '@/modules/main/actions';
 import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
+import { RootState } from '@/store';
+import { getStoreAccessors } from 'typesafe-vuex';
+import { ActionContext } from 'vuex';
+import { UserState } from '.';
+import { api } from './api';
+import { IUserProfileCreate, IUserProfileUpdate } from './models';
+import { commitSetUser, commitSetUsers } from './mutations';
 
 type UserContext = ActionContext<UserState, RootState>;
 

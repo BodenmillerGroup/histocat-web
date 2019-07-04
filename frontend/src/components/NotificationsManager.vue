@@ -10,7 +10,7 @@
 
 <script lang="ts">
   import { Component, Vue, Watch } from 'vue-property-decorator';
-  import { AppNotification } from '@/modules/main/state';
+  import { AppNotification } from '@/modules/main/models';
   import { commitRemoveNotification } from '@/modules/main/mutations';
   import { readFirstNotification } from '@/modules/main/getters';
   import { dispatchRemoveNotification } from '@/modules/main/actions';

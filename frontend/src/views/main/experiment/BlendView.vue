@@ -4,20 +4,21 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Watch } from 'vue-property-decorator';
-  import Map from 'ol/Map';
-  import View from 'ol/View';
-  import 'ol/ol.css';
+  import { apiUrl } from '@/env';
+  import { readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
+  import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import { readChannelSettings, readMetalColorMap } from '@/modules/settings/getters';
+  import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
+  import { DragPan, MouseWheelZoom } from 'ol/interaction';
   import ImageLayer from 'ol/layer/Image';
+  import Map from 'ol/Map';
+  import 'ol/ol.css';
   import Projection from 'ol/proj/Projection';
   import Static from 'ol/source/ImageStatic';
-  import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
-  import { readMetalColorMap, readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
-  import { IAcquisition, IChannel } from '@/modules/experiment/models';
-  import { DragPan, MouseWheelZoom } from 'ol/interaction';
+  import View from 'ol/View';
   import { equals } from 'ramda';
-  import { apiUrl } from '@/env';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
   export default class BlendView extends Vue {
@@ -107,14 +108,18 @@
 
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
+      if (!this.selectedAcquisition) {
+        return;
+      }
       const view = this.map.getView();
       const projection = view.getProjection();
       const extent = projection.getExtent();
       const colorMap = this.metalColorMap;
       const layers = this.selectedChannels.map((channel) => {
-        const color = channel.metal in colorMap ? colorMap[channel.metal] : '';
-        const min = channel.levels ? channel.levels.min : '';
-        const max = channel.levels ? channel.levels.max : '';
+        const color = colorMap.has(channel.metal) ? colorMap.get(channel.metal) : '';
+        const channelSettings = readChannelSettings(this.$store)(channel.id);
+        const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
+        const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
         return new ImageLayer({
           source: new Static({
             imageLoadFunction: (image, src) => {

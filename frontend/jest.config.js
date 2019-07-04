@@ -1,4 +1,5 @@
 module.exports = {
+  preset: 'ts-jest/presets/js-with-ts',
   moduleFileExtensions: [
     'js',
     'jsx',
@@ -13,7 +14,7 @@ module.exports = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/',
+    "<rootDir>/node_modules/(?!(ky)/)"
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

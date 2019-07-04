@@ -37,7 +37,7 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readExperimentDataset } from '@/modules/experiment/getters';
+  import { readSelectedExperiment } from '@/modules/experiment/getters';
   import { dispatchGetExperimentDataset } from '@/modules/experiment/actions';
   import LoadingView from '@/components/LoadingView.vue';
   import TreeView from '@/views/main/experiment/TreeView.vue';
@@ -54,8 +54,12 @@
 
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
+    get experiment() {
+      return readSelectedExperiment(this.$store);
+    }
+
     get dataset() {
-      return readExperimentDataset(this.$store);
+      return this.experiment && this.experiment.slides ? this.experiment : undefined;
     }
 
     get showWorkspace() {
@@ -78,8 +82,12 @@
 
     async mounted() {
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
-      commitSetSelectedExperimentId(this.$store, { id: experimentId });
-      await dispatchGetExperimentDataset(this.$store, { id: experimentId });
+      commitSetSelectedExperimentId(this.$store, experimentId);
+      await dispatchGetExperimentDataset(this.$store, experimentId);
+    }
+
+    async beforeDestroy() {
+      commitSetSelectedExperimentId(this.$store, undefined);
     }
   }
 </script>

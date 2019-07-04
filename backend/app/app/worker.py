@@ -25,7 +25,7 @@ if os.environ.get("BACKEND_ENV") == "development":
 
         # Allow other computers to attach to ptvsd at this IP address and port.
         import ptvsd
-        ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
+        # ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
 
         # PyCharm Debugging
 

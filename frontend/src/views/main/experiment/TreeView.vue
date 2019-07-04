@@ -60,8 +60,8 @@
 
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-  import { IAcquisition, IExperimentDataset } from '@/modules/experiment/models';
-  import { commitSetChannels, commitSetSelectedAcquisition } from '@/modules/experiment/mutations';
+  import { IExperiment } from '@/modules/experiment/models';
+  import { commitSetSelectedAcquisitionId } from '@/modules/experiment/mutations';
   import InfoCard from '@/components/InfoCard.vue';
 
   @Component({
@@ -69,7 +69,7 @@
   })
   export default class TreeView extends Vue {
 
-    @Prop(Object) dataset?: IExperimentDataset;
+    @Prop(Object) dataset?: IExperiment;
 
     search = null;
     active = [];
@@ -88,8 +88,7 @@
       }
       item = item[0];
       if (item.hasOwnProperty('channels')) {
-        commitSetSelectedAcquisition(this.$store, item as IAcquisition);
-        commitSetChannels(this.$store, item['channels']);
+        commitSetSelectedAcquisitionId(this.$store, item['id']);
       }
     }
 
@@ -98,7 +97,7 @@
     }
 
     get items() {
-      if (this.dataset) {
+      if (this.dataset && this.dataset.slides) {
         return this.dataset.slides.map((slide) => {
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {

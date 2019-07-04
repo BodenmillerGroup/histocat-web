@@ -1,9 +1,20 @@
-import { mutations } from './mutations';
-import { getters } from './getters';
-import { actions } from './actions';
-import { MainState } from './state';
+import { IUserProfile } from '@/modules/user/models';
+import { RootState } from '@/store';
 import { Module } from 'vuex';
-import { RootState } from '@/store/state';
+import { actions } from './actions';
+import { getters } from './getters';
+import { AppNotification } from './models';
+import { mutations } from './mutations';
+
+export interface MainState {
+  token: string;
+  isLoggedIn: boolean | null;
+  logInError: boolean;
+  userProfile: IUserProfile | null;
+  dashboardMiniDrawer: boolean;
+  dashboardShowDrawer: boolean;
+  notifications: AppNotification[];
+}
 
 const defaultState: MainState = {
   isLoggedIn: null,
