@@ -52,7 +52,7 @@
         return all;
       } else {
         return all.filter((experiment) => {
-          if (this.tags.some(r => experiment.tags.includes(r))) {
+          if (experiment.tags && this.tags.some(r => experiment.tags.includes(r))) {
             return experiment;
           }
         });
