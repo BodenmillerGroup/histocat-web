@@ -1,11 +1,11 @@
-import { IAcquisition, IChannel, IExperiment } from './models';
+import { IChannel, IExperiment } from './models';
 
 export interface ExperimentsState {
   experiments: IExperiment[];
   tags: string[];
   selectedExperimentId?: number;
+  selectedAcquisitionId?: number;
   channels: IChannel[];
-  selectedAcquisition?: IAcquisition;
   selectedMetals: string[];
   metalColorMap: { [metal: string]: string }
 }

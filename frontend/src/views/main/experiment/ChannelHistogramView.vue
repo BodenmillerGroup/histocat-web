@@ -15,7 +15,7 @@
     @Prop(Object) channel!: IChannel;
 
     async mounted() {
-      const stats = await dispatchGetChannelStats(this.$store, { id: this.channel.id });
+      const stats = await dispatchGetChannelStats(this.$store, this.channel.id);
       if (!stats) {
         return;
       }

@@ -81,7 +81,7 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionUploadSlide(context: ExperimentContext, payload: { id: number | undefined, data: any }) {
+  async actionUploadSlide(context: ExperimentContext, payload: { id: number, data: any }) {
     if (!payload.id) {
       return;
     }
@@ -98,9 +98,9 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetExperimentDataset(context: ExperimentContext, payload: { id: number }) {
+  async actionGetExperimentDataset(context: ExperimentContext, id: number) {
     try {
-      const data = await api.getExperimentDataset(context.rootState.main.token, payload.id);
+      const data = await api.getExperimentDataset(context.rootState.main.token, id);
       if (data) {
         commitSetExperiment(context, data);
       }
@@ -108,16 +108,16 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetChannelImage(context: ExperimentContext, payload: { id: number }) {
+  async actionGetChannelImage(context: ExperimentContext, id: number) {
     try {
-      const data = await api.getChannelImage(context.rootState.main.token, payload.id);
+      const data = await api.getChannelImage(context.rootState.main.token, id);
     } catch (error) {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetChannelStats(context: ExperimentContext, payload: { id: number }) {
+  async actionGetChannelStats(context: ExperimentContext, id: number) {
     try {
-      const data = await api.getChannelStats(context.rootState.main.token, payload.id);
+      const data = await api.getChannelStats(context.rootState.main.token, id);
       return data;
     } catch (error) {
       await dispatchCheckApiError(context, error);

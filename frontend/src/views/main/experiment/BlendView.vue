@@ -107,6 +107,9 @@
 
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
+      if (!this.selectedAcquisition) {
+        return;
+      }
       const view = this.map.getView();
       const projection = view.getProjection();
       const extent = projection.getExtent();

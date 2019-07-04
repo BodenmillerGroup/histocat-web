@@ -1,6 +1,7 @@
 import { ExperimentsState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { RootState } from '@/store/state';
+import { IExperiment } from '@/modules/experiment/models';
 
 export const getters = {
   adminExperiments: (state: ExperimentsState) => state.experiments,
@@ -13,8 +14,21 @@ export const getters = {
   channels: (state: ExperimentsState) => {
     return state.channels;
   },
-  selectedAcquisition: (state: ExperimentsState) => {
-    return state.selectedAcquisition;
+  selectedAcquisition: (state: ExperimentsState, self) => {
+    const experiment: IExperiment = self.selectedExperiment;
+    if (experiment && experiment.slides) {
+      for (const slide of experiment.slides) {
+        for (const panorama of slide.panoramas) {
+          for (const roi of panorama.rois) {
+            const acquisition = roi.acquisitions.find((item) => item.id === state.selectedAcquisitionId);
+            if (acquisition) {
+              return acquisition;
+            }
+          }
+        }
+      }
+    }
+    return undefined;
   },
   selectedMetals: (state: ExperimentsState) => {
     return state.selectedMetals;

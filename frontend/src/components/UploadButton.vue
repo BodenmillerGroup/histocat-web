@@ -14,8 +14,8 @@
 
   @Component
   export default class UploadButton extends Vue {
-    @Prop(Number) id: number | undefined;
-    @Prop(String) color: string | undefined;
+    @Prop(Number) id!: number;
+    @Prop(String) color!: string;
     @Prop({ default: false }) multiple!: boolean;
 
     @Emit()

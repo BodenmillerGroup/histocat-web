@@ -10,7 +10,7 @@ const defaultState: ExperimentsState = {
   tags: [],
   selectedExperimentId: undefined,
   channels: [],
-  selectedAcquisition: undefined,
+  selectedAcquisitionId: undefined,
   selectedMetals: [],
   metalColorMap: {}
 };

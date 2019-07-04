@@ -54,8 +54,12 @@
 
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
-    get dataset() {
+    get experiment() {
       return readSelectedExperiment(this.$store);
+    }
+
+    get dataset() {
+      return this.experiment && this.experiment.slides ? this.experiment : undefined;
     }
 
     get showWorkspace() {
@@ -78,8 +82,12 @@
 
     async mounted() {
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
-      commitSetSelectedExperimentId(this.$store, { id: experimentId });
-      await dispatchGetExperimentDataset(this.$store, { id: experimentId });
+      commitSetSelectedExperimentId(this.$store, experimentId);
+      await dispatchGetExperimentDataset(this.$store, experimentId);
+    }
+
+    async beforeDestroy() {
+      commitSetSelectedExperimentId(this.$store, undefined);
     }
   }
 </script>

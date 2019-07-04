@@ -36,12 +36,12 @@ export const api = {
   },
   async uploadSlide(token: string, id: number, data) {
     return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, {
-      json: data,
+      body: data,
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
       },
-    }).json();
+      timeout: false
+    });
   },
   async deleteExperiment(token: string, id: number) {
     return ky.delete(`${apiUrl}/api/v1/experiments/${id}`, {
