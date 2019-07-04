@@ -60,7 +60,7 @@
 
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-  import { IAcquisition, IExperimentDataset } from '@/modules/experiment/models';
+  import { IAcquisition, IExperiment } from '@/modules/experiment/models';
   import { commitSetChannels, commitSetSelectedAcquisition } from '@/modules/experiment/mutations';
   import InfoCard from '@/components/InfoCard.vue';
 
@@ -69,7 +69,7 @@
   })
   export default class TreeView extends Vue {
 
-    @Prop(Object) dataset?: IExperimentDataset;
+    @Prop(Object) dataset?: IExperiment;
 
     search = null;
     active = [];
@@ -99,7 +99,7 @@
 
     get items() {
       if (this.dataset) {
-        return this.dataset.slides.map((slide) => {
+        return this.dataset.slides!.map((slide) => {
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {
               const acquisitions = roi.acquisitions.map((acquisition) => {

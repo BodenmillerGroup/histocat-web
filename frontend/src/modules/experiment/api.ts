@@ -1,6 +1,6 @@
 import ky from 'ky';
 import { apiUrl } from '@/env';
-import { IChannelStats, IExperiment, IExperimentCreate, IExperimentDataset, IExperimentUpdate } from './models';
+import { IChannelStats, IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
 
 
 export const api = {
@@ -62,7 +62,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json<IExperimentDataset>();
+    }).json<IExperiment>();
   },
   async getChannelImage(token: string, id: number) {
     return ky.get(`${apiUrl}/api/v1/channels/${id}/image`, {

@@ -37,7 +37,7 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readExperimentDataset } from '@/modules/experiment/getters';
+  import { readSelectedExperiment } from '@/modules/experiment/getters';
   import { dispatchGetExperimentDataset } from '@/modules/experiment/actions';
   import LoadingView from '@/components/LoadingView.vue';
   import TreeView from '@/views/main/experiment/TreeView.vue';
@@ -55,7 +55,7 @@
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
     get dataset() {
-      return readExperimentDataset(this.$store);
+      return readSelectedExperiment(this.$store);
     }
 
     get showWorkspace() {

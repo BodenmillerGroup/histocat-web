@@ -1,4 +1,4 @@
-import { IAcquisition, IChannel, IExperiment, IExperimentDataset } from './models';
+import { IAcquisition, IChannel, IExperiment } from './models';
 import { ExperimentsState } from './state';
 import { getStoreAccessors } from 'typesafe-vuex';
 import { RootState } from '@/store/state';
@@ -21,9 +21,6 @@ export const mutations = {
   },
   setSelectedExperimentId(state: ExperimentsState, payload: { id: number }) {
     state.selectedExperimentId = payload.id;
-  },
-  setExperimentDataset(state: ExperimentsState, payload: IExperimentDataset) {
-    state.dataset = payload;
   },
   setChannels(state: ExperimentsState, payload: IChannel[]) {
     state.channels = payload;
@@ -55,7 +52,6 @@ export const commitSetExperiments = commit(mutations.setExperiments);
 export const commitSetTags = commit(mutations.setTags);
 export const commitDeleteExperiment = commit(mutations.deleteExperiment);
 export const commitSetSelectedExperimentId = commit(mutations.setSelectedExperimentId);
-export const commitSetExperimentDataset = commit(mutations.setExperimentDataset);
 export const commitSetChannels = commit(mutations.setChannels);
 export const commitSetSelectedAcquisition = commit(mutations.setSelectedAcquisition);
 export const commitSetSelectedMetals = commit(mutations.setSelectedMetals);

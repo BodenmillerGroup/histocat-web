@@ -1,18 +1,22 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import createLogger from 'vuex/dist/logger';
+import VuexPersistence from 'vuex-persist';
+import localforage from 'localforage';
 
 import { mainModule } from '@/modules/main';
 import { RootState } from './state';
 import { userModule } from '@/modules/user';
 import { experimentModule } from '@/modules/experiment';
 
-import cache from './cache';
-import sync from './sync';
-
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
+
+const vuexStorage = new VuexPersistence<RootState>({
+  storage: localforage,
+  asyncStorage: true,
+});
 
 const storeOptions: StoreOptions<RootState> = {
   modules: {
@@ -22,12 +26,10 @@ const storeOptions: StoreOptions<RootState> = {
   },
   strict: debug,
   plugins: debug ? [
-    cache,
-    sync,
-    createLogger()
+    vuexStorage.plugin,
+    createLogger(),
   ] : [
-    cache,
-    sync,
+    vuexStorage.plugin,
   ],
 };
 

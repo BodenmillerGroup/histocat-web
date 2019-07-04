@@ -7,7 +7,6 @@ import { getStoreAccessors } from 'typesafe-vuex';
 import {
   commitDeleteExperiment,
   commitSetExperiment,
-  commitSetExperimentDataset,
   commitSetExperiments,
   commitSetTags,
 } from './mutations';
@@ -45,7 +44,6 @@ export const actions = {
         api.updateExperiment(context.rootState.main.token, payload.id, payload.data),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      console.log(data)
       commitSetExperiment(context, data as any);
       commitRemoveNotification(context, notification);
       commitAddNotification(context, { content: 'Experiment successfully updated', color: 'success' });
@@ -104,7 +102,7 @@ export const actions = {
     try {
       const data = await api.getExperimentDataset(context.rootState.main.token, payload.id);
       if (data) {
-        commitSetExperimentDataset(context, data);
+        commitSetExperiment(context, data);
       }
     } catch (error) {
       await dispatchCheckApiError(context, error);
