@@ -9,8 +9,9 @@ export interface ExperimentsState {
   experiments: IExperiment[];
   datasets: IDataset[];
   tags: string[];
-  selectedExperimentId?: number;
-  selectedAcquisitionId?: number;
+  activeExperimentId?: number;
+  activeAcquisitionId?: number;
+  selectedAcquisitionIds: number[];
   selectedMetals: string[];
 }
 
@@ -18,8 +19,9 @@ const defaultState: ExperimentsState = {
   experiments: [],
   datasets: [],
   tags: [],
-  selectedExperimentId: undefined,
-  selectedAcquisitionId: undefined,
+  activeExperimentId: undefined,
+  activeAcquisitionId: undefined,
+  selectedAcquisitionIds: [],
   selectedMetals: [],
 };
 

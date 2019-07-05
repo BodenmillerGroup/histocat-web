@@ -8,6 +8,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.modules.user.db import User
 from . import crud
 from .models import DatasetModel, DatasetCreateModel
+import app.worker as worker
 
 router = APIRouter()
 
@@ -63,6 +64,7 @@ def create(
     Create new dataset
     """
     item = crud.create(db, user_id=current_user.id, params=params)
+    worker.prepare_dataset.send(item.id)
     return item
 
 

@@ -14,6 +14,7 @@
     </v-card-title>
     <v-card-text>
       <v-treeview
+        v-model="selected"
         :items="items"
         :search="search"
         :filter="filter"
@@ -25,6 +26,7 @@
         return-object
         open-on-click
         open-all
+        selectable
       >
         <template v-slot:prepend="{ item }">
           <v-icon small>
@@ -59,7 +61,7 @@
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
   import { IExperiment } from '@/modules/experiment/models';
-  import { commitSetSelectedAcquisitionId } from '@/modules/experiment/mutations';
+  import { commitSetActiveAcquisitionId, commitSetSelectedAcquisitionIds } from '@/modules/experiment/mutations';
   import InfoCard from '@/components/InfoCard.vue';
 
   @Component({
@@ -69,6 +71,7 @@
 
     @Prop(Object) experiment?: IExperiment;
 
+    selected = [];
     search = null;
     active = [];
 
@@ -80,14 +83,22 @@
     };
 
     @Watch('active')
-    onActiveChanged(item: object) {
+    onActiveChanged(item) {
       if (this.active.length === 0 || !item) {
         return;
       }
       item = item[0];
       if (item.hasOwnProperty('channels')) {
-        commitSetSelectedAcquisitionId(this.$store, item['id']);
+        commitSetActiveAcquisitionId(this.$store, item['id']);
       }
+    }
+
+    @Watch('selected')
+    onSelectedChanged(items) {
+      const ids = items
+        .filter((item) => item.type === 'acquisition')
+        .map((acquisition) => acquisition.id);
+      commitSetSelectedAcquisitionIds(this.$store, ids);
     }
 
     get filter() {

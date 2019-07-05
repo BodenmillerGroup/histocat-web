@@ -9,19 +9,19 @@ export const getters = {
   adminOneExperiment: (state: ExperimentsState) => (id: number) => {
     return state.experiments.find((item) => item.id === id);
   },
-  selectedExperimentId: (state: ExperimentsState) => {
-    return state.selectedExperimentId;
+  activeExperimentId: (state: ExperimentsState) => {
+    return state.activeExperimentId;
   },
-  selectedExperiment: (state: ExperimentsState) => {
-    return state.experiments.find((item) => item.id === state.selectedExperimentId);
+  activeExperiment: (state: ExperimentsState) => {
+    return state.experiments.find((item) => item.id === state.activeExperimentId);
   },
-  selectedAcquisition: (state: ExperimentsState, self) => {
-    const experiment: IExperiment = self.selectedExperiment;
+  activeAcquisition: (state: ExperimentsState, self) => {
+    const experiment: IExperiment = self.activeExperiment;
     if (experiment && experiment.slides) {
       for (const slide of experiment.slides) {
         for (const panorama of slide.panoramas) {
           for (const roi of panorama.rois) {
-            const acquisition = roi.acquisitions.find((item) => item.id === state.selectedAcquisitionId);
+            const acquisition = roi.acquisitions.find((item) => item.id === state.activeAcquisitionId);
             if (acquisition) {
               return acquisition;
             }
@@ -35,7 +35,7 @@ export const getters = {
     return state.selectedMetals;
   },
   selectedChannels: (state: ExperimentsState, self) => {
-    const acquisition = self.selectedAcquisition;
+    const acquisition = self.activeAcquisition;
     if (acquisition) {
       const channels = acquisition.channels.filter((channel) => {
         if (state.selectedMetals.includes(channel.metal)) {
@@ -48,16 +48,20 @@ export const getters = {
   tags: (state: ExperimentsState) => {
     return state.tags;
   },
+  selectedAcquisitionIds: (state: ExperimentsState) => {
+    return state.selectedAcquisitionIds;
+  },
 };
 
 const { read } = getStoreAccessors<ExperimentsState, RootState>('');
 
 export const readAdminOneExperiment = read(getters.adminOneExperiment);
 export const readExperiments = read(getters.experiments);
-export const readSelectedExperiment = read(getters.selectedExperiment);
-export const readSelectedExperimentId = read(getters.selectedExperimentId);
+export const readActiveExperiment = read(getters.activeExperiment);
+export const readActiveExperimentId = read(getters.activeExperimentId);
 export const readTags = read(getters.tags);
-export const readSelectedAcquisition = read(getters.selectedAcquisition);
+export const readActiveAcquisition = read(getters.activeAcquisition);
 export const readSelectedMetals = read(getters.selectedMetals);
 export const readSelectedChannels = read(getters.selectedChannels);
 export const readDatasets = read(getters.datasets);
+export const readSelectedAcquisitionIds = read(getters.selectedAcquisitionIds);

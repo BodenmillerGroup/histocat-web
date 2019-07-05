@@ -85,4 +85,4 @@ def import_slide(uri: str, experiment_id: int):
 def prepare_dataset(dataset_id: int):
     logger.info(f'Preparing dataset [{dataset_id}]...')
     dataset = dataset_crud.get(db_session, id=dataset_id)
-    logger.info(dataset)
+    logger.info(dataset.meta["input"])

@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import { apiUrl } from '@/env';
-  import { readSelectedAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
+  import { readActiveAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { readChannelSettings, readMetalColorMap } from '@/modules/settings/getters';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
@@ -34,12 +34,12 @@
       return readMetalColorMap(this.$store);
     }
 
-    get selectedAcquisition() {
-      return readSelectedAcquisition(this.$store);
+    get activeAcquisition() {
+      return readActiveAcquisition(this.$store);
     }
 
-    @Watch('selectedAcquisition')
-    onSelectedAcquisitionChanged(acquisition: IAcquisition) {
+    @Watch('activeAcquisition')
+    onActiveAcquisitionChanged(acquisition: IAcquisition) {
       if (!acquisition) {
         return;
       }
@@ -108,7 +108,7 @@
 
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
-      if (!this.selectedAcquisition) {
+      if (!this.activeAcquisition) {
         return;
       }
       const view = this.map.getView();

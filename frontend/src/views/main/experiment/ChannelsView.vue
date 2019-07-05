@@ -43,7 +43,7 @@
 
 <script lang="ts">
   import { Component, Vue, Watch } from 'vue-property-decorator';
-  import { readSelectedAcquisition } from '@/modules/experiment/getters';
+  import { readActiveAcquisition } from '@/modules/experiment/getters';
   import { IChannel } from '@/modules/experiment/models';
   import { commitSetSelectedMetals } from '@/modules/experiment/mutations';
 
@@ -78,7 +78,7 @@
     ];
 
     get channels() {
-      const acquisition = readSelectedAcquisition(this.$store);
+      const acquisition = readActiveAcquisition(this.$store);
       return acquisition && acquisition.channels;
     }
 

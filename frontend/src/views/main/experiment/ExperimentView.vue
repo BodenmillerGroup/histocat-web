@@ -57,14 +57,13 @@
 <script lang="ts">
   import LoadingView from '@/components/LoadingView.vue';
   import { dispatchGetExperimentData, dispatchGetOwnDatasets } from '@/modules/experiment/actions';
-  import { readSelectedExperiment } from '@/modules/experiment/getters';
-  import { commitSetDatasets, commitSetSelectedExperimentId } from '@/modules/experiment/mutations';
+  import { readActiveExperiment } from '@/modules/experiment/getters';
+  import { commitSetDatasets, commitSetActiveExperimentId } from '@/modules/experiment/mutations';
   import BlendView from '@/views/main/experiment/BlendView.vue';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
   import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
   import DatasetsView from '@/views/main/experiment/DatasetsView.vue';
   import SettingsView from '@/views/main/experiment/SettingsView.vue';
-  import TilesView from '@/views/main/experiment/TilesView.vue';
   import WorkspaceView from '@/views/main/experiment/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
@@ -73,7 +72,6 @@
       DatasetsView,
       CreateDatasetDialog,
       ChannelsView,
-      TilesView,
       BlendView,
       WorkspaceView,
       LoadingView,
@@ -87,7 +85,7 @@
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
     get experiment() {
-      return readSelectedExperiment(this.$store);
+      return readActiveExperiment(this.$store);
     }
 
     get experimentData() {
@@ -114,7 +112,7 @@
 
     async mounted() {
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
-      commitSetSelectedExperimentId(this.$store, experimentId);
+      commitSetActiveExperimentId(this.$store, experimentId);
       await Promise.all([
         dispatchGetExperimentData(this.$store, experimentId),
         dispatchGetOwnDatasets(this.$store, experimentId),
@@ -122,7 +120,7 @@
     }
 
     async beforeDestroy() {
-      commitSetSelectedExperimentId(this.$store, undefined);
+      commitSetActiveExperimentId(this.$store, undefined);
       commitSetDatasets(this.$store, []);
     }
   }

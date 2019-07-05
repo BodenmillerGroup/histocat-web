@@ -43,8 +43,6 @@
 
 <script lang="ts">
   import { dispatchCreateDataset } from '@/modules/experiment/actions';
-  import { readSelectedExperiment, readSelectedExperimentId } from '@/modules/experiment/getters';
-  import { IDatasetCreate } from '@/modules/experiment/models';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component
@@ -71,15 +69,7 @@
 
     async submit() {
       if (await this.$validator.validateAll()) {
-        const experimentId = readSelectedExperimentId(this.$store);
-        const params: IDatasetCreate = {
-          experiment_id: experimentId!,
-          name: this.name,
-        };
-        if (this.description) {
-          params.description = this.description;
-        }
-        await dispatchCreateDataset(this.$store, params);
+        await dispatchCreateDataset(this.$store, { name: this.name, description: this.description });
         this.dialog = false;
       }
     }

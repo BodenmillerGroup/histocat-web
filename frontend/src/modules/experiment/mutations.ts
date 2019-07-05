@@ -29,14 +29,17 @@ export const mutations = {
   deleteDataset(state: ExperimentsState, id: number) {
     state.datasets = state.datasets.filter((item) => item.id !== id);
   },
-  setSelectedExperimentId(state: ExperimentsState, id?: number) {
-    state.selectedExperimentId = id;
+  setActiveExperimentId(state: ExperimentsState, id?: number) {
+    state.activeExperimentId = id;
   },
-  setSelectedAcquisitionId(state: ExperimentsState, id?: number) {
-    state.selectedAcquisitionId = id;
+  setActiveAcquisitionId(state: ExperimentsState, id?: number) {
+    state.activeAcquisitionId = id;
   },
   setSelectedMetals(state: ExperimentsState, metals: string[]) {
     state.selectedMetals = metals;
+  },
+  setSelectedAcquisitionIds(state: ExperimentsState, ids: number[]) {
+    state.selectedAcquisitionIds = ids;
   },
 };
 
@@ -51,6 +54,7 @@ export const commitSetDataset = commit(mutations.setDataset);
 export const commitDeleteDataset = commit(mutations.deleteDataset);
 
 export const commitSetTags = commit(mutations.setTags);
-export const commitSetSelectedExperimentId = commit(mutations.setSelectedExperimentId);
-export const commitSetSelectedAcquisitionId = commit(mutations.setSelectedAcquisitionId);
+export const commitSetActiveExperimentId = commit(mutations.setActiveExperimentId);
+export const commitSetActiveAcquisitionId = commit(mutations.setActiveAcquisitionId);
 export const commitSetSelectedMetals = commit(mutations.setSelectedMetals);
+export const commitSetSelectedAcquisitionIds = commit(mutations.setSelectedAcquisitionIds);
