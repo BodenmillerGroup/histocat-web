@@ -98,10 +98,10 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Watch } from 'vue-property-decorator';
-  import { IExperimentCreate } from '@/modules/experiment/models';
-  import { dispatchCreateExperiment, dispatchGetExperiments, dispatchGetTags } from '@/modules/experiment/actions';
+  import { dispatchCreateExperiment, dispatchGetTags } from '@/modules/experiment/actions';
   import { readTags } from '@/modules/experiment/getters';
+  import { IExperimentCreate } from '@/modules/experiment/models';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
   export default class CreateExperiment extends Vue {
@@ -119,8 +119,8 @@
       const list = readTags(this.$store);
       return list.map((item) => {
         return {
-          text: item
-        }
+          text: item,
+        };
       });
     }
 

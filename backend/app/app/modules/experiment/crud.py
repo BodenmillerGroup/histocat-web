@@ -76,5 +76,5 @@ def remove(session: Session, *, id: int):
     return item
 
 
-def get_dataset(session: Session, *, id: int) -> Optional[Experiment]:
+def get_data(session: Session, *, id: int) -> Optional[Experiment]:
     return session.query(Experiment).filter(Experiment.id == id).first()

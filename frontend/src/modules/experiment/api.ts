@@ -1,6 +1,6 @@
-import ky from 'ky';
 import { apiUrl } from '@/env';
-import { IChannelStats, IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
+import ky from 'ky';
+import { IChannelStats, IDataset, IDatasetCreate, IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
 
 
 export const api = {
@@ -40,7 +40,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      timeout: false
+      timeout: false,
     });
   },
   async deleteExperiment(token: string, id: number) {
@@ -57,8 +57,8 @@ export const api = {
       },
     }).json<IExperiment>();
   },
-  async getExperimentDataset(token: string, id: number) {
-    return ky.get(`${apiUrl}/api/v1/experiments/${id}/dataset`, {
+  async getExperimentData(token: string, id: number) {
+    return ky.get(`${apiUrl}/api/v1/experiments/${id}/data`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -88,5 +88,27 @@ export const api = {
       }
       return response.json() as Promise<IChannelStats>;
     }
+  },
+  async createDataset(token: string, data: IDatasetCreate) {
+    return ky.post(`${apiUrl}/api/v1/datasets/`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
+  },
+  async deleteDataset(token: string, id: number) {
+    return ky.delete(`${apiUrl}/api/v1/datasets/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
+  },
+  async getOwnDatasets(token: string, experimentId: number) {
+    return ky.get(`${apiUrl}/api/v1/datasets/experiment/${experimentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IDataset[]>();
   },
 };

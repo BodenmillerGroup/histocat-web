@@ -36,7 +36,7 @@
     @Prop(Object) experiment?: IExperiment;
 
     get createdAt() {
-      return this.experiment && new Date(this.experiment.created_at).toLocaleString('de-ch', { timeZone: 'UTC' });
+      return this.experiment && new Date(this.experiment.created_at).toUTCString();
     }
   }
 </script>

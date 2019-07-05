@@ -131,14 +131,14 @@ def upload_slide(
     return {"filename": file.filename}
 
 
-@router.get("/{id}/dataset", response_model=ExperimentDatasetModel)
-def read_dataset(
+@router.get("/{id}/data", response_model=ExperimentDatasetModel)
+def read_data(
     id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
-    Get full experiment dataset
+    Get all experiment data
     """
-    item = crud.get_dataset(db, id=id)
+    item = crud.get_data(db, id=id)
     return item

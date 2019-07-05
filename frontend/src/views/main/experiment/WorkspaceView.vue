@@ -1,8 +1,6 @@
 <template>
   <v-card tile>
     <v-card-title class="card-title">
-      <h4>Workspace</h4>
-      <v-spacer/>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -67,9 +65,9 @@
   @Component({
     components: { InfoCard },
   })
-  export default class TreeView extends Vue {
+  export default class WorkspaceView extends Vue {
 
-    @Prop(Object) dataset?: IExperiment;
+    @Prop(Object) experiment?: IExperiment;
 
     search = null;
     active = [];
@@ -97,8 +95,8 @@
     }
 
     get items() {
-      if (this.dataset && this.dataset.slides) {
-        return this.dataset.slides.map((slide) => {
+      if (this.experiment && this.experiment.slides) {
+        return this.experiment.slides.map((slide) => {
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {
               const acquisitions = roi.acquisitions.map((acquisition) => {

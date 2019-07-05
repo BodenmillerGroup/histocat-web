@@ -19,6 +19,7 @@ class User(Base):
     updated_at: datetime = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
     experiments = relationship("Experiment", back_populates="user", cascade="all, delete, delete-orphan")
+    datasets = relationship("Dataset", back_populates="user", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"<User(id={self.id}, full_name={self.full_name}, email={self.email}, is_active={self.is_active}, is_superuser={self.is_superuser})>"

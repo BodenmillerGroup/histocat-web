@@ -21,7 +21,7 @@
           </v-tooltip>
           <v-tooltip top>
             <span>Delete</span>
-            <v-btn slot="activator" flat v-on:click="deleteExperiment($event, props.item.id)">
+            <v-btn slot="activator" flat @click="deleteExperiment($event, props.item.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-tooltip>
@@ -34,7 +34,7 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readAdminExperiments } from '@/modules/experiment/getters';
+  import { readExperiments } from '@/modules/experiment/getters';
   import { dispatchDeleteExperiment, dispatchGetExperiments } from '@/modules/experiment/actions';
   import UploadButton from '@/components/UploadButton.vue';
 
@@ -68,7 +68,7 @@
     ];
 
     get experiments() {
-      return readAdminExperiments(this.$store);
+      return readExperiments(this.$store);
     }
 
     async mounted() {

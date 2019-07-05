@@ -27,7 +27,7 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator';
-  import { readAdminExperiments, readTags } from '@/modules/experiment/getters';
+  import { readExperiments, readTags } from '@/modules/experiment/getters';
   import { dispatchGetExperiments, dispatchGetTags } from '@/modules/experiment/actions';
   import ExperimentCard from '@/components/ExperimentCard.vue';
 
@@ -47,7 +47,7 @@
     }
 
     get experiments() {
-      const all = readAdminExperiments(this.$store);
+      const all = readExperiments(this.$store);
       if (this.tags.length === 0) {
         return all;
       } else {

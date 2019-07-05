@@ -10,6 +10,7 @@ from app.modules.panorama import router as panorama_router
 from app.modules.roi import router as roi_router
 from app.modules.roi_point import router as roi_point_router
 from app.modules.user import router as user_router
+from app.modules.dataset import router as dataset_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router.router, prefix="/auth", tags=["auth"])
@@ -22,3 +23,4 @@ api_router.include_router(roi_point_router.router, prefix="/roi-points", tags=["
 api_router.include_router(acquisition_router.router, prefix="/acquisitions", tags=["acquisitions"])
 api_router.include_router(channel_router.router, prefix="/channels", tags=["channels"])
 api_router.include_router(user_router.router, prefix="/users", tags=["users"])
+api_router.include_router(dataset_router.router, prefix="/datasets", tags=["datasets"])

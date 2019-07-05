@@ -17,6 +17,7 @@ depends_on = None
 
 
 def upgrade():
+    op.execute('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')  # For uuid_generate_v4
     op.create_table(
         'user',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
@@ -32,3 +33,4 @@ def upgrade():
 
 def downgrade():
     op.drop_table('user')
+    op.execute('DROP EXTENSION IF EXISTS "uuid-ossp";')

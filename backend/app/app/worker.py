@@ -12,7 +12,9 @@ from app.io.mcd import import_mcd
 from app.io.ome_tiff_loader import OmeTiffLoader
 from app.io.text_loader import TextLoader
 
-import app.db.init_db
+from app.modules.dataset import crud as dataset_crud
+
+import app.db.init_db  # noqa
 
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
 dramatiq.set_broker(rabbitmq_broker)
@@ -41,7 +43,7 @@ def test_worker(word: str):
     logger.info(f'Testing worker: [{word}]')
 
 
-@dramatiq.actor(queue_name='default')
+@dramatiq.actor(queue_name='email')
 def send_email(email_to: str, subject_template="", html_template="", environment={}):
     logger.info(f'Sending email to: [{email_to}]')
     assert config.EMAILS_ENABLED, "no provided configuration for email variables"
@@ -61,7 +63,7 @@ def send_email(email_to: str, subject_template="", html_template="", environment
     logging.info(f"Send email result: {response}")
 
 
-@dramatiq.actor(queue_name='default')
+@dramatiq.actor(queue_name='processing')
 def import_slide(uri: str, experiment_id: int):
     logger.info(f'Importing slide into experiment [{experiment_id}] from {uri}')
 
@@ -77,3 +79,10 @@ def import_slide(uri: str, experiment_id: int):
         TextLoader.load(db_session, uri, experiment_id)
 
     os.remove(uri)
+
+
+@dramatiq.actor(queue_name='processing')
+def prepare_dataset(dataset_id: int):
+    logger.info(f'Preparing dataset [{dataset_id}]...')
+    dataset = dataset_crud.get(db_session, id=dataset_id)
+    logger.info(dataset)

@@ -4,9 +4,13 @@ import { ExperimentsState } from '.';
 import { IExperiment } from './models';
 
 export const getters = {
-  adminExperiments: (state: ExperimentsState) => state.experiments,
+  experiments: (state: ExperimentsState) => state.experiments,
+  datasets: (state: ExperimentsState) => state.datasets,
   adminOneExperiment: (state: ExperimentsState) => (id: number) => {
     return state.experiments.find((item) => item.id === id);
+  },
+  selectedExperimentId: (state: ExperimentsState) => {
+    return state.selectedExperimentId;
   },
   selectedExperiment: (state: ExperimentsState) => {
     return state.experiments.find((item) => item.id === state.selectedExperimentId);
@@ -49,9 +53,11 @@ export const getters = {
 const { read } = getStoreAccessors<ExperimentsState, RootState>('');
 
 export const readAdminOneExperiment = read(getters.adminOneExperiment);
-export const readAdminExperiments = read(getters.adminExperiments);
+export const readExperiments = read(getters.experiments);
 export const readSelectedExperiment = read(getters.selectedExperiment);
+export const readSelectedExperimentId = read(getters.selectedExperimentId);
 export const readTags = read(getters.tags);
 export const readSelectedAcquisition = read(getters.selectedAcquisition);
 export const readSelectedMetals = read(getters.selectedMetals);
 export const readSelectedChannels = read(getters.selectedChannels);
+export const readDatasets = read(getters.datasets);

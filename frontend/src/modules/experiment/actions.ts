@@ -5,9 +5,12 @@ import { getStoreAccessors } from 'typesafe-vuex';
 import { ActionContext } from 'vuex';
 import { ExperimentsState } from '.';
 import { api } from './api';
-import { IExperimentCreate, IExperimentUpdate } from './models';
+import { IDatasetCreate, IExperimentCreate, IExperimentUpdate } from './models';
 import {
+  commitDeleteDataset,
   commitDeleteExperiment,
+  commitSetDataset,
+  commitSetDatasets,
   commitSetExperiment,
   commitSetExperiments,
   commitSetTags,
@@ -98,9 +101,9 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
-  async actionGetExperimentDataset(context: ExperimentContext, id: number) {
+  async actionGetExperimentData(context: ExperimentContext, id: number) {
     try {
-      const data = await api.getExperimentDataset(context.rootState.main.token, id);
+      const data = await api.getExperimentData(context.rootState.main.token, id);
       if (data) {
         commitSetExperiment(context, data);
       }
@@ -115,6 +118,44 @@ export const actions = {
       await dispatchCheckApiError(context, error);
     }
   },
+  async actionCreateDataset(context: ExperimentContext, payload: IDatasetCreate) {
+    try {
+      const notification = { content: 'saving', showProgress: true };
+      commitAddNotification(context, notification);
+      const data = (await Promise.all([
+        api.createDataset(context.rootState.main.token, payload),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+      ]))[0];
+      commitSetDataset(context, data as any);
+      commitRemoveNotification(context, notification);
+      commitAddNotification(context, { content: 'Dataset successfully created', color: 'success' });
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
+  async actionGetOwnDatasets(context: ExperimentContext, experimentId: number) {
+    try {
+      const data = await api.getOwnDatasets(context.rootState.main.token, experimentId);
+      commitSetDatasets(context, data);
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
+  async actionDeleteDataset(context: ExperimentContext, id: number) {
+    try {
+      const notification = { content: 'deleting', showProgress: true };
+      commitAddNotification(context, notification);
+      const data = (await Promise.all([
+        api.deleteDataset(context.rootState.main.token, id),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+      ]))[0];
+      commitDeleteDataset(context, id);
+      commitRemoveNotification(context, notification);
+      commitAddNotification(context, { content: 'Dataset successfully deleted', color: 'success' });
+    } catch (error) {
+      await dispatchCheckApiError(context, error);
+    }
+  },
 };
 
 const { dispatch } = getStoreAccessors<ExperimentsState, RootState>('');
@@ -125,5 +166,8 @@ export const dispatchGetTags = dispatch(actions.actionGetTags);
 export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment);
 export const dispatchDeleteExperiment = dispatch(actions.actionDeleteExperiment);
 export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);
-export const dispatchGetExperimentDataset = dispatch(actions.actionGetExperimentDataset);
+export const dispatchGetExperimentData = dispatch(actions.actionGetExperimentData);
 export const dispatchGetChannelStats = dispatch(actions.actionGetChannelStats);
+export const dispatchCreateDataset = dispatch(actions.actionCreateDataset);
+export const dispatchGetOwnDatasets = dispatch(actions.actionGetOwnDatasets);
+export const dispatchDeleteDataset = dispatch(actions.actionDeleteDataset);

@@ -1,4 +1,4 @@
-import { IExperiment } from '@/modules/experiment/models';
+import { IDataset, IExperiment } from '@/modules/experiment/models';
 import { RootState } from '@/store';
 import { Module } from 'vuex';
 import { actions } from './actions';
@@ -7,6 +7,7 @@ import { mutations } from './mutations';
 
 export interface ExperimentsState {
   experiments: IExperiment[];
+  datasets: IDataset[];
   tags: string[];
   selectedExperimentId?: number;
   selectedAcquisitionId?: number;
@@ -15,6 +16,7 @@ export interface ExperimentsState {
 
 const defaultState: ExperimentsState = {
   experiments: [],
+  datasets: [],
   tags: [],
   selectedExperimentId: undefined,
   selectedAcquisitionId: undefined,

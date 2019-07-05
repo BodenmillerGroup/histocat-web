@@ -35,6 +35,7 @@ class Experiment(Base):
 
     user = relationship("User", back_populates="experiments")
     slides = relationship("Slide", back_populates="experiment", cascade="all, delete, delete-orphan")
+    datasets = relationship("Dataset", back_populates="experiment", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
     def slides_location(self) -> str:
@@ -42,6 +43,13 @@ class Experiment(Base):
         Location where slides data are stored
         """
         return os.path.join(self.location, "slides")
+
+    @autocreate_directory_property
+    def datasets_location(self) -> str:
+        """
+        Location where datasets are stored
+        """
+        return os.path.join(self.location, "datasets")
 
     def __repr__(self):
         return f"<Experiment(id={self.id}, name={self.name})>"
