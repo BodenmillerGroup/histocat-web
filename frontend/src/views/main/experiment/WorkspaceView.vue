@@ -24,7 +24,6 @@
         activatable
         transition
         return-object
-        open-on-click
         open-all
         selectable
       >
@@ -61,7 +60,11 @@
 <script lang="ts">
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
   import { IExperiment } from '@/modules/experiment/models';
-  import { commitSetActiveAcquisitionId, commitSetSelectedAcquisitionIds } from '@/modules/experiment/mutations';
+  import {
+    commitSetActiveAcquisitionId, commitSetActivePanoramaId,
+    commitSetActiveSlideId,
+    commitSetSelectedAcquisitionIds,
+  } from '@/modules/experiment/mutations';
   import InfoCard from '@/components/InfoCard.vue';
 
   @Component({
@@ -88,7 +91,11 @@
         return;
       }
       item = item[0];
-      if (item.hasOwnProperty('channels')) {
+      if (item.type === 'slide') {
+        commitSetActiveSlideId(this.$store, item['id']);
+      } else if (item.type === 'panorama') {
+        commitSetActivePanoramaId(this.$store, item['id']);
+      } else if (item.type === 'acquisition') {
         commitSetActiveAcquisitionId(this.$store, item['id']);
       }
     }

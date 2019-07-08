@@ -1,7 +1,9 @@
+import os
 from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from starlette.responses import FileResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
@@ -37,3 +39,16 @@ def read_by_id(
     """
     item = crud.get(db, id=id)
     return item
+
+
+@router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
+async def read_panorama_image(
+    id: int,
+    # current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get panorama image by id
+    """
+    item = crud.get(db, id=id)
+    return FileResponse(os.path.join(item.location, "panorama.png"), media_type="image/png")

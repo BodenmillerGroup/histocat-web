@@ -147,9 +147,12 @@ def import_mcd(db: Session, uri: str, experiment_id: int):
     with McdParser(uri) as mcd:
         slide_item = mcd.meta.objects["Slide"]["0"]
         slide = _import_slide(db, slide_item.properties, experiment_id)
+        mcd.save_meta_xml(slide.location)
+        mcd.save_slideimage(slide_item.properties["ID"], slide.location, "slide.png")
 
         for panorama_item in slide_item.childs["Panorama"].values():
             panorama = _import_panorama(db, panorama_item.properties, slide.id)
+            mcd.save_panorama(panorama_item.properties['ID'], panorama.location, "panorama.png")
 
             if "AcquisitionROI" in panorama_item.childs:
                 for roi_item in panorama_item.childs["AcquisitionROI"].values():

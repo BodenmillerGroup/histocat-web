@@ -5,8 +5,13 @@
 
 <script lang="ts">
   import { apiUrl } from '@/env';
-  import { readActiveAcquisition, readSelectedChannels } from '@/modules/experiment/getters';
-  import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import {
+    readActiveAcquisition,
+    readActivePanoramaId,
+    readActiveSlideId,
+    readSelectedChannels,
+  } from '@/modules/experiment/getters';
+  import { IAcquisition, IChannel, ISlide } from '@/modules/experiment/models';
   import { readChannelSettings, readMetalColorMap } from '@/modules/settings/getters';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
@@ -34,8 +39,58 @@
       return readMetalColorMap(this.$store);
     }
 
+    get activeSlideId() {
+      return readActiveSlideId(this.$store);
+    }
+
+    get activePanoramaId() {
+      return readActivePanoramaId(this.$store);
+    }
+
     get activeAcquisition() {
       return readActiveAcquisition(this.$store);
+    }
+
+    @Watch('activeSlideId')
+    onActiveSlideIdChanged(id?: number) {
+      if (!id) {
+        return;
+      }
+      const layers = [
+        new ImageLayer({
+          source: new Static({
+            imageLoadFunction: (image, src) => {
+              (image.getImage() as any).src = src;
+            },
+            url: `${apiUrl}/api/v1/slides/${id}/image`,
+            imageExtent: [0, 0, 800, 600],
+          }),
+        })
+      ];
+
+      this.map.getLayers().clear();
+      this.map.getLayers().extend(layers);
+    }
+
+    @Watch('activePanoramaId')
+    onActivePanoramaIdChanged(id?: number) {
+       if (!id) {
+        return;
+      }
+      const layers = [
+        new ImageLayer({
+          source: new Static({
+            imageLoadFunction: (image, src) => {
+              (image.getImage() as any).src = src;
+            },
+            url: `${apiUrl}/api/v1/panoramas/${id}/image`,
+            imageExtent: [0, 0, 800, 600],
+          }),
+        })
+      ];
+
+      this.map.getLayers().clear();
+      this.map.getLayers().extend(layers);
     }
 
     @Watch('activeAcquisition')
