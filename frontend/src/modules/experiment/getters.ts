@@ -68,4 +68,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   adminOneExperiment(id: number) {
     return this.state.experiments.find((item) => item.id === id);
   }
+
+  get activeWorkspaceNode() {
+    return this.state.activeWorkspaceNode;
+  }
 }

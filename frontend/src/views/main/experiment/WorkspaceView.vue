@@ -88,13 +88,7 @@
         return;
       }
       item = item[0];
-      if (item.type === 'slide') {
-        this.experimentContext.mutations.setActiveSlideId(item.id);
-      } else if (item.type === 'panorama') {
-        this.experimentContext.mutations.setActivePanoramaId(item.id);
-      } else if (item.type === 'acquisition') {
-        this.experimentContext.mutations.setActiveAcquisitionId(item.id);
-      }
+      this.experimentContext.mutations.setActiveWorkspaceNode(item);
     }
 
     @Watch('selected')

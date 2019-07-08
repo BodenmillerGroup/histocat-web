@@ -59,4 +59,17 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   setActiveAcquisitionId(id?: number) {
     this.state.activeAcquisitionId = id;
   }
+
+  setActiveWorkspaceNode(node?: { id: number, type: string}) {
+    this.state.activeWorkspaceNode = node;
+    if (node) {
+      if (node.type === 'slide') {
+      this.setActiveSlideId(node.id);
+    } else if (node.type === 'panorama') {
+      this.setActivePanoramaId(node.id);
+    } else if (node.type === 'acquisition') {
+      this.setActiveAcquisitionId(node.id);
+    }
+    }
+  }
 }

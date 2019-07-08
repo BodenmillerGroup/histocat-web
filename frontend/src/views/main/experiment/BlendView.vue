@@ -6,8 +6,9 @@
 <script lang="ts">
   import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
-  import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import { IAcquisition, IChannel, IPanorama } from '@/modules/experiment/models';
   import { settingsModule } from '@/modules/settings';
+  import { ImageType } from '@/utils';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
@@ -48,43 +49,101 @@
       return this.experimentContext.getters.activeAcquisition;
     }
 
-    @Watch('activeSlideId')
-    onActiveSlideIdChanged(id?: number) {
-      if (!id) {
-        return;
-      }
-      const layers = [
-        new ImageLayer({
-          source: new Static({
-            imageLoadFunction: (image, src) => {
-              (image.getImage() as any).src = src;
-            },
-            url: `${apiUrl}/api/v1/slides/${id}/image`,
-            imageExtent: [0, 0, 800, 600],
-          }),
-        }),
-      ];
-
-      this.map.getLayers().clear();
-      this.map.getLayers().extend(layers);
+    get activeWorkspaceNode() {
+      return this.experimentContext.getters.activeWorkspaceNode;
     }
 
-    @Watch('activePanoramaId')
-    onActivePanoramaIdChanged(id?: number) {
-      if (!id) {
+    @Watch('activeWorkspaceNode')
+    onActiveWorkspaceNodeChanged(node?: { id: number, type?: ImageType }) {
+      if (!node || !(node.type === 'slide' || node.type === 'panorama')) {
         return;
       }
-      const layers = [
-        new ImageLayer({
-          source: new Static({
-            imageLoadFunction: (image, src) => {
-              (image.getImage() as any).src = src;
-            },
-            url: `${apiUrl}/api/v1/panoramas/${id}/image`,
-            imageExtent: [0, 0, 800, 600],
-          }),
-        }),
-      ];
+
+      let extent: number[] = [];
+      let layers: ImageLayer[] = [];
+      switch (node.type) {
+        case 'slide': {
+          extent = [0, 0, 1200, 600];
+          layers = [
+            new ImageLayer({
+              source: new Static({
+                imageLoadFunction: (image, src) => {
+                  (image.getImage() as any).src = src;
+                },
+                url: `${apiUrl}/api/v1/slides/${node.id}/image`,
+                imageExtent: extent,
+              }),
+            }),
+          ];
+          break;
+        }
+
+        case 'panorama': {
+          const panorama = node as IPanorama;
+          extent = [0, 0, panorama.pixel_width, panorama.pixel_height];
+          layers = [
+            new ImageLayer({
+              source: new Static({
+                imageLoadFunction: (image, src) => {
+                  (image.getImage() as any).src = src;
+                },
+                url: `${apiUrl}/api/v1/panoramas/${node.id}/image`,
+                imageExtent: extent,
+              }),
+            }),
+          ];
+          break;
+        }
+      }
+
+      const projection = new Projection({
+        code: 'NONE',
+        units: 'pixels',
+        extent: extent,
+        getPointResolution: (pixelRes, point) => {
+          /*
+           * DICOM pixel spacing has millimeter unit while the projection has has meter unit.
+           */
+          const spacing = 0.0001 / 10 ** 3;
+          const res = pixelRes * spacing;
+          return (res);
+        },
+      });
+
+      const view = new View({
+        projection: projection,
+        center: getCenter(extent),
+        zoom: 4,
+        zoomFactor: 1.25,
+        maxZoom: 16,
+        enableRotation: false,
+      });
+
+      if (!this.map) {
+        this.map = new Map({
+          controls: defaultControls().extend([
+            new OverviewMap({
+              view: new View({
+                projection: projection,
+              }),
+            }),
+            new ScaleLine(),
+            new FullScreen(),
+          ]),
+          interactions: [
+            new DragPan({ kinetic: undefined }),
+            new MouseWheelZoom({ duration: 0 }),
+          ],
+          target: 'map',
+        });
+        this.map.on('precompose', this.precompose);
+      }
+      this.map.setView(view);
+
+      const existingExtent = this.map.getView().getProjection().getExtent();
+      if (!equals(existingExtent, extent)) {
+        this.map.getView().getProjection().setExtent(extent);
+      }
 
       this.map.getLayers().clear();
       this.map.getLayers().extend(layers);

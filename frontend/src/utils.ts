@@ -4,6 +4,8 @@ export const saveLocalToken = (token: string) => localStorage.setItem('token', t
 
 export const removeLocalToken = () => localStorage.removeItem('token');
 
+export type ImageType = 'slide' | 'panorama' | 'acquisition';
+
 export enum ChannelColor {
   Grayscale = '',
   Red = 'r',

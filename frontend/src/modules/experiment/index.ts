@@ -12,6 +12,7 @@ export class ExperimentState {
   activeSlideId?: number = undefined;
   activePanoramaId?: number = undefined;
   activeAcquisitionId?: number = undefined;
+  activeWorkspaceNode?: object = undefined;
   selectedAcquisitionIds: number[] = [];
   selectedMetals: string[] = [];
 }
