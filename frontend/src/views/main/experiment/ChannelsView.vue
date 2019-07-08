@@ -42,13 +42,13 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Watch } from 'vue-property-decorator';
-  import { readActiveAcquisition } from '@/modules/experiment/getters';
+  import { experimentModule } from '@/modules/experiment';
   import { IChannel } from '@/modules/experiment/models';
-  import { commitSetSelectedMetals } from '@/modules/experiment/mutations';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
   export default class ChannelsView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
 
     search = '';
     selected = [];
@@ -78,14 +78,14 @@
     ];
 
     get channels() {
-      const acquisition = readActiveAcquisition(this.$store);
+      const acquisition = this.experimentContext.getters.activeAcquisition;
       return acquisition && acquisition.channels;
     }
 
     @Watch('selected')
     onSelectedChanged(items: IChannel[]) {
       const selectedMetals = items.map(item => item.metal);
-      commitSetSelectedMetals(this.$store, selectedMetals);
+      this.experimentContext.mutations.setSelectedMetals(selectedMetals);
     }
   }
 </script>

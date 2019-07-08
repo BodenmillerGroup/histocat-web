@@ -114,13 +114,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Watch } from 'vue-property-decorator';
+  import { experimentModule } from '@/modules/experiment';
   import { IExperimentUpdate } from '@/modules/experiment/models';
-  import { dispatchGetExperiments, dispatchGetTags, dispatchUpdateExperiment } from '@/modules/experiment/actions';
-  import { readAdminOneExperiment, readTags } from '@/modules/experiment/getters';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
   export default class EditExperiment extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
+
     valid = true;
     name: string = '';
     description: string = '';
@@ -132,21 +133,21 @@
     search = null;
 
     get items(): any[] {
-      const list = readTags(this.$store);
+      const list = this.experimentContext.getters.tags;
       return list.map((item) => {
         return {
-          text: item
-        }
+          text: item,
+        };
       });
     }
 
     get experiment() {
-      return readAdminOneExperiment(this.$store)(+this.$router.currentRoute.params.id);
+      return this.experimentContext.getters.adminOneExperiment(+this.$router.currentRoute.params.id);
     }
 
     async mounted() {
-      await dispatchGetExperiments(this.$store);
-      await dispatchGetTags(this.$store);
+      await this.experimentContext.actions.getExperiments();
+      await this.experimentContext.actions.getTags();
       this.reset();
     }
 
@@ -175,7 +176,7 @@
       this.tags = val.map(v => {
         if (typeof v === 'string') {
           v = {
-            text: v
+            text: v,
           };
           this.items.push(v);
           this.nonce++;
@@ -217,7 +218,7 @@
         if (this.tags && this.tags.length > 0) {
           data.tags = this.tags.map(tag => tag.text);
         }
-        await dispatchUpdateExperiment(this.$store, { id: this.experiment!.id, data: data });
+        await this.experimentContext.actions.updateExperiment({ id: this.experiment!.id, data: data });
         this.$router.push('/main/admin/experiments');
       }
     }

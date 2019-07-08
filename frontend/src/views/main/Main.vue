@@ -96,12 +96,9 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-
   import { appName } from '@/env';
-  import { readDashboardMiniDrawer, readDashboardShowDrawer, readHasAdminAccess } from '@/modules/main/getters';
-  import { commitSetDashboardMiniDrawer, commitSetDashboardShowDrawer } from '@/modules/main/mutations';
-  import { dispatchUserLogOut } from '@/modules/main/actions';
+  import { mainModule } from '@/modules/main';
+  import { Component, Vue } from 'vue-property-decorator';
 
   const routeGuardMain = async (to, from, next) => {
     if (to.path === '/main') {
@@ -113,6 +110,8 @@
 
   @Component
   export default class Main extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     appName = appName;
 
     beforeRouteEnter(to, from, next) {
@@ -124,37 +123,35 @@
     }
 
     get miniDrawer() {
-      return readDashboardMiniDrawer(this.$store);
+      return this.mainContext.getters.dashboardMiniDrawer;
     }
 
     get showDrawer() {
-      return readDashboardShowDrawer(this.$store);
+      return this.mainContext.getters.dashboardShowDrawer;
     }
 
-    set showDrawer(value) {
-      commitSetDashboardShowDrawer(this.$store, value);
+    set showDrawer(value: boolean) {
+      this.mainContext.mutations.setDashboardShowDrawer(value);
     }
 
     switchShowDrawer() {
-      commitSetDashboardShowDrawer(
-        this.$store,
-        !readDashboardShowDrawer(this.$store),
+      this.mainContext.mutations.setDashboardShowDrawer(
+        !this.mainContext.getters.dashboardShowDrawer,
       );
     }
 
     switchMiniDrawer() {
-      commitSetDashboardMiniDrawer(
-        this.$store,
-        !readDashboardMiniDrawer(this.$store),
+      this.mainContext.mutations.setDashboardMiniDrawer(
+        !this.mainContext.getters.dashboardMiniDrawer,
       );
     }
 
     get hasAdminAccess() {
-      return readHasAdminAccess(this.$store);
+      return this.mainContext.getters.hasAdminAccess;
     }
 
     async logout() {
-      await dispatchUserLogOut(this.$store);
+      await this.mainContext.actions.userLogOut();
     }
   }
 </script>

@@ -3,12 +3,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { mainModule } from '@/modules/main';
   import { store } from '@/store';
-  import { readHasAdminAccess } from '@/modules/main/getters';
+  import { Component, Vue } from 'vue-property-decorator';
+
+  const mainContext = mainModule.context(store);
 
   const routeGuardAdmin = async (to, from, next) => {
-    if (!readHasAdminAccess(store)) {
+    if (!mainContext.getters.hasAdminAccess) {
       next('/main');
     } else {
       next();

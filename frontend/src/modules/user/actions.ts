@@ -1,60 +1,63 @@
-import { dispatchCheckApiError } from '@/modules/main/actions';
-import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
-import { ActionContext } from 'vuex';
+import { mainModule } from '@/modules/main';
+import { Store } from 'vuex';
+import { Actions, Context } from 'vuex-smart-module';
 import { UserState } from '.';
 import { api } from './api';
+import { UserGetters } from './getters';
 import { IUserProfileCreate, IUserProfileUpdate } from './models';
-import { commitSetUser, commitSetUsers } from './mutations';
+import { UserMutations } from './mutations';
 
-type UserContext = ActionContext<UserState, RootState>;
+export class UserActions extends Actions<UserState, UserGetters, UserMutations, UserActions> {
 
-export const actions = {
-  async actionGetUsers(context: UserContext) {
+  // Declare context type
+  main?: Context<typeof mainModule>;
+
+  // Called after the module is initialized
+  $init(store: Store<any>): void {
+    // Create and retain main module context
+    this.main = mainModule.context(store);
+  }
+
+  async getUsers() {
     try {
-      const data = await api.getUsers(context.rootState.main.token);
+      const data = await api.getUsers(this.main!.getters.token);
       if (data) {
-        commitSetUsers(context, data);
+        this.mutations.setUsers(data);
       }
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionUpdateUser(context: UserContext, payload: { id: number, user: IUserProfileUpdate }) {
+  }
+
+  async updateUser(payload: { id: number, user: IUserProfileUpdate }) {
     try {
       const loadingNotification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, loadingNotification);
+      this.main!.mutations.addNotification(loadingNotification);
       const data = (await Promise.all([
-        api.updateUser(context.rootState.main.token, payload.id, payload.user),
+        api.updateUser(this.main!.getters.token, payload.id, payload.user),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetUser(context, data as any);
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { content: 'User successfully updated', color: 'success' });
+      this.mutations.setUser(data as any);
+      this.main!.mutations.removeNotification(loadingNotification);
+      this.main!.mutations.addNotification({ content: 'User successfully updated', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionCreateUser(context: UserContext, payload: IUserProfileCreate) {
+  }
+
+  async createUser(payload: IUserProfileCreate) {
     try {
       const loadingNotification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, loadingNotification);
+      this.main!.mutations.addNotification(loadingNotification);
       const data = (await Promise.all([
-        api.createUser(context.rootState.main.token, payload),
+        api.createUser(this.main!.getters.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetUser(context, data as any);
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { content: 'User successfully created', color: 'success' });
+      this.mutations.setUser(data as any);
+      this.main!.mutations.removeNotification(loadingNotification);
+      this.main!.mutations.addNotification({ content: 'User successfully created', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-};
-
-const { dispatch } = getStoreAccessors<UserState, RootState>('');
-
-export const dispatchCreateUser = dispatch(actions.actionCreateUser);
-export const dispatchGetUsers = dispatch(actions.actionGetUsers);
-export const dispatchUpdateUser = dispatch(actions.actionUpdateUser);
+  }
+}

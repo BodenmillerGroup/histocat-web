@@ -3,20 +3,21 @@
 </template>
 
 <script lang="ts">
-  import { dispatchGetChannelStats } from '@/modules/experiment/actions';
+  import { experimentModule } from '@/modules/experiment';
   import { IChannel } from '@/modules/experiment/models';
-  import { readMetalColorMap } from '@/modules/settings/getters';
-  import { commitSetChannelSettings, commitSetMetalColor } from '@/modules/settings/mutations';
+  import { settingsModule } from '@/modules/settings';
   import * as d3 from 'd3';
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
   export default class ChannelHistogramView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
+    readonly settingsContext = settingsModule.context(this.$store);
 
     @Prop(Object) channel!: IChannel;
 
     async mounted() {
-      const stats = await dispatchGetChannelStats(this.$store, this.channel.id);
+      const stats = await this.experimentContext.actions.getChannelStats(this.channel.id);
       if (!stats) {
         return;
       }
@@ -82,14 +83,14 @@
             return idleTimeout = setTimeout(idled, 350);
           } // This allows to wait a little bit
           x.domain([0, xMax]);
-          commitSetChannelSettings(this.$store, {
+          this.settingsContext.mutations.setChannelSettings({
             id: this.channel.id,
             levels: undefined,
           });
         } else {
           const min = x.invert(extent[0]);
           const max = x.invert(extent[1]);
-          commitSetChannelSettings(this.$store, {
+          this.settingsContext.mutations.setChannelSettings({
             id: this.channel.id,
             levels: { min: Math.round(min), max: Math.round(max) },
           });
@@ -97,9 +98,9 @@
           scatter.select('.brush').call(brush.move as any, null); // This remove the grey brush area as soon as the selection has been done
         }
 
-        const colorMap = readMetalColorMap(this.$store);
+        const colorMap = this.settingsContext.getters.metalColorMap;
         const color = colorMap.get(this.channel.metal);
-        commitSetMetalColor(this.$store, { metal: this.channel.metal, color: color ? color : '' });
+        this.settingsContext.mutations.setMetalColor({ metal: this.channel.metal, color: color ? color : '' });
 
         // Update axis and circle position
         xAxis.call(d3.axisBottom(x));

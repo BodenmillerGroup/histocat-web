@@ -1,29 +1,38 @@
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
+import { Getters } from 'vuex-smart-module';
 import { MainState } from '.';
 
-export const getters = {
-  hasAdminAccess: (state: MainState) => {
+export class MainGetters extends Getters<MainState> {
+  get hasAdminAccess() {
     return (
-      state.userProfile &&
-      state.userProfile.is_superuser && state.userProfile.is_active);
-  },
-  loginError: (state: MainState) => state.logInError,
-  dashboardShowDrawer: (state: MainState) => state.dashboardShowDrawer,
-  dashboardMiniDrawer: (state: MainState) => state.dashboardMiniDrawer,
-  userProfile: (state: MainState) => state.userProfile,
-  token: (state: MainState) => state.token,
-  isLoggedIn: (state: MainState) => state.isLoggedIn,
-  firstNotification: (state: MainState) => state.notifications.length > 0 && state.notifications[0],
-};
+      this.state.userProfile &&
+      this.state.userProfile.is_superuser && this.state.userProfile.is_active);
+  }
 
-const { read } = getStoreAccessors<MainState, RootState>('');
+  get loginError() {
+    return this.state.logInError;
+  }
 
-export const readDashboardMiniDrawer = read(getters.dashboardMiniDrawer);
-export const readDashboardShowDrawer = read(getters.dashboardShowDrawer);
-export const readHasAdminAccess = read(getters.hasAdminAccess);
-export const readIsLoggedIn = read(getters.isLoggedIn);
-export const readLoginError = read(getters.loginError);
-export const readToken = read(getters.token);
-export const readUserProfile = read(getters.userProfile);
-export const readFirstNotification = read(getters.firstNotification);
+  get dashboardShowDrawer() {
+    return this.state.dashboardShowDrawer;
+  }
+
+  get dashboardMiniDrawer() {
+    return this.state.dashboardMiniDrawer;
+  }
+
+  get userProfile() {
+    return this.state.userProfile;
+  }
+
+  get token() {
+    return this.state.token;
+  }
+
+  get isLoggedIn() {
+    return this.state.isLoggedIn;
+  }
+
+  get firstNotification() {
+    return this.state.notifications.length > 0 && this.state.notifications[0];
+  }
+}

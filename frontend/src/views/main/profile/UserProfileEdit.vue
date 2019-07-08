@@ -44,19 +44,20 @@
 </template>
 
 <script lang="ts">
+  import { mainModule } from '@/modules/main';
   import { Component, Vue } from 'vue-property-decorator';
   import { IUserProfileUpdate } from '@/modules/user/models';
-  import { readUserProfile } from '@/modules/main/getters';
-  import { dispatchUpdateUserProfile } from '@/modules/main/actions';
 
   @Component
   export default class UserProfileEdit extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     valid = true;
     fullName: string = '';
     email: string = '';
 
     created() {
-      const userProfile = readUserProfile(this.$store);
+      const userProfile = this.userProfile;
       if (userProfile) {
         this.fullName = userProfile.full_name;
         this.email = userProfile.email;
@@ -64,11 +65,11 @@
     }
 
     get userProfile() {
-      return readUserProfile(this.$store);
+      return this.mainContext.getters.userProfile;
     }
 
     reset() {
-      const userProfile = readUserProfile(this.$store);
+      const userProfile = this.userProfile;
       if (userProfile) {
         this.fullName = userProfile.full_name;
         this.email = userProfile.email;
@@ -88,7 +89,7 @@
         if (this.email) {
           updatedProfile.email = this.email;
         }
-        await dispatchUpdateUserProfile(this.$store, updatedProfile);
+        await this.mainContext.actions.updateUserProfile(updatedProfile);
         this.$router.push('/main/profile');
       }
     }

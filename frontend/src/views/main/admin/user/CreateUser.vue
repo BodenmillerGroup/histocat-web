@@ -45,12 +45,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { userModule } from '@/modules/user';
   import { IUserProfileCreate } from '@/modules/user/models';
-  import { dispatchCreateUser, dispatchGetUsers } from '@/modules/user/actions';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class CreateUser extends Vue {
+    readonly userContext = userModule.context(this.$store);
+
     valid = false;
     fullName: string = '';
     email: string = '';
@@ -61,7 +63,7 @@
     password2: string = '';
 
     async mounted() {
-      await dispatchGetUsers(this.$store);
+      await this.userContext.actions.getUsers();
       this.reset();
     }
 
@@ -93,7 +95,7 @@
         updatedProfile.is_active = this.isActive;
         updatedProfile.is_superuser = this.isSuperuser;
         updatedProfile.password = this.password1;
-        await dispatchCreateUser(this.$store, updatedProfile);
+        await this.userContext.actions.createUser(updatedProfile);
         this.$router.push('/main/admin/users');
       }
     }

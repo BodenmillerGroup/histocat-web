@@ -18,10 +18,9 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
   import NotificationsManager from '@/components/NotificationsManager.vue';
-  import { readIsLoggedIn } from '@/modules/main/getters';
-  import { dispatchCheckLoggedIn } from '@/modules/main/actions';
+  import { mainModule } from '@/modules/main';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: {
@@ -29,13 +28,14 @@
     },
   })
   export default class App extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
 
     get loggedIn() {
-      return readIsLoggedIn(this.$store);
+      return this.mainContext.getters.isLoggedIn;
     }
 
     async created() {
-      await dispatchCheckLoggedIn(this.$store);
+      await this.mainContext.actions.checkLoggedIn();
     }
   }
 </script>

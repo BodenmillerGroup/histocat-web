@@ -48,19 +48,20 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { mainModule } from '@/modules/main';
   import { IUserProfileUpdate } from '@/modules/user/models';
-  import { readUserProfile } from '@/modules/main/getters';
-  import { dispatchUpdateUserProfile } from '@/modules/main/actions';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class UserProfileEdit extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     valid = true;
     password1 = '';
     password2 = '';
 
     get userProfile() {
-      return readUserProfile(this.$store);
+      return this.mainContext.getters.userProfile;
     }
 
     reset() {
@@ -77,7 +78,7 @@
       if (await this.$validator.validateAll()) {
         const updatedProfile: IUserProfileUpdate = {};
         updatedProfile.password = this.password1;
-        await dispatchUpdateUserProfile(this.$store, updatedProfile);
+        await this.mainContext.actions.updateUserProfile(updatedProfile);
         this.$router.push('/main/profile');
       }
     }

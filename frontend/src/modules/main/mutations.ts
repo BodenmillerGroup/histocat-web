@@ -1,44 +1,39 @@
 import { IUserProfile } from '@/modules/user/models';
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
+import { Mutations } from 'vuex-smart-module';
 import { MainState } from '.';
 import { AppNotification } from './models';
 
 
-export const mutations = {
-  setToken(state: MainState, payload: string) {
-    state.token = payload;
-  },
-  setLoggedIn(state: MainState, payload: boolean) {
-    state.isLoggedIn = payload;
-  },
-  setLogInError(state: MainState, payload: boolean) {
-    state.logInError = payload;
-  },
-  setUserProfile(state: MainState, payload: IUserProfile) {
-    state.userProfile = payload;
-  },
-  setDashboardMiniDrawer(state: MainState, payload: boolean) {
-    state.dashboardMiniDrawer = payload;
-  },
-  setDashboardShowDrawer(state: MainState, payload: boolean) {
-    state.dashboardShowDrawer = payload;
-  },
-  addNotification(state: MainState, payload: AppNotification) {
-    state.notifications.push(payload);
-  },
-  removeNotification(state: MainState, payload: AppNotification) {
-    state.notifications = state.notifications.filter((notification) => notification !== payload);
-  },
-};
+export class MainMutations extends Mutations<MainState> {
+  setToken(payload: string) {
+    this.state.token = payload;
+  }
 
-const { commit } = getStoreAccessors<MainState | any, RootState>('');
+  setLoggedIn(payload: boolean) {
+    this.state.isLoggedIn = payload;
+  }
 
-export const commitSetDashboardMiniDrawer = commit(mutations.setDashboardMiniDrawer);
-export const commitSetDashboardShowDrawer = commit(mutations.setDashboardShowDrawer);
-export const commitSetLoggedIn = commit(mutations.setLoggedIn);
-export const commitSetLogInError = commit(mutations.setLogInError);
-export const commitSetToken = commit(mutations.setToken);
-export const commitSetUserProfile = commit(mutations.setUserProfile);
-export const commitAddNotification = commit(mutations.addNotification);
-export const commitRemoveNotification = commit(mutations.removeNotification);
+  setLogInError(payload: boolean) {
+    this.state.logInError = payload;
+  }
+
+  setUserProfile(payload: IUserProfile) {
+    this.state.userProfile = payload;
+  }
+
+  setDashboardMiniDrawer(payload: boolean) {
+    this.state.dashboardMiniDrawer = payload;
+  }
+
+  setDashboardShowDrawer(payload: boolean) {
+    this.state.dashboardShowDrawer = payload;
+  }
+
+  addNotification(payload: AppNotification) {
+    this.state.notifications.push(payload);
+  }
+
+  removeNotification(payload: AppNotification) {
+    this.state.notifications = this.state.notifications.filter((notification) => notification !== payload);
+  }
+}

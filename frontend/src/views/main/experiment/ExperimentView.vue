@@ -56,9 +56,7 @@
 
 <script lang="ts">
   import LoadingView from '@/components/LoadingView.vue';
-  import { dispatchGetExperimentData, dispatchGetOwnDatasets } from '@/modules/experiment/actions';
-  import { readActiveExperiment } from '@/modules/experiment/getters';
-  import { commitSetDatasets, commitSetActiveExperimentId } from '@/modules/experiment/mutations';
+  import { experimentModule } from '@/modules/experiment';
   import BlendView from '@/views/main/experiment/BlendView.vue';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
   import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
@@ -79,13 +77,14 @@
     },
   })
   export default class ExperimentView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
 
     tab = 0;
 
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
     get experiment() {
-      return readActiveExperiment(this.$store);
+      return this.experimentContext.getters.activeExperiment;
     }
 
     get experimentData() {
@@ -112,16 +111,16 @@
 
     async mounted() {
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
-      commitSetActiveExperimentId(this.$store, experimentId);
+      this.experimentContext.mutations.setActiveExperimentId(experimentId);
       await Promise.all([
-        dispatchGetExperimentData(this.$store, experimentId),
-        dispatchGetOwnDatasets(this.$store, experimentId),
+        this.experimentContext.actions.getExperimentData(experimentId),
+        this.experimentContext.actions.getOwnDatasets(experimentId),
       ]);
     }
 
     async beforeDestroy() {
-      commitSetActiveExperimentId(this.$store, undefined);
-      commitSetDatasets(this.$store, []);
+      this.experimentContext.mutations.setActiveExperimentId(undefined);
+      this.experimentContext.mutations.setDatasets([]);
     }
   }
 </script>

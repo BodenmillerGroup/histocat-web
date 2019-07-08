@@ -1,37 +1,26 @@
-import { IDataset, IExperiment } from '@/modules/experiment/models';
-import { RootState } from '@/store';
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { getters } from './getters';
-import { mutations } from './mutations';
+import { Module } from 'vuex-smart-module';
+import { ExperimentActions } from './actions';
+import { ExperimentGetters } from './getters';
+import { IDataset, IExperiment } from './models';
+import { ExperimentMutations } from './mutations';
 
-export interface ExperimentsState {
-  experiments: IExperiment[];
-  datasets: IDataset[];
-  tags: string[];
-  activeExperimentId?: number;
-  activeSlideId?: number;
-  activePanoramaId?: number;
-  activeAcquisitionId?: number;
-  selectedAcquisitionIds: number[];
-  selectedMetals: string[];
+export class ExperimentState {
+  experiments: IExperiment[] = [];
+  datasets: IDataset[] = [];
+  tags: string[] = [];
+  activeExperimentId?: number = undefined;
+  activeSlideId?: number = undefined;
+  activePanoramaId?: number = undefined;
+  activeAcquisitionId?: number = undefined;
+  selectedAcquisitionIds: number[] = [];
+  selectedMetals: string[] = [];
 }
 
-const defaultState: ExperimentsState = {
-  experiments: [],
-  datasets: [],
-  tags: [],
-  activeExperimentId: undefined,
-  activeSlideId: undefined,
-  activePanoramaId: undefined,
-  activeAcquisitionId: undefined,
-  selectedAcquisitionIds: [],
-  selectedMetals: [],
-};
+export const experimentModule = new Module({
+  namespaced: false,
 
-export const experimentModule: Module<ExperimentsState, RootState> = {
-  state: defaultState,
-  mutations,
-  actions,
-  getters,
-};
+  state: ExperimentState,
+  getters: ExperimentGetters,
+  mutations: ExperimentMutations,
+  actions: ExperimentActions,
+});

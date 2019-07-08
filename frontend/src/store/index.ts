@@ -1,39 +1,37 @@
-import { experimentModule, ExperimentsState } from '@/modules/experiment';
-import { mainModule, MainState } from '@/modules/main';
-import { settingsModule, SettingsState } from '@/modules/settings';
-import { userModule, UserState } from '@/modules/user';
+import { experimentModule } from '@/modules/experiment';
+import { mainModule } from '@/modules/main';
+import { settingsModule } from '@/modules/settings';
+import { userModule } from '@/modules/user';
 import localforage from 'localforage';
 import Vue from 'vue';
-import Vuex, { StoreOptions } from 'vuex';
+import Vuex from 'vuex';
 import VuexPersistence from 'vuex-persist';
+import { createStore, Module } from 'vuex-smart-module';
 import createLogger from 'vuex/dist/logger';
 
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
 
-export interface RootState {
-  main: MainState;
-  user: UserState;
-  experiment: ExperimentsState;
-  settings: SettingsState;
-}
-
-const vuexStorage = new VuexPersistence<RootState>({
-  storage: localforage,
-  asyncStorage: true,
-  modules: [
-    'settings'
-  ]
-});
-
-const storeOptions: StoreOptions<RootState> = {
+const rootModule = new Module({
   modules: {
     main: mainModule,
     user: userModule,
     experiment: experimentModule,
     settings: settingsModule,
   },
+});
+
+const vuexStorage = new VuexPersistence<typeof rootModule>({
+  strictMode: debug,
+  storage: localforage,
+  asyncStorage: true,
+  modules: [
+    'settings',
+  ],
+});
+
+export const store = createStore(rootModule, {
   strict: debug,
   plugins: debug ? [
     vuexStorage.plugin,
@@ -41,8 +39,8 @@ const storeOptions: StoreOptions<RootState> = {
   ] : [
     vuexStorage.plugin,
   ],
-};
-
-export const store = new Vuex.Store<RootState>(storeOptions);
-
+  mutations: {
+    RESTORE_MUTATION: vuexStorage.RESTORE_MUTATION // this mutation **MUST** be named "RESTORE_MUTATION"
+  },
+});
 export default store;

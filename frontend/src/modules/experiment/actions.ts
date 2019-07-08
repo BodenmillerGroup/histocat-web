@@ -1,160 +1,166 @@
-import {
-  readActiveExperiment,
-  readActiveExperimentId,
-  readSelectedAcquisitionIds,
-  readSelectedMetals,
-} from '@/modules/experiment/getters';
-import { dispatchCheckApiError } from '@/modules/main/actions';
-import { commitAddNotification, commitRemoveNotification } from '@/modules/main/mutations';
+import { mainModule } from '@/modules/main';
+import { settingsModule } from '@/modules/settings';
 import { IChannelSettings } from '@/modules/settings/models';
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
-import { ActionContext } from 'vuex';
-import { ExperimentsState } from '.';
+import { Store } from 'vuex';
+import { Actions, Context } from 'vuex-smart-module';
+import { ExperimentState } from '.';
 import { api } from './api';
+import { ExperimentGetters } from './getters';
 import { IDatasetCreate, IExperimentCreate, IExperimentUpdate } from './models';
-import {
-  commitDeleteDataset,
-  commitDeleteExperiment,
-  commitSetDataset,
-  commitSetDatasets,
-  commitSetExperiment,
-  commitSetExperiments,
-  commitSetTags,
-} from './mutations';
+import { ExperimentMutations } from './mutations';
 
-type ExperimentContext = ActionContext<ExperimentsState, RootState>;
+export class ExperimentActions extends Actions<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions> {
 
-export const actions = {
-  async actionGetExperiments(context: ExperimentContext) {
+  // Declare context type
+  main?: Context<typeof mainModule>;
+  settings?: Context<typeof settingsModule>;
+
+  // Called after the module is initialized
+  $init(store: Store<any>): void {
+    // Create and retain main module context
+    this.main = mainModule.context(store);
+    this.settings = settingsModule.context(store);
+  }
+
+  async getExperiments() {
     try {
-      const data = await api.getExperiments(context.rootState.main.token);
+      const data = await api.getExperiments(this.main!.getters.token);
       if (data) {
-        commitSetExperiments(context, data);
+        this.mutations.setExperiments(data);
       }
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionGetTags(context: ExperimentContext) {
+  }
+
+  async getTags() {
     try {
-      const data = await api.getTags(context.rootState.main.token);
+      const data = await api.getTags(this.main!.getters.token);
       if (data) {
-        commitSetTags(context, data);
+        this.mutations.setTags(data);
       }
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionUpdateExperiment(context: ExperimentContext, payload: { id: number, data: IExperimentUpdate }) {
+  }
+
+  async updateExperiment(payload: { id: number, data: IExperimentUpdate }) {
     try {
       const notification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, notification);
+      this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
-        api.updateExperiment(context.rootState.main.token, payload.id, payload.data),
+        api.updateExperiment(this.main!.getters.token, payload.id, payload.data),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetExperiment(context, data as any);
-      commitRemoveNotification(context, notification);
-      commitAddNotification(context, { content: 'Experiment successfully updated', color: 'success' });
+      this.mutations.setExperiment(data as any);
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Experiment successfully updated', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionDeleteExperiment(context: ExperimentContext, id: number) {
+  }
+
+  async deleteExperiment(id: number) {
     try {
       const notification = { content: 'deleting', showProgress: true };
-      commitAddNotification(context, notification);
+      this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
-        api.deleteExperiment(context.rootState.main.token, id),
+        api.deleteExperiment(this.main!.getters.token, id),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitDeleteExperiment(context, id);
-      commitRemoveNotification(context, notification);
-      commitAddNotification(context, { content: 'Experiment successfully deleted', color: 'success' });
+      this.mutations.deleteExperiment(id);
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Experiment successfully deleted', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionCreateExperiment(context: ExperimentContext, payload: IExperimentCreate) {
+  }
+
+  async createExperiment(payload: IExperimentCreate) {
     try {
       const notification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, notification);
+      this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
-        api.createExperiment(context.rootState.main.token, payload),
+        api.createExperiment(this.main!.getters.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetExperiment(context, data as any);
-      commitRemoveNotification(context, notification);
-      commitAddNotification(context, { content: 'Experiment successfully created', color: 'success' });
+      this.mutations.setExperiment(data as any);
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Experiment successfully created', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionUploadSlide(context: ExperimentContext, payload: { id: number, data: any }) {
+  }
+
+  async uploadSlide(payload: { id: number, data: any }) {
     if (!payload.id) {
       return;
     }
     try {
       const notification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, notification);
+      this.main!.mutations.addNotification(notification);
       const response = (await Promise.all([
-        api.uploadSlide(context.rootState.main.token, payload.id, payload.data),
+        api.uploadSlide(this.main!.getters.token, payload.id, payload.data),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitRemoveNotification(context, notification);
-      commitAddNotification(context, { content: 'File successfully uploaded', color: 'success' });
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'File successfully uploaded', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionGetExperimentData(context: ExperimentContext, id: number) {
+  }
+
+  async getExperimentData(id: number) {
     try {
-      const data = await api.getExperimentData(context.rootState.main.token, id);
+      const data = await api.getExperimentData(this.main!.getters.token, id);
       if (data) {
-        commitSetExperiment(context, data);
+        this.mutations.setExperiment(data);
       }
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionGetChannelStats(context: ExperimentContext, id: number) {
+  }
+
+  async getChannelStats(id: number) {
     try {
-      return await api.getChannelStats(context.rootState.main.token, id);
+      return await api.getChannelStats(this.main!.getters.token, id);
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionGetOwnDatasets(context: ExperimentContext, experimentId: number) {
+  }
+
+  async getOwnDatasets(experimentId: number) {
     try {
-      const data = await api.getOwnDatasets(context.rootState.main.token, experimentId);
-      commitSetDatasets(context, data);
+      const data = await api.getOwnDatasets(this.main!.getters.token, experimentId);
+      this.mutations.setDatasets(data);
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionDeleteDataset(context: ExperimentContext, id: number) {
+  }
+
+  async deleteDataset(id: number) {
     try {
       const notification = { content: 'deleting', showProgress: true };
-      commitAddNotification(context, notification);
+      this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
-        api.deleteDataset(context.rootState.main.token, id),
+        api.deleteDataset(this.main!.getters.token, id),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitDeleteDataset(context, id);
-      commitRemoveNotification(context, notification);
-      commitAddNotification(context, { content: 'Dataset successfully deleted', color: 'success' });
+      this.mutations.deleteDataset(id);
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Dataset successfully deleted', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-  async actionCreateDataset(context: ExperimentContext, payload: { name: string, description: string }) {
-    const experimentId = readActiveExperimentId(context);
-    const acquisitionIds = readSelectedAcquisitionIds(context);
-    const metals = readSelectedMetals(context);
+  }
+
+  async createDataset(payload: { name: string, description: string }) {
+    const experimentId = this.getters.activeExperimentId;
+    const acquisitionIds = this.getters.selectedAcquisitionIds;
+    const metals = this.getters.selectedMetals;
     const channelsSettings: IChannelSettings[] = [];
 
-    const experiment = readActiveExperiment(context);
+    const experiment = this.getters.activeExperiment;
     if (experiment && experiment.slides) {
       for (const slide of experiment.slides) {
         for (const panorama of slide.panoramas) {
@@ -163,7 +169,7 @@ export const actions = {
               if (acquisitionIds.includes(acquisition.id)) {
                 for (const channel of acquisition.channels) {
                   if (metals.includes(channel.metal)) {
-                    const settings = context.getters.channelSettings(channel.id);
+                    const settings = this.settings!.getters.channelSettings(channel.id);
                     if (settings) {
                       channelsSettings.push(settings);
                     }
@@ -191,30 +197,16 @@ export const actions = {
 
     try {
       const notification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, notification);
+      this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
-        api.createDataset(context.rootState.main.token, params),
+        api.createDataset(this.main!.getters.token, params),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetDataset(context, data as any);
-      commitRemoveNotification(context, notification);
-      commitAddNotification(context, { content: 'Dataset successfully created', color: 'success' });
+      this.mutations.setDataset(data as any);
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Dataset successfully created', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.main!.actions.checkApiError(error);
     }
-  },
-};
-
-const { dispatch } = getStoreAccessors<ExperimentsState, RootState>('');
-
-export const dispatchCreateExperiment = dispatch(actions.actionCreateExperiment);
-export const dispatchGetExperiments = dispatch(actions.actionGetExperiments);
-export const dispatchGetTags = dispatch(actions.actionGetTags);
-export const dispatchUpdateExperiment = dispatch(actions.actionUpdateExperiment);
-export const dispatchDeleteExperiment = dispatch(actions.actionDeleteExperiment);
-export const dispatchUploadSlide = dispatch(actions.actionUploadSlide);
-export const dispatchGetExperimentData = dispatch(actions.actionGetExperimentData);
-export const dispatchGetChannelStats = dispatch(actions.actionGetChannelStats);
-export const dispatchCreateDataset = dispatch(actions.actionCreateDataset);
-export const dispatchGetOwnDatasets = dispatch(actions.actionGetOwnDatasets);
-export const dispatchDeleteDataset = dispatch(actions.actionDeleteDataset);
+  }
+}

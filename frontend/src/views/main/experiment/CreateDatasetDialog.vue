@@ -42,11 +42,13 @@
 </template>
 
 <script lang="ts">
-  import { dispatchCreateDataset } from '@/modules/experiment/actions';
+  import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class CreateDatasetDialog extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
+
     dialog = false;
 
     valid = false;
@@ -69,7 +71,7 @@
 
     async submit() {
       if (await this.$validator.validateAll()) {
-        await dispatchCreateDataset(this.$store, { name: this.name, description: this.description });
+        await this.experimentContext.actions.createDataset({ name: this.name, description: this.description });
         this.dialog = false;
       }
     }

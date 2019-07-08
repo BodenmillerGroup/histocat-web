@@ -1,69 +1,62 @@
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
-import { ExperimentsState } from '.';
+import { Mutations } from 'vuex-smart-module';
+import { ExperimentState } from '.';
 import { IDataset, IExperiment } from './models';
 
-export const mutations = {
-  setExperiments(state: ExperimentsState, experiments: IExperiment[]) {
-    state.experiments = experiments;
-  },
-  setDatasets(state: ExperimentsState, datasets: IDataset[]) {
-    state.datasets = datasets;
-  },
-  setTags(state: ExperimentsState, tags: string[]) {
-    state.tags = tags;
-  },
-  setExperiment(state: ExperimentsState, experiment: IExperiment) {
-    const items = state.experiments.filter((item) => item.id !== experiment.id);
+
+export class ExperimentMutations extends Mutations<ExperimentState> {
+  setExperiments(experiments: IExperiment[]) {
+    this.state.experiments = experiments;
+  }
+
+  setDatasets(datasets: IDataset[]) {
+    this.state.datasets = datasets;
+  }
+
+  setTags(tags: string[]) {
+    this.state.tags = tags;
+  }
+
+  setExperiment(experiment: IExperiment) {
+    const items = this.state.experiments.filter((item) => item.id !== experiment.id);
     items.push(experiment);
-    state.experiments = items;
-  },
-  setDataset(state: ExperimentsState, dataset: IDataset) {
-    const items = state.datasets.filter((item) => item.id !== dataset.id);
+    this.state.experiments = items;
+  }
+
+  setDataset(dataset: IDataset) {
+    const items = this.state.datasets.filter((item) => item.id !== dataset.id);
     items.push(dataset);
-    state.datasets = items;
-  },
-  deleteExperiment(state: ExperimentsState, id: number) {
-    state.experiments = state.experiments.filter((item) => item.id !== id);
-  },
-  deleteDataset(state: ExperimentsState, id: number) {
-    state.datasets = state.datasets.filter((item) => item.id !== id);
-  },
-  setSelectedMetals(state: ExperimentsState, metals: string[]) {
-    state.selectedMetals = metals;
-  },
-  setSelectedAcquisitionIds(state: ExperimentsState, ids: number[]) {
-    state.selectedAcquisitionIds = ids;
-  },
-  setActiveExperimentId(state: ExperimentsState, id?: number) {
-    state.activeExperimentId = id;
-  },
-  setActiveSlideId(state: ExperimentsState, id?: number) {
-    state.activeSlideId = id;
-  },
-  setActivePanoramaId(state: ExperimentsState, id?: number) {
-    state.activePanoramaId = id;
-  },
-  setActiveAcquisitionId(state: ExperimentsState, id?: number) {
-    state.activeAcquisitionId = id;
-  },
-};
+    this.state.datasets = items;
+  }
 
-const { commit } = getStoreAccessors<ExperimentsState, RootState>('');
+  deleteExperiment(id: number) {
+    this.state.experiments = this.state.experiments.filter((item) => item.id !== id);
+  }
 
-export const commitSetExperiments = commit(mutations.setExperiments);
-export const commitSetExperiment = commit(mutations.setExperiment);
-export const commitDeleteExperiment = commit(mutations.deleteExperiment);
+  deleteDataset(id: number) {
+    this.state.datasets = this.state.datasets.filter((item) => item.id !== id);
+  }
 
-export const commitSetDatasets = commit(mutations.setDatasets);
-export const commitSetDataset = commit(mutations.setDataset);
-export const commitDeleteDataset = commit(mutations.deleteDataset);
+  setSelectedMetals(metals: string[]) {
+    this.state.selectedMetals = metals;
+  }
 
-export const commitSetTags = commit(mutations.setTags);
-export const commitSetSelectedMetals = commit(mutations.setSelectedMetals);
-export const commitSetSelectedAcquisitionIds = commit(mutations.setSelectedAcquisitionIds);
+  setSelectedAcquisitionIds(ids: number[]) {
+    this.state.selectedAcquisitionIds = ids;
+  }
 
-export const commitSetActiveExperimentId = commit(mutations.setActiveExperimentId);
-export const commitSetActiveSlideId = commit(mutations.setActiveSlideId);
-export const commitSetActivePanoramaId = commit(mutations.setActivePanoramaId);
-export const commitSetActiveAcquisitionId = commit(mutations.setActiveAcquisitionId);
+  setActiveExperimentId(id?: number) {
+    this.state.activeExperimentId = id;
+  }
+
+  setActiveSlideId(id?: number) {
+    this.state.activeSlideId = id;
+  }
+
+  setActivePanoramaId(id?: number) {
+    this.state.activePanoramaId = id;
+  }
+
+  setActiveAcquisitionId(id?: number) {
+    this.state.activeAcquisitionId = id;
+  }
+}

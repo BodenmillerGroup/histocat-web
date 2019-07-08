@@ -54,14 +54,14 @@
 
 <script lang="ts">
   import InfoCard from '@/components/InfoCard.vue';
-  import { dispatchDeleteDataset } from '@/modules/experiment/actions';
-  import { readDatasets } from '@/modules/experiment/getters';
+  import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: { InfoCard },
   })
   export default class DatasetsView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
 
     search = '';
 
@@ -70,7 +70,7 @@
     };
 
     get datasets() {
-      return readDatasets(this.$store);
+      return this.experimentContext.getters.datasets;
     }
 
     get items() {
@@ -89,7 +89,7 @@
     async deleteDataset(event, id: number) {
       const res = await this.$confirm('Do you really want to delete dataset?', { title: 'Warning' });
       if (res) {
-        await dispatchDeleteDataset(this.$store, id);
+        await this.experimentContext.actions.deleteDataset(id);
       }
     }
   }

@@ -35,13 +35,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
   import { appName } from '@/env';
-  import { commitAddNotification } from '@/modules/main/mutations';
-  import { dispatchResetPassword } from '@/modules/main/actions';
+  import { mainModule } from '@/modules/main';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class UserProfileEdit extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     appName = appName;
     valid = true;
     password1 = '';
@@ -64,7 +65,7 @@
     checkToken() {
       const token = (this.$router.currentRoute.query.token as string);
       if (!token) {
-        commitAddNotification(this.$store, {
+        this.mainContext.mutations.addNotification({
           content: 'No token provided in the URL, start a new password recovery',
           color: 'error',
         });
@@ -78,7 +79,7 @@
       if (await this.$validator.validateAll()) {
         const token = this.checkToken();
         if (token) {
-          await dispatchResetPassword(this.$store, { token, password: this.password1 });
+          await this.mainContext.actions.resetPassword({ token, password: this.password1 });
           this.$router.push('/');
         }
       }

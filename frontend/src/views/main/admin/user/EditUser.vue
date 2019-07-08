@@ -103,13 +103,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
+  import { userModule } from '@/modules/user';
   import { IUserProfileUpdate } from '@/modules/user/models';
-  import { dispatchGetUsers, dispatchUpdateUser } from '@/modules/user/actions';
-  import { readAdminOneUser } from '@/modules/user/getters';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class EditUser extends Vue {
+    readonly userContext = userModule.context(this.$store);
+
     valid = true;
     fullName: string = '';
     email: string = '';
@@ -120,7 +121,7 @@
     password2: string = '';
 
     async mounted() {
-      await dispatchGetUsers(this.$store);
+      await this.userContext.actions.getUsers();
       this.reset();
     }
 
@@ -155,13 +156,13 @@
         if (this.setPassword) {
           data.password = this.password1;
         }
-        await dispatchUpdateUser(this.$store, { id: this.user!.id, user: data });
+        await this.userContext.actions.updateUser({ id: this.user!.id, user: data });
         this.$router.push('/main/admin/users');
       }
     }
 
     get user() {
-      return readAdminOneUser(this.$store)(+this.$router.currentRoute.params.id);
+      return this.userContext.getters.adminOneUser(+this.$router.currentRoute.params.id);
     }
   }
 </script>

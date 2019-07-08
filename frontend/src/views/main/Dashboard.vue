@@ -26,19 +26,20 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { readExperiments, readTags } from '@/modules/experiment/getters';
-  import { dispatchGetExperiments, dispatchGetTags } from '@/modules/experiment/actions';
   import ExperimentCard from '@/components/ExperimentCard.vue';
+  import { experimentModule } from '@/modules/experiment';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: { ExperimentCard },
   })
   export default class Dashboard extends Vue {
+    experimentContext = experimentModule.context(this.$store);
+
     tags: string[] = [];
 
     get items(): any[] {
-      const list = readTags(this.$store);
+      const list = this.experimentContext.getters.tags;
       return list.map((item) => {
         return {
           text: item,
@@ -47,7 +48,7 @@
     }
 
     get experiments() {
-      const all = readExperiments(this.$store);
+      const all = this.experimentContext.getters.experiments;
       if (this.tags.length === 0) {
         return all;
       } else {
@@ -60,8 +61,8 @@
     }
 
     async mounted() {
-      await dispatchGetExperiments(this.$store);
-      await dispatchGetTags(this.$store);
+      await this.experimentContext.actions.getExperiments();
+      await this.experimentContext.actions.getTags();
     }
   }
 </script>

@@ -98,13 +98,14 @@
 </template>
 
 <script lang="ts">
-  import { dispatchCreateExperiment, dispatchGetTags } from '@/modules/experiment/actions';
-  import { readTags } from '@/modules/experiment/getters';
+  import { experimentModule } from '@/modules/experiment';
   import { IExperimentCreate } from '@/modules/experiment/models';
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
   export default class CreateExperiment extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
+
     valid = false;
     name: string = '';
     description: string = '';
@@ -116,7 +117,7 @@
     search = null;
 
     get items(): any[] {
-      const list = readTags(this.$store);
+      const list = this.experimentContext.getters.tags;
       return list.map((item) => {
         return {
           text: item,
@@ -125,7 +126,7 @@
     }
 
     async mounted() {
-      await dispatchGetTags(this.$store);
+      await this.experimentContext.actions.getTags();
       this.reset();
     }
 
@@ -190,7 +191,7 @@
         if (this.tags.length > 0) {
           params.tags = this.tags.map(tag => tag.text);
         }
-        await dispatchCreateExperiment(this.$store, params);
+        await this.experimentContext.actions.createExperiment(params);
         this.$router.push('/main/admin/experiments');
       }
     }

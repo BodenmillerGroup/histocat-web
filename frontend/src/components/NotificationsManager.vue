@@ -9,14 +9,14 @@
 </template>
 
 <script lang="ts">
+  import { mainModule } from '@/modules/main';
   import { Component, Vue, Watch } from 'vue-property-decorator';
   import { AppNotification } from '@/modules/main/models';
-  import { commitRemoveNotification } from '@/modules/main/mutations';
-  import { readFirstNotification } from '@/modules/main/getters';
-  import { dispatchRemoveNotification } from '@/modules/main/actions';
 
   @Component
   export default class NotificationsManager extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     show: boolean = false;
     text: string = '';
     showProgress: boolean = false;
@@ -34,12 +34,12 @@
 
     async removeCurrentNotification() {
       if (this.currentNotification) {
-        commitRemoveNotification(this.$store, this.currentNotification);
+        this.mainContext.mutations.removeNotification(this.currentNotification);
       }
     }
 
     get firstNotification() {
-      return readFirstNotification(this.$store);
+      return this.mainContext.getters.firstNotification;
     }
 
     async setNotification(notification: AppNotification | false) {
@@ -63,7 +63,7 @@
       if (newNotification !== this.currentNotification) {
         await this.setNotification(newNotification);
         if (newNotification) {
-          dispatchRemoveNotification(this.$store, { notification: newNotification, timeout: 6500 });
+          this.mainContext.mutations.removeNotification(newNotification);
         }
       }
     }

@@ -5,14 +5,9 @@
 
 <script lang="ts">
   import { apiUrl } from '@/env';
-  import {
-    readActiveAcquisition,
-    readActivePanoramaId,
-    readActiveSlideId,
-    readSelectedChannels,
-  } from '@/modules/experiment/getters';
-  import { IAcquisition, IChannel, ISlide } from '@/modules/experiment/models';
-  import { readChannelSettings, readMetalColorMap } from '@/modules/settings/getters';
+  import { experimentModule } from '@/modules/experiment';
+  import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import { settingsModule } from '@/modules/settings';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
@@ -27,28 +22,30 @@
 
   @Component
   export default class BlendView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
+    readonly settingsContext = settingsModule.context(this.$store);
 
     // TODO: check for a better solution
     map!: Map;
 
     get selectedChannels() {
-      return readSelectedChannels(this.$store);
+      return this.experimentContext.getters.selectedChannels;
     }
 
     get metalColorMap() {
-      return readMetalColorMap(this.$store);
+      return this.settingsContext.getters.metalColorMap;
     }
 
     get activeSlideId() {
-      return readActiveSlideId(this.$store);
+      return this.experimentContext.getters.activeSlideId;
     }
 
     get activePanoramaId() {
-      return readActivePanoramaId(this.$store);
+      return this.experimentContext.getters.activePanoramaId;
     }
 
     get activeAcquisition() {
-      return readActiveAcquisition(this.$store);
+      return this.experimentContext.getters.activeAcquisition;
     }
 
     @Watch('activeSlideId')
@@ -65,7 +62,7 @@
             url: `${apiUrl}/api/v1/slides/${id}/image`,
             imageExtent: [0, 0, 800, 600],
           }),
-        })
+        }),
       ];
 
       this.map.getLayers().clear();
@@ -74,7 +71,7 @@
 
     @Watch('activePanoramaId')
     onActivePanoramaIdChanged(id?: number) {
-       if (!id) {
+      if (!id) {
         return;
       }
       const layers = [
@@ -86,7 +83,7 @@
             url: `${apiUrl}/api/v1/panoramas/${id}/image`,
             imageExtent: [0, 0, 800, 600],
           }),
-        })
+        }),
       ];
 
       this.map.getLayers().clear();
@@ -163,7 +160,7 @@
 
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
-      if (!this.activeAcquisition) {
+      if (!this.selectedChannels) {
         return;
       }
       const view = this.map.getView();
@@ -172,7 +169,7 @@
       const colorMap = this.metalColorMap;
       const layers = this.selectedChannels.map((channel) => {
         const color = colorMap.has(channel.metal) ? colorMap.get(channel.metal) : '';
-        const channelSettings = readChannelSettings(this.$store)(channel.id);
+        const channelSettings = this.settingsContext.getters.channelSettings(channel.id);
         const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
         const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
         return new ImageLayer({

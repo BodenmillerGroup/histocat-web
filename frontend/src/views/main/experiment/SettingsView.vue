@@ -7,17 +7,18 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { readSelectedChannels } from '@/modules/experiment/getters';
+  import { experimentModule } from '@/modules/experiment';
   import ChannelSettingsView from '@/views/main/experiment/ChannelSettingsView.vue';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: { ChannelSettingsView },
   })
   export default class SettingsView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
 
     get selectedChannels() {
-      return readSelectedChannels(this.$store);
+      return this.experimentContext.getters.selectedChannels;
     }
   }
 </script>

@@ -17,8 +17,7 @@
 
 <script lang="ts">
   import { IChannel } from '@/modules/experiment/models';
-  import { readMetalColorMap } from '@/modules/settings/getters';
-  import { commitSetMetalColor } from '@/modules/settings/mutations';
+  import { settingsModule } from '@/modules/settings';
   import { convertColorToIndex, convertIndexToColor } from '@/utils';
   import ChannelHistogramView from '@/views/main/experiment/ChannelHistogramView.vue';
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
@@ -27,11 +26,12 @@
     components: { ChannelHistogramView },
   })
   export default class ChannelSettingsView extends Vue {
+    readonly settingsContext = settingsModule.context(this.$store);
 
     @Prop(Object) channel!: IChannel;
 
     get metalColor() {
-      const colorMap = readMetalColorMap(this.$store);
+      const colorMap = this.settingsContext.getters.metalColorMap;
       const color = colorMap.get(this.channel.metal);
       return color ? color : '';
     }
@@ -40,7 +40,10 @@
 
     @Watch('colorIndex')
     onColorIndexChanged(colorIndex: number) {
-      commitSetMetalColor(this.$store, { metal: this.channel.metal, color: convertIndexToColor(colorIndex) });
+      this.settingsContext.mutations.setMetalColor({
+        metal: this.channel.metal,
+        color: convertIndexToColor(colorIndex),
+      });
     }
   }
 </script>

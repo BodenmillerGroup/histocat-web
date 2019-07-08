@@ -33,15 +33,16 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
-  import { readExperiments } from '@/modules/experiment/getters';
-  import { dispatchDeleteExperiment, dispatchGetExperiments } from '@/modules/experiment/actions';
   import UploadButton from '@/components/UploadButton.vue';
+  import { experimentModule } from '@/modules/experiment';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: { UploadButton },
   })
   export default class AdminExperiments extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
+
     headers = [
       {
         text: 'Name',
@@ -68,17 +69,17 @@
     ];
 
     get experiments() {
-      return readExperiments(this.$store);
+      return this.experimentContext.getters.experiments;
     }
 
     async mounted() {
-      await dispatchGetExperiments(this.$store);
+      await this.experimentContext.actions.getExperiments();
     }
 
     async deleteExperiment(event, id: number) {
       const res = await this.$confirm('Do you really want to delete experiment?', { title: 'Warning' });
       if (res) {
-        await dispatchDeleteExperiment(this.$store, id);
+        await this.experimentContext.actions.deleteExperiment(id);
       }
     }
   }

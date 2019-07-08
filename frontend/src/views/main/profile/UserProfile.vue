@@ -29,13 +29,15 @@
 </template>
 
 <script lang="ts">
+  import { mainModule } from '@/modules/main';
   import { Component, Vue } from 'vue-property-decorator';
-  import { readUserProfile } from '@/modules/main/getters';
 
   @Component
   export default class UserProfile extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     get userProfile() {
-      return readUserProfile(this.$store);
+      return this.mainContext.getters.userProfile;
     }
 
     goToEdit() {

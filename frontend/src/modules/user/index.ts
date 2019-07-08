@@ -1,21 +1,18 @@
-import { RootState } from '@/store';
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { getters } from './getters';
+import { UserActions } from '@/modules/user/actions';
+import { UserMutations } from '@/modules/user/mutations';
+import { Module } from 'vuex-smart-module';
+import { UserGetters } from './getters';
 import { IUserProfile } from './models';
-import { mutations } from './mutations';
 
-export interface UserState {
-  users: IUserProfile[];
+export class UserState {
+  users: IUserProfile[] = [];
 }
 
-const defaultState: UserState = {
-  users: [],
-};
+export const userModule = new Module({
+  namespaced: false,
 
-export const userModule: Module<UserState, RootState> = {
-  state: defaultState,
-  mutations,
-  actions,
-  getters,
-};
+  state: UserState,
+  getters: UserGetters,
+  mutations: UserMutations,
+  actions: UserActions,
+});

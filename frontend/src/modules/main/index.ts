@@ -1,34 +1,25 @@
 import { IUserProfile } from '@/modules/user/models';
-import { RootState } from '@/store';
-import { Module } from 'vuex';
-import { actions } from './actions';
-import { getters } from './getters';
+import { Module } from 'vuex-smart-module';
+import { MainActions } from './actions';
+import { MainGetters } from './getters';
 import { AppNotification } from './models';
-import { mutations } from './mutations';
+import { MainMutations } from './mutations';
 
-export interface MainState {
-  token: string;
-  isLoggedIn: boolean | null;
-  logInError: boolean;
-  userProfile: IUserProfile | null;
-  dashboardMiniDrawer: boolean;
-  dashboardShowDrawer: boolean;
-  notifications: AppNotification[];
+export class MainState {
+  token: string = '';
+  isLoggedIn: boolean | null = null;
+  logInError: boolean = false;
+  userProfile: IUserProfile | null = null;
+  dashboardMiniDrawer: boolean = true;
+  dashboardShowDrawer: boolean = true;
+  notifications: AppNotification[] = [];
 }
 
-const defaultState: MainState = {
-  isLoggedIn: null,
-  token: '',
-  logInError: false,
-  userProfile: null,
-  dashboardMiniDrawer: true,
-  dashboardShowDrawer: true,
-  notifications: [],
-};
+export const mainModule = new Module({
+  namespaced: false,
 
-export const mainModule: Module<MainState, RootState> = {
-  state: defaultState,
-  mutations,
-  actions,
-  getters,
-};
+  state: MainState,
+  getters: MainGetters,
+  mutations: MainMutations,
+  actions: MainActions,
+});

@@ -58,19 +58,16 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-  import { IExperiment } from '@/modules/experiment/models';
-  import {
-    commitSetActiveAcquisitionId, commitSetActivePanoramaId,
-    commitSetActiveSlideId,
-    commitSetSelectedAcquisitionIds,
-  } from '@/modules/experiment/mutations';
   import InfoCard from '@/components/InfoCard.vue';
+  import { experimentModule } from '@/modules/experiment';
+  import { IExperiment } from '@/modules/experiment/models';
+  import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
   @Component({
     components: { InfoCard },
   })
   export default class WorkspaceView extends Vue {
+    readonly experimentContext = experimentModule.context(this.$store);
 
     @Prop(Object) experiment?: IExperiment;
 
@@ -78,7 +75,7 @@
     search = null;
     active = [];
 
-    icons = {
+    readonly icons = {
       slide: 'mdi-folder-outline',
       panorama: 'mdi-apps',
       roi: 'mdi-blur',
@@ -92,11 +89,11 @@
       }
       item = item[0];
       if (item.type === 'slide') {
-        commitSetActiveSlideId(this.$store, item['id']);
+        this.experimentContext.mutations.setActiveSlideId(item.id);
       } else if (item.type === 'panorama') {
-        commitSetActivePanoramaId(this.$store, item['id']);
+        this.experimentContext.mutations.setActivePanoramaId(item.id);
       } else if (item.type === 'acquisition') {
-        commitSetActiveAcquisitionId(this.$store, item['id']);
+        this.experimentContext.mutations.setActiveAcquisitionId(item.id);
       }
     }
 
@@ -105,7 +102,7 @@
       const ids = items
         .filter((item) => item.type === 'acquisition')
         .map((acquisition) => acquisition.id);
-      commitSetSelectedAcquisitionIds(this.$store, ids);
+      this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
     }
 
     get filter() {

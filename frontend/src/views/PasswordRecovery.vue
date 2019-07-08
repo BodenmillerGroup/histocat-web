@@ -30,12 +30,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
   import { appName } from '@/env';
-  import { dispatchPasswordRecovery } from '@/modules/main/actions';
+  import { mainModule } from '@/modules/main';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class Login extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     valid = true;
     username: string = '';
     appName = appName;
@@ -45,7 +47,7 @@
     }
 
     submit() {
-      dispatchPasswordRecovery(this.$store, { username: this.username });
+      this.mainContext.actions.passwordRecovery({ username: this.username });
     }
   }
 </script>

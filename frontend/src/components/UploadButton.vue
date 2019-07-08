@@ -9,11 +9,13 @@
 </template>
 
 <script lang="ts">
+  import { experimentModule } from '@/modules/experiment';
   import { Component, Emit, Prop, Vue } from 'vue-property-decorator';
-  import { dispatchUploadSlide } from '@/modules/experiment/actions';
 
   @Component
   export default class UploadButton extends Vue {
+    experimentContext = experimentModule.context(this.$store);
+
     @Prop(Number) id!: number;
     @Prop(String) color!: string;
     @Prop({ default: false }) multiple!: boolean;
@@ -23,7 +25,7 @@
       const formData = new FormData();
       const file = e.target.files[0];
       formData.append('file', file, file.name);
-      await dispatchUploadSlide(this.$store, { id: this.id, data: formData });
+      await this.experimentContext.actions.uploadSlide({ id: this.id, data: formData });
       return e.target.files;
     }
 

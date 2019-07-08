@@ -1,17 +1,12 @@
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
+import { Getters } from 'vuex-smart-module';
 import { SettingsState } from '.';
 
-export const getters = {
-  channelSettings: (state: SettingsState) => (id: number) => {
-    return state.channelsSettings.get(id);
-  },
-  metalColorMap: (state: SettingsState) => {
-    return state.metalColorMap;
-  },
-};
+export class SettingsGetters extends Getters<SettingsState> {
+  channelSettings(id: number) {
+    return this.state.channelsSettings.get(id);
+  }
 
-const { read } = getStoreAccessors<SettingsState, RootState>('');
-
-export const readChannelSettings = read(getters.channelSettings);
-export const readMetalColorMap = read(getters.metalColorMap);
+  get metalColorMap() {
+    return this.state.metalColorMap;
+  }
+}

@@ -1,10 +1,7 @@
-import { RootState } from '@/store';
-import { getStoreAccessors } from 'typesafe-vuex';
-import { ActionContext } from 'vuex';
+import { Actions } from 'vuex-smart-module';
 import { SettingsState } from '.';
+import { SettingsGetters } from './getters';
+import { SettingsMutations } from './mutations';
 
-type SettingsContext = ActionContext<SettingsState, RootState>;
-
-export const actions = {};
-
-const { dispatch } = getStoreAccessors<SettingsState, RootState>('');
+export class SettingsActions extends Actions<SettingsState, SettingsGetters, SettingsMutations, SettingsActions> {
+}

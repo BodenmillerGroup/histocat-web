@@ -10,7 +10,8 @@
             </v-toolbar>
             <v-card-text>
               <v-form @keyup.enter="submit">
-                <v-text-field @keyup.enter="submit" v-model="email" prepend-icon="mdi-account" name="login" label="Login"
+                <v-text-field @keyup.enter="submit" v-model="email" prepend-icon="mdi-account" name="login"
+                              label="Login"
                               type="text"></v-text-field>
                 <v-text-field @keyup.enter="submit" v-model="password" prepend-icon="mdi-lock" name="password"
                               label="Password" id="password" type="password"></v-text-field>
@@ -36,23 +37,24 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator';
   import { appName } from '@/env';
-  import { readLoginError } from '@/modules/main/getters';
-  import { dispatchLogIn } from '@/modules/main/actions';
+  import { mainModule } from '@/modules/main';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class Login extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+
     email: string = '';
     password: string = '';
     appName = appName;
 
     get loginError() {
-      return readLoginError(this.$store);
+      return this.mainContext.getters.loginError;
     }
 
     submit() {
-      dispatchLogIn(this.$store, { username: this.email, password: this.password });
+      this.mainContext.actions.logIn({ username: this.email, password: this.password });
     }
   }
 </script>

@@ -32,12 +32,13 @@
 </template>
 
 <script lang="ts">
+  import { userModule } from '@/modules/user';
   import { Component, Vue } from 'vue-property-decorator';
-  import { readAdminUsers } from '@/modules/user/getters';
-  import { dispatchGetUsers } from '@/modules/user/actions';
 
   @Component
   export default class AdminUsers extends Vue {
+    readonly userContext = userModule.context(this.$store);
+
     headers = [
       {
         text: 'Name',
@@ -76,11 +77,11 @@
     ];
 
     get users() {
-      return readAdminUsers(this.$store);
+      return this.userContext.getters.adminUsers;
     }
 
     async mounted() {
-      await dispatchGetUsers(this.$store);
+      await this.userContext.actions.getUsers();
     }
   }
 </script>

@@ -1,174 +1,160 @@
 import { api } from '@/modules/user/api';
 import router from '@/router';
-import { RootState } from '@/store';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
-import { getStoreAccessors } from 'typesafe-vuex';
-import { ActionContext } from 'vuex';
+import { Actions } from 'vuex-smart-module';
 import { MainState } from '.';
+import { MainGetters } from './getters';
 import { AppNotification } from './models';
-import {
-  commitAddNotification,
-  commitRemoveNotification,
-  commitSetLoggedIn,
-  commitSetLogInError,
-  commitSetToken,
-  commitSetUserProfile,
-} from './mutations';
+import { MainMutations } from './mutations';
 
-type MainContext = ActionContext<MainState, RootState>;
-
-export const actions = {
-  async actionLogIn(context: MainContext, payload: { username: string; password: string }) {
+export class MainActions extends Actions<MainState, MainGetters, MainMutations, MainActions> {
+  async logIn(payload: { username: string; password: string }) {
     try {
       const data: any = await api.logInGetToken(payload.username, payload.password);
       const token = data.access_token;
       if (token) {
         saveLocalToken(token);
-        commitSetToken(context, token);
-        commitSetLoggedIn(context, true);
-        commitSetLogInError(context, false);
-        await dispatchGetUserProfile(context);
-        await dispatchRouteLoggedIn(context);
-        commitAddNotification(context, { content: 'Logged in', color: 'success' });
+        this.mutations.setToken(token);
+        this.mutations.setLoggedIn(true);
+        this.mutations.setLogInError(false);
+        await this.getUserProfile();
+        await this.routeLoggedIn();
+        this.mutations.addNotification({ content: 'Logged in', color: 'success' });
       } else {
-        await dispatchLogOut(context);
+        await this.logOut();
       }
     } catch (err) {
-      commitSetLogInError(context, true);
-      await dispatchLogOut(context);
+      this.mutations.setLogInError(true);
+      await this.logOut();
     }
-  },
-  async actionGetUserProfile(context: MainContext) {
+  }
+
+  async getUserProfile() {
     try {
-      const data = await api.getMe(context.state.token);
+      const data = await api.getMe(this.state.token);
       if (data) {
-        commitSetUserProfile(context, data);
+        this.mutations.setUserProfile(data);
       }
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.checkApiError(error);
     }
-  },
-  async actionUpdateUserProfile(context: MainContext, payload) {
+  }
+
+  async updateUserProfile(payload) {
     try {
       const loadingNotification = { content: 'saving', showProgress: true };
-      commitAddNotification(context, loadingNotification);
+      this.mutations.addNotification(loadingNotification);
       const data = (await Promise.all([
-        api.updateMe(context.state.token, payload),
+        api.updateMe(this.state.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitSetUserProfile(context, data);
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { content: 'Profile successfully updated', color: 'success' });
+      this.mutations.setUserProfile(data);
+      this.mutations.removeNotification(loadingNotification);
+      this.mutations.addNotification({ content: 'Profile successfully updated', color: 'success' });
     } catch (error) {
-      await dispatchCheckApiError(context, error);
+      await this.checkApiError(error);
     }
-  },
-  async actionCheckLoggedIn(context: MainContext) {
-    if (!context.state.isLoggedIn) {
-      let token = context.state.token;
+  }
+
+  async checkLoggedIn() {
+    if (!this.state.isLoggedIn) {
+      let token = this.state.token;
       if (!token) {
         const localToken = getLocalToken();
         if (localToken) {
-          commitSetToken(context, localToken);
+          this.mutations.setToken(localToken);
           token = localToken;
         }
       }
       if (token) {
         try {
           const data = await api.getMe(token);
-          commitSetLoggedIn(context, true);
-          commitSetUserProfile(context, data);
+          this.mutations.setLoggedIn(true);
+          this.mutations.setUserProfile(data);
         } catch (error) {
-          await dispatchRemoveLogIn(context);
+          await this.removeLogIn();
         }
       } else {
-        await dispatchRemoveLogIn(context);
+        await this.removeLogIn();
       }
     }
-  },
-  async actionRemoveLogIn(context: MainContext) {
+  }
+
+  async removeLogIn() {
     removeLocalToken();
-    commitSetToken(context, '');
-    commitSetLoggedIn(context, false);
-  },
-  async actionLogOut(context: MainContext) {
-    await dispatchRemoveLogIn(context);
-    await dispatchRouteLogOut(context);
-  },
-  async actionUserLogOut(context: MainContext) {
-    await dispatchLogOut(context);
-    commitAddNotification(context, { content: 'Logged out', color: 'success' });
-  },
-  actionRouteLogOut(context: MainContext) {
+    this.mutations.setToken('');
+    this.mutations.setLoggedIn(false);
+  }
+
+  async logOut() {
+    await this.removeLogIn();
+    await this.routeLogOut();
+  }
+
+  async userLogOut() {
+    await this.logOut();
+    this.mutations.addNotification({ content: 'Logged out', color: 'success' });
+  }
+
+  routeLogOut() {
     if (router.currentRoute.path !== '/login') {
       router.push('/login');
     }
-  },
-  async actionCheckApiError(context: MainContext, payload) {
+  }
+
+  async checkApiError(payload) {
     console.log('API error: ', payload);
     if (payload.response && payload.response.status === 401) {
-      await dispatchLogOut(context);
+      await this.logOut();
     }
-  },
-  actionRouteLoggedIn(context: MainContext) {
+  }
+
+  routeLoggedIn() {
     if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
       router.push('/main');
     }
-  },
-  async removeNotification(context: MainContext, payload: { notification: AppNotification, timeout: number }) {
+  }
+
+  async removeNotification(payload: { notification: AppNotification, timeout: number }) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        commitRemoveNotification(context, payload.notification);
+        this.mutations.removeNotification(payload.notification);
         resolve(true);
       }, payload.timeout);
     });
-  },
-  async passwordRecovery(context: MainContext, payload: { username: string }) {
+  }
+
+  async passwordRecovery(payload: { username: string }) {
     const loadingNotification = { content: 'Sending password recovery email', showProgress: true };
     try {
-      commitAddNotification(context, loadingNotification);
+      this.mutations.addNotification(loadingNotification);
       const response = (await Promise.all([
         api.passwordRecovery(payload.username),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { content: 'Password recovery email sent', color: 'success' });
-      await dispatchLogOut(context);
+      this.mutations.removeNotification(loadingNotification);
+      this.mutations.addNotification({ content: 'Password recovery email sent', color: 'success' });
+      await this.logOut();
     } catch (error) {
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { color: 'error', content: 'Incorrect username' });
+      this.mutations.removeNotification(loadingNotification);
+      this.mutations.addNotification({ color: 'error', content: 'Incorrect username' });
     }
-  },
-  async resetPassword(context: MainContext, payload: { password: string, token: string }) {
+  }
+
+  async resetPassword(payload: { password: string, token: string }) {
     const loadingNotification = { content: 'Resetting password', showProgress: true };
     try {
-      commitAddNotification(context, loadingNotification);
+      this.mutations.addNotification(loadingNotification);
       const response = (await Promise.all([
         api.resetPassword(payload.password, payload.token),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { content: 'Password successfully reset', color: 'success' });
-      await dispatchLogOut(context);
+      this.mutations.removeNotification(loadingNotification);
+      this.mutations.addNotification({ content: 'Password successfully reset', color: 'success' });
+      await this.logOut();
     } catch (error) {
-      commitRemoveNotification(context, loadingNotification);
-      commitAddNotification(context, { color: 'error', content: 'Error resetting password' });
+      this.mutations.removeNotification(loadingNotification);
+      this.mutations.addNotification({ color: 'error', content: 'Error resetting password' });
     }
-  },
-};
-
-const { dispatch } = getStoreAccessors<MainState | any, RootState>('');
-
-export const dispatchCheckApiError = dispatch(actions.actionCheckApiError);
-export const dispatchCheckLoggedIn = dispatch(actions.actionCheckLoggedIn);
-export const dispatchGetUserProfile = dispatch(actions.actionGetUserProfile);
-export const dispatchLogIn = dispatch(actions.actionLogIn);
-export const dispatchLogOut = dispatch(actions.actionLogOut);
-export const dispatchUserLogOut = dispatch(actions.actionUserLogOut);
-export const dispatchRemoveLogIn = dispatch(actions.actionRemoveLogIn);
-export const dispatchRouteLoggedIn = dispatch(actions.actionRouteLoggedIn);
-export const dispatchRouteLogOut = dispatch(actions.actionRouteLogOut);
-export const dispatchUpdateUserProfile = dispatch(actions.actionUpdateUserProfile);
-export const dispatchRemoveNotification = dispatch(actions.removeNotification);
-export const dispatchPasswordRecovery = dispatch(actions.passwordRecovery);
-export const dispatchResetPassword = dispatch(actions.resetPassword);
+  }
+}
