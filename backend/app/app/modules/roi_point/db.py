@@ -4,13 +4,11 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
-from app.core.utils import remove_location_upon_delete
 from app.db.base import Base
 
 logger = logging.getLogger(__name__)
 
 
-@remove_location_upon_delete
 class ROIPoint(Base):
     """
     ROIPoint
@@ -20,6 +18,8 @@ class ROIPoint(Base):
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     roi_id: int = sa.Column(sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
+    metaname: str = sa.Column('metaname', sa.String(4096))
+    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     order_number: int = sa.Column('order_number', sa.Integer())
     slide_x_pos_um: float = sa.Column('slide_x_pos_um', sa.Float())
     slide_y_pos_um: float = sa.Column('slide_y_pos_um', sa.Float())

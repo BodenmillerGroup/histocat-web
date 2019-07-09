@@ -26,6 +26,8 @@ class Acquisition(Base):
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     roi_id: int = sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
     description: str = sa.Column('description', sa.String())
+    metaname: str = sa.Column('metaname', sa.String(4096))
+    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     order_number: int = sa.Column('order_number', sa.Integer())
     ablation_power: float = sa.Column('ablation_power', sa.Float())
     ablation_distance_between_shots_x: float = sa.Column('ablation_distance_between_shots_x', sa.Float())

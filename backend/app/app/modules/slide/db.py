@@ -22,11 +22,16 @@ class Slide(Base):
     """
 
     __tablename__ = "slide"
+    __table_args__ = (
+        sa.UniqueConstraint('experiment_id', 'metaname', name='uq_experiment_slide_metaname'),
+    )
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     experiment_id: int = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
     uid: str = sa.Column('uid', UUID(), index=True)
     description: str = sa.Column('description', sa.String())
+    metaname: str = sa.Column('metaname', sa.String(4096))
+    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     filename: str = sa.Column('filename', sa.String(4096))
     slide_type: str = sa.Column('slide_type', sa.String())
     width_um: int = sa.Column('width_um', sa.Integer())

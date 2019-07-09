@@ -25,6 +25,8 @@ class Channel(Base):
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     acquisition_id: int = sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"),
                                     index=True)
+    metaname: str = sa.Column('metaname', sa.String(4096))
+    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     metal: str = sa.Column('metal', sa.String(), index=True)
     label: str = sa.Column('label', sa.String(), index=True)
     mass: int = sa.Column('mass', sa.Integer())

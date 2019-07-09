@@ -9,6 +9,8 @@ from app.modules.panorama.models import PanoramaDatasetModel
 # Properties to receive via API on creation
 class SlideCreateModel(BaseModel):
     experiment_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     uid: Optional[str]
     description: Optional[str]
     filename: Optional[str]
@@ -25,6 +27,8 @@ class SlideCreateModel(BaseModel):
 class SlideModel(BaseModel):
     id: int
     experiment_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     uid: Optional[str]
     description: Optional[str]
     filename: Optional[str]

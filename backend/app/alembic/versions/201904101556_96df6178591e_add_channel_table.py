@@ -21,6 +21,8 @@ def upgrade():
         'channel',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"), index=True),
+        sa.Column('metaname', sa.String(4096), index=True),
+        sa.Column('original_id', sa.Integer(), index=True),
         sa.Column('metal', sa.String(), index=True),
         sa.Column('label', sa.String(), index=True),
         sa.Column('mass', sa.Integer()),

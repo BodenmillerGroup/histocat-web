@@ -39,6 +39,7 @@
             :nudge-width="200"
             offset-x
             open-on-hover
+            lazy
           >
             <template v-slot:activator="{ on }">
               <v-btn
@@ -121,7 +122,7 @@
             });
             return Object.assign({}, panorama, { type: 'panorama', uid: Math.random(), children: rois });
           });
-          return Object.assign({}, slide, { type: 'slide', children: panoramas, uid: Math.random() });
+          return Object.assign({}, slide, { type: 'slide', description: slide.metaname, children: panoramas, uid: Math.random() });
         });
       }
     }

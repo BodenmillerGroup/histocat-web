@@ -63,6 +63,8 @@ export interface IDatasetCreate {
 export interface ISlide {
   id: number;
   experiment_id: number;
+  metaname: string;
+  original_id: number;
   uid: string;
   description: string;
   filename: string;
@@ -81,6 +83,8 @@ export interface ISlide {
 export interface IPanorama {
   id: number;
   slide_id: number;
+  metaname: string;
+  original_id: number;
   description: string;
   slide_x1_pos_um: number;
   slide_y1_pos_um: number;
@@ -105,6 +109,8 @@ export interface IPanorama {
 export interface IRoi {
   id: number;
   panorama_id: number;
+  metaname: string;
+  original_id: number;
   roi_type: string;
   location: string;
   created_at: string;
@@ -115,6 +121,8 @@ export interface IRoi {
 export interface IRoiPoint {
   id: number;
   roi_id: number;
+  metaname: string;
+  original_id: number;
   order_number: number;
   slide_x_pos_um: number;
   slide_y_pos_um: number;
@@ -126,6 +134,8 @@ export interface IRoiPoint {
 export interface IAcquisition {
   id: number;
   roi_id: number;
+  metaname: string;
+  original_id: number;
   description: string;
   order_number: number;
   ablation_power: number;
@@ -163,6 +173,8 @@ export interface IAcquisition {
 export interface IChannel {
   id: number;
   acquisition_id: number;
+  metaname: string;
+  original_id: number;
   metal: string;
   label: string;
   mass: number;

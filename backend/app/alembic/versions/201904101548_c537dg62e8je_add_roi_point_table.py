@@ -22,6 +22,8 @@ def upgrade():
         'roi_point',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True),
+        sa.Column('metaname', sa.String(4096), index=True),
+        sa.Column('original_id', sa.Integer(), index=True),
         sa.Column('order_number', sa.Integer()),
         sa.Column('slide_x_pos_um', sa.Float()),
         sa.Column('slide_y_pos_um', sa.Float()),

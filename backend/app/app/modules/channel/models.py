@@ -7,6 +7,8 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ChannelCreateModel(BaseModel):
     acquisition_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     metal: Optional[str]
     label: Optional[str]
     mass: Optional[int]
@@ -19,6 +21,8 @@ class ChannelCreateModel(BaseModel):
 class ChannelModel(BaseModel):
     id: int
     acquisition_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     metal: Optional[str]
     label: Optional[str]
     mass: Optional[int]

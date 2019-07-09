@@ -22,6 +22,8 @@ def upgrade():
         'panorama',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('slide_id', sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True),
+        sa.Column('metaname', sa.String(4096), index=True),
+        sa.Column('original_id', sa.Integer(), index=True),
         sa.Column('description', sa.String()),
         sa.Column('slide_x4_pos_um', sa.Float()),
         sa.Column('slide_y4_pos_um', sa.Float()),

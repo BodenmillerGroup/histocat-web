@@ -7,6 +7,8 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ROIPointCreateModel(BaseModel):
     roi_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     order_number: Optional[int]
     slide_x_pos_um: Optional[float]
     slide_y_pos_um: Optional[float]
@@ -18,6 +20,8 @@ class ROIPointCreateModel(BaseModel):
 class ROIPointModel(BaseModel):
     id: int
     roi_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     order_number: Optional[int]
     slide_x_pos_um: Optional[float]
     slide_y_pos_um: Optional[float]

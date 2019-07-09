@@ -25,6 +25,8 @@ class Panorama(Base):
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     slide_id: int = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True)
+    metaname: str = sa.Column('metaname', sa.String(4096))
+    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     description: str = sa.Column('description', sa.String())
     slide_x1_pos_um: float = sa.Column('slide_x1_pos_um', sa.Float())
     slide_y1_pos_um: float = sa.Column('slide_y1_pos_um', sa.Float())

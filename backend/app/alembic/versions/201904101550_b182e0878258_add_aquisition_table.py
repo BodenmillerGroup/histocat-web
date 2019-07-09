@@ -22,6 +22,8 @@ def upgrade():
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True),
         sa.Column('description', sa.String()),
+        sa.Column('metaname', sa.String(4096)),
+        sa.Column('original_id', sa.Integer(), index=True),
         sa.Column('order_number', sa.Integer()),
         sa.Column('ablation_power', sa.Float()),
         sa.Column('ablation_distance_between_shots_x', sa.Float()),

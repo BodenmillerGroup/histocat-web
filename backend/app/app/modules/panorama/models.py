@@ -9,6 +9,8 @@ from app.modules.roi.models import ROIDatasetModel
 # Properties to receive via API on creation
 class PanoramaCreateModel(BaseModel):
     slide_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     description: Optional[str]
     slide_x1_pos_um: Optional[float]
     slide_y1_pos_um: Optional[float]
@@ -31,6 +33,8 @@ class PanoramaCreateModel(BaseModel):
 class PanoramaModel(BaseModel):
     id: int
     slide_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     description: Optional[str]
     slide_x1_pos_um: Optional[float]
     slide_y1_pos_um: Optional[float]

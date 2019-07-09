@@ -9,6 +9,7 @@ from emails.template import JinjaTemplate
 from app.core import config
 from app.db.session import db_session
 from app.io.mcd import import_mcd
+from app.io import dataset
 from app.io.ome_tiff_loader import OmeTiffLoader
 from app.io.text_loader import TextLoader
 
@@ -84,5 +85,6 @@ def import_slide(uri: str, experiment_id: int):
 @dramatiq.actor(queue_name='processing')
 def prepare_dataset(dataset_id: int):
     logger.info(f'Preparing dataset [{dataset_id}]...')
-    dataset = dataset_crud.get(db_session, id=dataset_id)
-    logger.info(dataset.meta["input"])
+    item = dataset_crud.get(db_session, id=dataset_id)
+    dataset.prepare_dataset(db_session, item)
+    logger.info(item.meta["input"])

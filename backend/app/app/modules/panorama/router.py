@@ -51,4 +51,4 @@ async def read_panorama_image(
     Get panorama image by id
     """
     item = crud.get(db, id=id)
-    return FileResponse(os.path.join(item.location, "panorama.png"), media_type="image/png")
+    return FileResponse(os.path.join(item.location, item.metaname + "_pano.png"), media_type="image/png")

@@ -24,6 +24,8 @@ class ROI(Base):
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     panorama_id: int = sa.Column(sa.Integer(), sa.ForeignKey("panorama.id", ondelete="CASCADE"), index=True)
+    metaname: str = sa.Column('metaname', sa.String(4096))
+    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     roi_type: str = sa.Column('roi_type', sa.String(64))
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)

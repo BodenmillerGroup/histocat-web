@@ -20,7 +20,7 @@
     show: boolean = false;
     text: string = '';
     showProgress: boolean = false;
-    currentNotification: AppNotification | false = false;
+    currentNotification: AppNotification | false = false; s
 
     async hide() {
       this.show = false;
@@ -63,7 +63,7 @@
       if (newNotification !== this.currentNotification) {
         await this.setNotification(newNotification);
         if (newNotification) {
-          this.mainContext.mutations.removeNotification(newNotification);
+          this.mainContext.actions.removeNotification({ notification: newNotification, timeout: 6500 });
         }
       }
     }

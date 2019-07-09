@@ -9,6 +9,8 @@ from app.modules.channel.models import ChannelModel
 # Properties to receive via API on creation
 class AcquisitionCreateModel(BaseModel):
     roi_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     description: Optional[str]
     order_number: Optional[int]
     ablation_power: Optional[float]
@@ -44,6 +46,8 @@ class AcquisitionCreateModel(BaseModel):
 class AcquisitionModel(BaseModel):
     id: int
     roi_id: int
+    metaname: Optional[str]
+    original_id: Optional[int]
     description: Optional[str]
     order_number: Optional[int]
     ablation_power: Optional[float]
