@@ -6,9 +6,8 @@
 <script lang="ts">
   import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
-  import { IAcquisition, IChannel, IPanorama } from '@/modules/experiment/models';
+  import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { settingsModule } from '@/modules/settings';
-  import { ImageType } from '@/utils';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
@@ -28,6 +27,7 @@
 
     // TODO: check for a better solution
     map!: Map;
+    overviewMap!: OverviewMap;
 
     get selectedChannels() {
       return this.experimentContext.getters.selectedChannels;
@@ -37,65 +37,72 @@
       return this.settingsContext.getters.metalColorMap;
     }
 
-    get activeSlideId() {
-      return this.experimentContext.getters.activeSlideId;
-    }
-
-    get activePanoramaId() {
-      return this.experimentContext.getters.activePanoramaId;
-    }
-
     get activeAcquisition() {
       return this.experimentContext.getters.activeAcquisition;
     }
 
-    get activeWorkspaceNode() {
-      return this.experimentContext.getters.activeWorkspaceNode;
-    }
-
-    @Watch('activeWorkspaceNode')
-    onActiveWorkspaceNodeChanged(node?: { id: number, type?: ImageType }) {
-      if (!node || !(node.type === 'slide' || node.type === 'panorama')) {
+    @Watch('activeAcquisition')
+    onActiveAcquisitionChanged(acquisition: IAcquisition) {
+      if (!acquisition) {
         return;
       }
 
-      let extent: number[] = [];
-      let layers: ImageLayer[] = [];
-      switch (node.type) {
-        case 'slide': {
-          extent = [0, 0, 1200, 600];
-          layers = [
-            new ImageLayer({
-              source: new Static({
-                imageLoadFunction: (image, src) => {
-                  (image.getImage() as any).src = src;
-                },
-                url: `${apiUrl}/api/v1/slides/${node.id}/image`,
-                imageExtent: extent,
-              }),
-            }),
-          ];
-          break;
-        }
-
-        case 'panorama': {
-          const panorama = node as IPanorama;
-          extent = [0, 0, panorama.pixel_width, panorama.pixel_height];
-          layers = [
-            new ImageLayer({
-              source: new Static({
-                imageLoadFunction: (image, src) => {
-                  (image.getImage() as any).src = src;
-                },
-                url: `${apiUrl}/api/v1/panoramas/${node.id}/image`,
-                imageExtent: extent,
-              }),
-            }),
-          ];
-          break;
-        }
+      const extent = [0, 0, acquisition.max_x, acquisition.max_y];
+      if (!this.map) {
+        this.initMap(extent);
       }
 
+      const existingExtent = this.map.getView().getProjection().getExtent();
+      if (!equals(existingExtent, extent)) {
+        this.map.getView().getProjection().setExtent(extent);
+      }
+    }
+
+    @Watch('metalColorMap')
+    onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
+      this.onSelectedChannelsChanged([]);
+    }
+
+    @Watch('selectedChannels')
+    onSelectedChannelsChanged(channels: IChannel[]) {
+      if (!this.selectedChannels) {
+        return;
+      }
+      const projection = this.map.getView().getProjection();
+      const layers = this.selectedChannels.map((channel) => {
+        const color = this.metalColorMap.has(channel.metal) ? this.metalColorMap.get(channel.metal) : '';
+        const channelSettings = this.settingsContext.getters.channelSettings(channel.id);
+        const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
+        const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
+        return new ImageLayer({
+          source: new Static({
+            url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
+            imageExtent: projection.getExtent(),
+          }),
+        });
+      });
+      this.map.getLayers().clear();
+      this.map.getLayers().extend(layers);
+    }
+
+    beforeDestroy() {
+      if (this.map) {
+        this.map.un('precompose', this.precompose);
+      }
+    }
+
+    private precompose(evt) {
+      evt.context.imageSmoothingEnabled = false;
+      evt.context.webkitImageSmoothingEnabled = false;
+      evt.context.mozImageSmoothingEnabled = false;
+      evt.context.msImageSmoothingEnabled = false;
+      evt.context.globalCompositeOperation = 'screen';
+    };
+
+    private initMap(extent: number[]) {
+      // Map views always need a projection.  Here we just want to map image
+      // coordinates directly to map coordinates, so we create a projection that uses
+      // the image extent in pixels.
       const projection = new Projection({
         code: 'NONE',
         units: 'pixels',
@@ -119,147 +126,27 @@
         enableRotation: false,
       });
 
-      if (!this.map) {
-        this.map = new Map({
-          controls: defaultControls().extend([
-            new OverviewMap({
-              view: new View({
-                projection: projection,
-              }),
-            }),
-            new ScaleLine(),
-            new FullScreen(),
-          ]),
-          interactions: [
-            new DragPan({ kinetic: undefined }),
-            new MouseWheelZoom({ duration: 0 }),
-          ],
-          target: 'map',
-        });
-        this.map.on('precompose', this.precompose);
-      }
-      this.map.setView(view);
-
-      const existingExtent = this.map.getView().getProjection().getExtent();
-      if (!equals(existingExtent, extent)) {
-        this.map.getView().getProjection().setExtent(extent);
-      }
-
-      this.map.getLayers().clear();
-      this.map.getLayers().extend(layers);
-    }
-
-    @Watch('activeAcquisition')
-    onActiveAcquisitionChanged(acquisition: IAcquisition) {
-      if (!acquisition) {
-        return;
-      }
-
-      if (!this.map) {
-        // Map views always need a projection.  Here we just want to map image
-        // coordinates directly to map coordinates, so we create a projection that uses
-        // the image extent in pixels.
-        const extent = [0, 0, acquisition.max_x, acquisition.max_y];
-
-        const projection = new Projection({
-          code: 'NONE',
-          units: 'pixels',
-          extent: extent,
-          getPointResolution: (pixelRes, point) => {
-            /*
-             * DICOM pixel spacing has millimeter unit while the projection has has meter unit.
-             */
-            const spacing = 0.0001 / 10 ** 3;
-            const res = pixelRes * spacing;
-            return (res);
-          },
-        });
-
-        const view = new View({
+      this.overviewMap = new OverviewMap({
+        view: new View({
           projection: projection,
-          center: getCenter(extent),
-          zoom: 4,
-          zoomFactor: 1.25,
-          maxZoom: 16,
-          enableRotation: false,
-        });
-
-        this.map = new Map({
-          controls: defaultControls().extend([
-            new OverviewMap({
-              view: new View({
-                projection: projection,
-              }),
-            }),
-            new ScaleLine(),
-            new FullScreen(),
-          ]),
-          interactions: [
-            new DragPan({ kinetic: undefined }),
-            new MouseWheelZoom({ duration: 0 }),
-          ],
-          view: view,
-          target: 'map',
-        });
-
-        this.map.on('precompose', this.precompose);
-      }
-
-      const existingExtent = this.map.getView().getProjection().getExtent();
-      const newExtent = [0, 0, acquisition.max_x, acquisition.max_y];
-      if (!equals(existingExtent, newExtent)) {
-        this.map.getView().getProjection().setExtent(newExtent);
-      }
-    }
-
-    @Watch('metalColorMap')
-    onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
-      this.onSelectedChannelsChanged([]);
-    }
-
-    @Watch('selectedChannels')
-    onSelectedChannelsChanged(channels: IChannel[]) {
-      if (!this.selectedChannels) {
-        return;
-      }
-      const view = this.map.getView();
-      const projection = view.getProjection();
-      const extent = projection.getExtent();
-      const colorMap = this.metalColorMap;
-      const layers = this.selectedChannels.map((channel) => {
-        const color = colorMap.has(channel.metal) ? colorMap.get(channel.metal) : '';
-        const channelSettings = this.settingsContext.getters.channelSettings(channel.id);
-        const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
-        const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
-        return new ImageLayer({
-          source: new Static({
-            imageLoadFunction: (image, src) => {
-              (image.getImage() as any).src = src;
-            },
-            url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
-            projection: projection,
-            imageExtent: extent,
-          }),
-        });
+        }),
+      });
+      this.map = new Map({
+        controls: defaultControls().extend([
+          new ScaleLine(),
+          new FullScreen(),
+          this.overviewMap,
+        ]),
+        interactions: [
+          new DragPan({ kinetic: undefined }),
+          new MouseWheelZoom({ duration: 0 }),
+        ],
+        view: view,
+        target: 'map',
       });
 
-      this.map.getLayers().clear();
-      this.map.getLayers().extend(layers);
+      this.map.on('precompose', this.precompose);
     }
-
-    beforeDestroy() {
-      if (this.map) {
-        this.map.un('precompose', this.precompose);
-      }
-    }
-
-    private precompose(evt) {
-      evt.context.imageSmoothingEnabled = false;
-      evt.context.webkitImageSmoothingEnabled = false;
-      evt.context.mozImageSmoothingEnabled = false;
-      evt.context.msImageSmoothingEnabled = false;
-      evt.context.globalCompositeOperation = 'screen';
-    };
   }
 </script>
 

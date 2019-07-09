@@ -25,6 +25,7 @@
         transition
         return-object
         open-all
+        open-on-click
         selectable
       >
         <template v-slot:prepend="{ item }">
