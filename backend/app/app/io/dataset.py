@@ -1,29 +1,23 @@
 import csv
-import os
 import logging
-import shutil
+import os
 import re
-import zipfile
+import shutil
 from collections import namedtuple
-from io import StringIO
 from typing import Dict
-from xml.etree import cElementTree as ElementTree
 
+import imctools.external.omexml as ome
+import numpy as np
 from imctools.io.tiffwriter import TiffWriter
 from sqlalchemy.orm import Session
-import numpy as np
 
-from imctools.scripts import convertfolder2imcfolder
-from tifffile import tifffile
-
-from app.modules.dataset.db import Dataset
 from app.modules.acquisition import crud as acquisition_crud
+from app.modules.dataset.db import Dataset
 from app.modules.panorama.db import Panorama
 from app.modules.roi.db import ROI
 from app.modules.slide.db import Slide
 
 logger = logging.getLogger(__name__)
-
 
 # 1) input folders
 # the folders with the ziped acquisition files for the analysis
@@ -44,7 +38,7 @@ folders = ['../example_data']
 # Please look at the example!
 csv_pannel = '../config/example_pannel.csv'
 # Three columns are obligatory
-csv_pannel_metal = 'Metal Tag' # Contains the isotope channel measured int he form (Metal)(Mass), e.g. Ir191, Yb171 etc.
+csv_pannel_metal = 'Metal Tag'  # Contains the isotope channel measured int he form (Metal)(Mass), e.g. Ir191, Yb171 etc.
 # ilastik columm: Bool, either 0 or 1: this selects channels to be used for cellular segmentation
 # It is recommended to choose all channels/isotope that gave a signal that could help for cell identification,
 # e.g. nuclear, cytoplasmic or membranous signal
@@ -66,11 +60,32 @@ failed_images = list()
 # CSV_NAME: name of the column in the CSV to be used
 # SUFFIX: suffix of the tiff
 # ADDSUM: BOOL, should the sum of all channels be added as the first channel?
-list_analysis_stacks =[
+list_analysis_stacks = [
     (csv_pannel_ilastik, suffix_ilastik, 1),
     (csv_pannel_full, suffix_full, 0)
 ]
 
+pixeltype_dict = {
+    np.int64().dtype: ome.PT_FLOAT,
+    np.int32().dtype: ome.PT_INT32,
+    np.int16().dtype: ome.PT_INT16,
+    np.uint16().dtype: ome.PT_UINT16,
+    np.uint32().dtype: ome.PT_UINT32,
+    np.uint8().dtype: ome.PT_UINT8,
+    np.float32().dtype: ome.PT_FLOAT,
+    np.float64().dtype: ome.PT_DOUBLE,
+}
+
+pixeltype_np = {
+    ome.PT_FLOAT: np.dtype("float32"),
+    ome.PT_DOUBLE: np.dtype("float64"),
+    ome.PT_UINT8: np.dtype("uint8"),
+    ome.PT_UINT16: np.dtype("uint16"),
+    ome.PT_UINT32: np.dtype("uint32"),
+    ome.PT_INT8: np.dtype("int8"),
+    ome.PT_INT16: np.dtype("int16"),
+    ome.PT_INT32: np.dtype("int32"),
+}
 
 FileLink = namedtuple('FileLink', ['src', 'dst'])
 
@@ -87,44 +102,6 @@ def _save_meta_csv(items: Dict[int, dict], filename: str):
         for row in items.values():
             writer.writerow(row)
 
-def get_xml(file_name: str, original_description: str, dtype=None):
-    if dtype is not None:
-        pixeltype = self.pixeltype_dict[dtype]
-    else:
-        pixeltype = self.pixeltype
-    img = self.img_stack
-    omexml = ome.OMEXML()
-    omexml.image(0).Name = os.path.basename(file_name)
-    p = omexml.image(0).Pixels
-    p.SizeX = img.shape[0]
-    p.SizeY = img.shape[1]
-    p.SizeC = self.nchannels
-    p.SizeT = 1
-    p.SizeZ = 1
-    p.DimensionOrder = ome.DO_XYCZT
-    p.PixelType = pixeltype
-    p.channel_count = self.nchannels
-    for i in range(self.nchannels):
-        channel_info = self.channel_name[i]
-        p.Channel(i).set_SamplesPerPixel(1)
-        p.Channel(i).set_Name(channel_info)
-        p.Channel(i).set_ID("Channel:0:" + str(i))
-        p.Channel(i).node.set("Fluor", self.fluor[i])
-
-    # adds original metadata as annotation
-    if original_description is not None:
-        if isinstance(original_description, type(ElementTree.Element(1))):
-            result = StringIO()
-            ElementTree.ElementTree(original_description).write(result, encoding="unicode", method="xml")
-            desc = result.getvalue()
-        else:
-            desc = str(original_description)
-
-        omexml.structured_annotations.add_original_metadata("MCD-XML", desc)
-
-    xml = omexml.to_xml()
-    return xml
-
 
 def prepare_dataset(db: Session, dataset: Dataset):
     # output folder where the output files will be saved
@@ -138,7 +115,8 @@ def prepare_dataset(db: Session, dataset: Dataset):
     folder_histocat = os.path.join(folder_base, 'histocat')
     folder_uncertainty = os.path.join(folder_base, 'uncertainty')
 
-    for folder in [folder_base, folder_analysis, folder_ilastik, folder_ome, folder_cp, folder_histocat, folder_uncertainty]:
+    for folder in [folder_base, folder_analysis, folder_ilastik, folder_ome, folder_cp, folder_histocat,
+                   folder_uncertainty]:
         if not os.path.exists(folder):
             os.makedirs(folder)
 
@@ -183,7 +161,7 @@ def prepare_dataset(db: Session, dataset: Dataset):
                 channel_names.append(channel.label)
                 channel_fluors.append(channel.metal)
 
-        img_stack = np.stack(channel_arrays)
+        img_stack = np.stack(channel_arrays).swapaxes(2, 0)
 
         tiff_writer = TiffWriter(
             os.path.join(folder_ome, acquisition.metaname + '_ac.ome.tiff'),
