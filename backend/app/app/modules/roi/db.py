@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.core.utils import remove_location_upon_delete, autocreate_directory_property
@@ -27,6 +28,7 @@ class ROI(Base):
     metaname: str = sa.Column('metaname', sa.String(4096))
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     roi_type: str = sa.Column('roi_type', sa.String(64))
+    meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 

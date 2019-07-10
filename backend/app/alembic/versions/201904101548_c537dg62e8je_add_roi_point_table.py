@@ -29,6 +29,7 @@ def upgrade():
         sa.Column('slide_y_pos_um', sa.Float()),
         sa.Column('panorama_pixel_x_pos', sa.Integer()),
         sa.Column('panorama_pixel_y_pos', sa.Integer()),
+        sa.Column('meta', JSONB()),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import xml.etree.ElementTree as et
 
 import numpy as np
 from imctools.io.mcdparser import McdParser
@@ -21,7 +22,7 @@ from app.modules.slide import crud as slide_crud
 from app.modules.slide.models import SlideCreateModel
 
 
-def _import_slide(db: Session, item, experiment_id: int):
+def _import_slide(db: Session, item, original_metadata: str, experiment_id: int):
     params = SlideCreateModel(
         experiment_id=experiment_id,
         metaname=item.metaname,
@@ -35,6 +36,7 @@ def _import_slide(db: Session, item, experiment_id: int):
         image_end_offset=item.properties["ImageEndOffset"],
         image_start_offset=item.properties["ImageStartOffset"],
         image_file=item.properties["ImageFile"],
+        original_metadata=original_metadata,
         meta=item.properties,
     )
     slide = slide_crud.create(db, params=params)
@@ -73,6 +75,7 @@ def _import_roi(db: Session, item, panorama_id: int):
         metaname=item.metaname,
         original_id=item.id,
         roi_type=item.properties["ROIType"],
+        meta=item.properties,
     )
     roi = roi_crud.create(db, params=params)
     return roi
@@ -88,6 +91,7 @@ def _import_roi_point(db: Session, item, roi_id: int):
         slide_y_pos_um=item.properties["SlideYPosUm"],
         panorama_pixel_x_pos=item.properties["PanoramaPixelXPos"],
         panorama_pixel_y_pos=item.properties["PanoramaPixelYPos"],
+        meta=item.properties,
     )
     roi_point = roi_point_crud.create(db, params=params)
     return roi_point
@@ -161,7 +165,8 @@ def _import_channel(db: Session, item, imc_acquisition, acquisition_id: int):
 def import_mcd(db: Session, uri: str, experiment_id: int):
     with McdParser(uri) as mcd:
         slide_item = mcd.meta.objects["Slide"]["0"]
-        slide = _import_slide(db, slide_item, experiment_id)
+        original_metadata = et.tostring(mcd.xml, encoding="utf8", method="xml")
+        slide = _import_slide(db, slide_item, original_metadata, experiment_id)
         mcd.meta.save_meta_xml(slide.location)
         mcd.meta.save_meta_csv(slide.location)
         mcd.save_slideimage(slide_item.id, slide.location)

@@ -33,6 +33,7 @@ def upgrade():
         sa.Column('image_end_offset', sa.BigInteger()),
         sa.Column('image_start_offset', sa.BigInteger()),
         sa.Column('image_file', sa.String(4096)),
+        sa.Column('original_metadata', sa.String()),
         sa.Column('meta', JSONB()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),

@@ -39,6 +39,7 @@ class Slide(Base):
     image_end_offset: int = sa.Column('image_end_offset', sa.BigInteger())
     image_start_offset: int = sa.Column('image_start_offset', sa.BigInteger())
     image_file: str = sa.Column('image_file', sa.String(4096))
+    original_metadata: str = sa.Column('original_metadata', sa.String())
     meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)

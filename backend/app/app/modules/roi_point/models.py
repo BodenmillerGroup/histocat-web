@@ -14,6 +14,7 @@ class ROIPointCreateModel(BaseModel):
     slide_y_pos_um: Optional[float]
     panorama_pixel_x_pos: Optional[int]
     panorama_pixel_y_pos: Optional[int]
+    meta: Optional[dict]
 
 
 # Shared properties
@@ -27,6 +28,7 @@ class ROIPointModel(BaseModel):
     slide_y_pos_um: Optional[float]
     panorama_pixel_x_pos: Optional[int]
     panorama_pixel_y_pos: Optional[int]
+    meta: Optional[dict]
     created_at: datetime
 
     class Config:

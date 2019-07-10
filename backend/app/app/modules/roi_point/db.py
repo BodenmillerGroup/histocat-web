@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -25,6 +26,7 @@ class ROIPoint(Base):
     slide_y_pos_um: float = sa.Column('slide_y_pos_um', sa.Float())
     panorama_pixel_x_pos: int = sa.Column('panorama_pixel_x_pos', sa.Integer())
     panorama_pixel_y_pos: int = sa.Column('panorama_pixel_y_pos', sa.Integer())
+    meta: dict = sa.Column('meta', JSONB())
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     roi = relationship("ROI", back_populates="roi_points")

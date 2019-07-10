@@ -7,6 +7,7 @@ Create Date: 2019-04-10 15:46:16.499555
 """
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
 
@@ -24,6 +25,7 @@ def upgrade():
         sa.Column('metaname', sa.String(4096), index=True),
         sa.Column('original_id', sa.Integer(), index=True),
         sa.Column('roi_type', sa.String(64)),
+        sa.Column('meta', JSONB()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )

@@ -74,6 +74,7 @@ export interface ISlide {
   image_end_offset: number;
   image_start_offset: number;
   image_file: string;
+  original_metadata: string;
   meta: object;
   location: string;
   created_at: string;
@@ -113,6 +114,7 @@ export interface IRoi {
   original_id: number;
   roi_type: string;
   location: string;
+  meta: object;
   created_at: string;
   acquisitions: IAcquisition[];
   roi_points: IRoiPoint[];
@@ -128,6 +130,7 @@ export interface IRoiPoint {
   slide_y_pos_um: number;
   panorama_pixel_x_pos: number;
   panorama_pixel_y_pos: number;
+  meta: object;
   created_at: string;
 }
 

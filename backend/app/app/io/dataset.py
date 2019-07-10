@@ -5,11 +5,16 @@ import shutil
 import re
 import zipfile
 from collections import namedtuple
+from io import StringIO
 from typing import Dict
+from xml.etree import cElementTree as ElementTree
 
+from imctools.io.tiffwriter import TiffWriter
 from sqlalchemy.orm import Session
+import numpy as np
 
 from imctools.scripts import convertfolder2imcfolder
+from tifffile import tifffile
 
 from app.modules.dataset.db import Dataset
 from app.modules.acquisition import crud as acquisition_crud
@@ -77,10 +82,48 @@ def _save_meta_csv(items: Dict[int, dict], filename: str):
     """
     with open(filename, 'w') as f:
         cols = next(iter(items.values())).keys()
-        writer = csv.DictWriter(f, sorted(cols))
+        writer = csv.DictWriter(f, cols)
         writer.writeheader()
         for row in items.values():
             writer.writerow(row)
+
+def get_xml(file_name: str, original_description: str, dtype=None):
+    if dtype is not None:
+        pixeltype = self.pixeltype_dict[dtype]
+    else:
+        pixeltype = self.pixeltype
+    img = self.img_stack
+    omexml = ome.OMEXML()
+    omexml.image(0).Name = os.path.basename(file_name)
+    p = omexml.image(0).Pixels
+    p.SizeX = img.shape[0]
+    p.SizeY = img.shape[1]
+    p.SizeC = self.nchannels
+    p.SizeT = 1
+    p.SizeZ = 1
+    p.DimensionOrder = ome.DO_XYCZT
+    p.PixelType = pixeltype
+    p.channel_count = self.nchannels
+    for i in range(self.nchannels):
+        channel_info = self.channel_name[i]
+        p.Channel(i).set_SamplesPerPixel(1)
+        p.Channel(i).set_Name(channel_info)
+        p.Channel(i).set_ID("Channel:0:" + str(i))
+        p.Channel(i).node.set("Fluor", self.fluor[i])
+
+    # adds original metadata as annotation
+    if original_description is not None:
+        if isinstance(original_description, type(ElementTree.Element(1))):
+            result = StringIO()
+            ElementTree.ElementTree(original_description).write(result, encoding="unicode", method="xml")
+            desc = result.getvalue()
+        else:
+            desc = str(original_description)
+
+        omexml.structured_annotations.add_original_metadata("MCD-XML", desc)
+
+    xml = omexml.to_xml()
+    return xml
 
 
 def prepare_dataset(db: Session, dataset: Dataset):
@@ -109,8 +152,10 @@ def prepare_dataset(db: Session, dataset: Dataset):
     roi_csv: Dict[int, dict] = dict()
     acquisition_csv: Dict[int, dict] = dict()
     channel_csv: Dict[int, dict] = dict()
+    roi_point_csv: Dict[int, dict] = dict()
 
     short_slide_name = None
+    file_links = []
 
     for acquisition_id in acquisition_ids:
         acquisition = acquisition_crud.get(db, id=acquisition_id)
@@ -122,38 +167,43 @@ def prepare_dataset(db: Session, dataset: Dataset):
 
         slide_csv[slide.id] = slide.meta
         panorama_csv[panorama.id] = panorama.meta
-        # roi_csv[roi.id] = roi.meta
+        roi_csv[roi.id] = roi.meta
         acquisition_csv[acquisition.id] = acquisition.meta
 
-        links = [
+        for roi_point in roi.roi_points:
+            roi_point_csv[roi_point.id] = roi_point.meta
+
+        channel_arrays = []
+        channel_names = []
+        channel_fluors = []
+        for channel in acquisition.channels:
+            if channel.metal in metals:
+                channel_csv[channel.id] = channel.meta
+                channel_arrays.append(np.load(os.path.join(channel.location, "origin.npy")))
+                channel_names.append(channel.label)
+                channel_fluors.append(channel.metal)
+
+        img_stack = np.stack(channel_arrays)
+
+        tiff_writer = TiffWriter(
+            os.path.join(folder_ome, acquisition.metaname + '_ac.ome.tiff'),
+            img_stack=img_stack,
+            channel_name=channel_names,
+            original_description=slide.original_metadata,
+            fluor=channel_fluors,
+        )
+
+        tiff_writer.save_image(
+            mode='ome',
+            compression=0,
+            bigtiff=True,
+        )
+
+        file_links.extend([
             FileLink(
                 src=os.path.join(slide.location, short_slide_name + '_schema.xml'),
                 dst=os.path.join(folder_ome, short_slide_name + '_schema.xml')
             ),
-            # FileLink(
-            #     src=os.path.join(slide.location, short_slide_name + '_Slide_meta.csv'),
-            #     dst=os.path.join(folder_ome, short_slide_name + '_Slide_meta.csv')
-            # ),
-            # FileLink(
-            #     src=os.path.join(slide.location, short_slide_name + '_AcquisitionChannel_meta.csv'),
-            #     dst=os.path.join(folder_ome, short_slide_name + '_AcquisitionChannel_meta.csv')
-            # ),
-            # FileLink(
-            #     src=os.path.join(slide.location, short_slide_name + '_Acquisition_meta.csv'),
-            #     dst=os.path.join(folder_ome, short_slide_name + '_Acquisition_meta.csv')
-            # ),
-            # FileLink(
-            #     src=os.path.join(slide.location, short_slide_name + '_AcquisitionROI_meta.csv'),
-            #     dst=os.path.join(folder_ome, short_slide_name + '_AcquisitionROI_meta.csv')
-            # ),
-            # FileLink(
-            #     src=os.path.join(slide.location, short_slide_name + '_Panorama_meta.csv'),
-            #     dst=os.path.join(folder_ome, short_slide_name + '_Panorama_meta.csv')
-            # ),
-            # FileLink(
-            #     src=os.path.join(slide.location, short_slide_name + '_ROIPoint_meta.csv'),
-            #     dst=os.path.join(folder_ome, short_slide_name + '_ROIPoint_meta.csv')
-            # ),
             FileLink(
                 src=os.path.join(slide.location, slide.metaname + '_slide.png'),
                 dst=os.path.join(folder_ome, slide.metaname + '_slide.png')
@@ -162,9 +212,15 @@ def prepare_dataset(db: Session, dataset: Dataset):
                 src=os.path.join(panorama.location, panorama.metaname + '_pano.png'),
                 dst=os.path.join(folder_ome, panorama.metaname + '_pano.png')
             ),
-        ]
-        for link in links:
-            if not os.path.exists(link.dst):
-                shutil.copy2(link.src, link.dst)
+        ])
+
+    for link in file_links:
+        if not os.path.exists(link.dst):
+            shutil.copy2(link.src, link.dst)
 
     _save_meta_csv(slide_csv, os.path.join(folder_ome, short_slide_name + '_Slide_meta.csv'))
+    _save_meta_csv(panorama_csv, os.path.join(folder_ome, short_slide_name + '_Panorama_meta.csv'))
+    _save_meta_csv(roi_csv, os.path.join(folder_ome, short_slide_name + '_AcquisitionROI_meta.csv'))
+    _save_meta_csv(acquisition_csv, os.path.join(folder_ome, short_slide_name + '_Acquisition_meta.csv'))
+    _save_meta_csv(channel_csv, os.path.join(folder_ome, short_slide_name + '_AcquisitionChannel_meta.csv'))
+    _save_meta_csv(roi_point_csv, os.path.join(folder_ome, short_slide_name + '_ROIPoint_meta.csv'))

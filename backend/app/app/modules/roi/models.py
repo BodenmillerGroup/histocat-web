@@ -13,6 +13,7 @@ class ROICreateModel(BaseModel):
     metaname: Optional[str]
     original_id: Optional[int]
     roi_type: Optional[str]
+    meta: Optional[dict]
 
 
 # Shared properties
@@ -22,6 +23,7 @@ class ROIModel(BaseModel):
     metaname: Optional[str]
     original_id: Optional[int]
     roi_type: Optional[str]
+    meta: Optional[dict]
     location: Optional[str]
     created_at: datetime
 

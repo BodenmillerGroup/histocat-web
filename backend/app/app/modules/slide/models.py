@@ -20,6 +20,7 @@ class SlideCreateModel(BaseModel):
     image_end_offset: Optional[int]
     image_start_offset: Optional[int]
     image_file: Optional[str]
+    original_metadata: Optional[str]
     meta: Optional[dict]
 
 
@@ -38,6 +39,7 @@ class SlideModel(BaseModel):
     image_end_offset: Optional[int]
     image_start_offset: Optional[int]
     image_file: Optional[str]
+    original_metadata: Optional[str]
     meta: Optional[dict]
     location: Optional[str]
     created_at: datetime
