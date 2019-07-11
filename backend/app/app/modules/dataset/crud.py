@@ -28,6 +28,7 @@ def create(session: Session, *, user_id: int, params: DatasetCreateModel) -> Dat
         experiment_id=params.experiment_id,
         name=params.name,
         description=params.description,
+        input=params.input,
         meta=params.meta,
     )
     session.add(entity)

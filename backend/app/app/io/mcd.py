@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-import xml.etree.ElementTree as et
+from xml.etree import ElementTree
 
 import numpy as np
 from imctools.io.mcdparser import McdParser
@@ -27,15 +27,6 @@ def _import_slide(db: Session, item, original_metadata: str, experiment_id: int)
         experiment_id=experiment_id,
         metaname=item.metaname,
         original_id=item.id,
-        uid=item.properties["UID"],
-        description=item.properties["Description"],
-        filename=item.properties["Filename"],
-        slide_type=item.properties["SlideType"],
-        width_um=item.properties["WidthUm"],
-        height_um=item.properties["HeightUm"],
-        image_end_offset=item.properties["ImageEndOffset"],
-        image_start_offset=item.properties["ImageStartOffset"],
-        image_file=item.properties["ImageFile"],
         original_metadata=original_metadata,
         meta=item.properties,
     )
@@ -48,21 +39,6 @@ def _import_panorama(db: Session, item, slide_id: int):
         slide_id=slide_id,
         metaname=item.metaname,
         original_id=item.id,
-        description=item.properties["Description"],
-        slide_x1_pos_um=item.properties["SlideX1PosUm"],
-        slide_y1_pos_um=item.properties["SlideY1PosUm"],
-        slide_x2_pos_um=item.properties["SlideX2PosUm"],
-        slide_y2_pos_um=item.properties["SlideY2PosUm"],
-        slide_x3_pos_um=item.properties["SlideX3PosUm"],
-        slide_y3_pos_um=item.properties["SlideY3PosUm"],
-        slide_x4_pos_um=item.properties["SlideX4PosUm"],
-        slide_y4_pos_um=item.properties["SlideY4PosUm"],
-        image_end_offset=item.properties["ImageEndOffset"],
-        image_start_offset=item.properties["ImageStartOffset"],
-        pixel_width=item.properties["PixelWidth"],
-        pixel_height=item.properties["PixelHeight"],
-        image_format=item.properties["ImageFormat"],
-        pixel_scale_coef=item.properties["PixelScaleCoef"],
         meta=item.properties,
     )
     panorama = panorama_crud.create(db, params=params)
@@ -74,7 +50,6 @@ def _import_roi(db: Session, item, panorama_id: int):
         panorama_id=panorama_id,
         metaname=item.metaname,
         original_id=item.id,
-        roi_type=item.properties["ROIType"],
         meta=item.properties,
     )
     roi = roi_crud.create(db, params=params)
@@ -86,11 +61,6 @@ def _import_roi_point(db: Session, item, roi_id: int):
         roi_id=roi_id,
         metaname=item.metaname,
         original_id=item.id,
-        order_number=item.properties["OrderNumber"],
-        slide_x_pos_um=item.properties["SlideXPosUm"],
-        slide_y_pos_um=item.properties["SlideYPosUm"],
-        panorama_pixel_x_pos=item.properties["PanoramaPixelXPos"],
-        panorama_pixel_y_pos=item.properties["PanoramaPixelYPos"],
         meta=item.properties,
     )
     roi_point = roi_point_crud.create(db, params=params)
@@ -102,34 +72,6 @@ def _import_acquisition(db: Session, item, roi_id: int):
         roi_id=roi_id,
         metaname=item.metaname,
         original_id=item.id,
-        description=item.properties["Description"],
-        order_number=item.properties["OrderNumber"],
-        ablation_power=item.properties["AblationPower"],
-        ablation_distance_between_shots_x=item.properties["AblationDistanceBetweenShotsX"],
-        ablation_distance_between_shots_y=item.properties["AblationDistanceBetweenShotsY"],
-        ablation_frequency=item.properties["AblationFrequency"],
-        signal_type=item.properties["SignalType"],
-        dual_count_start=item.properties["DualCountStart"],
-        data_start_offset=item.properties["DataStartOffset"],
-        data_end_offset=item.properties["DataEndOffset"],
-        start_timestamp=item.properties["StartTimeStamp"],
-        end_timestamp=item.properties["EndTimeStamp"],
-        after_ablation_image_end_offset=item.properties["AfterAblationImageEndOffset"],
-        after_ablation_image_start_offset=item.properties["AfterAblationImageStartOffset"],
-        before_ablation_image_end_offset=item.properties["BeforeAblationImageEndOffset"],
-        before_ablation_image_start_offset=item.properties["BeforeAblationImageStartOffset"],
-        roi_start_x_pos_um=item.properties["ROIStartXPosUm"],
-        roi_start_y_pos_um=item.properties["ROIStartYPosUm"],
-        roi_end_x_pos_um=item.properties["ROIEndXPosUm"],
-        roi_end_y_pos_um=item.properties["ROIEndYPosUm"],
-        movement_type=item.properties["MovementType"],
-        segment_data_format=item.properties["SegmentDataFormat"],
-        value_bytes=item.properties["ValueBytes"],
-        max_y=item.properties["MaxY"],
-        max_x=item.properties["MaxX"],
-        plume_start=item.properties["PlumeStart"],
-        plume_end=item.properties["PlumeEnd"],
-        template=item.properties["Template"],
         meta=item.properties,
     )
     acquisition = acquisition_crud.create(db, params=params)
@@ -165,7 +107,7 @@ def _import_channel(db: Session, item, imc_acquisition, acquisition_id: int):
 def import_mcd(db: Session, uri: str, experiment_id: int):
     with McdParser(uri) as mcd:
         slide_item = mcd.meta.objects["Slide"]["0"]
-        original_metadata = et.tostring(mcd.xml, encoding="utf8", method="xml")
+        original_metadata = ElementTree.tostring(mcd.xml, encoding="utf8", method="xml")
         slide = _import_slide(db, slide_item, original_metadata, experiment_id)
         mcd.meta.save_meta_xml(slide.location)
         mcd.meta.save_meta_csv(slide.location)

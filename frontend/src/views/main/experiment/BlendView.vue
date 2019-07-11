@@ -47,7 +47,7 @@
         return;
       }
 
-      const extent = [0, 0, acquisition.max_x, acquisition.max_y];
+      const extent = [0, 0, parseInt(acquisition.meta.MaxX, 10), parseInt(acquisition.meta.MaxY, 10)];
       if (!this.map) {
         this.initMap(extent);
       }

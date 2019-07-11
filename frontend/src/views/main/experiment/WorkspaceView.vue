@@ -20,7 +20,6 @@
         :filter="filter"
         :active.sync="active"
         item-key="uid"
-        item-text="description"
         activatable
         transition
         return-object
@@ -111,18 +110,18 @@
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {
               const acquisitions = roi.acquisitions.map((acquisition) => {
-                return Object.assign({}, acquisition, { type: 'acquisition', uid: Math.random() });
+                return Object.assign({}, acquisition, { type: 'acquisition', name: acquisition.meta.Description, uid: Math.random() });
               });
               return Object.assign({}, roi, {
                 type: 'roi',
-                description: `ROI [${roi.roi_type}]`,
+                name: `ROI ${roi.original_id}`,
                 uid: Math.random(),
                 children: acquisitions,
               });
             });
-            return Object.assign({}, panorama, { type: 'panorama', uid: Math.random(), children: rois });
+            return Object.assign({}, panorama, { type: 'panorama', name: panorama.meta.Description, uid: Math.random(), children: rois });
           });
-          return Object.assign({}, slide, { type: 'slide', description: slide.metaname, children: panoramas, uid: Math.random() });
+          return Object.assign({}, slide, { type: 'slide', name: slide.metaname, children: panoramas, uid: Math.random() });
         });
       }
     }

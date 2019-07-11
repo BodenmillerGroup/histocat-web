@@ -24,7 +24,6 @@ def upgrade():
         sa.Column('panorama_id', sa.Integer(), sa.ForeignKey("panorama.id", ondelete="CASCADE"), index=True),
         sa.Column('metaname', sa.String(4096), index=True),
         sa.Column('original_id', sa.Integer(), index=True),
-        sa.Column('roi_type', sa.String(64)),
         sa.Column('meta', JSONB()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),

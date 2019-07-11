@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel
 
@@ -7,28 +7,28 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ChannelCreateModel(BaseModel):
     acquisition_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    metal: Optional[str]
-    label: Optional[str]
-    mass: Optional[int]
+    metaname: str
+    original_id: int
+    metal: str
+    label: str
+    mass: int
     max_intensity: Optional[int]
     min_intensity: Optional[int]
-    meta: Optional[dict]
+    meta: Dict[str, str]
 
 
 # Shared properties
 class ChannelModel(BaseModel):
     id: int
     acquisition_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    metal: Optional[str]
-    label: Optional[str]
-    mass: Optional[int]
+    metaname: str
+    original_id: int
+    metal: str
+    label: str
+    mass: int
     max_intensity: Optional[int]
     min_intensity: Optional[int]
-    meta: Optional[dict]
+    meta: Dict[str, str]
     location: Optional[str]
     created_at: datetime
 

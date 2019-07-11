@@ -1,6 +1,7 @@
-import os
 import logging
+import os
 from datetime import datetime
+from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
@@ -27,7 +28,6 @@ class ROI(Base):
     panorama_id: int = sa.Column(sa.Integer(), sa.ForeignKey("panorama.id", ondelete="CASCADE"), index=True)
     metaname: str = sa.Column('metaname', sa.String(4096))
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
-    roi_type: str = sa.Column('roi_type', sa.String(64))
     meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
@@ -35,6 +35,10 @@ class ROI(Base):
     panorama = relationship("Panorama", back_populates="rois")
     acquisitions = relationship("Acquisition", back_populates="roi", cascade="all, delete, delete-orphan")
     roi_points = relationship("ROIPoint", back_populates="roi", cascade="all, delete, delete-orphan")
+
+    @property
+    def ROIType(self) -> Optional[str]:
+        return self.meta.get('ROIType')
 
     @autocreate_directory_property
     def acquisitions_location(self) -> str:
@@ -44,4 +48,4 @@ class ROI(Base):
         return os.path.join(self.location, "acquisitions")
 
     def __repr__(self):
-        return f"<ROI(id={self.id}, roi_type={self.roi_type})>"
+        return f"<ROI(id={self.id}, metaname={self.metaname})>"

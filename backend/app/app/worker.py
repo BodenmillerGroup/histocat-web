@@ -87,4 +87,3 @@ def prepare_dataset(dataset_id: int):
     logger.info(f'Preparing dataset [{dataset_id}]...')
     item = dataset_crud.get(db_session, id=dataset_id)
     dataset.prepare_dataset(db_session, item)
-    logger.info(item.meta["input"])

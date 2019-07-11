@@ -9,6 +9,7 @@ class DatasetCreateModel(BaseModel):
     experiment_id: int
     name: str
     description: Optional[str]
+    input: Optional[dict]
     meta: Optional[dict]
 
 
@@ -21,6 +22,7 @@ class DatasetModel(BaseModel):
     name: str
     description: Optional[str]
     status: str
+    input: Optional[dict]
     meta: Optional[dict]
     location: Optional[str]
     created_at: datetime
