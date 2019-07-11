@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Dict
 
 from pydantic import BaseModel
 
@@ -7,28 +7,18 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ROIPointCreateModel(BaseModel):
     roi_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    order_number: Optional[int]
-    slide_x_pos_um: Optional[float]
-    slide_y_pos_um: Optional[float]
-    panorama_pixel_x_pos: Optional[int]
-    panorama_pixel_y_pos: Optional[int]
-    meta: Optional[dict]
+    metaname: str
+    original_id: int
+    meta: Dict[str, str]
 
 
 # Shared properties
 class ROIPointModel(BaseModel):
     id: int
     roi_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    order_number: Optional[int]
-    slide_x_pos_um: Optional[float]
-    slide_y_pos_um: Optional[float]
-    panorama_pixel_x_pos: Optional[int]
-    panorama_pixel_y_pos: Optional[int]
-    meta: Optional[dict]
+    metaname: str
+    original_id: int
+    meta: Dict[str, str]
     created_at: datetime
 
     class Config:

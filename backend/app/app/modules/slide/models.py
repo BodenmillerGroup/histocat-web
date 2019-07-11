@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel
 
@@ -9,38 +9,20 @@ from app.modules.panorama.models import PanoramaDatasetModel
 # Properties to receive via API on creation
 class SlideCreateModel(BaseModel):
     experiment_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    uid: Optional[str]
-    description: Optional[str]
-    filename: Optional[str]
-    slide_type: Optional[str]
-    width_um: Optional[int]
-    height_um: Optional[int]
-    image_end_offset: Optional[int]
-    image_start_offset: Optional[int]
-    image_file: Optional[str]
-    original_metadata: Optional[str]
-    meta: Optional[dict]
+    metaname: str
+    original_id: int
+    original_metadata: str
+    meta: Dict[str, Optional[str]]
 
 
 # Shared properties
 class SlideModel(BaseModel):
     id: int
     experiment_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    uid: Optional[str]
-    description: Optional[str]
-    filename: Optional[str]
-    slide_type: Optional[str]
-    width_um: Optional[int]
-    height_um: Optional[int]
-    image_end_offset: Optional[int]
-    image_start_offset: Optional[int]
-    image_file: Optional[str]
-    original_metadata: Optional[str]
-    meta: Optional[dict]
+    metaname: str
+    original_id: int
+    original_metadata: str
+    meta: Dict[str, Optional[str]]
     location: Optional[str]
     created_at: datetime
 

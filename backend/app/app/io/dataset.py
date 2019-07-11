@@ -120,10 +120,16 @@ def prepare_dataset(db: Session, dataset: Dataset):
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-    input = dataset.meta['input']
-    acquisition_ids = input['acquisition_ids']
-    metals = input['metals']
-    channel_settings = input['channel_settings']
+    input = dataset.input
+    acquisition_ids = input.get('acquisition_ids')
+    if not acquisition_ids or len(acquisition_ids) == 0:
+        logger.warn(f'Dataset [{dataset.id}]: Acquisitions are not selected')
+        return
+    metals = input.get('metals')
+    if not metals or len(metals) == 0:
+        logger.warn(f'Dataset [{dataset.id}]: Metals are not selected')
+        return
+    channel_settings = input.get('channel_settings')
 
     slide_csv: Dict[int, dict] = dict()
     panorama_csv: Dict[int, dict] = dict()

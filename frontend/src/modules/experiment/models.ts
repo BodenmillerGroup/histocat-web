@@ -35,13 +35,12 @@ export interface IDataset {
   name: string;
   description: string;
   status: Status;
-  meta: {
-    input: {
-      acquisition_ids: number[];
-      metals: string[];
-      channel_settings: IChannelSettings[];
-    }
-  };
+  input: {
+    acquisition_ids: number[];
+    metals: string[];
+    channel_settings: IChannelSettings[];
+  }
+  meta: object;
   location: string;
   created_at: string;
   updated_at: string;
@@ -51,13 +50,12 @@ export interface IDatasetCreate {
   experiment_id: number;
   name: string;
   description?: string;
-  meta?: {
-    input: {
-      acquisition_ids: number[];
-      metals: string[];
-      channel_settings: IChannelSettings[];
-    }
-  };
+  input: {
+    acquisition_ids: number[];
+    metals: string[];
+    channel_settings: IChannelSettings[];
+  }
+  meta?: object;
 }
 
 export interface ISlide {
@@ -65,17 +63,18 @@ export interface ISlide {
   experiment_id: number;
   metaname: string;
   original_id: number;
-  uid: string;
-  description: string;
-  filename: string;
-  slide_type: string;
-  width_um: number;
-  height_um: number;
-  image_end_offset: number;
-  image_start_offset: number;
-  image_file: string;
   original_metadata: string;
-  meta: object;
+  meta: {
+    UID: string;
+    Description: string;
+    FileName: string;
+    SlideType: string;
+    WidthUm: string;
+    HeightUm: string;
+    ImageEndOffset: string;
+    ImageStartOffset: string;
+    ImageFile: string;
+  };
   location: string;
   created_at: string;
   panoramas: IPanorama[];
@@ -86,22 +85,23 @@ export interface IPanorama {
   slide_id: number;
   metaname: string;
   original_id: number;
-  description: string;
-  slide_x1_pos_um: number;
-  slide_y1_pos_um: number;
-  slide_x2_pos_um: number;
-  slide_y2_pos_um: number;
-  slide_x3_pos_um: number;
-  slide_y3_pos_um: number;
-  slide_x4_pos_um: number;
-  slide_y4_pos_um: number;
-  image_end_offset: number;
-  image_start_offset: number;
-  pixel_width: number;
-  pixel_height: number;
-  image_format: string;
-  pixel_scale_coef: number;
-  meta: object;
+  meta: {
+    Description: string;
+    SlideX1PosUm: string;
+    SlideY1PosUm: string;
+    SlideX2PosUm: string;
+    SlideY2PosUm: string;
+    SlideX3PosUm: string;
+    SlideY3PosUm: string;
+    SlideX4PosUm: string;
+    SlideY4PosUm: string;
+    ImageEndOffset: string;
+    ImageStartOffset: string;
+    PixelWidth: string;
+    PixelHeight: string;
+    ImageFormat: string;
+    PixelScaleCoef: string;
+  };
   location: string;
   created_at: string;
   rois: IRoi[];
@@ -112,9 +112,10 @@ export interface IRoi {
   panorama_id: number;
   metaname: string;
   original_id: number;
-  roi_type: string;
+  meta: {
+    ROIType: string;
+  };
   location: string;
-  meta: object;
   created_at: string;
   acquisitions: IAcquisition[];
   roi_points: IRoiPoint[];
@@ -125,12 +126,13 @@ export interface IRoiPoint {
   roi_id: number;
   metaname: string;
   original_id: number;
-  order_number: number;
-  slide_x_pos_um: number;
-  slide_y_pos_um: number;
-  panorama_pixel_x_pos: number;
-  panorama_pixel_y_pos: number;
-  meta: object;
+  meta: {
+    OrderNumber: string;
+    SlideXPosUm: string;
+    SlideYPosUm: string;
+    PanoramaPixelXPos: string;
+    PanoramaPixelYPos: string;
+  };
   created_at: string;
 }
 
@@ -139,35 +141,36 @@ export interface IAcquisition {
   roi_id: number;
   metaname: string;
   original_id: number;
-  description: string;
-  order_number: number;
-  ablation_power: number;
-  ablation_distance_between_shots_x: number;
-  ablation_distance_between_shots_y: number;
-  ablation_frequency: number;
-  signal_type: string;
-  dual_count_start: number;
-  data_start_offset: number;
-  data_end_offset: number;
-  start_timestamp: string;
-  end_timestamp: string;
-  after_ablation_image_end_offset: number;
-  after_ablation_image_start_offset: number;
-  before_ablation_image_end_offset: number;
-  before_ablation_image_start_offset: number;
-  roi_start_x_pos_um: number;
-  roi_start_y_pos_um: number;
-  roi_end_x_pos_um: number;
-  roi_end_y_pos_um: number;
-  movement_type: string;
-  segment_data_format: string;
-  value_bytes: number;
-  max_y: number;
-  max_x: number;
-  plume_start: number;
-  plume_end: number;
-  template: string;
-  meta: object;
+  meta: {
+    Description: string;
+    OrderNumber: string;
+    AblationPower: string;
+    AblationDistanceBetweenShotsX: string;
+    AblationDistanceBetweenShotsY: string;
+    AblationFrequency: string;
+    SignalType: string;
+    DualCountStart: string;
+    DataStartOffset: string;
+    DataEndOffset: string;
+    StartTimestamp: string;
+    EndTimestamp: string;
+    AfterAblationImageEndOffset: string;
+    AfterAblationImageStartOffset: string;
+    BeforeAblationImageEndOffset: string;
+    BeforeAblationImageStartOffset: string;
+    ROIStartXPosUm: string;
+    ROIStartYPosUm: string;
+    ROIEndXPosUm: string;
+    ROIEndYPosUm: string;
+    MovementType: string;
+    SegmentDataFormat: string;
+    ValueBytes: string;
+    MaxY: string;
+    MaxX: string;
+    PlumeStart: string;
+    PlumeEnd: string;
+    Template: string;
+  };
   location: string;
   created_at: string;
   channels: IChannel[];

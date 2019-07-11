@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
@@ -25,36 +26,8 @@ class Acquisition(Base):
 
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     roi_id: int = sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
-    description: str = sa.Column('description', sa.String())
     metaname: str = sa.Column('metaname', sa.String(4096))
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
-    order_number: int = sa.Column('order_number', sa.Integer())
-    ablation_power: float = sa.Column('ablation_power', sa.Float())
-    ablation_distance_between_shots_x: float = sa.Column('ablation_distance_between_shots_x', sa.Float())
-    ablation_distance_between_shots_y: float= sa.Column('ablation_distance_between_shots_y', sa.Float())
-    ablation_frequency: float = sa.Column('ablation_frequency', sa.Float())
-    signal_type: str = sa.Column('signal_type', sa.String(64))
-    dual_count_start: int = sa.Column('dual_count_start', sa.Integer())
-    data_start_offset: int = sa.Column('data_start_offset', sa.BigInteger())
-    data_end_offset: int = sa.Column('data_end_offset', sa.BigInteger())
-    start_timestamp: datetime = sa.Column('start_timestamp', sa.DateTime())
-    end_timestamp: datetime = sa.Column('end_timestamp', sa.DateTime())
-    after_ablation_image_end_offset: int = sa.Column('after_ablation_image_end_offset', sa.BigInteger())
-    after_ablation_image_start_offset: int = sa.Column('after_ablation_image_start_offset', sa.BigInteger())
-    before_ablation_image_end_offset: int = sa.Column('before_ablation_image_end_offset', sa.BigInteger())
-    before_ablation_image_start_offset: int = sa.Column('before_ablation_image_start_offset', sa.BigInteger())
-    roi_start_x_pos_um: float = sa.Column('roi_start_x_pos_um', sa.Float())
-    roi_start_y_pos_um: float = sa.Column('roi_start_y_pos_um', sa.Float())
-    roi_end_x_pos_um: float = sa.Column('roi_end_x_pos_um', sa.Float())
-    roi_end_y_pos_um: float = sa.Column('roi_end_y_pos_um', sa.Float())
-    movement_type: str = sa.Column('movement_type', sa.String(64))
-    segment_data_format: str = sa.Column('segment_data_format', sa.String(64))
-    value_bytes: int = sa.Column('value_bytes', sa.Integer())
-    max_y: int = sa.Column('max_y', sa.Integer())
-    max_x: int = sa.Column('max_x', sa.Integer())
-    plume_start: int = sa.Column('plume_start', sa.Integer())
-    plume_end: int = sa.Column('plume_end', sa.Integer())
-    template: str = sa.Column('template', sa.String())
     meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
@@ -62,10 +35,118 @@ class Acquisition(Base):
     roi = relationship("ROI", back_populates="acquisitions")
     channels = relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
 
+    @property
+    def Description(self) -> Optional[str]:
+        return self.meta.get('Description')
+
+    @property
+    def OrderNumber(self) -> Optional[str]:
+        return self.meta.get('OrderNumber')
+
+    @property
+    def AblationPower(self) -> Optional[str]:
+        return self.meta.get('AblationPower')
+
+    @property
+    def AblationDistanceBetweenShotsX(self) -> Optional[str]:
+        return self.meta.get('AblationDistanceBetweenShotsX')
+
+    @property
+    def AblationDistanceBetweenShotsY(self) -> Optional[str]:
+        return self.meta.get('AblationDistanceBetweenShotsY')
+
+    @property
+    def AblationFrequency(self) -> Optional[str]:
+        return self.meta.get('AblationFrequency')
+
+    @property
+    def SignalType(self) -> Optional[str]:
+        return self.meta.get('SignalType')
+
+    @property
+    def DualCountStart(self) -> Optional[str]:
+        return self.meta.get('DualCountStart')
+
+    @property
+    def DataStartOffset(self) -> Optional[str]:
+        return self.meta.get('DataStartOffset')
+
+    @property
+    def DataEndOffset(self) -> Optional[str]:
+        return self.meta.get('DataEndOffset')
+
+    @property
+    def StartTimeStamp(self) -> Optional[str]:
+        return self.meta.get('StartTimeStamp')
+
+    @property
+    def EndTimeStamp(self) -> Optional[str]:
+        return self.meta.get('EndTimeStamp')
+
+    @property
+    def AfterAblationImageEndOffset(self) -> Optional[str]:
+        return self.meta.get('AfterAblationImageEndOffset')
+
+    @property
+    def AfterAblationImageStartOffset(self) -> Optional[str]:
+        return self.meta.get('AfterAblationImageStartOffset')
+
+    @property
+    def BeforeAblationImageEndOffset(self) -> Optional[str]:
+        return self.meta.get('BeforeAblationImageEndOffset')
+
+    @property
+    def BeforeAblationImageStartOffset(self) -> Optional[str]:
+        return self.meta.get('BeforeAblationImageStartOffset')
+
+    @property
+    def ROIStartXPosUm(self) -> Optional[str]:
+        return self.meta.get('ROIStartXPosUm')
+
+    @property
+    def ROIStartYPosUm(self) -> Optional[str]:
+        return self.meta.get('ROIStartYPosUm')
+
+    @property
+    def ROIEndXPosUm(self) -> Optional[str]:
+        return self.meta.get('ROIEndXPosUm')
+
+    @property
+    def MovementType(self) -> Optional[str]:
+        return self.meta.get('MovementType')
+
+    @property
+    def SegmentDataFormat(self) -> Optional[str]:
+        return self.meta.get('SegmentDataFormat')
+
+    @property
+    def ValueBytes(self) -> Optional[str]:
+        return self.meta.get('ValueBytes')
+
+    @property
+    def MaxY(self) -> Optional[str]:
+        return self.meta.get('MaxY')
+
+    @property
+    def MaxX(self) -> Optional[str]:
+        return self.meta.get('MaxX')
+
+    @property
+    def PlumeStart(self) -> Optional[str]:
+        return self.meta.get('PlumeStart')
+
+    @property
+    def PlumeEnd(self) -> Optional[str]:
+        return self.meta.get('PlumeEnd')
+
+    @property
+    def Template(self) -> Optional[str]:
+        return self.meta.get('Template')
+
     @autocreate_directory_property
     def channels_location(self) -> str:
         """str: location where channels files are stored"""
         return os.path.join(self.location, "channels")
 
     def __repr__(self):
-        return f"<Acquisition(id={self.id}, description={self.description})>"
+        return f"<Acquisition(id={self.id}, metaname={self.metaname})>"

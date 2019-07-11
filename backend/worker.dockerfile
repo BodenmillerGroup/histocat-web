@@ -1,4 +1,4 @@
-FROM python:3.7.3
+FROM python:3.7.4
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
@@ -10,7 +10,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=0.12.16 \
+  POETRY_VERSION=0.12.17 \
   BACKEND_ENV=${BACKEND_ENV}
 
 # Install Poetry

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 from pydantic import BaseModel
 
@@ -10,20 +10,18 @@ from app.modules.roi_point.models import ROIPointModel
 # Properties to receive via API on creation
 class ROICreateModel(BaseModel):
     panorama_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    roi_type: Optional[str]
-    meta: Optional[dict]
+    metaname: str
+    original_id: int
+    meta: Dict[str, str]
 
 
 # Shared properties
 class ROIModel(BaseModel):
     id: int
     panorama_id: int
-    metaname: Optional[str]
-    original_id: Optional[int]
-    roi_type: Optional[str]
-    meta: Optional[dict]
+    metaname: str
+    original_id: int
+    meta: Dict[str, str]
     location: Optional[str]
     created_at: datetime
 

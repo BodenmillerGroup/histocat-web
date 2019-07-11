@@ -186,12 +186,10 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       experiment_id: experimentId!,
       name: payload.name,
       description: payload.description,
-      meta: {
-        input: {
-          acquisition_ids: acquisitionIds,
-          metals: metals,
-          channel_settings: channelsSettings,
-        },
+      input: {
+        acquisition_ids: acquisitionIds,
+        metals: metals,
+        channel_settings: channelsSettings,
       },
     };
 

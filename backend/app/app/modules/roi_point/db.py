@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
@@ -21,15 +22,30 @@ class ROIPoint(Base):
     roi_id: int = sa.Column(sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
     metaname: str = sa.Column('metaname', sa.String(4096))
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
-    order_number: int = sa.Column('order_number', sa.Integer())
-    slide_x_pos_um: float = sa.Column('slide_x_pos_um', sa.Float())
-    slide_y_pos_um: float = sa.Column('slide_y_pos_um', sa.Float())
-    panorama_pixel_x_pos: int = sa.Column('panorama_pixel_x_pos', sa.Integer())
-    panorama_pixel_y_pos: int = sa.Column('panorama_pixel_y_pos', sa.Integer())
     meta: dict = sa.Column('meta', JSONB())
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     roi = relationship("ROI", back_populates="roi_points")
 
+    @property
+    def OrderNumber(self) -> Optional[str]:
+        return self.meta.get('OrderNumber')
+
+    @property
+    def SlideXPosUm(self) -> Optional[str]:
+        return self.meta.get('SlideXPosUm')
+
+    @property
+    def SlideYPosUm(self) -> Optional[str]:
+        return self.meta.get('SlideYPosUm')
+
+    @property
+    def PanoramaPixelXPos(self) -> Optional[str]:
+        return self.meta.get('PanoramaPixelXPos')
+
+    @property
+    def PanoramaPixelYPos(self) -> Optional[str]:
+        return self.meta.get('PanoramaPixelYPos')
+
     def __repr__(self):
-        return f"<ROIPoint(id={self.id}, roi_id={self.roi_id}, order_number={self.order_number})>"
+        return f"<ROIPoint(id={self.id}, roi_id={self.roi_id}, metaname={self.metaname})>"
