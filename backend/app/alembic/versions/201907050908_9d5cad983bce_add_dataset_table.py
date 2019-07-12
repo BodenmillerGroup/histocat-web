@@ -30,6 +30,7 @@ def upgrade():
         sa.Column('input', JSONB()),
         sa.Column('meta', JSONB()),
         sa.Column('status', sa.String(64), default="pending", nullable=False, index=True),
+        sa.Column('errors', JSONB()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False),

@@ -13,6 +13,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 class NotSupportedError(Exception):
     """Error class that is raised when a feature is not supported by the program.
     """
@@ -101,8 +103,7 @@ class WorkflowTransitionError(WorkflowError):
 
 
 class DataIntegrityError(Exception):
-    """Error class that is raised when a dataset doesn't fullfile certain
-    requirements.
+    """Error class that is raised when a dataset doesn't fullfile certain requirements.
     """
 
 
@@ -111,6 +112,13 @@ class RegistryError(Exception):
 
 
 class DataModelError(Exception):
-    """Error class that is raised when a model class has attributes that are
-    not supported.
+    """Error class that is raised when a model class has attributes that are not supported.
     """
+
+
+class SlideImportError(Exception):
+    """Error class that is raised when there is an error with slide import."""
+
+
+class DatasetInputError(Exception):
+    """Error class that is raised when there is an error with dataset creation."""

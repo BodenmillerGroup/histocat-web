@@ -1,5 +1,7 @@
+import datetime
 import logging
 import os
+import shutil
 
 import dramatiq
 import emails
@@ -7,11 +9,13 @@ from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
 
 from app.core import config
+from app.core.errors import SlideImportError
 from app.db.session import db_session
 from app.io.mcd import import_mcd
 from app.io import dataset
 from app.io.ome_tiff_loader import OmeTiffLoader
 from app.io.text_loader import TextLoader
+from app.io.zip import import_zip
 
 from app.modules.dataset import crud as dataset_crud
 
@@ -68,22 +72,39 @@ def send_email(email_to: str, subject_template="", html_template="", environment
 def import_slide(uri: str, experiment_id: int):
     logger.info(f'Importing slide into experiment [{experiment_id}] from {uri}')
 
+    path = os.path.dirname(os.path.abspath(uri))
     filename, file_extension = os.path.splitext(uri)
     file_extension = file_extension.lower()
 
-    if file_extension == ".mcd":
-        import_mcd(db_session, uri, experiment_id)
-    elif file_extension == ".tiff" or file_extension == ".tif":
-        if filename.endswith(".ome"):
-            OmeTiffLoader.load(db_session, uri, experiment_id)
-    elif file_extension == ".txt":
-        TextLoader.load(db_session, uri, experiment_id)
-
-    os.remove(uri)
+    try:
+        if file_extension == ".mcd":
+            import_mcd(db_session, uri, experiment_id)
+        elif file_extension == ".zip":
+            import_zip(db_session, uri, experiment_id)
+    except SlideImportError as error:
+        logger.warn(error)
+    finally:
+        shutil.rmtree(path)
 
 
 @dramatiq.actor(queue_name='processing')
 def prepare_dataset(dataset_id: int):
-    logger.info(f'Preparing dataset [{dataset_id}]...')
+    logger.info(f'Preparing dataset [{dataset_id}].')
     item = dataset_crud.get(db_session, id=dataset_id)
-    dataset.prepare_dataset(db_session, item)
+
+    if not item:
+        logger.error(f'Dataset [{dataset_id}] not found')
+        return
+
+    try:
+        dataset.prepare_dataset(db_session, item)
+        item.status = 'imported'
+        db_session.add(item)
+        db_session.commit()
+    except Exception as error:
+        if not item.errors:
+            item.errors = dict()
+        item.errors[str(datetime.datetime.now())] = str(error)
+        db_session.add(item)
+        db_session.commit()
+        logger.error(error)

@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import text
@@ -33,6 +34,7 @@ class Dataset(Base):
     input: dict = sa.Column('input', JSONB())
     meta: dict = sa.Column('meta', JSONB())
     status: str = sa.Column('status', sa.String(64), default="pending", nullable=False, index=True)
+    errors: Optional[dict] = sa.Column('errors', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
     updated_at: datetime = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)

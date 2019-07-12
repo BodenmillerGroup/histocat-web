@@ -22,6 +22,7 @@ class DatasetModel(BaseModel):
     name: str
     description: Optional[str]
     status: str
+    errors: Optional[dict]
     input: Optional[dict]
     meta: Optional[dict]
     location: Optional[str]

@@ -1,5 +1,6 @@
 import logging
 import os
+import uuid
 from typing import List, Set
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -122,13 +123,14 @@ def upload_slide(
     file: UploadFile = File(None),
     db: Session = Depends(get_db),
 ):
-    if not os.path.exists(config.INBOX_DIRECTORY):
-        os.makedirs(config.INBOX_DIRECTORY)
-    uri = os.path.join(config.INBOX_DIRECTORY, file.filename)
+    path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    uri = os.path.join(path, file.filename)
     with open(uri, 'wb') as f:
         f.write(file.file.read())
     worker.import_slide.send(uri, id)
-    return {"filename": file.filename}
+    return {"uri": uri}
 
 
 @router.get("/{id}/data", response_model=ExperimentDatasetModel)

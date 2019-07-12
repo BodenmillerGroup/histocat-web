@@ -6,11 +6,11 @@ import shutil
 from collections import namedtuple
 from typing import Dict
 
-import imctools.external.omexml as ome
 import numpy as np
 from imctools.io.tiffwriter import TiffWriter
 from sqlalchemy.orm import Session
 
+from app.core.errors import DatasetInputError
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.dataset.db import Dataset
 from app.modules.panorama.db import Panorama
@@ -19,88 +19,7 @@ from app.modules.slide.db import Slide
 
 logger = logging.getLogger(__name__)
 
-# 1) input folders
-# the folders with the ziped acquisition files for the analysis
-# -> If you want to analyse  your own data, put the zipped inuput files (see above `Data requirements`)
-#    into a directory and add it to the folder
-# Example: if you put it into a folder 'data' which is a subdirectory of the ÌmcSegmentationPipeline folder change this to
-#  folders = ['../data']
-# Example2: if you put your data into a folder C://Users/dummy/mydata change this to
-# folders = ['C://Users/dummy/mydata']
-
-folders = ['../example_data']
-
-# 4) pannel
-# pannel:
-# This CSV file is specific to the pannel used for the Acquisitions
-# It is a comma seperated file that contains metadata about the antibodies and isotopes measured
-# This absolutely **needs** to be adapted if you work with your own files1
-# Please look at the example!
-csv_pannel = '../config/example_pannel.csv'
-# Three columns are obligatory
-csv_pannel_metal = 'Metal Tag'  # Contains the isotope channel measured int he form (Metal)(Mass), e.g. Ir191, Yb171 etc.
-# ilastik columm: Bool, either 0 or 1: this selects channels to be used for cellular segmentation
-# It is recommended to choose all channels/isotope that gave a signal that could help for cell identification,
-# e.g. nuclear, cytoplasmic or membranous signal
-# The more channels selected, the slower the pixel classification
-csv_pannel_ilastik = 'ilastik'
-# full column: Contains the channels that should be quantified/measured in cellprofiler
-csv_pannel_full = 'full'
-
-suffix_full = '_full'
-suffix_ilastik = '_ilastik'
-suffix_ilastik_scale = '_s2'
-suffix_mask = '_mask.tiff'
-suffix_probablities = '_Probabilities'
-
-failed_images = list()
-
-# Make a list of all the analysis stacks with format:
-# (CSV_NAME, SUFFIX, ADDSUM)
-# CSV_NAME: name of the column in the CSV to be used
-# SUFFIX: suffix of the tiff
-# ADDSUM: BOOL, should the sum of all channels be added as the first channel?
-list_analysis_stacks = [
-    (csv_pannel_ilastik, suffix_ilastik, 1),
-    (csv_pannel_full, suffix_full, 0)
-]
-
-pixeltype_dict = {
-    np.int64().dtype: ome.PT_FLOAT,
-    np.int32().dtype: ome.PT_INT32,
-    np.int16().dtype: ome.PT_INT16,
-    np.uint16().dtype: ome.PT_UINT16,
-    np.uint32().dtype: ome.PT_UINT32,
-    np.uint8().dtype: ome.PT_UINT8,
-    np.float32().dtype: ome.PT_FLOAT,
-    np.float64().dtype: ome.PT_DOUBLE,
-}
-
-pixeltype_np = {
-    ome.PT_FLOAT: np.dtype("float32"),
-    ome.PT_DOUBLE: np.dtype("float64"),
-    ome.PT_UINT8: np.dtype("uint8"),
-    ome.PT_UINT16: np.dtype("uint16"),
-    ome.PT_UINT32: np.dtype("uint32"),
-    ome.PT_INT8: np.dtype("int8"),
-    ome.PT_INT16: np.dtype("int16"),
-    ome.PT_INT32: np.dtype("int32"),
-}
-
 FileLink = namedtuple('FileLink', ['src', 'dst'])
-
-
-def _save_meta_csv(items: Dict[int, dict], filename: str):
-    """
-    Writes the xml data as csv tables
-
-    """
-    with open(filename, 'w') as f:
-        cols = next(iter(items.values())).keys()
-        writer = csv.DictWriter(f, cols)
-        writer.writeheader()
-        for row in items.values():
-            writer.writerow(row)
 
 
 def prepare_dataset(db: Session, dataset: Dataset):
@@ -123,12 +42,10 @@ def prepare_dataset(db: Session, dataset: Dataset):
     input = dataset.input
     acquisition_ids = input.get('acquisition_ids')
     if not acquisition_ids or len(acquisition_ids) == 0:
-        logger.warn(f'Dataset [{dataset.id}]: Acquisitions are not selected')
-        return
+        raise DatasetInputError(f'Dataset [{dataset.id}]: Acquisitions are not selected')
     metals = input.get('metals')
     if not metals or len(metals) == 0:
-        logger.warn(f'Dataset [{dataset.id}]: Metals are not selected')
-        return
+        raise DatasetInputError(f'Dataset [{dataset.id}]: Metals are not selected')
     channel_settings = input.get('channel_settings')
 
     slide_csv: Dict[int, dict] = dict()
@@ -208,3 +125,16 @@ def prepare_dataset(db: Session, dataset: Dataset):
     _save_meta_csv(acquisition_csv, os.path.join(folder_ome, short_slide_name + '_Acquisition_meta.csv'))
     _save_meta_csv(channel_csv, os.path.join(folder_ome, short_slide_name + '_AcquisitionChannel_meta.csv'))
     _save_meta_csv(roi_point_csv, os.path.join(folder_ome, short_slide_name + '_ROIPoint_meta.csv'))
+
+
+def _save_meta_csv(items: Dict[int, dict], filename: str):
+    """
+    Writes the xml data as csv tables
+
+    """
+    with open(filename, 'w') as f:
+        cols = next(iter(items.values())).keys()
+        writer = csv.DictWriter(f, cols)
+        writer.writeheader()
+        for row in items.values():
+            writer.writerow(row)
