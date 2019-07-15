@@ -1,5 +1,17 @@
 <template>
-  <svg ref="svg" height="100" width="300" shape-rendering="optimizeSpeed"></svg>
+  <v-flex>
+    <svg ref="svg" height="100" width="300" shape-rendering="optimizeSpeed"></svg>
+    <v-range-slider
+      v-if="levels"
+      :value="levels"
+      :max="channel.max_intensity"
+      :min="channel.min_intensity"
+      :step="1"
+      thumb-label="always"
+      :thumb-size="14"
+      @end="submitLimit"
+    ></v-range-slider>
+  </v-flex>
 </template>
 
 <script lang="ts">
@@ -15,6 +27,24 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     @Prop(Object) channel!: IChannel;
+
+    get levels() {
+      const settings = this.settingsContext.getters.channelSettings(this.channel.id);
+      if (settings && settings.levels) {
+        return [settings.levels.min, settings.levels.max];
+      }
+    }
+
+    submitLimit(range: number[]) {
+      console.log(range)
+      this.settingsContext.mutations.setChannelSettings({
+        id: this.channel.id,
+        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+      });
+
+      const color = this.settingsContext.getters.metalColorMap.get(this.channel.metal);
+      this.settingsContext.mutations.setMetalColor({ metal: this.channel.metal, color: color ? color : '' });
+    }
 
     async mounted() {
       const stats = await this.experimentContext.actions.getChannelStats(this.channel.id);
@@ -98,8 +128,7 @@
           scatter.select('.brush').call(brush.move as any, null); // This remove the grey brush area as soon as the selection has been done
         }
 
-        const colorMap = this.settingsContext.getters.metalColorMap;
-        const color = colorMap.get(this.channel.metal);
+        const color = this.settingsContext.getters.metalColorMap.get(this.channel.metal);
         this.settingsContext.mutations.setMetalColor({ metal: this.channel.metal, color: color ? color : '' });
 
         // Update axis and circle position
