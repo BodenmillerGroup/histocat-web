@@ -2,6 +2,8 @@ import { apiUrl } from '@/env';
 import ky from 'ky';
 import { IChannelStats, IDataset, IDatasetCreate, IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
 
+const cacheAvailable = 'caches' in self;
+
 
 export const api = {
   async getExperiments(token: string) {
@@ -73,21 +75,25 @@ export const api = {
   },
   async getChannelStats(token: string, id: number) {
     const url = `${apiUrl}/api/v1/channels/${id}/stats`;
-    const cache = await caches.open('stats');
-    const found = await cache.match(url);
-    if (found) {
-      return found.json() as Promise<IChannelStats>;
-    } else {
-      const response = await ky.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.ok) {
+    let cache;
+    if (cacheAvailable) {
+      cache = await self.caches.open('stats');
+      const found = await cache.match(url);
+      if (found) {
+        return found.json() as Promise<IChannelStats>;
+      }
+    }
+    const response = await ky.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      if (cacheAvailable) {
         await cache.put(url, response.clone());
       }
-      return response.json() as Promise<IChannelStats>;
     }
+    return response.json() as Promise<IChannelStats>;
   },
   async createDataset(token: string, data: IDatasetCreate) {
     return ky.post(`${apiUrl}/api/v1/datasets/`, {
