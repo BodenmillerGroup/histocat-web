@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 import sqlalchemy as sa
+from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
@@ -29,23 +30,23 @@ class ROIPoint(Base):
 
     @property
     def OrderNumber(self) -> Optional[str]:
-        return self.meta.get('OrderNumber')
+        return self.meta.get(mcdxmlparser.ORDERNUMBER)
 
     @property
     def SlideXPosUm(self) -> Optional[str]:
-        return self.meta.get('SlideXPosUm')
+        return self.meta.get(mcdxmlparser.SLIDEXPOSUM)
 
     @property
     def SlideYPosUm(self) -> Optional[str]:
-        return self.meta.get('SlideYPosUm')
+        return self.meta.get(mcdxmlparser.SLIDEYPOSUM)
 
     @property
     def PanoramaPixelXPos(self) -> Optional[str]:
-        return self.meta.get('PanoramaPixelXPos')
+        return self.meta.get(mcdxmlparser.PANORAMAPIXELXPOS)
 
     @property
     def PanoramaPixelYPos(self) -> Optional[str]:
-        return self.meta.get('PanoramaPixelYPos')
+        return self.meta.get(mcdxmlparser.PANORAMAPIXELYPOS)
 
     def __repr__(self):
         return f"<ROIPoint(id={self.id}, roi_id={self.roi_id}, metaname={self.metaname})>"

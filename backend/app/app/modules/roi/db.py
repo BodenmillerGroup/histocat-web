@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 import sqlalchemy as sa
+from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
@@ -38,7 +39,7 @@ class ROI(Base):
 
     @property
     def ROIType(self) -> Optional[str]:
-        return self.meta.get('ROIType')
+        return self.meta.get(mcdxmlparser.ROITYPE)
 
     @autocreate_directory_property
     def acquisitions_location(self) -> str:

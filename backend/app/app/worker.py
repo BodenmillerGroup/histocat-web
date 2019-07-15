@@ -7,14 +7,13 @@ import dramatiq
 import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
+from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDING
 
 from app.core import config
 from app.core.errors import SlideImportError
 from app.db.session import db_session
 from app.io.mcd import import_mcd
 from app.io import dataset
-from app.io.ome_tiff_loader import OmeTiffLoader
-from app.io.text_loader import TextLoader
 from app.io.zip import import_zip
 
 from app.modules.dataset import crud as dataset_crud
@@ -38,7 +37,8 @@ if os.environ.get("BACKEND_ENV") == "development":
 
         import pydevd_pycharm
         # TODO: Don't forget to modify IP address!!
-        pydevd_pycharm.settrace('130.60.106.36', port=5679, stdoutToServer=True, stderrToServer=True)
+        # pydevd_pycharm.settrace('130.60.106.36', port=5679, stdoutToServer=True, stderrToServer=True)
+        pydevd_pycharm.settrace('10.12.187.103', port=5679, stdoutToServer=True, stderrToServer=True)
     except Exception as e:
         logger.error(e)
 
@@ -77,9 +77,9 @@ def import_slide(uri: str, experiment_id: int):
     file_extension = file_extension.lower()
 
     try:
-        if file_extension == ".mcd":
+        if file_extension == MCD_FILENDING:
             import_mcd(db_session, uri, experiment_id)
-        elif file_extension == ".zip":
+        elif file_extension == ZIP_FILENDING:
             import_zip(db_session, uri, experiment_id)
     except SlideImportError as error:
         logger.warn(error)

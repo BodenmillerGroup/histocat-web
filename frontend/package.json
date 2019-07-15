@@ -45,7 +45,7 @@
     "vuex-smart-module": "0.3.0"
   },
   "devDependencies": {
-    "@mdi/font": "3.7.95",
+    "@mdi/font": "3.8.95",
     "@types/d3": "5.7.2",
     "@types/jest": "24.0.15",
     "@types/ol": "5.3.3",

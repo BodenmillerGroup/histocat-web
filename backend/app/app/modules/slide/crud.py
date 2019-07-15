@@ -15,8 +15,8 @@ def get(session: Session, *, id: int) -> Optional[Slide]:
     return session.query(Slide).filter(Slide.id == id).first()
 
 
-def get_by_uid(session: Session, *, uid: str) -> Optional[Slide]:
-    return session.query(Slide).filter(Slide.uid == uid).first()
+def get_by_experiment_uid(session: Session, *, experiment_id: int, uid: str) -> Optional[Slide]:
+    return session.query(Slide).filter(Slide.uid == uid, Slide.experiment_id == experiment_id).first()
 
 
 def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Slide]:

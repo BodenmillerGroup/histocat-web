@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 import sqlalchemy as sa
+from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import relationship
 
@@ -42,39 +43,39 @@ class Slide(Base):
 
     @property
     def UID(self) -> Optional[str]:
-        return self.meta.get('UID')
+        return self.meta.get(mcdxmlparser.UID)
 
     @property
     def Description(self) -> Optional[str]:
-        return self.meta.get('Description')
+        return self.meta.get(mcdxmlparser.DESCRIPTION)
 
     @property
     def Filename(self) -> Optional[str]:
-        return self.meta.get('Filename')
+        return self.meta.get(mcdxmlparser.FILENAME)
 
     @property
     def SlideType(self) -> Optional[str]:
-        return self.meta.get('SlideType')
+        return self.meta.get(mcdxmlparser.SLIDETYPE)
 
     @property
     def WidthUm(self) -> Optional[str]:
-        return self.meta.get('WidthUm')
+        return self.meta.get(mcdxmlparser.WIDTHUM)
 
     @property
     def HeightUm(self) -> Optional[str]:
-        return self.meta.get('HeightUm')
+        return self.meta.get(mcdxmlparser.HEIGHTUM)
 
     @property
     def ImageEndOffset(self) -> Optional[str]:
-        return self.meta.get('ImageEndOffset')
+        return self.meta.get(mcdxmlparser.IMAGEENDOFFSET)
 
     @property
     def ImageStartOffset(self) -> Optional[str]:
-        return self.meta.get('ImageStartOffset')
+        return self.meta.get(mcdxmlparser.IMAGESTARTOFFSET)
 
     @property
     def ImageFile(self) -> Optional[str]:
-        return self.meta.get('ImageFile')
+        return self.meta.get(mcdxmlparser.IMAGEFILE)
 
     @autocreate_directory_property
     def panoramas_location(self) -> str:

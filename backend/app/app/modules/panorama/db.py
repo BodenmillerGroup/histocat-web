@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 import sqlalchemy as sa
+from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
@@ -37,63 +38,63 @@ class Panorama(Base):
 
     @property
     def Description(self) -> Optional[str]:
-        return self.meta.get('Description')
+        return self.meta.get(mcdxmlparser.DESCRIPTION)
 
     @property
     def SlideX1PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideX1PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEX1POSUM)
 
     @property
     def SlideY1PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideY1PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEY1POSUM)
 
     @property
     def SlideX2PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideX2PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEX2POSUM)
 
     @property
     def SlideY2PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideY2PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEY2POSUM)
 
     @property
     def SlideX3PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideX3PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEX3POSUM)
 
     @property
     def SlideY3PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideY3PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEY3POSUM)
 
     @property
     def SlideX4PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideX4PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEX4POSUM)
 
     @property
     def SlideY4PosUm(self) -> Optional[str]:
-        return self.meta.get('SlideY4PosUm')
+        return self.meta.get(mcdxmlparser.SLIDEY4POSUM)
 
     @property
     def ImageEndOffset(self) -> Optional[str]:
-        return self.meta.get('ImageEndOffset')
+        return self.meta.get(mcdxmlparser.IMAGEENDOFFSET)
 
     @property
     def ImageStartOffset(self) -> Optional[str]:
-        return self.meta.get('ImageStartOffset')
+        return self.meta.get(mcdxmlparser.IMAGESTARTOFFSET)
 
     @property
     def PixelWidth(self) -> Optional[str]:
-        return self.meta.get('PixelWidth')
+        return self.meta.get(mcdxmlparser.PIXELWIDTH)
 
     @property
     def PixelHeight(self) -> Optional[str]:
-        return self.meta.get('PixelHeight')
+        return self.meta.get(mcdxmlparser.PIXELHEIGHT)
 
     @property
     def ImageFormat(self) -> Optional[str]:
-        return self.meta.get('ImageFormat')
+        return self.meta.get(mcdxmlparser.IMAGEFORMAT)
 
     @property
     def PixelScaleCoef(self) -> Optional[str]:
-        return self.meta.get('PixelScaleCoef')
+        return self.meta.get(mcdxmlparser.PIXELSCALECOEF)
 
     @autocreate_directory_property
     def rois_location(self) -> str:
