@@ -13,6 +13,7 @@ import jwt
 import numpy as np
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
+from skimage.exposure import rescale_intensity
 
 from app.core import config
 
@@ -144,11 +145,8 @@ def colorize(image: np.ndarray, color: Color):
     return image
 
 
-def scale_image(image: np.ndarray, scale: float, levels: Tuple[float, float]):
-    minL, maxL = levels
-    if maxL <= minL:
-        return image
-    result = image * (scale / (maxL - minL))
+def scale_image(image: np.ndarray, range: Tuple[float, float], levels: Tuple[float, float]):
+    result = rescale_intensity(image, in_range=levels, out_range=range)
     return result
 
 

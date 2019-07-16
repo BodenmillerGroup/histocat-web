@@ -1,7 +1,7 @@
 <template>
   <v-card tile class="scroll-y">
     <v-card-title><h4>Settings</h4></v-card-title>
-    <v-divider></v-divider>
+    <v-divider class="pb-3"></v-divider>
     <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>
   </v-card>
 </template>

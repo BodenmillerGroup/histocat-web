@@ -63,8 +63,8 @@ async def stream_image(record: bytes, chunk_size: int = 65536):
 async def read_channel_image(
     id: int,
     color: str = None,
-    min: int = None,
-    max: int = None,
+    min: float = None,
+    max: float = None,
     # current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -75,7 +75,7 @@ async def read_channel_image(
 
     data = np.load(os.path.join(item.location, "origin.npy"))
     if min is not None and max is not None:
-        data = scale_image(data, item.max_intensity, (min, max))
+        data = scale_image(data, (item.min_intensity, item.max_intensity), (min, max))
     clr = Color[color] if color else None
     img = colorize(data, clr) if clr else data
     png = cv2.imencode(".png", img)[1]
@@ -88,6 +88,7 @@ async def read_channel_image(
 async def read_channel_stats(
     id: int,
     request: Request,
+    bins: int = 100,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -103,7 +104,7 @@ async def read_channel_stats(
     item = crud.get(db, id=id)
 
     data = np.load(os.path.join(item.location, "origin.npy"))
-    hist, bins = np.histogram(data.ravel(), bins="auto")
-    content = {"hist": hist.tolist(), "bins": bins.tolist()}
+    hist, edges = np.histogram(data.ravel(), bins=bins)
+    content = {"hist": hist.tolist(), "edges": edges.tolist()}
     r.set(request.url.path, ujson.dumps(content))
     return UJSONResponse(content=content, headers={"Cache-Control": "private"})

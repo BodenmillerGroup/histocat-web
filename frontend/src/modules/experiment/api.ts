@@ -74,7 +74,7 @@ export const api = {
     });
   },
   async getChannelStats(token: string, id: number) {
-    const url = `${apiUrl}/api/v1/channels/${id}/stats`;
+    const url = `${apiUrl}/api/v1/channels/${id}/stats?bins=100`;
     let cache;
     if (cacheAvailable) {
       cache = await self.caches.open('stats');

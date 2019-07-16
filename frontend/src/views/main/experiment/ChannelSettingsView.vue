@@ -1,5 +1,5 @@
 <template>
-  <v-flex column pa-3>
+  <v-flex column px-3>
     <v-layout justify-space-between>
       <b>{{ channel.label }}</b>
       <v-btn-toggle v-model="colorIndex">

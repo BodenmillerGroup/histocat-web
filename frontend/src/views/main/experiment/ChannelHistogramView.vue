@@ -2,13 +2,12 @@
   <v-flex>
     <svg ref="svg" height="100" width="300" shape-rendering="optimizeSpeed"></svg>
     <v-range-slider
-      v-if="levels"
       :value="levels"
       :max="channel.max_intensity"
       :min="channel.min_intensity"
       :step="1"
       thumb-label="always"
-      :thumb-size="14"
+      :thumb-size="24"
       @end="submitLimit"
     ></v-range-slider>
   </v-flex>
@@ -16,7 +15,7 @@
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
-  import { IChannel } from '@/modules/experiment/models';
+  import { IChannel, IChannelStats } from '@/modules/experiment/models';
   import { settingsModule } from '@/modules/settings';
   import * as d3 from 'd3';
   import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -28,15 +27,18 @@
 
     @Prop(Object) channel!: IChannel;
 
+    stats: IChannelStats | undefined = undefined;
+
     get levels() {
       const settings = this.settingsContext.getters.channelSettings(this.channel.id);
       if (settings && settings.levels) {
         return [settings.levels.min, settings.levels.max];
+      } else {
+        return [this.channel.min_intensity, this.channel.max_intensity];
       }
     }
 
     submitLimit(range: number[]) {
-      console.log(range)
       this.settingsContext.mutations.setChannelSettings({
         id: this.channel.id,
         levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
@@ -46,17 +48,16 @@
       this.settingsContext.mutations.setMetalColor({ metal: this.channel.metal, color: color ? color : '' });
     }
 
-    async mounted() {
-      const stats = await this.experimentContext.actions.getChannelStats(this.channel.id);
-      if (!stats) {
+    showHistogram() {
+      if (!this.stats) {
         return;
       }
 
-      const data = stats.hist.map((hist, index) => {
-        return [stats.bins[index], hist];
+      const data = this.stats.hist.map((hist, index) => {
+        return [this.stats!.edges[index], hist];
       });
-      const xMax = Math.max(...stats.bins);
-      const yMax = Math.max(...stats.hist.slice(1));
+      const xMax = Math.max(...this.stats.edges);
+      const yMax = Math.max(...this.stats.hist.slice(1));
 
       // find svg container
       let svg = d3.select(this.$refs.svg as any);
@@ -102,58 +103,10 @@
         .attr('x', 0)
         .attr('y', 0);
 
-      // A function that update the chart for given boundaries
-      const updateChart = () => {
-
-        const extent = d3.event.selection;
-
-        // If no selection, back to initial coordinate. Otherwise, update X axis domain
-        if (!extent) {
-          if (!idleTimeout) {
-            return idleTimeout = setTimeout(idled, 350);
-          } // This allows to wait a little bit
-          x.domain([0, xMax]);
-          this.settingsContext.mutations.setChannelSettings({
-            id: this.channel.id,
-            levels: undefined,
-          });
-        } else {
-          const min = x.invert(extent[0]);
-          const max = x.invert(extent[1]);
-          this.settingsContext.mutations.setChannelSettings({
-            id: this.channel.id,
-            levels: { min: Math.round(min), max: Math.round(max) },
-          });
-          x.domain([min, max]);
-          scatter.select('.brush').call(brush.move as any, null); // This remove the grey brush area as soon as the selection has been done
-        }
-
-        const color = this.settingsContext.getters.metalColorMap.get(this.channel.metal);
-        this.settingsContext.mutations.setMetalColor({ metal: this.channel.metal, color: color ? color : '' });
-
-        // Update axis and circle position
-        xAxis.call(d3.axisBottom(x));
-        scatter
-          .selectAll('line')
-          .transition().duration(500)
-          .attr('x1', (d: any) => {
-            return x(d[0]);
-          })
-          .attr('x2', (d: any) => {
-            return x(d[0]);
-          });
-      };
-
-      // Add brushing
-      const brush = d3.brushX() // Add the brush feature using the d3.brush function
-        .extent([[0, 0], [width, height]]) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-        .on('end', updateChart); // Each time the brush selection changes, trigger the 'updateChart' function
-
       // Create the scatter variable: where both the circles and the brush take place
       const scatter = svg.append('g')
         .attr('clip-path', 'url(#clip)');
 
-      // Add circles
       scatter
         .selectAll('line')
         .data(data)
@@ -170,19 +123,11 @@
         })
         .attr('y2', y(0))
         .attr('stroke', '#1975d2');
+    }
 
-      // Add the brushing
-      scatter
-        .append('g')
-        .attr('class', 'brush')
-        .call(brush);
-
-      // A function that set idleTimeOut to null
-      let idleTimeout;
-
-      function idled() {
-        idleTimeout = null;
-      }
+    async mounted() {
+      this.stats = await this.experimentContext.actions.getChannelStats(this.channel.id);
+      this.showHistogram();
     }
   }
 </script>
