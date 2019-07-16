@@ -35,4 +35,12 @@ export class MainGetters extends Getters<MainState> {
   get firstNotification() {
     return this.state.notifications.length > 0 && this.state.notifications[0];
   }
+
+  get showWorkspace() {
+    return this.state.showWorkspace;
+  }
+
+  get showChannels() {
+    return this.state.showChannels;
+  }
 }

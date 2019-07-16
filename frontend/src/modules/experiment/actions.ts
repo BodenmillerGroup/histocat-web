@@ -157,7 +157,15 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
   async createDataset(payload: { name: string, description: string }) {
     const experimentId = this.getters.activeExperimentId;
     const acquisitionIds = this.getters.selectedAcquisitionIds;
+    if (acquisitionIds.length === 0) {
+      this.main!.mutations.addNotification({ content: 'Please select at least one acquisition', color: 'warning' });
+      return;
+    }
     const metals = this.getters.selectedMetals;
+    if (metals.length === 0) {
+      this.main!.mutations.addNotification({ content: 'Please select at least one channel', color: 'warning' });
+      return;
+    }
     const channelsSettings: IChannelSettings[] = [];
 
     const experiment = this.getters.activeExperiment;

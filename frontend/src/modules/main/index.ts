@@ -13,6 +13,8 @@ export class MainState {
   dashboardMiniDrawer: boolean = true;
   dashboardShowDrawer: boolean = true;
   notifications: AppNotification[] = [];
+  showWorkspace: boolean = true;
+  showChannels: boolean = true;
 }
 
 export const mainModule = new Module({

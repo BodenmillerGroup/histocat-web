@@ -14,45 +14,7 @@
           </v-tab-item>
         </v-tabs>
       </v-flex>
-      <v-flex :class="viewerClass">
-        <v-toolbar card dense>
-          <v-toolbar-side-icon></v-toolbar-side-icon>
-          <v-menu>
-            <template v-slot:activator="{ on }">
-              <v-toolbar-title v-on="on">
-                <span>Tools</span>
-                <v-icon>mdi-menu-down</v-icon>
-              </v-toolbar-title>
-            </template>
-            <v-list>
-              <CreateDatasetDialog></CreateDatasetDialog>
-            </v-list>
-          </v-menu>
-          <v-spacer/>
-          <v-btn-toggle v-model="toggleMultiple" multiple>
-            <v-btn small flat value='showWorkspace'>
-              <v-icon>mdi-file-tree</v-icon>
-              <span>Workspace</span>
-            </v-btn>
-            <v-btn small flat value='showChannels'>
-              <v-icon>mdi-format-list-checkbox</v-icon>
-              <span>Channels</span>
-            </v-btn>
-          </v-btn-toggle>
-        </v-toolbar>
-        <v-flex>
-          <v-tabs v-model="tabImageView">
-            <v-tab>Blend</v-tab>
-            <v-tab>Tiles</v-tab>
-            <v-tab-item>
-              <BlendView class="image-view"/>
-            </v-tab-item>
-            <v-tab-item>
-              <TilesView class="image-view"/>
-            </v-tab-item>
-          </v-tabs>
-        </v-flex>
-      </v-flex>
+      <ImageView/>
       <v-flex v-if="showChannels" md3>
         <v-flex>
           <ChannelsView class="channels-view"/>
@@ -68,34 +30,29 @@
 <script lang="ts">
   import LoadingView from '@/components/LoadingView.vue';
   import { experimentModule } from '@/modules/experiment';
-  import BlendView from '@/views/main/experiment/BlendView.vue';
+  import { mainModule } from '@/modules/main';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
-  import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
   import DatasetsView from '@/views/main/experiment/DatasetsView.vue';
+  import ImageView from '@/views/main/experiment/ImageView.vue';
   import SettingsView from '@/views/main/experiment/SettingsView.vue';
-  import TilesView from '@/views/main/experiment/TilesView.vue';
   import WorkspaceView from '@/views/main/experiment/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: {
-      TilesView,
+      ImageView,
       DatasetsView,
-      CreateDatasetDialog,
       ChannelsView,
-      BlendView,
       WorkspaceView,
       LoadingView,
       SettingsView,
     },
   })
   export default class ExperimentView extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
 
     tabWorkspace = 0;
-    tabImageView = 0;
-
-    toggleMultiple = ['showWorkspace', 'showChannels'];
 
     get experiment() {
       return this.experimentContext.getters.activeExperiment;
@@ -106,21 +63,11 @@
     }
 
     get showWorkspace() {
-      return this.toggleMultiple.includes('showWorkspace');
+      return this.mainContext.getters.showWorkspace;
     }
 
     get showChannels() {
-      return this.toggleMultiple.includes('showChannels');
-    }
-
-    get viewerClass() {
-      if (this.showWorkspace && this.showChannels) {
-        return 'md6';
-      }
-      if (this.showWorkspace || this.showChannels) {
-        return 'md9';
-      }
-      return 'md12';
+      return this.mainContext.getters.showChannels;
     }
 
     async mounted() {
@@ -138,10 +85,6 @@
 <style scoped>
   .tree-view {
     height: calc(100vh - 115px);
-  }
-
-  .image-view {
-    height: calc(100vh - 163px);
   }
 
   .channels-view {

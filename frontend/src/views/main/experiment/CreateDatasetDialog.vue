@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template v-slot:activator="{ on }">
-      <v-list-tile v-on="on">
-        <v-list-tile-title>Create Dataset</v-list-tile-title>
-      </v-list-tile>
+      <v-btn v-on="on">
+        Create Dataset
+      </v-btn>
     </template>
     <v-card>
       <v-card-title>Create Dataset</v-card-title>
