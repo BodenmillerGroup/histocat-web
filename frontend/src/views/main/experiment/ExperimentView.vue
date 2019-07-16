@@ -3,7 +3,7 @@
   <v-container v-else fluid grid-list-md pa-2>
     <v-layout row>
       <v-flex v-if="showWorkspace" md3>
-        <v-tabs v-model="tab">
+        <v-tabs v-model="tabWorkspace">
           <v-tab>Workspace</v-tab>
           <v-tab>Datasets</v-tab>
           <v-tab-item>
@@ -40,7 +40,18 @@
             </v-btn>
           </v-btn-toggle>
         </v-toolbar>
-        <BlendView/>
+        <v-flex>
+          <v-tabs v-model="tabImageView">
+            <v-tab>Blend</v-tab>
+            <v-tab>Tiles</v-tab>
+            <v-tab-item>
+              <BlendView class="image-view"/>
+            </v-tab-item>
+            <v-tab-item>
+              <TilesView class="image-view"/>
+            </v-tab-item>
+          </v-tabs>
+        </v-flex>
       </v-flex>
       <v-flex v-if="showChannels" md3>
         <v-flex>
@@ -62,11 +73,13 @@
   import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
   import DatasetsView from '@/views/main/experiment/DatasetsView.vue';
   import SettingsView from '@/views/main/experiment/SettingsView.vue';
+  import TilesView from '@/views/main/experiment/TilesView.vue';
   import WorkspaceView from '@/views/main/experiment/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: {
+      TilesView,
       DatasetsView,
       CreateDatasetDialog,
       ChannelsView,
@@ -79,7 +92,8 @@
   export default class ExperimentView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
 
-    tab = 0;
+    tabWorkspace = 0;
+    tabImageView = 0;
 
     toggleMultiple = ['showWorkspace', 'showChannels'];
 
@@ -112,15 +126,11 @@
     async mounted() {
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
       this.experimentContext.mutations.setActiveExperimentId(experimentId);
-      await Promise.all([
-        this.experimentContext.actions.getExperimentData(experimentId),
-        this.experimentContext.actions.getOwnDatasets(experimentId),
-      ]);
+      await this.experimentContext.actions.getExperimentData(experimentId);
     }
 
-    async beforeDestroy() {
+    beforeDestroy() {
       this.experimentContext.mutations.setActiveExperimentId(undefined);
-      this.experimentContext.mutations.setDatasets([]);
     }
   }
 </script>
@@ -128,6 +138,10 @@
 <style scoped>
   .tree-view {
     height: calc(100vh - 115px);
+  }
+
+  .image-view {
+    height: calc(100vh - 163px);
   }
 
   .channels-view {

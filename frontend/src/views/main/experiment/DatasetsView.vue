@@ -1,5 +1,16 @@
 <template>
   <v-card tile>
+    <v-toolbar card dense>
+      <v-toolbar-side-icon></v-toolbar-side-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click="refreshStatus">
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+        </template>
+        <span>Refresh datasets status</span>
+      </v-tooltip>
+    </v-toolbar>
     <v-card-title class="card-title">
       <v-text-field
         v-model="search"
@@ -91,6 +102,21 @@
       if (res) {
         await this.experimentContext.actions.deleteDataset(id);
       }
+    }
+
+    async refreshStatus() {
+      const experimentId = this.experimentContext.getters.activeExperimentId;
+      if (experimentId) {
+        await this.experimentContext.actions.getOwnDatasets(experimentId);
+      }
+    }
+
+    async mounted() {
+      this.refreshStatus();
+    }
+
+    beforeDestroy() {
+      this.experimentContext.mutations.setDatasets([]);
     }
   }
 </script>
