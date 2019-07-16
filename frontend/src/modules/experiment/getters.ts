@@ -36,12 +36,13 @@ export class ExperimentGetters extends Getters<ExperimentState> {
 
   get selectedChannels() {
     if (this.activeAcquisition) {
-      const channels = this.activeAcquisition.channels.filter((channel) => {
+      return this.activeAcquisition.channels.filter((channel) => {
         if (this.state.selectedMetals.includes(channel.metal)) {
           return channel;
         }
       });
-      return channels;
+    } else {
+      return [];
     }
   }
 

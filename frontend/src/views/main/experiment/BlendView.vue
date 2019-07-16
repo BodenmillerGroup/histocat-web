@@ -1,5 +1,5 @@
 <template>
-  <div id="map" class="blend-view">
+  <div id="map">
   </div>
 </template>
 
@@ -149,13 +149,6 @@
     }
   }
 </script>
-
-<style scoped>
-  .blend-view {
-    height: 95%;
-    /*width: 100%;*/
-  }
-</style>
 
 <style>
   .ol-scale-line {
