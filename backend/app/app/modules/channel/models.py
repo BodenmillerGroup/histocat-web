@@ -40,3 +40,14 @@ class ChannelModel(BaseModel):
 class ChannelStatsModel(BaseModel):
     hist: List[int]
     edges: List[float]
+
+
+class ChannelSettingsModel(BaseModel):
+    id: int
+    color: Optional[str]
+    min: Optional[float]
+    max: Optional[float]
+
+
+class ChannelStackModel(BaseModel):
+    channels: List[ChannelSettingsModel]

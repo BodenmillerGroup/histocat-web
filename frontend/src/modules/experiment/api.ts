@@ -1,6 +1,14 @@
 import { apiUrl } from '@/env';
 import ky from 'ky';
-import { IChannelStats, IDataset, IDatasetCreate, IExperiment, IExperimentCreate, IExperimentUpdate } from './models';
+import {
+  IChannelStack,
+  IChannelStats,
+  IDataset,
+  IDatasetCreate,
+  IExperiment,
+  IExperimentCreate,
+  IExperimentUpdate,
+} from './models';
 
 const cacheAvailable = 'caches' in self;
 
@@ -66,11 +74,12 @@ export const api = {
       },
     }).json<IExperiment>();
   },
-  async getChannelImage(token: string, id: number) {
-    return ky.get(`${apiUrl}/api/v1/channels/${id}/image`, {
+  async getChannelStackImage(token: string, params: IChannelStack) {
+    return ky.post(`${apiUrl}/api/v1/channels/stack`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      json: params,
     });
   },
   async getChannelStats(token: string, id: number) {

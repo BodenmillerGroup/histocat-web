@@ -195,3 +195,12 @@ export interface IChannelStats {
   hist: number[];
   edges: number[];
 }
+
+export interface IChannelStack {
+  channels: Array<{
+    id: number;
+    color?: string;
+    min?: number;
+    max?: number;
+  }>;
+}

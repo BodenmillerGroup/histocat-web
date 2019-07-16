@@ -13,6 +13,7 @@ import jwt
 import numpy as np
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
+from skimage import filters
 from skimage.exposure import rescale_intensity
 
 from app.core import config
@@ -246,3 +247,10 @@ def verify_password_reset_token(token) -> Optional[str]:
         return decoded_token["email"]
     except InvalidTokenError:
         return None
+
+
+def apply_filter(image: np.ndarray, filter_type: str, param1=None, param2=None, param3=None):
+    if filter_type == 'gaussian':
+        return filters.gaussian(image, 1)
+    elif filter_type == 'median':
+        return filters.median(image)

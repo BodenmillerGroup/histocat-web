@@ -76,13 +76,15 @@
         const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
         return new ImageLayer({
           source: new Static({
-            url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
+            url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}&filter=gaussian`,
             imageExtent: projection.getExtent(),
           }),
         });
       });
       this.map.getLayers().clear();
       this.map.getLayers().extend(layers);
+
+      this.experimentContext.actions.getChannelStackImage();
     }
 
     beforeDestroy() {

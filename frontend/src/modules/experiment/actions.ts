@@ -215,4 +215,25 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       await this.main!.actions.checkApiError(error);
     }
   }
+
+  async getChannelStackImage() {
+    const channels = this.getters.selectedChannels.map((channel) => {
+      const settings = this.settings!.getters.channelSettings(channel.id);
+      const color = this.settings!.getters.metalColorMap.get(channel.metal);
+      const min = settings && settings.levels ? settings.levels.min : undefined;
+      const max = settings && settings.levels ? settings.levels.max : undefined;
+      return {
+        id: channel.id,
+        color: color,
+        min: min,
+        max: max
+      };
+    });
+
+    try {
+      return await api.getChannelStackImage(this.main!.getters.token, { channels: channels });
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
 }
