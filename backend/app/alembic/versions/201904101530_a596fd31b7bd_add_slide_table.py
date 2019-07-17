@@ -7,7 +7,7 @@ Create Date: 2019-04-10 15:30:16.499555
 """
 import sqlalchemy as sa
 from alembic import op
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
 
@@ -24,14 +24,13 @@ def upgrade():
         sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
         sa.Column('metaname', sa.String(4096), index=True),
         sa.Column('original_id', sa.Integer(), index=True),
-        sa.Column('uid', UUID(), index=True),
         sa.Column('original_metadata', sa.String()),
         sa.Column('meta', JSONB()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
     op.create_unique_constraint(
-        'uq_experiment_slide_uid',
+        'uq_experiment_slide_metaname',
         'slide',
         ['experiment_id', 'metaname']
     )
@@ -39,4 +38,4 @@ def upgrade():
 
 def downgrade():
     op.drop_table('slide')
-    op.drop_unique_constraint('uq_experiment_slide_uid')
+    op.drop_unique_constraint('uq_experiment_slide_metaname')

@@ -77,6 +77,6 @@
 
 <style scoped>
   .image-view {
-    height: calc(100vh - 163px);
+    height: calc(100vh - 168px);
   }
 </style>

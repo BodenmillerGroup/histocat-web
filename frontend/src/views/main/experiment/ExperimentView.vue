@@ -7,20 +7,20 @@
           <v-tab>Workspace</v-tab>
           <v-tab>Datasets</v-tab>
           <v-tab-item>
-            <WorkspaceView :experiment="experimentData" class="tree-view"/>
+            <WorkspaceView :experiment="experimentData"/>
           </v-tab-item>
           <v-tab-item lazy>
-            <DatasetsView class="tree-view"/>
+            <DatasetsView/>
           </v-tab-item>
         </v-tabs>
       </v-flex>
       <ImageView/>
       <v-flex v-if="showChannels" md3>
         <v-flex>
-          <ChannelsView class="channels-view"/>
+          <ChannelsView/>
         </v-flex>
         <v-flex>
-          <SettingsView class="settings-view"/>
+          <SettingsView/>
         </v-flex>
       </v-flex>
     </v-layout>
@@ -81,17 +81,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .tree-view {
-    height: calc(100vh - 115px);
-  }
-
-  .channels-view {
-    height: calc(50vh - 50px);
-  }
-
-  .settings-view {
-    height: calc(50vh - 60px);
-  }
-</style>

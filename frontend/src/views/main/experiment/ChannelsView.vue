@@ -23,7 +23,7 @@
       select-all
       disable-initial-sort
       hide-actions
-      class="scroll-y channels-table"
+      class="scroll-y scroll-view"
     >
       <template slot="items" slot-scope="props">
         <td>
@@ -99,7 +99,7 @@
     height: 35px;
   }
 
-  .channels-table {
+  .scroll-view {
     height: calc(50vh - 100px);
   }
 </style>

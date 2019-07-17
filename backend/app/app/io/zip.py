@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import csv
+import logging
 import os
-from typing import Dict
-import zipfile
 import shutil
+import zipfile
 from pathlib import Path
+from typing import Dict
 
 import numpy as np
 from imctools.io import mcdxmlparser
@@ -33,6 +34,8 @@ from app.modules.slide import crud as slide_crud
 from app.modules.slide.db import Slide
 from app.modules.slide.models import SlideCreateModel
 
+logger = logging.getLogger(__name__)
+
 
 @timeit
 def import_zip(db: Session, uri: str, experiment_id: int):
@@ -57,10 +60,12 @@ def import_zip(db: Session, uri: str, experiment_id: int):
 
     slide_map: Dict[str, Slide] = dict()
     for slide_item in slide_data.values():
-        uid = slide_item.get(mcdxmlparser.UID)
-        item = slide_crud.get_by_experiment_uid(db, experiment_id=experiment_id, uid=uid)
+        original_id = slide_item.get(mcdxmlparser.ID)
+        metaname = f'{basename}_s{original_id}'
+        item = slide_crud.get_by_metaname(db, experiment_id=experiment_id, metaname=metaname)
         if item:
-            raise SlideImportError(f"The slide with UID [{uid}] already exists in the experiment [{experiment_id}]")
+            raise SlideImportError(
+                f"The slide with metaname [{metaname}] already exists in the experiment [{experiment_id}]")
 
         xml_metadata_file: Path = dir / '_'.join([basename, "schema.xml"])
         with xml_metadata_file.open('rt') as f:
@@ -77,7 +82,8 @@ def import_zip(db: Session, uri: str, experiment_id: int):
     for panorama_item in panorama_data.values():
         panorama = _import_panorama(db, panorama_item, slide_map.get(panorama_item.get(mcdxmlparser.SLIDEID)), basename)
         panorama_map[str(panorama.original_id)] = panorama
-        _copy_file(dir / '_'.join([basename, f's{panorama.slide.original_id}_p{panorama.original_id}_pano.png']), panorama.location)
+        _copy_file(dir / '_'.join([basename, f's{panorama.slide.original_id}_p{panorama.original_id}_pano.png']),
+                   panorama.location)
 
     roi_map: Dict[str, ROI] = dict()
     for roi_item in roi_data.values():
@@ -86,16 +92,19 @@ def import_zip(db: Session, uri: str, experiment_id: int):
 
     roi_point_map: Dict[str, ROIPoint] = dict()
     for roi_point_item in roi_point_data.values():
-        roi_point = _import_roi_point(db, roi_point_item, roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID)), basename)
+        roi_point = _import_roi_point(db, roi_point_item,
+                                      roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID)), basename)
         roi_point_map[str(roi_point.original_id)] = roi_point
 
     acquisition_map: Dict[str, Acquisition] = dict()
     for acquisition_item in acquisition_data.values():
-        acquisition = _import_acquisition(db, acquisition_item, roi_map.get(acquisition_item.get(mcdxmlparser.ACQUISITIONROIID)), basename)
+        acquisition = _import_acquisition(db, acquisition_item,
+                                          roi_map.get(acquisition_item.get(mcdxmlparser.ACQUISITIONROIID)), basename)
         acquisition_map[str(acquisition.original_id)] = acquisition
 
     for channel_item in channel_data.values():
-        channel = _import_channel(db, channel_item, acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID)), basename, dir)
+        channel = _import_channel(db, channel_item, acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID)),
+                                  basename, dir)
 
 
 def _import_slide(db: Session, meta: Dict[str, str], original_metadata: str, experiment_id: int, basename: str):
@@ -105,7 +114,6 @@ def _import_slide(db: Session, meta: Dict[str, str], original_metadata: str, exp
         experiment_id=experiment_id,
         metaname=metaname,
         original_id=original_id,
-        uid=meta.get(mcdxmlparser.UID),
         original_metadata=original_metadata,
         meta=meta,
     )

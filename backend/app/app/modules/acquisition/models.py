@@ -11,7 +11,7 @@ class AcquisitionCreateModel(BaseModel):
     roi_id: int
     metaname: str
     original_id: int
-    meta: Dict[str, str]
+    meta: Dict[str, Optional[str]]
 
 
 # Shared properties
@@ -20,7 +20,7 @@ class AcquisitionModel(BaseModel):
     roi_id: int
     metaname: str
     original_id: int
-    meta: Dict[str, str]
+    meta: Dict[str, Optional[str]]
     location: Optional[str]
     created_at: datetime
 

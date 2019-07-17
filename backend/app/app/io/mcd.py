@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import logging
 import os
 from xml.etree import ElementTree
 
 import numpy as np
 from imctools.io import mcdxmlparser
+from imctools.io.abstractparserbase import AcquisitionError
 from imctools.io.mcdparser import McdParser
 from sqlalchemy.orm import Session
 
@@ -23,15 +25,18 @@ from app.modules.roi_point.models import ROIPointCreateModel
 from app.modules.slide import crud as slide_crud
 from app.modules.slide.models import SlideCreateModel
 
+logger = logging.getLogger(__name__)
+
 
 @timeit
 def import_mcd(db: Session, uri: str, experiment_id: int):
     with McdParser(uri) as mcd:
         for slide_item in mcd.meta.childs[mcdxmlparser.SLIDE].values():
-            uid = slide_item.properties.get(mcdxmlparser.UID)
-            item = slide_crud.get_by_experiment_uid(db, experiment_id=experiment_id, uid=uid)
+            metaname = mcd.meta.metaname
+            item = slide_crud.get_by_metaname(db, experiment_id=experiment_id, metaname=metaname)
             if item:
-                raise SlideImportError(f"The slide with UID [{uid}] already exists in the experiment [{experiment_id}]")
+                raise SlideImportError(
+                    f"The slide with metaname [{metaname}] already exists in the experiment [{experiment_id}]")
             original_metadata = ElementTree.tostring(mcd.xml, encoding="utf8", method="xml")
             slide = _import_slide(db, slide_item, original_metadata, experiment_id)
             mcd.meta.save_meta_xml(slide.location)
@@ -54,9 +59,12 @@ def import_mcd(db: Session, uri: str, experiment_id: int):
                             mcd.save_acquisition_bfimage_before(acquisition_item.id, acquisition.location)
                             mcd.save_acquisition_bfimage_after(acquisition_item.id, acquisition.location)
 
-                            imc_acquisition = mcd.get_imc_acquisition(acquisition_item.id)
-                            for channel_item in acquisition_item.childs[mcdxmlparser.ACQUISITIONCHANNEL].values():
-                                channel = _import_channel(db, channel_item, imc_acquisition, acquisition.id)
+                            try:
+                                imc_acquisition = mcd.get_imc_acquisition(acquisition_item.id)
+                                for channel_item in acquisition_item.childs[mcdxmlparser.ACQUISITIONCHANNEL].values():
+                                    channel = _import_channel(db, channel_item, imc_acquisition, acquisition.id)
+                            except AcquisitionError as error:
+                                logger.error(error)
 
 
 def _import_slide(db: Session, item, original_metadata: str, experiment_id: int):
@@ -64,7 +72,6 @@ def _import_slide(db: Session, item, original_metadata: str, experiment_id: int)
         experiment_id=experiment_id,
         metaname=item.metaname,
         original_id=item.id,
-        uid=item.properties.get(mcdxmlparser.UID),
         original_metadata=original_metadata,
         meta=item.properties,
     )

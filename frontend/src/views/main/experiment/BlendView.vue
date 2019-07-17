@@ -7,6 +7,7 @@
   import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import { mainModule } from '@/modules/main';
   import { settingsModule } from '@/modules/settings';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
@@ -22,6 +23,7 @@
 
   @Component
   export default class BlendView extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
 
@@ -43,6 +45,21 @@
 
     get channelStackImage() {
       return this.experimentContext.getters.channelStackImage;
+    }
+
+
+    get showWorkspace() {
+      return this.mainContext.getters.showWorkspace;
+    }
+
+    get showChannels() {
+      return this.mainContext.getters.showChannels;
+    }
+
+    @Watch('showWorkspace')
+    @Watch('showChannels')
+    onRefreshImageView() {
+      this.map.updateSize();
     }
 
     @Watch('channelStackImage')

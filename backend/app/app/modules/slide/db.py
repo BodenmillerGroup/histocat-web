@@ -5,7 +5,7 @@ from typing import Dict, Optional
 
 import sqlalchemy as sa
 from imctools.io import mcdxmlparser
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.core.utils import autocreate_directory_property, remove_location_upon_delete
@@ -25,14 +25,13 @@ class Slide(Base):
 
     __tablename__ = "slide"
     __table_args__ = (
-        sa.UniqueConstraint('experiment_id', 'uid', name='uq_experiment_slide_uid'),
+        sa.UniqueConstraint('experiment_id', 'metaname', name='uq_experiment_slide_metaname'),
     )
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     experiment_id: int = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
     metaname: str = sa.Column('metaname', sa.String(4096))
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
-    uid: str = sa.Column('uid', UUID(), index=True)
     original_metadata: str = sa.Column('original_metadata', sa.String())
     meta: Dict[str, str] = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))

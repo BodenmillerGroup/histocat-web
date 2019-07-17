@@ -23,7 +23,7 @@
       />
     </v-card-title>
     <v-card-text>
-      <v-list>
+      <v-list class="scroll-y scroll-view">
         <v-list-group
           v-for="item in items"
           :key="item.uid"
@@ -124,6 +124,10 @@
 <style scoped>
   .card-title {
     padding-bottom: 0;
+  }
+
+  .scroll-view {
+    height: calc(100vh - 240px);
   }
 </style>
 

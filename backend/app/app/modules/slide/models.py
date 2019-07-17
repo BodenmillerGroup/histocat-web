@@ -11,7 +11,6 @@ class SlideCreateModel(BaseModel):
     experiment_id: int
     metaname: str
     original_id: int
-    uid: Optional[str]
     original_metadata: str
     meta: Dict[str, Optional[str]]
 
@@ -22,7 +21,6 @@ class SlideModel(BaseModel):
     experiment_id: int
     metaname: str
     original_id: int
-    uid: Optional[str]
     original_metadata: str
     meta: Dict[str, Optional[str]]
     location: Optional[str]

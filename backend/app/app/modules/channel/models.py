@@ -14,7 +14,7 @@ class ChannelCreateModel(BaseModel):
     mass: int
     max_intensity: Optional[float]
     min_intensity: Optional[float]
-    meta: Dict[str, str]
+    meta: Dict[str, Optional[str]]
 
 
 # Shared properties
@@ -28,7 +28,7 @@ class ChannelModel(BaseModel):
     mass: int
     max_intensity: Optional[float]
     min_intensity: Optional[float]
-    meta: Dict[str, str]
+    meta: Dict[str, Optional[str]]
     location: Optional[str]
     created_at: datetime
 
