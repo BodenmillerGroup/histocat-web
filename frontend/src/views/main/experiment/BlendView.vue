@@ -41,6 +41,28 @@
       return this.experimentContext.getters.activeAcquisition;
     }
 
+    get channelStackImage() {
+      return this.experimentContext.getters.channelStackImage;
+    }
+
+    @Watch('channelStackImage')
+    onChannelStackImageChanged(image: string | ArrayBuffer | null) {
+      if (image !== null) {
+        const projection = this.map.getView().getProjection();
+        const layer = new ImageLayer({
+          source: new Static({
+            url: `${apiUrl}/api/v1/channels/stack`,
+            imageExtent: projection.getExtent(),
+            imageLoadFunction: (view, src: string) => {
+              (view.getImage() as any).src = image;
+            },
+          }),
+        });
+        this.map.getLayers().clear();
+        this.map.getLayers().extend([layer]);
+      }
+    }
+
     @Watch('activeAcquisition')
     onActiveAcquisitionChanged(acquisition: IAcquisition) {
       if (!acquisition) {
@@ -60,44 +82,16 @@
 
     @Watch('metalColorMap')
     onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
-      this.onSelectedChannelsChanged([]);
+      this.experimentContext.actions.getChannelStackImage();
     }
 
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
-      if (!this.selectedChannels) {
+      if (!this.selectedChannels || this.selectedChannels.length === 0) {
         return;
       }
-      const projection = this.map.getView().getProjection();
-      const layers = this.selectedChannels.map((channel) => {
-        const color = this.metalColorMap.has(channel.metal) ? this.metalColorMap.get(channel.metal) : '';
-        const channelSettings = this.settingsContext.getters.channelSettings(channel.id);
-        const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
-        const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
-        return new ImageLayer({
-          source: new Static({
-            url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
-            imageExtent: projection.getExtent(),
-          }),
-        });
-      });
-      this.map.getLayers().clear();
-      this.map.getLayers().extend(layers);
+      this.experimentContext.actions.getChannelStackImage();
     }
-
-    beforeDestroy() {
-      if (this.map) {
-        this.map.un('precompose', this.precompose);
-      }
-    }
-
-    private precompose(evt) {
-      evt.context.imageSmoothingEnabled = false;
-      evt.context.webkitImageSmoothingEnabled = false;
-      evt.context.mozImageSmoothingEnabled = false;
-      evt.context.msImageSmoothingEnabled = false;
-      evt.context.globalCompositeOperation = 'screen';
-    };
 
     private initMap(extent: number[]) {
       // Map views always need a projection.  Here we just want to map image
@@ -144,8 +138,6 @@
         view: view,
         target: 'map',
       });
-
-      this.map.on('precompose', this.precompose);
     }
   }
 </script>

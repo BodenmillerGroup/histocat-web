@@ -9,4 +9,8 @@ export class SettingsGetters extends Getters<SettingsState> {
   get metalColorMap() {
     return this.state.metalColorMap;
   }
+
+  get filter() {
+    return this.state.filter;
+  }
 }

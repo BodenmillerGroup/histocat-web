@@ -15,6 +15,7 @@ export class ExperimentState {
   activeWorkspaceNode?: object = undefined;
   selectedAcquisitionIds: number[] = [];
   selectedMetals: string[] = [];
+  channelStackImage: string | ArrayBuffer | null = null;
 }
 
 export const experimentModule = new Module({

@@ -13,11 +13,11 @@ from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.utils import Color, colorize, scale_image
+from app.core.utils import Color, colorize, scale_image, apply_filter
 from app.modules.user.db import User
 
 from . import crud
-from .models import ChannelModel, ChannelStatsModel
+from .models import ChannelModel, ChannelStatsModel, ChannelStackModel
 
 r = redis.Redis(host="redis")
 
@@ -79,9 +79,7 @@ async def read_channel_image(
     clr = Color[color] if color else None
     img = colorize(data, clr) if clr else data
     png = cv2.imencode(".png", img)[1]
-    return StreamingResponse(
-        stream_image(png), media_type="image/png", headers={"Cache-Control": "private"}
-    )
+    return StreamingResponse(stream_image(png), media_type="image/png")
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
@@ -97,9 +95,7 @@ async def read_channel_stats(
     """
     content = r.get(request.url.path)
     if content:
-        return UJSONResponse(
-            content=ujson.loads(content), headers={"Cache-Control": "private"}
-        )
+        return UJSONResponse(content=ujson.loads(content))
 
     item = crud.get(db, id=id)
 
@@ -107,4 +103,33 @@ async def read_channel_stats(
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
     r.set(request.url.path, ujson.dumps(content))
-    return UJSONResponse(content=content, headers={"Cache-Control": "private"})
+    return UJSONResponse(content=content)
+
+
+@router.post("/stack", responses={200: {"content": {"image/png": {}}}})
+async def create_channel_stack(
+    params: ChannelStackModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Create channel stack (additive) image
+    """
+    additive_image = None
+    for channel in params.channels:
+        item = crud.get(db, id=channel.id)
+        data = np.load(os.path.join(item.location, "origin.npy"))
+
+        if channel.min is not None and channel.max is not None:
+            data = scale_image(data, (item.min_intensity, item.max_intensity), (channel.min, channel.max))
+        clr = Color[channel.color] if channel.color else None
+        img = colorize(data, clr)
+
+        if additive_image is None:
+            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 3), dtype=data.dtype)
+        additive_image += img
+
+    if params.filter.apply:
+        additive_image = apply_filter(additive_image, params.filter)
+    png = cv2.imencode(".png", additive_image)[1]
+    return StreamingResponse(stream_image(png), media_type="image/png")

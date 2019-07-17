@@ -43,9 +43,7 @@
         id: this.channel.id,
         levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
       });
-
-      const color = this.settingsContext.getters.metalColorMap.get(this.channel.metal);
-      this.settingsContext.mutations.setMetalColor({ metal: this.channel.metal, color: color ? color : '' });
+      this.experimentContext.actions.getChannelStackImage();
     }
 
     showHistogram() {

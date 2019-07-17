@@ -22,7 +22,7 @@
         <v-tab-item>
           <BlendView class="image-view"/>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item lazy>
           <TilesView class="image-view"/>
         </v-tab-item>
       </v-tabs>

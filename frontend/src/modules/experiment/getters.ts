@@ -73,4 +73,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   get activeWorkspaceNode() {
     return this.state.activeWorkspaceNode;
   }
+
+  get channelStackImage() {
+    return this.state.channelStackImage;
+  }
 }

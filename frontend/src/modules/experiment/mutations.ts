@@ -60,16 +60,20 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.activeAcquisitionId = id;
   }
 
-  setActiveWorkspaceNode(node?: { id: number, type: string}) {
+  setActiveWorkspaceNode(node?: { id: number, type: string }) {
     this.state.activeWorkspaceNode = node;
     if (node) {
       if (node.type === 'slide') {
-      this.setActiveSlideId(node.id);
-    } else if (node.type === 'panorama') {
-      this.setActivePanoramaId(node.id);
-    } else if (node.type === 'acquisition') {
-      this.setActiveAcquisitionId(node.id);
+        this.setActiveSlideId(node.id);
+      } else if (node.type === 'panorama') {
+        this.setActivePanoramaId(node.id);
+      } else if (node.type === 'acquisition') {
+        this.setActiveAcquisitionId(node.id);
+      }
     }
-    }
+  }
+
+  setChannelStackImage(base64Image: string | ArrayBuffer | null) {
+    this.state.channelStackImage = base64Image;
   }
 }

@@ -13,9 +13,11 @@ import jwt
 import numpy as np
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
+from skimage import filters
 from skimage.exposure import rescale_intensity
 
 from app.core import config
+from app.modules.channel.models import FilterModel
 
 password_reset_jwt_subject = "preset"
 
@@ -141,7 +143,8 @@ class Color(Enum):
 
 def colorize(image: np.ndarray, color: Color):
     image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    image = image * color.value
+    if color:
+        image = image * color.value
     return image
 
 
@@ -246,3 +249,8 @@ def verify_password_reset_token(token) -> Optional[str]:
         return decoded_token["email"]
     except InvalidTokenError:
         return None
+
+
+def apply_filter(image: np.ndarray, filter: FilterModel):
+    if filter.type == 'gaussian':
+        return filters.gaussian(image, 1)
