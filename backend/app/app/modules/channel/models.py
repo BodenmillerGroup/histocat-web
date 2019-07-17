@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 from pydantic import BaseModel
 
@@ -49,5 +49,12 @@ class ChannelSettingsModel(BaseModel):
     max: Optional[float]
 
 
+class FilterModel(BaseModel):
+    apply: bool
+    type: str
+    settings: Optional[dict]
+
+
 class ChannelStackModel(BaseModel):
+    filter: FilterModel
     channels: List[ChannelSettingsModel]

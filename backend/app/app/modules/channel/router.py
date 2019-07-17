@@ -65,10 +65,6 @@ async def read_channel_image(
     color: str = None,
     min: float = None,
     max: float = None,
-    filter: str = None,
-    filter_param_1=None,
-    filter_param_2=None,
-    filter_param_3=None,
     # current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -82,12 +78,8 @@ async def read_channel_image(
         data = scale_image(data, (item.min_intensity, item.max_intensity), (min, max))
     clr = Color[color] if color else None
     img = colorize(data, clr) if clr else data
-    # if filter is not None:
-    #     img = apply_filter(img, filter, filter_param_1, filter_param_2, filter_param_3)
     png = cv2.imencode(".png", img)[1]
-    return StreamingResponse(
-        stream_image(png), media_type="image/png", headers={"Cache-Control": "private"}
-    )
+    return StreamingResponse(stream_image(png), media_type="image/png")
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
@@ -103,9 +95,7 @@ async def read_channel_stats(
     """
     content = r.get(request.url.path)
     if content:
-        return UJSONResponse(
-            content=ujson.loads(content), headers={"Cache-Control": "private"}
-        )
+        return UJSONResponse(content=ujson.loads(content))
 
     item = crud.get(db, id=id)
 
@@ -113,13 +103,13 @@ async def read_channel_stats(
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
     r.set(request.url.path, ujson.dumps(content))
-    return UJSONResponse(content=content, headers={"Cache-Control": "private"})
+    return UJSONResponse(content=content)
 
 
 @router.post("/stack", responses={200: {"content": {"image/png": {}}}})
 async def create_channel_stack(
     params: ChannelStackModel,
-    # current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -133,15 +123,13 @@ async def create_channel_stack(
         if channel.min is not None and channel.max is not None:
             data = scale_image(data, (item.min_intensity, item.max_intensity), (channel.min, channel.max))
         clr = Color[channel.color] if channel.color else None
-        img = colorize(data, clr) if clr else data
+        img = colorize(data, clr)
 
         if additive_image is None:
             additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 3), dtype=data.dtype)
         additive_image += img
 
-    cv2.imwrite('/data/test.png', additive_image)
+    if params.filter.apply:
+        additive_image = apply_filter(additive_image, params.filter)
     png = cv2.imencode(".png", additive_image)[1]
-    return StreamingResponse(
-        stream_image(png),
-        media_type="image/png"
-    )
+    return StreamingResponse(stream_image(png), media_type="image/png")

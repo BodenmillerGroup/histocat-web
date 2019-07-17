@@ -1,3 +1,4 @@
+import { IImageFilter } from '@/modules/experiment/models';
 import { Module } from 'vuex-smart-module';
 import { SettingsActions } from './actions';
 import { SettingsGetters } from './getters';
@@ -7,6 +8,11 @@ import { SettingsMutations } from './mutations';
 export class SettingsState {
   channelsSettings: Map<number, IChannelSettings> = new Map<number, IChannelSettings>();
   metalColorMap: Map<string, string> = new Map<string, string>();
+  filter: IImageFilter = {
+    apply: false,
+    type: 'gaussian',
+    settings: {},
+  }
 }
 
 export const settingsModule = new Module({

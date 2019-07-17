@@ -230,8 +230,16 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       };
     });
 
+    const filter = this.settings!.getters.filter;
+
     try {
-      return await api.getChannelStackImage(this.main!.getters.token, { channels: channels });
+      const response = await api.getChannelStackImage(this.main!.getters.token, { filter: filter, channels: channels });
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        this.mutations.setChannelStackImage(reader.result);
+      };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

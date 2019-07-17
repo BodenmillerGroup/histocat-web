@@ -197,10 +197,17 @@ export interface IChannelStats {
 }
 
 export interface IChannelStack {
+  filter: IImageFilter;
   channels: Array<{
     id: number;
     color?: string;
     min?: number;
     max?: number;
   }>;
+}
+
+export interface IImageFilter {
+  apply: boolean;
+  type: string;
+  settings?: any;
 }
