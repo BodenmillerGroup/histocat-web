@@ -1,13 +1,37 @@
 <template>
   <div>
-    <v-toolbar light>
+    <v-toolbar dense light>
       <v-toolbar-title>
         Manage Experiments
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="primary" to="/main/admin/experiments/create">Create Experiment</v-btn>
+      <v-btn small color="primary" to="/main/admin/experiments/create">Create Experiment</v-btn>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="experiments">
+
+    <v-data-table
+      :headers="headers"
+      :items="experiments"
+    >
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon :to="{name: 'main-admin-experiments-edit', params: {id: item.id}}">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+          </template>
+          <span>Edit</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon @click="deleteExperiment($event, item.id)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+          <span>Delete</span>
+        </v-tooltip>
+        <UploadButton :id="item.id"/>
+      </template>
+
       <template slot="items" slot-scope="props">
         <td>{{ props.item.name }}</td>
         <td>{{ props.item.description }}</td>
@@ -64,7 +88,8 @@
       },
       {
         text: 'Actions',
-        value: 'id',
+        value: 'action',
+        sortable: false,
       },
     ];
 

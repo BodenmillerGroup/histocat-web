@@ -3,12 +3,12 @@
     <v-layout justify-space-between>
       <b>{{ channel.label }}</b>
       <v-btn-toggle v-model="colorIndex">
-        <v-btn color="red" small depressed>R</v-btn>
-        <v-btn color="green" small depressed>G</v-btn>
-        <v-btn color="blue" small depressed>B</v-btn>
-        <v-btn color="yellow" small depressed>Y</v-btn>
-        <v-btn color="cyan" small depressed>C</v-btn>
-        <v-btn color="#FF00FF" small depressed>M</v-btn>
+        <v-btn color="red" small>R</v-btn>
+        <v-btn color="green" small>G</v-btn>
+        <v-btn color="blue" small>B</v-btn>
+        <v-btn color="yellow" small>Y</v-btn>
+        <v-btn color="cyan" small>C</v-btn>
+        <v-btn color="#FF00FF" small>M</v-btn>
       </v-btn-toggle>
     </v-layout>
     <ChannelHistogramView :channel="channel"></ChannelHistogramView>

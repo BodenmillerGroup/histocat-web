@@ -1,7 +1,6 @@
 <template>
   <v-flex :class="viewerClass">
-    <v-toolbar card dense>
-      <v-toolbar-side-icon></v-toolbar-side-icon>
+    <v-toolbar flat dense>
       <CreateDatasetDialog/>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
@@ -13,27 +12,25 @@
           </v-btn>
         </template>
         <v-list dense>
-          <v-list-tile
+          <v-list-item
             @click="download('tiff')"
           >
-            <v-list-tile-title>TIFF</v-list-tile-title>
-          </v-list-tile>
-          <v-list-tile
+            <v-list-item-title>TIFF</v-list-item-title>
+          </v-list-item>
+          <v-list-item
             @click="download('png')"
           >
-            <v-list-tile-title>PNG</v-list-tile-title>
-          </v-list-tile>
+            <v-list-item-title>PNG</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-menu>
       <v-spacer/>
       <v-btn-toggle v-model="toggleUI" multiple>
-        <v-btn small flat value='workspace'>
-          <v-icon>mdi-file-tree</v-icon>
-          <span>Workspace</span>
+        <v-btn text tile small value='workspace'>
+          <v-icon left>mdi-file-tree</v-icon> Workspace
         </v-btn>
-        <v-btn small flat value='channels'>
-          <v-icon>mdi-format-list-checkbox</v-icon>
-          <span>Channels</span>
+        <v-btn text tile small value='channels'>
+          <v-icon left>mdi-format-list-checkbox</v-icon> Channels
         </v-btn>
       </v-btn-toggle>
     </v-toolbar>
@@ -44,7 +41,7 @@
         <v-tab-item>
           <BlendView class="image-view"/>
         </v-tab-item>
-        <v-tab-item lazy>
+        <v-tab-item>
           <TilesView class="image-view"/>
         </v-tab-item>
       </v-tabs>

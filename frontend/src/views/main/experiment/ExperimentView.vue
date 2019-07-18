@@ -9,7 +9,7 @@
           <v-tab-item>
             <WorkspaceView :experiment="experimentData"/>
           </v-tab-item>
-          <v-tab-item lazy>
+          <v-tab-item>
             <DatasetsView/>
           </v-tab-item>
         </v-tabs>

@@ -2,7 +2,7 @@
 
 import '@/component-hooks';
 import Vue from 'vue';
-import '@/plugins/vuetify';
+import vuetify from '@/plugins/vuetify';
 import '@/plugins/vee-validate';
 import '@/plugins/vuetify-confirm';
 import '@/plugins/masonry-css';
@@ -19,4 +19,6 @@ new Vue({
   router,
   store,
   render: (h) => h(App),
+  // @ts-ignore
+  vuetify: vuetify,
 }).$mount('#app');

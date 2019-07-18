@@ -1,31 +1,38 @@
 <template>
   <div>
-    <v-toolbar light>
+    <v-toolbar dense>
       <v-toolbar-title>
         Manage Users
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="primary" to="/main/admin/users/create">Create User</v-btn>
+      <v-btn
+        small
+        color="primary"
+        to="/main/admin/users/create"
+      >Create User
+      </v-btn>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="users">
-      <template slot="items" slot-scope="props">
-        <td>{{ props.item.name }}</td>
-        <td>{{ props.item.email }}</td>
-        <td>{{ props.item.full_name }}</td>
-        <td>
-          <v-icon v-if="props.item.is_active">mdi-check</v-icon>
-        </td>
-        <td>
-          <v-icon v-if="props.item.is_superuser">mdi-check</v-icon>
-        </td>
-        <td class="justify-center layout px-0">
-          <v-tooltip top>
-            <span>Edit</span>
-            <v-btn slot="activator" flat :to="{name: 'main-admin-users-edit', params: {id: props.item.id}}">
+    <v-data-table
+      :headers="headers"
+      :items="users"
+    >
+      <template v-slot:item.is_active="{ item }">
+        <v-icon v-if="item.is_active">mdi-check</v-icon>
+      </template>
+
+      <template v-slot:item.is_superuser="{ item }">
+        <v-icon v-if="item.is_superuser">mdi-check</v-icon>
+      </template>
+
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon :to="{name: 'main-admin-users-edit', params: {id: item.id}}">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-          </v-tooltip>
-        </td>
+          </template>
+          <span>Edit</span>
+        </v-tooltip>
       </template>
     </v-data-table>
   </div>
@@ -41,12 +48,6 @@
 
     headers = [
       {
-        text: 'Name',
-        sortable: true,
-        value: 'name',
-        align: 'left',
-      },
-      {
         text: 'Email',
         sortable: true,
         value: 'email',
@@ -61,18 +62,19 @@
       {
         text: 'Is Active',
         sortable: true,
-        value: 'isActive',
+        value: 'is_active',
         align: 'left',
       },
       {
         text: 'Is Superuser',
         sortable: true,
-        value: 'isSuperuser',
+        value: 'is_superuser',
         align: 'left',
       },
       {
         text: 'Actions',
-        value: 'id',
+        value: 'action',
+        sortable: false,
       },
     ];
 

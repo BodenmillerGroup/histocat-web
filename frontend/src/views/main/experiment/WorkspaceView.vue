@@ -1,6 +1,6 @@
 <template>
   <v-card tile>
-    <v-card-title class="card-title">
+    <v-card-title>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -39,11 +39,10 @@
             :nudge-width="200"
             offset-x
             open-on-hover
-            lazy
           >
             <template v-slot:activator="{ on }">
               <v-btn
-                flat
+                text
                 icon
                 color="grey"
                 v-on="on"
@@ -144,10 +143,6 @@
 </script>
 
 <style scoped>
-  .card-title {
-    padding-bottom: 0;
-  }
-
   .scroll-view {
     height: calc(100vh - 192px);
   }

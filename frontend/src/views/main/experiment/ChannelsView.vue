@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
-    <v-card-title class="card-title">
-      <h4>Channels</h4>
+    <v-card-title>
+      Channels
       <v-spacer/>
       <v-text-field
         v-model="search"
@@ -10,8 +10,6 @@
         single-line
         hide-details
         clearable
-        solo-inverted
-        flat
       />
     </v-card-title>
     <v-data-table
@@ -19,11 +17,11 @@
       :items="channels"
       :search="search"
       v-model="selected"
-      item-key="label"
-      select-all
-      disable-initial-sort
-      hide-actions
+      show-select
+      hide-default-footer
       class="scroll-y scroll-view"
+      dense
+      disable-pagination
     >
       <template slot="items" slot-scope="props">
         <td>
@@ -55,9 +53,9 @@
 
     headers = [
       {
-        text: 'Name',
+        text: 'Label',
         sortable: true,
-        value: 'name',
+        value: 'label',
         align: 'left',
         width: '50%',
       },
@@ -91,10 +89,6 @@
 </script>
 
 <style scoped>
-  .card-title {
-    padding-bottom: 4px;
-  }
-
   table.v-table tbody td, table.v-table tbody th {
     height: 35px;
   }
