@@ -7,7 +7,7 @@ import {
   IDatasetCreate,
   IExperiment,
   IExperimentCreate,
-  IExperimentUpdate,
+  IExperimentUpdate
 } from './models';
 
 const cacheAvailable = 'caches' in self;
@@ -74,14 +74,6 @@ export const api = {
       },
     }).json<IExperiment>();
   },
-  async getChannelStackImage(token: string, params: IChannelStack) {
-    return ky.post(`${apiUrl}/api/v1/channels/stack`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      json: params,
-    });
-  },
   async getChannelStats(token: string, id: number) {
     const url = `${apiUrl}/api/v1/channels/${id}/stats?bins=100`;
     let cache;
@@ -125,5 +117,13 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
     }).json<IDataset[]>();
+  },
+  async downloadChannelStackImage(token: string, params: IChannelStack) {
+    return ky.post(`${apiUrl}/api/v1/channels/stack`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      json: params,
+    });
   },
 };

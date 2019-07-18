@@ -3,6 +3,28 @@
     <v-toolbar card dense>
       <v-toolbar-side-icon></v-toolbar-side-icon>
       <CreateDatasetDialog/>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            small
+            v-on="on"
+          >
+            Download
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-tile
+            @click="download('tiff')"
+          >
+            <v-list-tile-title>TIFF</v-list-tile-title>
+          </v-list-tile>
+          <v-list-tile
+            @click="download('png')"
+          >
+            <v-list-tile-title>PNG</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
       <v-spacer/>
       <v-btn-toggle v-model="toggleUI" multiple>
         <v-btn small flat value='workspace'>
@@ -71,6 +93,10 @@
         return 'md9';
       }
       return 'md12';
+    }
+
+    download(type: 'png' | 'tiff') {
+      this.experimentContext.actions.exportChannelStackImage(type);
     }
   }
 </script>

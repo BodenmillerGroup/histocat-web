@@ -106,16 +106,16 @@ async def read_channel_stats(
     return UJSONResponse(content=content)
 
 
-@router.post("/stack", responses={200: {"content": {"image/png": {}}}})
-async def create_channel_stack(
+@router.post("/stack")
+async def download_channel_stack(
     params: ChannelStackModel,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
-    Create channel stack (additive) image
+    Download channel stack (additive) image
     """
-    additive_image = None
+    additive_image: np.ndarray = None
     for channel in params.channels:
         item = crud.get(db, id=channel.id)
         data = np.load(os.path.join(item.location, "origin.npy"))
@@ -131,5 +131,7 @@ async def create_channel_stack(
 
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)
-    png = cv2.imencode(".png", additive_image)[1]
-    return StreamingResponse(stream_image(png), media_type="image/png")
+
+    format = params.format if params.format is not None else 'png'
+    status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == 'tiff' else additive_image)
+    return StreamingResponse(stream_image(result), media_type=f"image/{format}")

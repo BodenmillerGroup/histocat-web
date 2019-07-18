@@ -1,6 +1,7 @@
 import { mainModule } from '@/modules/main';
 import { settingsModule } from '@/modules/settings';
 import { IChannelSettings } from '@/modules/settings/models';
+import { saveAs } from 'file-saver';
 import { Store } from 'vuex';
 import { Actions, Context } from 'vuex-smart-module';
 import { ExperimentState } from '.';
@@ -217,23 +218,9 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
   }
 
   async getChannelStackImage() {
-    const channels = this.getters.selectedChannels.map((channel) => {
-      const settings = this.settings!.getters.channelSettings(channel.id);
-      const color = this.settings!.getters.metalColorMap.get(channel.metal);
-      const min = settings && settings.levels ? settings.levels.min : undefined;
-      const max = settings && settings.levels ? settings.levels.max : undefined;
-      return {
-        id: channel.id,
-        color: color,
-        min: min,
-        max: max
-      };
-    });
-
-    const filter = this.settings!.getters.filter;
-
+    const params = this.prepareStackParams();
     try {
-      const response = await api.getChannelStackImage(this.main!.getters.token, { filter: filter, channels: channels });
+      const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -243,5 +230,39 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
+  }
+
+  async exportChannelStackImage(format: 'png' | 'tiff' = 'png') {
+    const params = this.prepareStackParams(format);
+    try {
+      const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
+      const blob = await response.blob();
+      saveAs(blob);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  private prepareStackParams(format: 'png' | 'tiff' = 'png') {
+    const channels = this.getters.selectedChannels.map((channel) => {
+      const settings = this.settings!.getters.channelSettings(channel.id);
+      const color = this.settings!.getters.metalColorMap.get(channel.metal);
+      const min = settings && settings.levels ? settings.levels.min : undefined;
+      const max = settings && settings.levels ? settings.levels.max : undefined;
+      return {
+        id: channel.id,
+        color: color,
+        min: min,
+        max: max,
+      };
+    });
+
+    const filter = this.settings!.getters.filter;
+
+    return {
+      format: format,
+      filter: filter,
+      channels: channels,
+    };
   }
 }

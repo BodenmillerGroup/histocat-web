@@ -64,7 +64,7 @@
 
     @Watch('channelStackImage')
     onChannelStackImageChanged(image: string | ArrayBuffer | null) {
-      if (image !== null) {
+      if (this.map && image !== null) {
         const projection = this.map.getView().getProjection();
         const layer = new ImageLayer({
           source: new Static({

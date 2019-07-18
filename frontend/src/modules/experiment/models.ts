@@ -197,6 +197,7 @@ export interface IChannelStats {
 }
 
 export interface IChannelStack {
+  format?: string;
   filter: IImageFilter;
   channels: Array<{
     id: number;

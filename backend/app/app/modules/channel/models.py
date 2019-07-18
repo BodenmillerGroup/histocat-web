@@ -58,3 +58,4 @@ class FilterModel(BaseModel):
 class ChannelStackModel(BaseModel):
     filter: FilterModel
     channels: List[ChannelSettingsModel]
+    format: Optional[str] = 'png'
