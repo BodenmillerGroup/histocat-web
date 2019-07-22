@@ -53,7 +53,7 @@
             </v-card-title>
 
             <v-card-actions>
-              <v-btn flat color="red" @click="deleteDataset($event, item.id)">Delete</v-btn>
+              <v-btn text color="red" @click="deleteDataset($event, item.id)">Delete</v-btn>
             </v-card-actions>
           </v-card>
         </v-list-group>
@@ -97,8 +97,7 @@
     }
 
     async deleteDataset(event, id: number) {
-      const res = await this.$confirm('Do you really want to delete dataset?', { title: 'Warning' });
-      if (res) {
+      if (self.confirm('Do you really want to delete dataset?')) {
         await this.experimentContext.actions.deleteDataset(id);
       }
     }

@@ -81,8 +81,7 @@
     }
 
     async deleteExperiment(event, id: number) {
-      const res = await this.$confirm('Do you really want to delete experiment?', { title: 'Warning' });
-      if (res) {
+      if (self.confirm('Are you sure you want to delete this item?')) {
         await this.experimentContext.actions.deleteExperiment(id);
       }
     }

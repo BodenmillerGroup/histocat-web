@@ -1,17 +1,15 @@
 // Import Component hooks before component definitions
 
-import '@/component-hooks';
-import Vue from 'vue';
-import vuetify from '@/plugins/vuetify';
-import '@/plugins/vee-validate';
-import '@/plugins/vuetify-confirm';
-import '@/plugins/masonry-css';
 import App from '@/App.vue';
+import '@/component-hooks';
+import '@/plugins/masonry-css';
+import '@/plugins/vee-validate';
+import vuetify from '@/plugins/vuetify';
+import '@/registerServiceWorker';
 import router from '@/router';
 import store from '@/store';
-import '@/registerServiceWorker';
-import 'vuetify/dist/vuetify.min.css';
-import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
+import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-loader
+import Vue from 'vue';
 
 Vue.config.productionTip = false;
 
