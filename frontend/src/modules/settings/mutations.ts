@@ -5,6 +5,16 @@ import { IChannelSettings } from './models';
 
 
 export class SettingsMutations extends Mutations<SettingsState> {
+  resetSettings() {
+    this.state.channelsSettings = new Map<number, IChannelSettings>();
+    this.state.metalColorMap = new Map<string, string>();
+    this.state.filter = {
+      apply: false,
+      type: 'gaussian',
+      settings: {},
+    };
+  }
+
   setChannelSettings(channelSettings: IChannelSettings) {
     this.state.channelsSettings.set(channelSettings.id, channelSettings);
   }

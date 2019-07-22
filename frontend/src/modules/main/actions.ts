@@ -1,13 +1,23 @@
+import { settingsModule } from '@/modules/settings';
 import { api } from '@/modules/user/api';
 import router from '@/router';
 import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
-import { Actions } from 'vuex-smart-module';
+import { Store } from 'vuex';
+import { Actions, Context } from 'vuex-smart-module';
 import { MainState } from '.';
 import { MainGetters } from './getters';
 import { AppNotification } from './models';
 import { MainMutations } from './mutations';
 
 export class MainActions extends Actions<MainState, MainGetters, MainMutations, MainActions> {
+  // Declare context type
+  settings?: Context<typeof settingsModule>;
+
+  // Called after the module is initialized
+  $init(store: Store<any>): void {
+    this.settings = settingsModule.context(store);
+  }
+
   async logIn(payload: { username: string; password: string }) {
     try {
       const data: any = await api.logInGetToken(payload.username, payload.password);
@@ -89,6 +99,14 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
   async logOut() {
     await this.removeLogIn();
     await this.routeLogOut();
+    if ('caches' in self) {
+      await caches.keys().then((keyList) => {
+        return Promise.all(keyList.map((key) => {
+          return caches.delete(key);
+        }));
+      });
+    }
+    // this.settings!.mutations.resetSettings();
   }
 
   async userLogOut() {
