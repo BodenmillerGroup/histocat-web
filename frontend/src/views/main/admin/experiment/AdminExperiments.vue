@@ -31,27 +31,6 @@
         </v-tooltip>
         <UploadButton :id="item.id"/>
       </template>
-
-      <template slot="items" slot-scope="props">
-        <td>{{ props.item.name }}</td>
-        <td>{{ props.item.description }}</td>
-        <td>{{ props.item.location }}</td>
-        <td class="justify-center layout px-0">
-          <v-tooltip top>
-            <span>Edit</span>
-            <v-btn slot="activator" flat :to="{name: 'main-admin-experiments-edit', params: {id: props.item.id}}">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          </v-tooltip>
-          <v-tooltip top>
-            <span>Delete</span>
-            <v-btn slot="activator" flat @click="deleteExperiment($event, props.item.id)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-tooltip>
-          <UploadButton :id="props.item.id"/>
-        </td>
-      </template>
     </v-data-table>
   </div>
 </template>

@@ -76,4 +76,10 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   setChannelStackImage(base64Image: string | ArrayBuffer | null) {
     this.state.channelStackImage = base64Image;
   }
+
+  resetExperiment() {
+    this.setActiveExperimentId(undefined);
+    this.setActiveAcquisitionId(undefined);
+    this.setSelectedMetals([]);
+  }
 }

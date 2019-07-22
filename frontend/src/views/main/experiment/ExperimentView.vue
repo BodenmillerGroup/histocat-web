@@ -77,7 +77,7 @@
     }
 
     beforeDestroy() {
-      this.experimentContext.mutations.setActiveExperimentId(undefined);
+      this.experimentContext.mutations.resetExperiment();
     }
   }
 </script>

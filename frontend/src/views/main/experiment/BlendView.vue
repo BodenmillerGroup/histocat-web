@@ -47,7 +47,6 @@
       return this.experimentContext.getters.channelStackImage;
     }
 
-
     get showWorkspace() {
       return this.mainContext.getters.showWorkspace;
     }
@@ -64,7 +63,11 @@
 
     @Watch('channelStackImage')
     onChannelStackImageChanged(image: string | ArrayBuffer | null) {
-      if (this.map && image !== null) {
+      if (!this.map) {
+        this.initMap();
+      }
+
+      if (image !== null) {
         const projection = this.map.getView().getProjection();
         const layer = new ImageLayer({
           source: new Static({
@@ -86,12 +89,12 @@
         return;
       }
 
-      const extent = [0, 0, parseInt(acquisition.meta.MaxX, 10), parseInt(acquisition.meta.MaxY, 10)];
       if (!this.map) {
-        this.initMap(extent);
+        this.initMap();
       }
 
       const existingExtent = this.map.getView().getProjection().getExtent();
+      const extent = [0, 0, parseInt(acquisition.meta.MaxX, 10), parseInt(acquisition.meta.MaxY, 10)];
       if (!equals(existingExtent, extent)) {
         this.map.getView().getProjection().setExtent(extent);
       }
@@ -104,13 +107,24 @@
 
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
-      if (!this.selectedChannels || this.selectedChannels.length === 0) {
-        return;
+      if (!this.map) {
+        this.initMap();
       }
-      this.experimentContext.actions.getChannelStackImage();
+
+      if (channels && channels.length > 0) {
+        this.experimentContext.actions.getChannelStackImage();
+      } else {
+        this.experimentContext.mutations.setChannelStackImage(null);
+        this.map.getLayers().clear();
+      }
     }
 
-    private initMap(extent: number[]) {
+    private initMap() {
+      if (!this.activeAcquisition) {
+        return;
+      }
+      const extent = [0, 0, parseInt(this.activeAcquisition.meta.MaxX, 10), parseInt(this.activeAcquisition.meta.MaxY, 10)];
+
       // Map views always need a projection.  Here we just want to map image
       // coordinates directly to map coordinates, so we create a projection that uses
       // the image extent in pixels.
