@@ -13,7 +13,7 @@ from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.utils import Color, colorize, scale_image, apply_filter
+from app.core.utils import colorize, scale_image, apply_filter
 from app.modules.user.db import User
 
 from . import crud
@@ -74,12 +74,17 @@ async def read_channel_image(
     item = crud.get(db, id=id)
 
     data = np.load(os.path.join(item.location, "origin.npy"))
-    if min is not None and max is not None:
-        data = scale_image(data, (item.min_intensity, item.max_intensity), (min, max))
-    clr = Color[color] if color else None
-    img = colorize(data, clr) if clr else data
-    png = cv2.imencode(".png", img)[1]
-    return StreamingResponse(stream_image(png), media_type="image/png")
+
+    levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
+    data = scale_image(data, levels)
+
+    color = f'#{color}' if color else None
+    image = colorize(data, color)
+
+    image = cv2.cvtColor(image.astype(data.dtype), cv2.COLOR_BGR2RGB)
+
+    status, result = cv2.imencode(".png", image)
+    return StreamingResponse(stream_image(result), media_type="image/png")
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
@@ -120,14 +125,20 @@ async def download_channel_stack(
         item = crud.get(db, id=channel.id)
         data = np.load(os.path.join(item.location, "origin.npy"))
 
-        if channel.min is not None and channel.max is not None:
-            data = scale_image(data, (item.min_intensity, item.max_intensity), (channel.min, channel.max))
-        clr = Color[channel.color] if channel.color else None
-        img = colorize(data, clr)
+        levels = (channel.min, channel.max) if channel.min is not None and channel.max is not None else (item.min_intensity, item.max_intensity)
+        data = scale_image(data, levels)
+
+        color = channel.color if channel.color else None
+        image = colorize(data, color)
 
         if additive_image is None:
-            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 3), dtype=data.dtype)
-        additive_image += img
+            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
+        additive_image += image
+
+    # TODO: Bright-field effect
+    # additive_image = additive_image[..., ::-1]
+
+    additive_image = cv2.cvtColor(additive_image, cv2.COLOR_BGR2RGB)
 
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)

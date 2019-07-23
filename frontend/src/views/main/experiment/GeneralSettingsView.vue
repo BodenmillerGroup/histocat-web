@@ -1,32 +1,29 @@
 <template>
-  <v-expansion-panel
-    v-model="panel"
-    expand
-  >
-    <v-expansion-panel-content>
-      <template v-slot:header>
-        <div>Filter</div>
-      </template>
-      <v-card flat>
-        <v-card-text>
-          <v-switch
-            v-model="filterApply"
-            label="Apply Filter"
-          ></v-switch>
-          <v-select
-            :items="filterTypes"
-            v-model="filterType"
-            label="Filter Type"
-          ></v-select>
-          <v-text-field
-            type="number"
-            label="Sigma"
-            v-model="sigma"
-          ></v-text-field>
-        </v-card-text>
-      </v-card>
-    </v-expansion-panel-content>
-  </v-expansion-panel>
+  <v-expansion-panels v-model="panel" multiple>
+    <v-expansion-panel>
+      <v-expansion-panel-header>Filter</v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-card flat>
+          <v-card-text>
+            <v-switch
+              v-model="filterApply"
+              label="Apply Filter"
+            ></v-switch>
+            <v-select
+              :items="filterTypes"
+              v-model="filterType"
+              label="Filter Type"
+            ></v-select>
+            <v-text-field
+              type="number"
+              label="Sigma"
+              v-model="sigma"
+            ></v-text-field>
+          </v-card-text>
+        </v-card>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script lang="ts">
@@ -42,7 +39,7 @@
     readonly settingsContext = settingsModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
 
-    panel = [true];
+    panel = [0];
     filterTypes = ['gaussian'];
 
     get filterApply() {

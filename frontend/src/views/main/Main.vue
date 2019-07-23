@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-navigation-drawer
-      persistent
       :mini-variant="miniDrawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
       v-model="showDrawer"
@@ -11,84 +10,79 @@
     >
       <v-layout column fill-height>
         <v-list>
-          <v-subheader>Main menu</v-subheader>
-          <v-list-tile to="/main/dashboard">
-            <v-list-tile-action>
+          <v-subheader>Main</v-subheader>
+          <v-list-item to="/main/dashboard">
+            <v-list-item-action>
               <v-icon>mdi-view-dashboard-outline</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Dashboard</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item>
         </v-list>
         <v-divider></v-divider>
         <v-list subheader v-show="hasAdminAccess">
           <v-subheader>Admin</v-subheader>
-          <v-list-tile to="/main/admin/users/all">
-            <v-list-tile-action>
+          <v-list-item to="/main/admin/users/all">
+            <v-list-item-action>
               <v-icon>mdi-account-multiple-outline</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Manage Users</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile to="/main/admin/experiments/all">
-            <v-list-tile-action>
+            </v-list-item-action>
+            <v-list-item-title>Manage Users</v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/main/admin/experiments/all">
+            <v-list-item-action>
               <v-icon>mdi-folder-multiple-outline</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Manage Experiments</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-title>Manage Experiments</v-list-item-title>
+          </v-list-item>
         </v-list>
         <v-spacer></v-spacer>
         <v-list>
           <v-divider></v-divider>
-          <v-list-tile @click="switchMiniDrawer">
-            <v-list-tile-action>
+          <v-list-item @click="switchMiniDrawer">
+            <v-list-item-action>
               <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"></v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Collapse</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-action>
+            <v-list-item-title>Collapse</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-layout>
     </v-navigation-drawer>
-    <v-toolbar
+    <v-app-bar
+      app
+      dense
       dark
       color="primary"
-      app
       :clipped-left="$vuetify.breakpoint.lgAndUp"
-      dense
     >
-      <v-toolbar-side-icon @click.stop="switchShowDrawer"></v-toolbar-side-icon>
-      <v-toolbar-title v-text="appName"></v-toolbar-title>
+      <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>{{appName}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-menu bottom left offset-y>
-        <v-btn slot="activator" icon>
-          <v-icon>mdi-dots-vertical</v-icon>
-        </v-btn>
+      <v-menu
+        bottom
+        left
+        offset-y
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+
         <v-list>
-          <v-list-tile to="/main/profile">
-            <v-list-tile-content>
-              <v-list-tile-title>Profile</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+          <v-list-item to="/main/profile">
+            <v-list-item-title>Profile</v-list-item-title>
+            <v-list-item-action>
               <v-icon>mdi-account</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
-          <v-list-tile @click="logout">
-            <v-list-tile-content>
-              <v-list-tile-title>Logout</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item @click="logout">
+            <v-list-item-title>Logout</v-list-item-title>
+            <v-list-item-action>
               <v-icon>mdi-logout-variant</v-icon>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
         </v-list>
       </v-menu>
-    </v-toolbar>
+    </v-app-bar>
     <v-content>
       <router-view></router-view>
     </v-content>

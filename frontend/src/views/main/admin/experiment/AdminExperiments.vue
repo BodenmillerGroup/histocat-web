@@ -1,32 +1,35 @@
 <template>
   <div>
-    <v-toolbar light>
+    <v-toolbar dense light>
       <v-toolbar-title>
         Manage Experiments
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn color="primary" to="/main/admin/experiments/create">Create Experiment</v-btn>
+      <v-btn small color="primary" to="/main/admin/experiments/create">Create Experiment</v-btn>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="experiments">
-      <template slot="items" slot-scope="props">
-        <td>{{ props.item.name }}</td>
-        <td>{{ props.item.description }}</td>
-        <td>{{ props.item.location }}</td>
-        <td class="justify-center layout px-0">
-          <v-tooltip top>
-            <span>Edit</span>
-            <v-btn slot="activator" flat :to="{name: 'main-admin-experiments-edit', params: {id: props.item.id}}">
+
+    <v-data-table
+      :headers="headers"
+      :items="experiments"
+    >
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon :to="{name: 'main-admin-experiments-edit', params: {id: item.id}}">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-          </v-tooltip>
-          <v-tooltip top>
-            <span>Delete</span>
-            <v-btn slot="activator" flat @click="deleteExperiment($event, props.item.id)">
+          </template>
+          <span>Edit</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" icon @click="deleteExperiment($event, item.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
-          </v-tooltip>
-          <UploadButton :id="props.item.id"/>
-        </td>
+          </template>
+          <span>Delete</span>
+        </v-tooltip>
+        <UploadButton :id="item.id"/>
       </template>
     </v-data-table>
   </div>
@@ -64,7 +67,8 @@
       },
       {
         text: 'Actions',
-        value: 'id',
+        value: 'action',
+        sortable: false,
       },
     ];
 
@@ -77,8 +81,7 @@
     }
 
     async deleteExperiment(event, id: number) {
-      const res = await this.$confirm('Do you really want to delete experiment?', { title: 'Warning' });
-      if (res) {
+      if (self.confirm('Are you sure you want to delete this item?')) {
         await this.experimentContext.actions.deleteExperiment(id);
       }
     }

@@ -1,9 +1,11 @@
 <template>
-  <v-tooltip top>
+  <v-tooltip bottom>
+    <template v-slot:activator="{ on }">
+      <v-btn v-on="on" icon @click="trigger">
+        <v-icon>mdi-cloud-upload</v-icon>
+      </v-btn>
+    </template>
     <span>Upload Slide</span>
-    <v-btn slot="activator" flat @click="trigger">
-      <v-icon>mdi-cloud-upload</v-icon>
-    </v-btn>
     <input :multiple="multiple" class="visually-hidden" type="file" v-on:change="files" ref="fileInput">
   </v-tooltip>
 </template>

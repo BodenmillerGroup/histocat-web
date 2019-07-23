@@ -4,6 +4,7 @@
       <v-img
         :src="imageUrl"
         class="grey lighten-2"
+        width="380px"
       >
         <template v-slot:placeholder>
           <v-layout
@@ -21,11 +22,18 @@
       Info
     </v-card-title>
     <v-divider></v-divider>
-    <v-list dense class="list">
-      <v-list-tile v-for="item in items" :key="item.name" class="list-tile">
-        <v-list-tile-content>{{item.name}}</v-list-tile-content>
-        <v-list-tile-content class="align-end list-tile-content">{{item.value}}</v-list-tile-content>
-      </v-list-tile>
+    <v-list dense>
+      <template v-for="item in items">
+        <v-list-item dense inactive :key="item.name">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+          </v-list-item-content>
+
+          <v-list-item-action>
+            <v-list-item-action-text v-text="item.value"></v-list-item-action-text>
+          </v-list-item-action>
+        </v-list-item>
+      </template>
     </v-list>
   </v-card>
 </template>
@@ -66,13 +74,5 @@
 <style scoped>
   .card {
     height: 40vh;
-  }
-
-  .list-tile {
-    height: 25px;
-  }
-
-  .list-tile-content {
-    margin-left: 10px;
   }
 </style>

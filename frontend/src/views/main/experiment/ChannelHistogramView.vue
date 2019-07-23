@@ -1,49 +1,24 @@
 <template>
-  <v-flex>
-    <svg ref="svg" height="100" width="300" shape-rendering="optimizeSpeed"></svg>
-    <v-range-slider
-      :value="levels"
-      :max="channel.max_intensity"
-      :min="channel.min_intensity"
-      :step="1"
-      thumb-label="always"
-      :thumb-size="24"
-      @end="submitLimit"
-    ></v-range-slider>
-  </v-flex>
+  <svg ref="svg" height="100" :width="histogramWidth" shape-rendering="optimizeSpeed"></svg>
 </template>
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
   import { IChannel, IChannelStats } from '@/modules/experiment/models';
-  import { settingsModule } from '@/modules/settings';
   import * as d3 from 'd3';
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component
   export default class ChannelHistogramView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
-    readonly settingsContext = settingsModule.context(this.$store);
 
     @Prop(Object) channel!: IChannel;
 
     stats: IChannelStats | undefined = undefined;
 
-    get levels() {
-      const settings = this.settingsContext.getters.channelSettings(this.channel.id);
-      if (settings && settings.levels) {
-        return [settings.levels.min, settings.levels.max];
-      } else {
-        return [this.channel.min_intensity, this.channel.max_intensity];
-      }
-    }
-
-    submitLimit(range: number[]) {
-      this.settingsContext.mutations.setChannelSettings({
-        id: this.channel.id,
-        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-      });
-      this.experimentContext.actions.getChannelStackImage();
+    get histogramWidth() {
+      const element = document.getElementById('settings-container');
+      return element && element.clientWidth - 48;
     }
 
     showHistogram() {

@@ -9,7 +9,7 @@
           <v-tab-item>
             <WorkspaceView :experiment="experimentData"/>
           </v-tab-item>
-          <v-tab-item lazy>
+          <v-tab-item>
             <DatasetsView/>
           </v-tab-item>
         </v-tabs>
@@ -77,7 +77,7 @@
     }
 
     beforeDestroy() {
-      this.experimentContext.mutations.setActiveExperimentId(undefined);
+      this.experimentContext.mutations.resetExperiment();
     }
   }
 </script>

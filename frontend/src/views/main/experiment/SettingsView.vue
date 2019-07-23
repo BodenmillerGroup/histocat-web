@@ -1,13 +1,14 @@
 <template>
-  <v-card tile>
-    <v-card-title class="card-title"><h4>Settings</h4></v-card-title>
+  <v-card tile id="settings-container">
     <v-tabs v-model="tabSettings">
       <v-tab>Channels</v-tab>
       <v-tab>General</v-tab>
       <v-tab-item class="scroll-y scroll-view">
-        <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>
+        <v-expansion-panels>
+          <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>
+        </v-expansion-panels>
       </v-tab-item>
-      <v-tab-item lazy class="scroll-y scroll-view">
+      <v-tab-item class="scroll-y scroll-view">
         <GeneralSettingsView/>
       </v-tab-item>
     </v-tabs>
@@ -35,10 +36,6 @@
 </script>
 
 <style scoped>
-  .card-title {
-    padding-bottom: 4px;
-  }
-
   .scroll-view {
     height: calc(50vh - 121px);
   }

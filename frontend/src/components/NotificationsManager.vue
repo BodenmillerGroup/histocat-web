@@ -3,15 +3,15 @@
     <v-snackbar auto-height :color="currentNotificationColor" v-model="show" right>
       <v-progress-circular class="ma-2" indeterminate v-show="showProgress"></v-progress-circular>
       {{ currentNotificationContent }}
-      <v-btn flat @click.native="close">Close</v-btn>
+      <v-btn text @click.native="close">Close</v-btn>
     </v-snackbar>
   </div>
 </template>
 
 <script lang="ts">
   import { mainModule } from '@/modules/main';
-  import { Component, Vue, Watch } from 'vue-property-decorator';
   import { AppNotification } from '@/modules/main/models';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
   export default class NotificationsManager extends Vue {
@@ -20,7 +20,7 @@
     show: boolean = false;
     text: string = '';
     showProgress: boolean = false;
-    currentNotification: AppNotification | false = false; s
+    currentNotification: AppNotification | false = false;
 
     async hide() {
       this.show = false;

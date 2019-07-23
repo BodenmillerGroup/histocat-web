@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
-    <v-card-title class="card-title">
-      <h4>Channels</h4>
+    <v-card-title>
+      Channels
       <v-spacer/>
       <v-text-field
         v-model="search"
@@ -10,8 +10,6 @@
         single-line
         hide-details
         clearable
-        solo-inverted
-        flat
       />
     </v-card-title>
     <v-data-table
@@ -19,24 +17,14 @@
       :items="channels"
       :search="search"
       v-model="selected"
-      item-key="label"
-      select-all
-      disable-initial-sort
-      hide-actions
+      show-select
+      hide-default-footer
       class="scroll-y scroll-view"
+      dense
+      disable-pagination
+      no-data-text="Please first select an acquisition"
     >
-      <template slot="items" slot-scope="props">
-        <td>
-          <v-checkbox
-            v-model="props.selected"
-            primary
-            hide-details
-          ></v-checkbox>
-        </td>
-        <td>{{ props.item.label }}</td>
-        <td>{{ props.item.metal }}</td>
-        <td>{{ props.item.mass }}</td>
-      </template>
+
     </v-data-table>
   </v-card>
 </template>
@@ -44,20 +32,20 @@
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
   import { IChannel } from '@/modules/experiment/models';
-  import { Component, Vue, Watch } from 'vue-property-decorator';
+  import * as R from 'ramda';
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class ChannelsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
 
     search = '';
-    selected = [];
 
     headers = [
       {
-        text: 'Name',
+        text: 'Label',
         sortable: true,
-        value: 'name',
+        value: 'label',
         align: 'left',
         width: '50%',
       },
@@ -79,22 +67,31 @@
 
     get channels() {
       const acquisition = this.experimentContext.getters.activeAcquisition;
-      return acquisition && acquisition.channels;
+      return acquisition && acquisition.channels ? acquisition.channels : [];
     }
 
-    @Watch('selected')
-    onSelectedChanged(items: IChannel[]) {
+    get selectedMetals() {
+      return this.experimentContext.getters.selectedMetals;
+    }
+
+    get selected() {
+      return this.channels.filter((channel) => {
+        if (this.selectedMetals.includes(channel.metal)) {
+          return channel;
+        }
+      });
+    }
+
+    set selected(items: IChannel[]) {
       const selectedMetals = items.map(item => item.metal);
-      this.experimentContext.mutations.setSelectedMetals(selectedMetals);
+      if (!R.equals(this.selectedMetals, selectedMetals)) {
+        this.experimentContext.mutations.setSelectedMetals(selectedMetals);
+      }
     }
   }
 </script>
 
 <style scoped>
-  .card-title {
-    padding-bottom: 4px;
-  }
-
   table.v-table tbody td, table.v-table tbody th {
     height: 35px;
   }
