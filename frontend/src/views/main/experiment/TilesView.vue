@@ -46,7 +46,10 @@
 
     get urls() {
       return this.experimentContext.getters.selectedChannels.map((channel) => {
-        const color = this.metalColorMap.has(channel.metal) ? this.metalColorMap.get(channel.metal) : '';
+        let color = this.metalColorMap.get(channel.metal);
+        if (color) {
+          color = color.replace('#', '');
+        }
         const channelSettings = this.settingsContext.getters.channelSettings(channel.id);
         const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
         const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';

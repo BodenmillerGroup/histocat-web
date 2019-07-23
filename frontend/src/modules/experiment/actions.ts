@@ -244,7 +244,6 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
   }
 
   async setSharedChannelLevels(payload: { metal: string, levels: number[] }) {
-    console.log(payload)
     const experiment = this.getters.activeExperiment;
     if (experiment && experiment.slides) {
       for (const slide of experiment.slides) {

@@ -2,19 +2,17 @@ import logging
 import os
 import time
 from datetime import datetime, timedelta
-from enum import Enum, unique
 from pathlib import Path
 from shutil import rmtree
 from typing import Optional
 from typing import Tuple
 
-import cv2
 import jwt
 import numpy as np
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
+from matplotlib.colors import to_rgb, LinearSegmentedColormap
 from skimage import filters
-from skimage.exposure import rescale_intensity
 
 from app.core import config
 from app.modules.channel.models import FilterModel
@@ -131,26 +129,27 @@ def remove_location_upon_delete(cls):
     return cls
 
 
-@unique
-class Color(Enum):
-    r = (0, 0, 1)  # red
-    g = (0, 1, 0)  # green
-    b = (1, 0, 0)  # blue
-    y = (0, 1, 1)  # yellow
-    c = (1, 1, 0)  # cyan
-    m = (1, 0, 1)  # magenta
+def colorize(image: np.ndarray, color: str):
+    try:
+        channel_color = to_rgb(color)
+    except:
+        channel_color = to_rgb('w')
+    channel_colormap = LinearSegmentedColormap.from_list(None, [(0, 0, 0), channel_color])
+    result = channel_colormap(image)
+    return result * 255.0
 
-
-def colorize(image: np.ndarray, color: Color):
-    image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    if color:
-        image = image * color.value
-    return image
+    # image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    # if color:
+    #     image = image * color.value
+    # return image
 
 
 def scale_image(image: np.ndarray, levels: Tuple[float, float]):
-    result = rescale_intensity(image, in_range=levels, out_range=(0, 255))
-    return result
+    channel_image = image - levels[0]
+    channel_image /= levels[1] - levels[0]
+    return np.clip(channel_image, 0, 1, out=channel_image)
+    # result = rescale_intensity(image, in_range=levels, out_range=(0, 255))
+    # return result
 
 
 def timeit(method):
