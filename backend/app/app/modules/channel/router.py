@@ -75,7 +75,7 @@ async def read_channel_image(
 
     data = np.load(os.path.join(item.location, "origin.npy"))
     if min is not None and max is not None:
-        data = scale_image(data, (item.min_intensity, item.max_intensity), (min, max))
+        data = scale_image(data, (min, max))
     clr = Color[color] if color else None
     img = colorize(data, clr) if clr else data
     png = cv2.imencode(".png", img)[1]
@@ -121,7 +121,8 @@ async def download_channel_stack(
         data = np.load(os.path.join(item.location, "origin.npy"))
 
         if channel.min is not None and channel.max is not None:
-            data = scale_image(data, (item.min_intensity, item.max_intensity), (channel.min, channel.max))
+            data = scale_image(data, (channel.min, channel.max))
+
         clr = Color[channel.color] if channel.color else None
         img = colorize(data, clr)
 

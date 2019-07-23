@@ -22,7 +22,9 @@
       class="scroll-y scroll-view"
       dense
       disable-pagination
+      no-data-text="Please first select an acquisition"
     >
+
     </v-data-table>
   </v-card>
 </template>

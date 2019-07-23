@@ -148,8 +148,8 @@ def colorize(image: np.ndarray, color: Color):
     return image
 
 
-def scale_image(image: np.ndarray, range: Tuple[float, float], levels: Tuple[float, float]):
-    result = rescale_intensity(image, in_range=levels, out_range=range)
+def scale_image(image: np.ndarray, levels: Tuple[float, float]):
+    result = rescale_intensity(image, in_range=levels, out_range=(0, 255))
     return result
 
 
