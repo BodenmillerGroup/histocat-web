@@ -1,8 +1,8 @@
 <template>
   <v-card tile id="settings-container">
     <v-tabs v-model="tabSettings">
-      <v-tab>Channel Settings</v-tab>
-      <v-tab>General Settings</v-tab>
+      <v-tab>Channels</v-tab>
+      <v-tab>General</v-tab>
       <v-tab-item class="scroll-y scroll-view">
         <v-expansion-panels>
           <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>

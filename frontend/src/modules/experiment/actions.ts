@@ -243,6 +243,33 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
+  async setSharedChannelLevels(payload: { metal: string, levels: number[] }) {
+    console.log(payload)
+    const experiment = this.getters.activeExperiment;
+    if (experiment && experiment.slides) {
+      for (const slide of experiment.slides) {
+        for (const panorama of slide.panoramas) {
+          for (const roi of panorama.rois) {
+            for (const acquisition of roi.acquisitions) {
+              for (const channel of acquisition.channels) {
+                if (channel.metal === payload.metal) {
+                  const settings: IChannelSettings = {
+                    id: channel.id,
+                    levels: {
+                      min: payload.levels[0],
+                      max: payload.levels[1],
+                    },
+                  };
+                  this.settings!.mutations.setChannelSettings(settings);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   private prepareStackParams(format: 'png' | 'tiff' = 'png') {
     const channels = this.getters.selectedChannels.map((channel) => {
       const settings = this.settings!.getters.channelSettings(channel.id);
