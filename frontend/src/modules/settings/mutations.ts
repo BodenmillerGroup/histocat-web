@@ -20,6 +20,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setChannelSettings(channelSettings: IChannelSettings) {
     this.state.channelsSettings.set(channelSettings.id, channelSettings);
+    this.state.channelsSettings = new Map(this.state.channelsSettings);
   }
 
   setMetalColor(payload: { metal: string, color: string }) {

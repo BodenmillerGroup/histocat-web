@@ -36,7 +36,6 @@
   import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
   import { settingsModule } from '@/modules/settings';
-  import 'ol/ol.css';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component
