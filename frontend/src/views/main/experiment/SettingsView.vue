@@ -37,6 +37,6 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(50vh - 124px);
+    height: calc(50vh - 92px);
   }
 </style>
