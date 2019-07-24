@@ -1,13 +1,13 @@
 <template>
   <v-container fluid>
-    <v-card class="ma-3 pa-3">
+    <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
         <div class="headline primary--text">Edit User</div>
       </v-card-title>
       <v-card-text>
         <template>
-          <div class="my-3">
-            <div class="subheading secondary--text text--lighten-2">Username</div>
+          <div class="my-4">
+            <div class="subtitle-1 secondary--text text--lighten-2">Username</div>
             <div
               class="title primary--text text--darken-2"
               v-if="user"
@@ -38,13 +38,13 @@
               :error-messages="errors.collect('email')"
               required
             ></v-text-field>
-            <div class="subheading secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
+            <div class="subtitle-1 secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
               v-else>(currently is not a superuser)</span></div>
             <v-checkbox
               label="Is Superuser"
               v-model="isSuperuser"
             ></v-checkbox>
-            <div class="subheading secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
+            <div class="subtitle-1 secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
               v-else>(currently not active)</span></div>
             <v-checkbox
               label="Is Active"

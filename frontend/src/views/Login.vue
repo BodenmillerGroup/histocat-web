@@ -21,7 +21,7 @@
                   Incorrect email or password
                 </v-alert>
               </div>
-              <v-flex class="caption text-xs-right">
+              <v-flex class="caption text-right">
                 <router-link to="/recover-password">Forgot your password?</router-link>
               </v-flex>
             </v-card-text>

@@ -3,12 +3,12 @@
     <v-tabs v-model="tabSettings">
       <v-tab>Channels</v-tab>
       <v-tab>General</v-tab>
-      <v-tab-item class="scroll-y scroll-view">
+      <v-tab-item class="overflow-y-auto scroll-view">
         <v-expansion-panels>
           <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>
         </v-expansion-panels>
       </v-tab-item>
-      <v-tab-item class="scroll-y scroll-view">
+      <v-tab-item class="overflow-y-auto scroll-view">
         <GeneralSettingsView/>
       </v-tab-item>
     </v-tabs>
@@ -37,6 +37,6 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(50vh - 121px);
+    height: calc(50vh - 124px);
   }
 </style>

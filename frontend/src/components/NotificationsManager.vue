@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-snackbar auto-height :color="currentNotificationColor" v-model="show" right>
+    <v-snackbar :color="currentNotificationColor" v-model="show" right>
       <v-progress-circular class="ma-2" indeterminate v-show="showProgress"></v-progress-circular>
       {{ currentNotificationContent }}
       <v-btn text @click.native="close">Close</v-btn>

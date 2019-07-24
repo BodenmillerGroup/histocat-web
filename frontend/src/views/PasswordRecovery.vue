@@ -3,12 +3,12 @@
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12">
+          <v-card elevation="12">
             <v-toolbar dark color="primary">
               <v-toolbar-title>{{appName}} - Password Recovery</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
-              <p class="subheading">A password recovery email will be sent to the registered account</p>
+              <p class="subtitle-3">A password recovery email will be sent to the registered account</p>
               <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
                 <v-text-field @keyup.enter="submit" label="Username" type="text" prepend-icon="mdi-account"
                               v-model="username" v-validate="'required'" data-vv-name="username"

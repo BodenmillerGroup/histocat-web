@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card class="ma-3 pa-3">
+    <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
         <div class="headline primary--text">Edit Experiment</div>
       </v-card-title>
@@ -36,20 +36,21 @@
               solo
             >
               <template v-slot:no-data>
-                <v-list-tile>
-                  <span class="subheading">Create</span>
+                <v-list-item>
+                  <span class="subtitle-1">Create</span>
                   <v-chip
                     label
                     small
                   >
                     {{ search }}
                   </v-chip>
-                </v-list-tile>
+                </v-list-item>
               </template>
-              <template v-slot:selection="{ item, parent, selected }">
+              <template v-slot:selection="{ attrs, item, parent, selected }">
                 <v-chip
                   v-if="item === Object(item)"
-                  :selected="selected"
+                  v-bind="attrs"
+                  :input-value="selected"
                   label
                   small
                 >
@@ -64,35 +65,33 @@
                 </v-chip>
               </template>
               <template v-slot:item="{ index, item }">
-                <v-list-tile-content>
-                  <v-text-field
-                    v-if="editing === item"
-                    v-model="editing.text"
-                    autofocus
-                    flat
-                    background-color="transparent"
-                    hide-details
-                    solo
-                    @keyup.enter="edit(index, item)"
-                  ></v-text-field>
-                  <v-chip
-                    v-else
-                    dark
-                    label
-                    small
-                  >
-                    {{ item.text }}
-                  </v-chip>
-                </v-list-tile-content>
+                <v-text-field
+                  v-if="editing === item"
+                  v-model="editing.text"
+                  autofocus
+                  flat
+                  background-color="transparent"
+                  hide-details
+                  solo
+                  @keyup.enter="edit(index, item)"
+                ></v-text-field>
+                <v-chip
+                  v-else
+                  dark
+                  label
+                  small
+                >
+                  {{ item.text }}
+                </v-chip>
                 <v-spacer></v-spacer>
-                <v-list-tile-action @click.stop>
+                <v-list-item-action @click.stop>
                   <v-btn
                     icon
                     @click.stop.prevent="edit(index, item)"
                   >
                     <v-icon>{{ editing !== item ? 'mdi-pencil' : 'mdi-check' }}</v-icon>
                   </v-btn>
-                </v-list-tile-action>
+                </v-list-item-action>
               </template>
             </v-combobox>
           </v-form>

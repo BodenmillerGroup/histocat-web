@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card class="ma-3 pa-3">
+    <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
         <div class="headline primary--text">Create User</div>
       </v-card-title>
@@ -10,10 +10,10 @@
             <v-text-field label="Full Name" v-model="fullName" required></v-text-field>
             <v-text-field label="E-mail" type="email" v-model="email" v-validate="'required|email'" data-vv-name="email"
                           :error-messages="errors.collect('email')" required></v-text-field>
-            <div class="subheading secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
+            <div class="subtitle-1 secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
               v-else>(currently is not a superuser)</span></div>
             <v-checkbox label="Is Superuser" v-model="isSuperuser"></v-checkbox>
-            <div class="subheading secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
+            <div class="subtitle-1 secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
               v-else>(currently not active)</span></div>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
             <v-layout align-center>

@@ -3,7 +3,7 @@
     tile
     hover
     :to="{name: 'main-experiment', params: {id: experiment.id}}"
-    class="ma-3 pa-3"
+    class="ma-6 pa-1"
   >
     <v-card-title>
       <v-layout column>
@@ -20,8 +20,9 @@
         v-for="item in experiment.tags"
         label
         small
+        class="mr-1"
       >
-        <v-icon left>mdi-tag-outline</v-icon>{{ item }}
+        <v-icon small left>mdi-tag-outline</v-icon>{{ item }}
       </v-chip>
     </v-card-actions>
   </v-card>

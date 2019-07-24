@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card class="ma-3 pa-3">
+    <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
         <div class="headline primary--text">Edit User Profile</div>
       </v-card-title>

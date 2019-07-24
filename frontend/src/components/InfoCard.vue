@@ -1,5 +1,5 @@
 <template>
-  <v-card tile flat class="card scroll-y">
+  <v-card tile flat class="card overflow-y-auto">
     <v-card-title v-if="imageUrl">
       <v-img
         :src="imageUrl"

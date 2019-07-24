@@ -1,14 +1,14 @@
 <template>
-  <v-card>
+  <v-card flat>
     <v-container grid-list-sm fluid>
       <v-layout row wrap>
         <v-flex
           v-for="url in urls"
           :key="url"
           xs4
-          d-flex
+          flex-grow-1
         >
-          <v-card flat tile class="d-flex">
+          <v-card flat tile flex-grow-1>
             <v-img
               :src="`${url}`"
               aspect-ratio="1"

@@ -19,7 +19,7 @@
       v-model="selected"
       show-select
       hide-default-footer
-      class="scroll-y scroll-view"
+      class="overflow-y-auto scroll-view"
       dense
       disable-pagination
       no-data-text="Please first select an acquisition"

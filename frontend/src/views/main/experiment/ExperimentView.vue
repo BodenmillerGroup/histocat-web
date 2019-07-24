@@ -1,6 +1,6 @@
 <template>
   <LoadingView v-if="!experimentData" text="Loading..."/>
-  <v-container v-else fluid grid-list-md pa-2>
+  <v-container v-else fluid grid-list-md pa-1>
     <v-layout row>
       <v-flex v-if="showWorkspace" md3>
         <v-tabs v-model="tabWorkspace">

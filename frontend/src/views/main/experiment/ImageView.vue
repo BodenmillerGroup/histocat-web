@@ -7,6 +7,7 @@
           <v-btn
             small
             v-on="on"
+            class="ml-1"
           >
             Download
           </v-btn>

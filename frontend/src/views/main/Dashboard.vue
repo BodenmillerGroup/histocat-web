@@ -9,12 +9,12 @@
       label="Tags"
       multiple
       solo
-      class="mt-3 mx-3"
+      class="mt-6 mx-6"
     ></v-select>
 
     <masonry
-      :cols="3"
-      :gutter="30"
+      cols="3"
+      gutter="30"
     >
       <ExperimentCard
         v-for="experiment in experiments"

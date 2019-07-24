@@ -22,7 +22,7 @@
       />
     </v-card-title>
     <v-card-text>
-      <v-list class="scroll-y scroll-view">
+      <v-list class="overflow-y-auto scroll-view">
         <v-list-group
           v-for="item in items"
           :key="item.uid"
@@ -125,7 +125,7 @@
   }
 
   .scroll-view {
-    height: calc(100vh - 240px);
+    height: calc(100vh - 220px);
   }
 </style>
 

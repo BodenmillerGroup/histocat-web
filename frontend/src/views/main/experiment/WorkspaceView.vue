@@ -26,7 +26,7 @@
         open-all
         open-on-click
         selectable
-        class="scroll-y scroll-view"
+        class="overflow-y-auto scroll-view"
       >
         <template v-slot:prepend="{ item }">
           <v-icon small>
@@ -144,7 +144,7 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(100vh - 192px);
+    height: calc(100vh - 180px);
   }
 </style>
 
