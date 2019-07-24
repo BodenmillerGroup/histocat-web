@@ -196,19 +196,25 @@ export interface IChannelStats {
   edges: number[];
 }
 
+export interface IImageFilter {
+  apply: boolean;
+  type: string;
+  settings?: any;
+}
+
+export interface IImageLegend {
+  apply: boolean;
+  settings?: any;
+}
+
 export interface IChannelStack {
   format?: string;
   filter: IImageFilter;
+  legend: IImageLegend;
   channels: Array<{
     id: number;
     color?: string;
     min?: number;
     max?: number;
   }>;
-}
-
-export interface IImageFilter {
-  apply: boolean;
-  type: string;
-  settings?: any;
 }

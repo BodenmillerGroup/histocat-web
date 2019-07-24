@@ -55,7 +55,13 @@ class FilterModel(BaseModel):
     settings: Optional[dict]
 
 
+class LegendModel(BaseModel):
+    apply: bool
+    settings: Optional[dict]
+
+
 class ChannelStackModel(BaseModel):
     filter: FilterModel
+    legend: LegendModel
     channels: List[ChannelSettingsModel]
     format: Optional[str] = 'png'

@@ -1,4 +1,4 @@
-import { IImageFilter } from '@/modules/experiment/models';
+import { IImageFilter, IImageLegend } from '@/modules/experiment/models';
 import { Mutations } from 'vuex-smart-module';
 import { SettingsState } from '.';
 import { IChannelSettings } from './models';
@@ -11,6 +11,10 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.filter = {
       apply: false,
       type: 'gaussian',
+      settings: {},
+    };
+    this.state.legend = {
+      apply: false,
       settings: {},
     };
   }
@@ -26,5 +30,9 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setFilter(filter: IImageFilter) {
     this.state.filter = filter;
+  }
+
+  setLegend(legend: IImageLegend) {
+    this.state.legend = legend;
   }
 }

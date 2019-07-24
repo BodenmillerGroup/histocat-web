@@ -1,4 +1,4 @@
-import { IImageFilter } from '@/modules/experiment/models';
+import { IImageFilter, IImageLegend } from '@/modules/experiment/models';
 import { Module } from 'vuex-smart-module';
 import { SettingsActions } from './actions';
 import { SettingsGetters } from './getters';
@@ -11,6 +11,10 @@ export class SettingsState {
   filter: IImageFilter = {
     apply: false,
     type: 'gaussian',
+    settings: {},
+  };
+  legend: IImageLegend = {
+    apply: false,
     settings: {},
   }
 }

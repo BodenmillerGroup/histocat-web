@@ -13,4 +13,8 @@ export class SettingsGetters extends Getters<SettingsState> {
   get filter() {
     return this.state.filter;
   }
+
+  get legend() {
+    return this.state.legend;
+  }
 }

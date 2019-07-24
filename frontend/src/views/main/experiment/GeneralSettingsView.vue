@@ -1,26 +1,35 @@
 <template>
-  <v-expansion-panels v-model="panel" multiple>
+  <v-expansion-panels
+    v-model="panel"
+    multiple
+    accordion
+  >
     <v-expansion-panel>
-      <v-expansion-panel-header>Filter</v-expansion-panel-header>
+      <v-expansion-panel-header>
+        <v-switch
+          v-model="legendApply"
+          label="Show Legend"
+        ></v-switch>
+      </v-expansion-panel-header>
+    </v-expansion-panel>
+    <v-expansion-panel>
+      <v-expansion-panel-header>
+        <v-switch
+          v-model="filterApply"
+          label="Apply Filter"
+        ></v-switch>
+      </v-expansion-panel-header>
       <v-expansion-panel-content>
-        <v-card flat>
-          <v-card-text>
-            <v-switch
-              v-model="filterApply"
-              label="Apply Filter"
-            ></v-switch>
-            <v-select
-              :items="filterTypes"
-              v-model="filterType"
-              label="Filter Type"
-            ></v-select>
-            <v-text-field
-              type="number"
-              label="Sigma"
-              v-model="sigma"
-            ></v-text-field>
-          </v-card-text>
-        </v-card>
+        <v-select
+          :items="filterTypes"
+          v-model="filterType"
+          label="Filter Type"
+        ></v-select>
+        <v-text-field
+          type="number"
+          label="Sigma"
+          v-model="sigma"
+        ></v-text-field>
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -41,6 +50,18 @@
 
     panel = [0];
     filterTypes = ['gaussian'];
+
+    get legendApply() {
+      return this.settingsContext.getters.legend.apply;
+    }
+
+    set legendApply(value: boolean) {
+      this.settingsContext.mutations.setLegend({
+        ...this.settingsContext.getters.legend,
+        apply: value,
+      });
+      this.experimentContext.actions.getChannelStackImage();
+    }
 
     get filterApply() {
       return this.settingsContext.getters.filter.apply;

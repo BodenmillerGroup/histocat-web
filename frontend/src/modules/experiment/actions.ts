@@ -219,6 +219,9 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
   async getChannelStackImage() {
     const params = this.prepareStackParams();
+    if (params.channels.length === 0) {
+      return;
+    }
     try {
       const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
       const blob = await response.blob();
@@ -284,10 +287,12 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     });
 
     const filter = this.settings!.getters.filter;
+    const legend = this.settings!.getters.legend;
 
     return {
       format: format,
       filter: filter,
+      legend: legend,
       channels: channels,
     };
   }
