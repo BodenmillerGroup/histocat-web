@@ -13,7 +13,12 @@ logger = logging.getLogger(__name__)
 
 def apply_filter(image: np.ndarray, filter: FilterModel):
     if filter.type == 'gaussian':
-        return filters.gaussian(image, 1)
+        sigma = filter.settings.get('sigma')
+        if sigma is not None and sigma != '':
+            sigma = float(sigma)
+        else:
+            sigma = 1.0
+        return filters.gaussian(image, sigma)
 
 
 def colorize(image: np.ndarray, color: str):
