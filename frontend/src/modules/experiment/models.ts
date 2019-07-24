@@ -1,4 +1,4 @@
-import { IChannelSettings } from '@/modules/settings/models';
+import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar } from '@/modules/settings/models';
 
 export interface IExperiment {
   id: number;
@@ -196,21 +196,11 @@ export interface IChannelStats {
   edges: number[];
 }
 
-export interface IImageFilter {
-  apply: boolean;
-  type: string;
-  settings?: any;
-}
-
-export interface IImageLegend {
-  apply: boolean;
-  settings?: any;
-}
-
 export interface IChannelStack {
   format?: string;
   filter: IImageFilter;
   legend: IImageLegend;
+  scalebar: IImageScalebar;
   channels: Array<{
     id: number;
     color?: string;

@@ -288,11 +288,13 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
     const filter = this.settings!.getters.filter;
     const legend = this.settings!.getters.legend;
+    const scalebar = this.settings!.getters.scalebar;
 
     return {
       format: format,
       filter: filter,
       legend: legend,
+      scalebar: scalebar,
       channels: channels,
     };
   }

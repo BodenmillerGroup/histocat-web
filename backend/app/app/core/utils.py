@@ -5,17 +5,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from shutil import rmtree
 from typing import Optional
-from typing import Tuple
 
 import jwt
-import numpy as np
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
-from matplotlib.colors import to_rgb, LinearSegmentedColormap
-from skimage import filters
 
 from app.core import config
-from app.modules.channel.models import FilterModel
 
 password_reset_jwt_subject = "preset"
 
@@ -129,29 +124,6 @@ def remove_location_upon_delete(cls):
     return cls
 
 
-def colorize(image: np.ndarray, color: str):
-    try:
-        channel_color = to_rgb(color)
-    except:
-        channel_color = to_rgb('w')
-    channel_colormap = LinearSegmentedColormap.from_list(None, [(0, 0, 0), channel_color])
-    result = channel_colormap(image)
-    return result * 255.0
-
-    # image = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
-    # if color:
-    #     image = image * color.value
-    # return image
-
-
-def scale_image(image: np.ndarray, levels: Tuple[float, float]):
-    channel_image = image - levels[0]
-    channel_image /= levels[1] - levels[0]
-    return np.clip(channel_image, 0, 1, out=channel_image)
-    # result = rescale_intensity(image, in_range=levels, out_range=(0, 255))
-    # return result
-
-
 def timeit(method):
     def timed(*args, **kw):
         ts = time.time()
@@ -248,8 +220,3 @@ def verify_password_reset_token(token) -> Optional[str]:
         return decoded_token["email"]
     except InvalidTokenError:
         return None
-
-
-def apply_filter(image: np.ndarray, filter: FilterModel):
-    if filter.type == 'gaussian':
-        return filters.gaussian(image, 1)

@@ -9,7 +9,7 @@
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
   import { settingsModule } from '@/modules/settings';
-  import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
+  import { defaults as defaultControls, FullScreen, OverviewMap } from 'ol/control';
   import { getCenter } from 'ol/extent';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
   import ImageLayer from 'ol/layer/Image';
@@ -158,7 +158,7 @@
       });
       this.map = new Map({
         controls: defaultControls().extend([
-          new ScaleLine(),
+          // new ScaleLine(),
           new FullScreen(),
           this.overviewMap,
         ]),

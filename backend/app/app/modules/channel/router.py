@@ -1,3 +1,4 @@
+import logging
 import os
 from io import BytesIO
 from typing import List, Tuple
@@ -7,18 +8,18 @@ import numpy as np
 import redis
 import ujson
 from fastapi import APIRouter, Depends
-from matplotlib.colors import to_rgb, to_rgba
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.utils import colorize, scale_image, apply_filter
+from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend
 from app.modules.user.db import User
 from . import crud
 from .models import ChannelModel, ChannelStatsModel, ChannelStackModel
 
+logger = logging.getLogger(__name__)
 r = redis.Redis(host="redis")
 
 router = APIRouter()
@@ -26,10 +27,10 @@ router = APIRouter()
 
 @router.get("/", response_model=List[ChannelModel])
 def read_channels(
-        db: Session = Depends(get_db),
-        skip: int = 0,
-        limit: int = 100,
-        current_user: User = Depends(get_current_active_superuser),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(get_current_active_superuser),
 ):
     """
     Retrieve channels
@@ -40,9 +41,9 @@ def read_channels(
 
 @router.get("/{id}", response_model=ChannelModel)
 def read_channel_by_id(
-        id: int,
-        current_user: User = Depends(get_current_active_user),
-        db: Session = Depends(get_db),
+    id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Get a specific channel by id
@@ -61,11 +62,11 @@ async def stream_image(record: bytes, chunk_size: int = 65536):
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
 async def read_channel_stats(
-        id: int,
-        request: Request,
-        bins: int = 100,
-        current_user: User = Depends(get_current_active_user),
-        db: Session = Depends(get_db),
+    id: int,
+    request: Request,
+    bins: int = 100,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Get channel stats by id
@@ -85,12 +86,12 @@ async def read_channel_stats(
 
 @router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
 async def read_channel_image(
-        id: int,
-        color: str = None,
-        min: float = None,
-        max: float = None,
-        # current_user: User = Depends(get_current_active_user),
-        db: Session = Depends(get_db),
+    id: int,
+    color: str = None,
+    min: float = None,
+    max: float = None,
+    # current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Get channel image by id
@@ -113,9 +114,9 @@ async def read_channel_image(
 
 @router.post("/stack")
 async def download_channel_stack(
-        params: ChannelStackModel,
-        current_user: User = Depends(get_current_active_user),
-        db: Session = Depends(get_db),
+    params: ChannelStackModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Download channel stack (additive) image
@@ -148,28 +149,10 @@ async def download_channel_stack(
         additive_image = apply_filter(additive_image, params.filter)
 
     if params.legend.apply:
-        for i, label in enumerate(legend_labels):
-            cv2.rectangle(
-                additive_image,
-                (5, 50 * (i + 1) - 30),
-                (15 + cv2.getTextSize(label[0], cv2.FONT_HERSHEY_DUPLEX, 1, 1)[0][0], 50 * (i + 1) - 30 + 40),
-                (0, 0, 0),
-                cv2.FILLED,
-                cv2.LINE_AA
-            )
+        additive_image = draw_legend(additive_image, legend_labels, params.legend)
 
-            b, g, r = tuple([255 * x for x in to_rgb(label[1])])
-            color = (r, g, b)
-            cv2.putText(
-                additive_image,
-                label[0],
-                (10, 50 * (i + 1)),
-                cv2.FONT_HERSHEY_DUPLEX,
-                1,
-                color,
-                1,
-                cv2.LINE_AA
-            )
+    if params.scalebar.apply:
+        additive_image = draw_scalebar(additive_image, params.scalebar)
 
     format = params.format if params.format is not None else 'png'
     status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == 'tiff' else additive_image)

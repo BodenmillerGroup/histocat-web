@@ -17,4 +17,8 @@ export class SettingsGetters extends Getters<SettingsState> {
   get legend() {
     return this.state.legend;
   }
+
+  get scalebar() {
+    return this.state.scalebar;
+  }
 }

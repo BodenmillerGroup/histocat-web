@@ -1,8 +1,7 @@
-import { IImageFilter, IImageLegend } from '@/modules/experiment/models';
 import { Module } from 'vuex-smart-module';
 import { SettingsActions } from './actions';
 import { SettingsGetters } from './getters';
-import { IChannelSettings } from './models';
+import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar } from './models';
 import { SettingsMutations } from './mutations';
 
 export class SettingsState {
@@ -16,7 +15,11 @@ export class SettingsState {
   legend: IImageLegend = {
     apply: false,
     settings: {},
-  }
+  };
+  scalebar: IImageScalebar = {
+    apply: false,
+    settings: {},
+  };
 }
 
 export const settingsModule = new Module({

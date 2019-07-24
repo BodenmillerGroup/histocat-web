@@ -60,8 +60,14 @@ class LegendModel(BaseModel):
     settings: Optional[dict]
 
 
+class ScalebarModel(BaseModel):
+    apply: bool
+    settings: Optional[dict]
+
+
 class ChannelStackModel(BaseModel):
     filter: FilterModel
     legend: LegendModel
+    scalebar: ScalebarModel
     channels: List[ChannelSettingsModel]
     format: Optional[str] = 'png'
