@@ -204,6 +204,7 @@ export interface IChannelStack {
   channels: Array<{
     id: number;
     color?: string;
+    customLabel?: string;
     min?: number;
     max?: number;
   }>;

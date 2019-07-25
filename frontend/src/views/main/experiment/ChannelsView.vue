@@ -14,7 +14,7 @@
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="channels"
+      :items="items"
       :search="search"
       v-model="selected"
       show-select
@@ -24,7 +24,22 @@
       disable-pagination
       no-data-text="Please first select an acquisition"
     >
-
+      <template v-slot:item.label="props">
+        <v-edit-dialog
+          :return-value.sync="props.item.label"
+          @save="save"
+        > {{ props.item.label }}
+          <template v-slot:input>
+            <v-text-field
+              v-model="props.item.label"
+              :rules="[max25chars]"
+              label="Edit"
+              single-line
+              counter
+            ></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -32,14 +47,24 @@
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
   import { IChannel } from '@/modules/experiment/models';
+  import { settingsModule } from '@/modules/settings';
   import * as R from 'ramda';
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
+
+  interface IChannelRow {
+    id: number;
+    label: string;
+    metal: string;
+    mass: number;
+  }
 
   @Component
   export default class ChannelsView extends Vue {
+    readonly settingsModule = settingsModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
 
     search = '';
+    items: IChannelRow[] = [];
 
     headers = [
       {
@@ -65,6 +90,21 @@
       },
     ];
 
+    max25chars = v => v.length <= 25 || 'Input too long!';
+
+    @Watch('channels')
+    onChannelsChange(channels: IChannel[]) {
+      this.items = channels.map((channel) => {
+        const settings = this.settingsModule.getters.channelSettings(channel.id);
+        return {
+          id: channel.id,
+          label: settings && settings.customLabel ? settings.customLabel : channel.label,
+          metal: channel.metal,
+          mass: channel.mass,
+        };
+      });
+    }
+
     get channels() {
       const acquisition = this.experimentContext.getters.activeAcquisition;
       return acquisition && acquisition.channels ? acquisition.channels : [];
@@ -86,6 +126,28 @@
       const selectedMetals = items.map(item => item.metal);
       if (!R.equals(this.selectedMetals, selectedMetals)) {
         this.experimentContext.mutations.setSelectedMetals(selectedMetals);
+      }
+    }
+
+    save() {
+      this.items.forEach((item) => {
+        const settings = this.settingsModule.getters.channelSettings(item.id);
+        if (!settings) {
+          this.settingsModule.mutations.setChannelSettings({
+            id: item.id,
+            customLabel: item.label,
+          });
+        } else {
+          if (settings.customLabel !== item.label) {
+            this.settingsModule.mutations.setChannelSettings({
+              ...settings,
+              customLabel: item.label,
+            });
+          }
+        }
+      });
+      if (this.items.length > 0) {
+        this.experimentContext.actions.getChannelStackImage();
       }
     }
   }

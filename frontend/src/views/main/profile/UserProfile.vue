@@ -23,6 +23,8 @@
       <v-card-actions>
         <v-btn to="/main/profile/edit">Edit</v-btn>
         <v-btn to="/main/profile/password">Change password</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn color="warning" @click="resetSettings">Reset Settings</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -30,22 +32,22 @@
 
 <script lang="ts">
   import { mainModule } from '@/modules/main';
+  import { settingsModule } from '@/modules/settings';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class UserProfile extends Vue {
     readonly mainContext = mainModule.context(this.$store);
+    readonly settingsModule = settingsModule.context(this.$store);
 
     get userProfile() {
       return this.mainContext.getters.userProfile;
     }
 
-    goToEdit() {
-      this.$router.push('/main/profile/edit');
-    }
-
-    goToPassword() {
-      this.$router.push('/main/profile/password');
+    resetSettings() {
+      if (self.confirm('Reset all settings?')) {
+        this.settingsModule.actions.resetSettings();
+      }
     }
   }
 </script>

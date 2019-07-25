@@ -255,13 +255,25 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
             for (const acquisition of roi.acquisitions) {
               for (const channel of acquisition.channels) {
                 if (channel.metal === payload.metal) {
-                  const settings: IChannelSettings = {
-                    id: channel.id,
-                    levels: {
-                      min: payload.levels[0],
-                      max: payload.levels[1],
-                    },
-                  };
+                  let settings = this.settings!.getters.channelSettings(channel.id);
+                  if (!settings) {
+                    settings = {
+                      id: channel.id,
+                      customLabel: channel.label,
+                      levels: {
+                        min: payload.levels[0],
+                        max: payload.levels[1],
+                      },
+                    };
+                  } else {
+                    settings = {
+                      ...settings,
+                      levels: {
+                        min: payload.levels[0],
+                        max: payload.levels[1],
+                      },
+                    };
+                  }
                   this.settings!.mutations.setChannelSettings(settings);
                 }
               }
@@ -274,13 +286,15 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
   private prepareStackParams(format: 'png' | 'tiff' = 'png') {
     const channels = this.getters.selectedChannels.map((channel) => {
-      const settings = this.settings!.getters.channelSettings(channel.id);
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
+      const settings = this.settings!.getters.channelSettings(channel.id);
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
+      const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;
       return {
         id: channel.id,
         color: color,
+        customLabel: customLabel,
         min: min,
         max: max,
       };

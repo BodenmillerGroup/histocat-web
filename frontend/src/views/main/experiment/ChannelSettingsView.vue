@@ -1,9 +1,9 @@
 <template>
-  <v-expansion-panel style="margin-bottom: 0">
+  <v-expansion-panel>
     <v-expansion-panel-header v-slot="{ open }" hide-actions>
       <v-layout column>
         <v-layout justify-space-between>
-          <b>{{ channel.label }}</b>
+          <b>{{ label }}</b>
           <input
             type="color"
             v-model.lazy="color"
@@ -24,7 +24,7 @@
           ></v-range-slider>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn class="ma-2" outlined fab x-small color="teal" @click.stop="setSharedChannelLevels" v-on="on">
+              <v-btn class="ma-2" outlined fab x-small color="blue" @click.stop="setSharedChannelLevels" v-on="on">
                 <v-icon small>mdi-share</v-icon>
               </v-btn>
             </template>
@@ -57,20 +57,39 @@
 
     color = this.channel ? this.metalColor : '#ffffff';
 
+    get settings() {
+      return this.settingsContext.getters.channelSettings(this.channel.id);
+    }
+
+    get label() {
+      return this.settings && this.settings.customLabel ?
+        this.settings.customLabel :
+        this.channel.label;
+    }
+
     get levels() {
-      const settings = this.settingsContext.getters.channelSettings(this.channel.id);
-      if (settings && settings.levels) {
-        return [settings.levels.min, settings.levels.max];
+      if (this.settings && this.settings.levels) {
+        return [this.settings.levels.min, this.settings.levels.max];
       } else {
         return [this.channel.min_intensity, this.channel.max_intensity];
       }
     }
 
     submitLimit(range: number[]) {
-      this.settingsContext.mutations.setChannelSettings({
-        id: this.channel.id,
-        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-      });
+      let settings = this.settingsContext.getters.channelSettings(this.channel.id);
+      if (!settings) {
+        settings = {
+          id: this.channel.id,
+          customLabel: this.channel.label,
+          levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+        };
+      } else {
+        settings = {
+          ...settings,
+          levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+        };
+      }
+      this.settingsContext.mutations.setChannelSettings(settings);
       this.experimentContext.actions.getChannelStackImage();
     }
 
@@ -90,7 +109,7 @@
     }
 
     @Watch('color')
-    onColorIndexChanged(color: string) {
+    onColorChanged(color: string) {
       this.settingsContext.mutations.setMetalColor({
         metal: this.channel.metal,
         color: color,

@@ -10,11 +10,13 @@ export class SettingsState {
   filter: IImageFilter = {
     apply: false,
     type: 'gaussian',
-    settings: {},
+    settings: {
+      sigma: 1.0
+    },
   };
   legend: IImageLegend = {
     apply: false,
-    settings: {},
+    fontScale: 1.0,
   };
   scalebar: IImageScalebar = {
     apply: false,

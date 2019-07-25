@@ -10,11 +10,19 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.filter = {
       apply: false,
       type: 'gaussian',
-      settings: {},
+      settings: {
+        sigma: 1.0,
+      },
     };
     this.state.legend = {
       apply: false,
-      settings: {},
+      fontScale: 1.0,
+    };
+    this.state.scalebar = {
+      apply: false,
+      settings: {
+        scale: 1.0,
+      },
     };
   }
 

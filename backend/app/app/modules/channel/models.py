@@ -45,6 +45,7 @@ class ChannelStatsModel(BaseModel):
 class ChannelSettingsModel(BaseModel):
     id: int
     color: Optional[str]
+    customLabel: Optional[str]
     min: Optional[float]
     max: Optional[float]
 
@@ -57,7 +58,7 @@ class FilterModel(BaseModel):
 
 class LegendModel(BaseModel):
     apply: bool
-    settings: Optional[dict]
+    fontScale: float
 
 
 class ScalebarModel(BaseModel):

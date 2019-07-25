@@ -12,6 +12,16 @@
           hide-details
         ></v-switch>
       </v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <v-text-field
+          type="number"
+          label="Font Scale"
+          v-model="legendFontScale"
+          min="0"
+          step="0.05"
+          hide-details
+        ></v-text-field>
+      </v-expansion-panel-content>
     </v-expansion-panel>
     <v-expansion-panel>
       <v-expansion-panel-header>
@@ -86,6 +96,20 @@
       this.experimentContext.actions.getChannelStackImage();
     }
 
+    get legendFontScale() {
+      return this.settingsContext.getters.legend.fontScale;
+    }
+
+    set legendFontScale(value: number) {
+      this.settingsContext.mutations.setLegend({
+        ...this.settingsContext.getters.legend,
+        fontScale: value,
+      });
+      if (this.legendApply) {
+        this.experimentContext.actions.getChannelStackImage();
+      }
+    }
+
     get scalebarApply() {
       return this.settingsContext.getters.scalebar.apply;
     }
@@ -96,6 +120,22 @@
         apply: value,
       });
       this.experimentContext.actions.getChannelStackImage();
+    }
+
+    get scale() {
+      return this.settingsContext.getters.scalebar.settings.scale ? this.settingsContext.getters.scalebar.settings.scale : 1;
+    }
+
+    set scale(value: number) {
+      this.settingsContext.mutations.setScalebar({
+        ...this.settingsContext.getters.scalebar,
+        settings: {
+          scale: value,
+        },
+      });
+      if (this.scalebarApply) {
+        this.experimentContext.actions.getChannelStackImage();
+      }
     }
 
     get filterApply() {
@@ -119,7 +159,9 @@
         ...this.settingsContext.getters.filter,
         type: value,
       });
-      this.experimentContext.actions.getChannelStackImage();
+      if (this.filterApply) {
+        this.experimentContext.actions.getChannelStackImage();
+      }
     }
 
     get sigma() {
@@ -133,21 +175,9 @@
           sigma: value,
         },
       });
-      this.experimentContext.actions.getChannelStackImage();
-    }
-
-    get scale() {
-      return this.settingsContext.getters.scalebar.settings.scale ? this.settingsContext.getters.scalebar.settings.scale : 1;
-    }
-
-    set scale(value: number) {
-      this.settingsContext.mutations.setScalebar({
-        ...this.settingsContext.getters.scalebar,
-        settings: {
-          scale: value,
-        },
-      });
-      this.experimentContext.actions.getChannelStackImage();
+      if (this.filterApply) {
+        this.experimentContext.actions.getChannelStackImage();
+      }
     }
   }
 </script>

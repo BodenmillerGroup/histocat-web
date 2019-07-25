@@ -134,7 +134,8 @@ async def download_channel_stack(
         color = channel.color if channel.color else '#ffffff'
         image = colorize(data, color)
 
-        legend_labels.append((item.label, color))
+        label = channel.customLabel if channel.customLabel else item.label
+        legend_labels.append((label, color))
 
         if additive_image is None:
             additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)

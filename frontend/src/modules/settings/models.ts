@@ -1,5 +1,6 @@
 export interface IChannelSettings {
   id: number;
+  customLabel: string;
   levels?: {
     min: number,
     max: number
@@ -14,7 +15,7 @@ export interface IImageFilter {
 
 export interface IImageLegend {
   apply: boolean;
-  settings?: any;
+  fontScale: number;
 }
 
 export interface IImageScalebar {
