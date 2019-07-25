@@ -1,6 +1,5 @@
 <template>
-  <div id="map">
-  </div>
+  <div id="map"></div>
 </template>
 
 <script lang="ts">
@@ -9,7 +8,7 @@
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
   import { settingsModule } from '@/modules/settings';
-  import { defaults as defaultControls, FullScreen, OverviewMap } from 'ol/control';
+  import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
   import ImageLayer from 'ol/layer/Image';
@@ -58,7 +57,9 @@
     @Watch('showWorkspace')
     @Watch('showChannels')
     onRefreshImageView() {
-      this.map.updateSize();
+      if (this.map) {
+        this.map.updateSize();
+      }
     }
 
     @Watch('channelStackImage')
@@ -133,10 +134,9 @@
         units: 'pixels',
         extent: extent,
         getPointResolution: (pixelRes, point) => {
-          /*
-           * DICOM pixel spacing has millimeter unit while the projection has has meter unit.
-           */
-          const spacing = 0.0001 / 10 ** 3;
+          const scale = this.settingsContext.getters.scalebar.settings.scale ?
+            this.settingsContext.getters.scalebar.settings.scale : 1.0;
+          const spacing = 0.000001 * scale;
           const res = pixelRes * spacing;
           return (res);
         },
@@ -157,8 +157,12 @@
         }),
       });
       this.map = new Map({
-        controls: defaultControls().extend([
-          // new ScaleLine(),
+        controls: defaultControls({
+          zoom: false,
+          attribution: false,
+          rotate: false
+        }).extend([
+          new ScaleLine(),
           new FullScreen(),
           this.overviewMap,
         ]),
@@ -175,9 +179,9 @@
 
 <style>
   .ol-scale-line {
-    bottom: 8px;
-    left: 12em;
-    padding: 2px;
-    position: absolute;
+    bottom: 10px;
+    left: auto;
+    right: 10px;
+    top: auto;
   }
 </style>

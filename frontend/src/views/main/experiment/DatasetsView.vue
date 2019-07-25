@@ -9,6 +9,7 @@
         </template>
         <span>Refresh datasets status</span>
       </v-tooltip>
+      <CreateDatasetDialog/>
     </v-toolbar>
     <v-card-title class="card-title">
       <v-text-field
@@ -66,9 +67,10 @@
   import InfoCard from '@/components/InfoCard.vue';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
+  import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
 
   @Component({
-    components: { InfoCard },
+    components: { InfoCard, CreateDatasetDialog, },
   })
   export default class DatasetsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);

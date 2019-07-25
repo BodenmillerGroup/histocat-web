@@ -18,7 +18,9 @@ export class SettingsState {
   };
   scalebar: IImageScalebar = {
     apply: false,
-    settings: {},
+    settings: {
+      scale: 1.0
+    },
   };
 }
 
