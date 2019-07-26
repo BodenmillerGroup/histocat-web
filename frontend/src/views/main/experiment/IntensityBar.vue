@@ -1,7 +1,7 @@
 <template>
   <v-card
     tile
-    width="75"
+    width="60"
     class="ma-auto"
   >
     <v-card-title class="caption">{{caption}}</v-card-title>
@@ -27,7 +27,10 @@
     @Prop(Object) channel!: IChannel;
 
     get caption() {
-      return this.channel.max_intensity.toLocaleString();
+      const settings = this.settingsContext.getters.channelSettings(this.channel.id);
+      return settings && settings.levels ?
+        settings.levels.max :
+        this.channel.max_intensity.toFixed(0);
     }
 
     get color() {

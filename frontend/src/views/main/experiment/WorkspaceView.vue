@@ -1,6 +1,6 @@
 <template>
   <v-card tile>
-    <v-card-title>
+    <v-toolbar dense flat>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -11,50 +11,58 @@
         solo-inverted
         flat
       />
-    </v-card-title>
-    <v-card-text>
-      <v-treeview
-        v-model="selected"
-        :items="items"
-        :search="search"
-        :filter="filter"
-        :active.sync="active"
-        item-key="uid"
-        activatable
-        transition
-        return-object
-        open-all
-        open-on-click
-        selectable
-        class="overflow-y-auto scroll-view"
-      >
-        <template v-slot:prepend="{ item }">
-          <v-icon small>
-            {{ icons[item.type] }}
-          </v-icon>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon small v-on="on" @click="toggleShowROI">
+            <v-icon v-if="showROI" color="blue">mdi-blur</v-icon>
+            <v-icon v-else color="grey">mdi-blur</v-icon>
+          </v-btn>
         </template>
-        <template v-slot:append="{ item }">
-          <v-menu
-            :close-on-content-click="false"
-            :nudge-width="200"
-            offset-x
-            open-on-hover
-          >
-            <template v-slot:activator="{ on }">
-              <v-btn
-                text
-                icon
-                color="grey"
-                v-on="on"
-              >
-                <v-icon small>mdi-information-outline</v-icon>
-              </v-btn>
-            </template>
-            <InfoCard :node="{ item }"></InfoCard>
-          </v-menu>
-        </template>
-      </v-treeview>
-    </v-card-text>
+        <span v-if="showROI">Hide ROI</span>
+        <span v-else>Show ROI</span>
+      </v-tooltip>
+    </v-toolbar>
+    <v-treeview
+      v-model="selected"
+      :items="items"
+      :search="search"
+      :filter="filter"
+      :active.sync="active"
+      item-key="uid"
+      activatable
+      transition
+      return-object
+      open-all
+      open-on-click
+      selectable
+      class="overflow-y-auto scroll-view"
+    >
+      <template v-slot:prepend="{ item }">
+        <v-icon small>
+          {{ icons[item.type] }}
+        </v-icon>
+      </template>
+      <template v-slot:append="{ item }">
+        <v-menu
+          :close-on-content-click="false"
+          :nudge-width="200"
+          offset-x
+          open-on-hover
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn
+              text
+              icon
+              color="grey"
+              v-on="on"
+            >
+              <v-icon small>mdi-information-outline</v-icon>
+            </v-btn>
+          </template>
+          <InfoCard :node="{ item }"></InfoCard>
+        </v-menu>
+      </template>
+    </v-treeview>
   </v-card>
 </template>
 
@@ -75,6 +83,7 @@
     selected = [];
     search = null;
     active = [];
+    showROI = false;
 
     readonly icons = {
       slide: 'mdi-folder-outline',
@@ -82,6 +91,10 @@
       roi: 'mdi-blur',
       acquisition: 'mdi-buffer',
     };
+
+    toggleShowROI() {
+      this.showROI = !this.showROI;
+    }
 
     @Watch('active')
     onActiveChanged(item) {
@@ -123,11 +136,16 @@
                 children: acquisitions,
               });
             });
+            const panoramaChildren = this.showROI ?
+              rois :
+              rois.reduce((total, roi) => {
+                return total.concat(roi.children);
+              }, [] as any);
             return Object.assign({}, panorama, {
               type: 'panorama',
               name: panorama.meta.Description,
               uid: Math.random(),
-              children: rois,
+              children: panoramaChildren,
             });
           });
           return Object.assign({}, slide, {
@@ -144,7 +162,7 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(100vh - 180px);
+    height: calc(100vh - 154px);
   }
 </style>
 
