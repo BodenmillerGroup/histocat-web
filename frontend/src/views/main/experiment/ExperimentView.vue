@@ -34,7 +34,7 @@
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
   import DatasetsView from '@/views/main/experiment/DatasetsView.vue';
   import ImageView from '@/views/main/experiment/ImageView.vue';
-  import SettingsView from '@/views/main/experiment/SettingsView.vue';
+  import SettingsView from '@/views/main/experiment/settings/SettingsView.vue';
   import WorkspaceView from '@/views/main/experiment/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 

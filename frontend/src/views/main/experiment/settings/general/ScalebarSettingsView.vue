@@ -1,0 +1,67 @@
+<template>
+  <v-expansion-panel>
+    <v-expansion-panel-header>
+      <v-switch
+        v-model="apply"
+        label="Show Scalebar"
+        hide-details
+      ></v-switch>
+    </v-expansion-panel-header>
+    <v-expansion-panel-content>
+      <v-text-field
+        type="number"
+        :rules="[required]"
+        min="0"
+        step="0.1"
+        label="Scale"
+        v-model="scale"
+        persistent-hint
+        hint="1px to μm"
+      ></v-text-field>
+    </v-expansion-panel-content>
+  </v-expansion-panel>
+</template>
+
+<script lang="ts">
+  import { experimentModule } from '@/modules/experiment';
+  import { settingsModule } from '@/modules/settings';
+  import { Component, Vue } from 'vue-property-decorator';
+
+  @Component({
+    components: {},
+  })
+  export default class ScalebarSettingsView extends Vue {
+    readonly settingsContext = settingsModule.context(this.$store);
+    readonly experimentContext = experimentModule.context(this.$store);
+
+    required = value => !!value || 'Required';
+
+    get apply() {
+      return this.settingsContext.getters.scalebar.apply;
+    }
+
+    set apply(value: boolean) {
+      this.settingsContext.mutations.setScalebar({
+        ...this.settingsContext.getters.scalebar,
+        apply: value,
+      });
+      this.experimentContext.actions.getChannelStackImage();
+    }
+
+    get scale() {
+      return this.settingsContext.getters.scalebar.settings.scale ? this.settingsContext.getters.scalebar.settings.scale : 1;
+    }
+
+    set scale(value: number) {
+      this.settingsContext.mutations.setScalebar({
+        ...this.settingsContext.getters.scalebar,
+        settings: {
+          scale: value,
+        },
+      });
+      if (this.apply) {
+        this.experimentContext.actions.getChannelStackImage();
+      }
+    }
+  }
+</script>

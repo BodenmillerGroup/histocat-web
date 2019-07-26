@@ -11,7 +11,8 @@ export class SettingsState {
     apply: false,
     type: 'gaussian',
     settings: {
-      sigma: 1.0
+      sigma: 1.0,
+      mode: 'nearest',
     },
   };
   legend: IImageLegend = {
@@ -21,7 +22,7 @@ export class SettingsState {
   scalebar: IImageScalebar = {
     apply: false,
     settings: {
-      scale: 1.0
+      scale: 1.0,
     },
   };
 }

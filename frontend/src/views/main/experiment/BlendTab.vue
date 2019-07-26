@@ -31,7 +31,12 @@
         </v-list>
       </v-menu>
     </v-toolbar>
-    <BlendView class="blend-view"/>
+    <v-layout>
+      <v-flex pa-0>
+        <BlendView class="blend-view"/>
+      </v-flex>
+      <IntensityView class="intensity-view"/>
+    </v-layout>
   </v-flex>
 </template>
 
@@ -39,10 +44,11 @@
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
   import BlendView from '@/views/main/experiment/BlendView.vue';
+  import IntensityView from '@/views/main/experiment/IntensityView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
-    components: { BlendView },
+    components: { IntensityView, BlendView },
   })
   export default class BlendTab extends Vue {
     readonly mainContext = mainModule.context(this.$store);
@@ -65,5 +71,8 @@
 <style scoped>
   .blend-view {
     height: calc(100vh - 162px);
+  }
+
+  .intensity-view {
   }
 </style>

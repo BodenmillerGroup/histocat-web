@@ -14,11 +14,14 @@ logger = logging.getLogger(__name__)
 def apply_filter(image: np.ndarray, filter: FilterModel):
     if filter.type == 'gaussian':
         sigma = filter.settings.get('sigma')
-        if sigma is not None and sigma != '':
-            sigma = float(sigma)
-        else:
-            sigma = 1.0
-        return filters.gaussian(image, sigma)
+        sigma = float(sigma) if sigma is not None and sigma != '' else 1.0
+        mode = filter.settings.get('mode')
+        mode = mode if mode is not None and mode != '' else 'nearest'
+        return filters.gaussian(image, sigma=sigma, mode=mode, output=image, preserve_range=True)
+    elif filter.type == 'median':
+        mode = filter.settings.get('mode')
+        mode = mode if mode is not None and mode != '' else 'nearest'
+        return filters.median(image, behavior='ndimage', mode=mode, out=image)
 
 
 def colorize(image: np.ndarray, color: str):
@@ -90,11 +93,11 @@ def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str]], legend:
             image,
             (
                 5,
-                50 * (i + 1) + 5
+                (label_height + 20) * (i + 1) + 5
             ),
             (
                 15 + label_width,
-                50 * (i + 1) - label_height - 5
+                (label_height + 20) * (i + 1) - label_height - 5
             ),
             (0, 0, 0),
             cv2.FILLED,
@@ -108,7 +111,7 @@ def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str]], legend:
             label[0],
             (
                 10,
-                50 * (i + 1)
+                (label_height + 20) * (i + 1)
             ),
             cv2.FONT_HERSHEY_DUPLEX,
             legend.fontScale,

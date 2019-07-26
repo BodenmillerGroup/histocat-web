@@ -1,5 +1,10 @@
 <template>
-  <svg ref="svg" height="100" :width="histogramWidth" shape-rendering="optimizeSpeed"></svg>
+  <svg
+    ref="svg"
+    height="100"
+    :width="histogramWidth"
+    shape-rendering="optimizeSpeed"
+  ></svg>
 </template>
 
 <script lang="ts">
