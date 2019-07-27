@@ -16,6 +16,7 @@ export interface IImageFilter {
 export interface IImageLegend {
   apply: boolean;
   fontScale: number;
+  showIntensity: boolean;
 }
 
 export interface IImageScalebar {

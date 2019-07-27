@@ -18,6 +18,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.legend = {
       apply: false,
       fontScale: 1.0,
+      showIntensity: true,
     };
     this.state.scalebar = {
       apply: false,

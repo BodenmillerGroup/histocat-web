@@ -209,3 +209,9 @@ export interface IChannelStack {
     max?: number;
   }>;
 }
+
+export interface IShareCreate {
+  user_ids: number[];
+  experiment_id: number;
+  permissions?: string[];
+}

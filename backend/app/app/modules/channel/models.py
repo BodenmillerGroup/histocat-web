@@ -59,6 +59,7 @@ class FilterModel(BaseModel):
 class LegendModel(BaseModel):
     apply: bool
     fontScale: float
+    showIntensity: bool
 
 
 class ScalebarModel(BaseModel):

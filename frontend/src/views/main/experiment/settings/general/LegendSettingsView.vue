@@ -17,6 +17,11 @@
         step="0.05"
         hide-details
       ></v-text-field>
+      <v-switch
+        v-model="showIntensity"
+        label="Show Intensity"
+        hide-details
+      ></v-switch>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -59,6 +64,18 @@
       if (this.apply) {
         this.experimentContext.actions.getChannelStackImage();
       }
+    }
+
+    get showIntensity() {
+      return this.settingsContext.getters.legend.showIntensity;
+    }
+
+    set showIntensity(value: boolean) {
+      this.settingsContext.mutations.setLegend({
+        ...this.settingsContext.getters.legend,
+        showIntensity: value,
+      });
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 </script>
