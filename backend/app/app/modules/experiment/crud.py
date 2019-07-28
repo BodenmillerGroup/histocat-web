@@ -7,6 +7,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.core.config import ROOT_DATA_DIRECTORY
+from app.modules.share.crud import get_by_user_id
+from app.modules.user.db import User
 from .db import Experiment, EXPERIMENT_LOCATION_FORMAT
 from .models import ExperimentCreateModel, ExperimentUpdateModel
 
@@ -21,8 +23,15 @@ def get_by_name(session: Session, *, name: str) -> Optional[Experiment]:
     return session.query(Experiment).filter(Experiment.name == name).first()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Experiment]]:
-    items = session.query(Experiment).offset(skip).limit(limit).all()
+def get_multi(session: Session, *, user: User, skip: int = 0, limit: int = 100) -> List[Optional[Experiment]]:
+    if user.is_superuser:
+        items = session.query(Experiment).offset(skip).limit(limit).all()
+    else:
+        shares = get_by_user_id(session, user_id=user.id)
+        shared_experiments = [item.experiment for item in shares]
+        items = session.query(Experiment).filter(Experiment.user_id == user.id).offset(skip).limit(limit).all()
+        items.extend(shared_experiments)
+
     return items
 
 

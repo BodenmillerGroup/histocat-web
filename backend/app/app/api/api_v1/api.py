@@ -11,6 +11,7 @@ from app.modules.roi import router as roi_router
 from app.modules.roi_point import router as roi_point_router
 from app.modules.user import router as user_router
 from app.modules.dataset import router as dataset_router
+from app.modules.share import router as share_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router.router, prefix="/auth", tags=["auth"])
@@ -24,3 +25,4 @@ api_router.include_router(acquisition_router.router, prefix="/acquisitions", tag
 api_router.include_router(channel_router.router, prefix="/channels", tags=["channels"])
 api_router.include_router(user_router.router, prefix="/users", tags=["users"])
 api_router.include_router(dataset_router.router, prefix="/datasets", tags=["datasets"])
+api_router.include_router(share_router.router, prefix="/share", tags=["share"])

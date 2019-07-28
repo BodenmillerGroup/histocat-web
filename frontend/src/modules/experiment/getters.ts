@@ -10,6 +10,10 @@ export class ExperimentGetters extends Getters<ExperimentState> {
     return this.state.datasets;
   }
 
+  get shares() {
+    return this.state.shares;
+  }
+
   get activeExperiment() {
     return this.state.experiments.find((item) => item.id === this.state.activeExperimentId);
   }

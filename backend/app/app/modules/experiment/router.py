@@ -33,7 +33,7 @@ def read_all(
     """
     Retrieve experiments
     """
-    items = crud.get_multi(db, skip=skip, limit=limit)
+    items = crud.get_multi(db, user=current_user, skip=skip, limit=limit)
     return items
 
 

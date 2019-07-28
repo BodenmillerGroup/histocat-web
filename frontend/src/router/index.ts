@@ -43,6 +43,12 @@ export default new Router({
                 /* webpackChunkName: "main-experiment" */ '@/views/main/experiment/ExperimentView.vue'),
             },
             {
+              path: 'experiments/:id/share',
+              name: 'main-experiment-share',
+              component: () => import(
+                /* webpackChunkName: "main-experiment" */ '@/views/main/experiment/ShareExperiment.vue'),
+            },
+            {
               path: 'profile',
               component: RouterComponent,
               redirect: 'profile/view',

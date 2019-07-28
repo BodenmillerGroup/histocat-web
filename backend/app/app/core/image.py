@@ -86,9 +86,10 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
     return image
 
 
-def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str]], legend: LegendModel):
+def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendModel):
     for i, label in enumerate(legend_labels):
-        (label_width, label_height), baseline = cv2.getTextSize(label[0], cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1)
+        text = f'{label[0]} - {int(label[2])}' if legend.showIntensity else f'{label[0]}'
+        (label_width, label_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1)
         cv2.rectangle(
             image,
             (
@@ -108,7 +109,7 @@ def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str]], legend:
         color = (r, g, b)
         cv2.putText(
             image,
-            label[0],
+            text,
             (
                 10,
                 (label_height + 20) * (i + 1)

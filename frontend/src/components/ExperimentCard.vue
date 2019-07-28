@@ -1,8 +1,6 @@
 <template>
   <v-card
     tile
-    hover
-    :to="{name: 'main-experiment', params: {id: experiment.id}}"
     class="ma-6 pa-1"
   >
     <v-card-title>
@@ -14,7 +12,7 @@
     <v-card-text>
       {{experiment.description}}
     </v-card-text>
-    <v-card-actions>
+    <v-card-text>
       <v-chip
         :key="item"
         v-for="item in experiment.tags"
@@ -22,8 +20,21 @@
         small
         class="mr-1"
       >
-        <v-icon small left>mdi-tag-outline</v-icon>{{ item }}
+        <v-icon small left>mdi-tag-outline</v-icon>
+        {{ item }}
       </v-chip>
+    </v-card-text>
+    <v-card-actions>
+      <v-btn tile color="indigo" dark :to="{name: 'main-experiment', params: {id: experiment.id}}">Open</v-btn>
+      <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" :to="{name: 'main-experiment-share', params: {id: experiment.id}}">
+            <v-icon>mdi-share-variant</v-icon>
+          </v-btn>
+        </template>
+        <span>Share experiment</span>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>

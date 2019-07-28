@@ -1,6 +1,6 @@
 import { Mutations } from 'vuex-smart-module';
 import { ExperimentState } from '.';
-import { IDataset, IExperiment } from './models';
+import { IDataset, IExperiment, IShare } from './models';
 
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
@@ -10,6 +10,10 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
 
   setDatasets(datasets: IDataset[]) {
     this.state.datasets = datasets;
+  }
+
+  setShares(shares: IShare[]) {
+    this.state.shares = shares;
   }
 
   setTags(tags: string[]) {

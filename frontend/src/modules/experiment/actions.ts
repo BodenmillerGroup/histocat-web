@@ -7,7 +7,7 @@ import { Actions, Context } from 'vuex-smart-module';
 import { ExperimentState } from '.';
 import { api } from './api';
 import { ExperimentGetters } from './getters';
-import { IDatasetCreate, IExperimentCreate, IExperimentUpdate } from './models';
+import { IDatasetCreate, IExperimentCreate, IExperimentUpdate, IShareCreate } from './models';
 import { ExperimentMutations } from './mutations';
 
 export class ExperimentActions extends Actions<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions> {
@@ -281,6 +281,30 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
           }
         }
       }
+    }
+  }
+
+  async createShare(payload: IShareCreate) {
+    try {
+      const notification = { content: 'saving', showProgress: true };
+      this.main!.mutations.addNotification(notification);
+      const data = (await Promise.all([
+        api.createShare(this.main!.getters.token, payload),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+      ]))[0];
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Experiment successfully shared', color: 'success' });
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getExperimentShares(experimentId: number) {
+    try {
+      const data = await api.getExperimentShares(this.main!.getters.token, experimentId);
+      this.mutations.setShares(data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
     }
   }
 

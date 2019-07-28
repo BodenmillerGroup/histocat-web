@@ -14,6 +14,7 @@ from app.modules.channel.db import Channel  # noqa
 from app.modules.submission.db import Submission  # noqa
 from app.modules.task.db import Task  # noqa
 from app.modules.dataset.db import Dataset  # noqa
+from app.modules.share.db import Share  # noqa
 
 from app.core import config
 from app.modules.user import crud
