@@ -299,6 +299,15 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
+  async getExperimentShares(experimentId: number) {
+    try {
+      const data = await api.getExperimentShares(this.main!.getters.token, experimentId);
+      this.mutations.setShares(data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
   private prepareStackParams(format: 'png' | 'tiff' = 'png') {
     const channels = this.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);

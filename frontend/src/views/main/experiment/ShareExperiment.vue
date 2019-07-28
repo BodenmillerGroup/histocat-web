@@ -43,11 +43,13 @@
   import { userModule } from '@/modules/user';
   import { IUserProfile } from '@/modules/user/models';
   import { IShareCreate } from '@/modules/experiment/models';
+  import { mainModule } from '@/modules/main';
 
   @Component
   export default class ShareExperiment extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
     readonly userContext = userModule.context(this.$store);
+    readonly mainContext = mainModule.context(this.$store);
 
     selected: IUserProfile[] = [];
     search = '';
@@ -68,16 +70,30 @@
     ];
 
     get users() {
-      return this.userContext.getters.adminUsers;
+      return this.userContext.getters.adminUsers.filter((user) => {
+        if (user.id !== this.mainContext.getters.userProfile!.id) {
+          return user;
+        }
+      });
+    }
+
+    get shares() {
+      return this.experimentContext.getters.shares;
     }
 
     async mounted() {
       await this.userContext.actions.getUsers();
+      await this.experimentContext.actions.getExperimentShares(parseInt(this.$router.currentRoute.params.id, 10));
       this.reset();
     }
 
     reset() {
-      this.selected = [];
+      const userIds = this.shares.map(share => share.user_id);
+      this.selected = this.users.filter((user) => {
+        if (userIds.includes(user.id)) {
+          return user;
+        }
+      });
     }
 
     cancel() {

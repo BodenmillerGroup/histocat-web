@@ -215,3 +215,10 @@ export interface IShareCreate {
   experiment_id: number;
   permissions?: string[];
 }
+
+export interface IShare {
+  id: number;
+  user_id: number;
+  experiment_id: number;
+  permissions?: string[];
+}

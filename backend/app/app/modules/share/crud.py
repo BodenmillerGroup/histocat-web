@@ -1,7 +1,6 @@
 import logging
 from typing import Optional, List
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from .db import Share
@@ -14,8 +13,16 @@ def get_by_user_id(session: Session, *, user_id: int) -> Optional[List[Share]]:
     return session.query(Share).filter(Share.user_id == user_id).all()
 
 
+def get_by_experiment_id(session: Session, *, experiment_id: int) -> Optional[List[Share]]:
+    return session.query(Share).filter(Share.experiment_id == experiment_id).all()
+
+
 def create(session: Session, *, params: ShareCreateModel) -> List[Share]:
     shares = []
+    items = session.query(Share).filter(Share.experiment_id == params.experiment_id).all()
+    for item in items:
+        session.delete(item)
+        session.commit()
     for user_id in params.user_ids:
         entity = Share(
             user_id=user_id,

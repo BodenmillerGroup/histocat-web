@@ -7,7 +7,7 @@ import {
   IDatasetCreate,
   IExperiment,
   IExperimentCreate,
-  IExperimentUpdate, IShareCreate,
+  IExperimentUpdate, IShare, IShareCreate,
 } from './models';
 
 const cacheAvailable = 'caches' in self;
@@ -133,5 +133,12 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
     }).json();
+  },
+  async getExperimentShares(token: string, experimentId: number) {
+    return ky.get(`${apiUrl}/api/v1/share/${experimentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IShare[]>();
   },
 };
