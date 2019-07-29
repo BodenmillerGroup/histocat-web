@@ -10,7 +10,7 @@ import {
   IExperimentUpdate, IShare, IShareCreate,
 } from './models';
 
-const cacheAvailable = 'caches' in self;
+const cacheAvailable = false; // 'caches' in self;
 
 
 export const api = {
