@@ -83,7 +83,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer:1.21.0
+    image: portainer/portainer:1.22.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
