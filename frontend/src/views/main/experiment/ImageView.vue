@@ -3,6 +3,7 @@
     <v-tabs v-model="tabImageView">
       <v-tab>Blend</v-tab>
       <v-tab>Tiles</v-tab>
+      <v-tab>Workflow</v-tab>
       <v-spacer/>
       <v-btn-toggle v-model="toggleUI" multiple>
         <v-tooltip bottom>
@@ -28,6 +29,9 @@
       <v-tab-item>
         <TilesView/>
       </v-tab-item>
+      <v-tab-item>
+        <WorkflowTab/>
+      </v-tab-item>
     </v-tabs>
   </v-flex>
 </template>
@@ -35,15 +39,15 @@
 <script lang="ts">
   import { mainModule } from '@/modules/main';
   import BlendTab from '@/views/main/experiment/BlendTab.vue';
-  import BlendView from '@/views/main/experiment/BlendView.vue';
   import TilesView from '@/views/main/experiment/TilesView.vue';
+  import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component({
     components: {
+      WorkflowTab,
       BlendTab,
       TilesView,
-      BlendView,
     },
   })
   export default class ImageView extends Vue {

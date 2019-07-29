@@ -8,5 +8,9 @@ module.exports = {
 
   configureWebpack: {
     devtool: 'eval-source-map'
-  }
+  },
+
+  transpileDependencies: [
+    'rete'
+  ]
 };

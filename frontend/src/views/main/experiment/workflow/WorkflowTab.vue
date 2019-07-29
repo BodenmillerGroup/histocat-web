@@ -31,26 +31,20 @@
         </v-list>
       </v-menu>
     </v-toolbar>
-    <v-layout>
-      <v-flex pa-0>
-        <BlendView class="blend-view"/>
-      </v-flex>
-      <IntensityView class="intensity-view"/>
-    </v-layout>
+    <WorkflowView class="workflow-view"/>
   </v-flex>
 </template>
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
-  import BlendView from '@/views/main/experiment/BlendView.vue';
-  import IntensityView from '@/views/main/experiment/IntensityView.vue';
+  import WorkflowView from '@/views/main/experiment/workflow/WorkflowView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
-    components: { IntensityView, BlendView },
+    components: { WorkflowView },
   })
-  export default class BlendTab extends Vue {
+  export default class WorkflowTab extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
 
@@ -61,18 +55,11 @@
     get showChannels() {
       return this.mainContext.getters.showChannels;
     }
-
-    download(type: 'png' | 'tiff') {
-      this.experimentContext.actions.exportChannelStackImage(type);
-    }
   }
 </script>
 
 <style scoped>
-  .blend-view {
+  .workflow-view {
     height: calc(100vh - 162px);
-  }
-
-  .intensity-view {
   }
 </style>

@@ -1,5 +1,6 @@
 // Import Component hooks before component definitions
 
+import '@babel/polyfill';
 import App from '@/App.vue';
 import '@/component-hooks';
 import '@/plugins/masonry-css';
