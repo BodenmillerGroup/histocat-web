@@ -1,7 +1,7 @@
 <template>
   <div class="editor">
-    <div class="container">
-      <div class="node-editor"></div>
+    <div class="container" style="height: 90vh">
+      <div id="editor" class="node-editor" ></div>
     </div>
     <div class="dock"></div>
   </div>
@@ -37,9 +37,15 @@
 
       const editor = new Rete.NodeEditor('demo@0.1.0', container);
 
+      editor.use(DockPlugin, {
+        container: document.getElementById('editor'),
+        itemClass: 'item',
+        plugins: [VueRenderPlugin]
+      });
+
       editor.use(ConnectionPlugin);
       editor.use(VueRenderPlugin);
-      editor.use(DockPlugin);
+      // editor.use(DockPlugin);
       editor.use(MinimapPlugin);
       editor.use(ContextMenuPlugin, {
         searchBar: false, // true by default

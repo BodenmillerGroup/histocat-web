@@ -7,7 +7,9 @@ import {
   IDatasetCreate,
   IExperiment,
   IExperimentCreate,
-  IExperimentUpdate, IShare, IShareCreate,
+  IExperimentUpdate,
+  IShare,
+  IShareCreate,
 } from './models';
 
 const cacheAvailable = false; // 'caches' in self;
@@ -140,5 +142,13 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
     }).json<IShare[]>();
+  },
+  async downloadDataset(token: string, datasetId: number) {
+    return ky.get(`${apiUrl}/api/v1/datasets/${datasetId}/download`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: false,
+    });
   },
 };

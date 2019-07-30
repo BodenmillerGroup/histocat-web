@@ -63,11 +63,6 @@
                   required
                 ></v-text-field>
               </v-form>
-              <div v-if="loginError">
-                <v-alert :value="loginError" transition="fade-transition" type="error">
-                  Incorrect email or password
-                </v-alert>
-              </div>
               <v-flex class="caption text-right">
                 <router-link to="/login">Already have an account?</router-link>
               </v-flex>
@@ -107,10 +102,6 @@
       this.password1 = '';
       this.password2 = '';
       this.$validator.reset();
-    }
-
-    get loginError() {
-      return this.mainContext.getters.loginError;
     }
 
     async submit() {

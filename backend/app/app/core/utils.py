@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from datetime import datetime, timedelta
+from io import BytesIO
 from pathlib import Path
 from shutil import rmtree
 from typing import Optional
@@ -220,3 +221,11 @@ def verify_password_reset_token(token) -> Optional[str]:
         return decoded_token["email"]
     except InvalidTokenError:
         return None
+
+
+async def stream_bytes(record: bytes, chunk_size: int = 65536):
+    with BytesIO(record) as stream:
+        data = stream.read(chunk_size)
+        while data:
+            yield data
+            data = stream.read(chunk_size)

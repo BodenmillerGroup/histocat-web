@@ -54,7 +54,8 @@
             </v-card-title>
 
             <v-card-actions>
-              <v-btn text color="red" @click="deleteDataset($event, item.id)">Delete</v-btn>
+              <v-btn text download :href="`${apiUrl}/api/v1/datasets/${item.id}/download`">Download</v-btn>
+              <v-btn text color="error" @click="deleteDataset($event, item.id)">Delete</v-btn>
             </v-card-actions>
           </v-card>
         </v-list-group>
@@ -65,6 +66,7 @@
 
 <script lang="ts">
   import InfoCard from '@/components/InfoCard.vue';
+  import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
   import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
@@ -76,6 +78,7 @@
     readonly experimentContext = experimentModule.context(this.$store);
 
     search = '';
+    apiUrl = apiUrl;
 
     icons = {
       pending: 'mdi-progress-upload',
@@ -96,6 +99,10 @@
             });
           });
       }
+    }
+
+    async downloadDataset(event, id: number, filename: string) {
+      await this.experimentContext.actions.downloadDataset({ datasetId: id, filename: filename });
     }
 
     async deleteDataset(event, id: number) {

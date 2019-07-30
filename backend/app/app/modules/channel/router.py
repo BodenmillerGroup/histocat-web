@@ -1,6 +1,5 @@
 import logging
 import os
-from io import BytesIO
 from typing import List, Tuple
 
 import cv2
@@ -15,6 +14,7 @@ from starlette.responses import StreamingResponse, UJSONResponse
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend
+from app.core.utils import stream_bytes
 from app.modules.user.db import User
 from . import crud
 from .models import ChannelModel, ChannelStatsModel, ChannelStackModel
@@ -50,14 +50,6 @@ def read_channel_by_id(
     """
     item = crud.get(db, id=id)
     return item
-
-
-async def stream_image(record: bytes, chunk_size: int = 65536):
-    with BytesIO(record) as stream:
-        data = stream.read(chunk_size)
-        while data:
-            yield data
-            data = stream.read(chunk_size)
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsModel)
@@ -109,7 +101,7 @@ async def read_channel_image(
     image = cv2.cvtColor(image.astype(data.dtype), cv2.COLOR_BGR2RGB)
 
     status, result = cv2.imencode(".png", image)
-    return StreamingResponse(stream_image(result), media_type="image/png")
+    return StreamingResponse(stream_bytes(result), media_type="image/png")
 
 
 @router.post("/stack")
@@ -157,4 +149,4 @@ async def download_channel_stack(
 
     format = params.format if params.format is not None else 'png'
     status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == 'tiff' else additive_image)
-    return StreamingResponse(stream_image(result), media_type=f"image/{format}")
+    return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")

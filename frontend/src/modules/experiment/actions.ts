@@ -308,6 +308,16 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
+  async downloadDataset(payload: { datasetId: number, filename: string }) {
+    try {
+      const response = await api.downloadDataset(this.main!.getters.token, payload.datasetId);
+      const blob = await response.blob();
+      saveAs(blob, payload.filename);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
   private prepareStackParams(format: 'png' | 'tiff' = 'png') {
     const channels = this.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
