@@ -9,10 +9,24 @@
             </v-toolbar>
             <v-card-text>
               <p class="subtitle-3">A password recovery email will be sent to the registered account</p>
-              <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
-                <v-text-field @keyup.enter="submit" label="Username" type="text" prepend-icon="mdi-account"
-                              v-model="username" v-validate="'required'" data-vv-name="username"
-                              :error-messages="errors.collect('username')" required></v-text-field>
+              <v-form
+                @keyup.enter="submit"
+                v-model="valid"
+                ref="form"
+                @submit.prevent=""
+                lazy-validation
+              >
+                <v-text-field
+                  @keyup.enter="submit"
+                  label="Username"
+                  type="text"
+                  prepend-icon="mdi-account"
+                  v-model="username"
+                  v-validate="'required'"
+                  data-vv-name="username"
+                  :error-messages="errors.collect('username')"
+                  required
+                ></v-text-field>
               </v-form>
             </v-card-text>
             <v-card-actions>

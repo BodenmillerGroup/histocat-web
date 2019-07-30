@@ -51,6 +51,14 @@ export const api = {
   async passwordRecovery(email: string) {
     return ky.post(`${apiUrl}/api/v1/auth/password-recovery/${email}`).json();
   },
+  async checkUserExists(email: string) {
+    return ky.get(`${apiUrl}/api/v1/users/check/${email}`).json<{exists: boolean}>();
+  },
+  async signUp(data: IUserProfileCreate) {
+    return ky.post(`${apiUrl}/api/v1/users/signup`, {
+      json: data,
+    }).json();
+  },
   async resetPassword(password: string, token: string) {
     return ky.post(`${apiUrl}/api/v1/auth/reset-password/`, {
       json: {

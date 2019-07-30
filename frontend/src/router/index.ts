@@ -21,6 +21,13 @@ export default new Router({
           component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
         },
         {
+          path: 'signup',
+          // route level code-splitting
+          // this generates a separate chunk (about.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import(/* webpackChunkName: "login" */ '@/views/SignUp.vue'),
+        },
+        {
           path: 'recover-password',
           component: () => import(/* webpackChunkName: "recover-password" */ '@/views/PasswordRecovery.vue'),
         },
