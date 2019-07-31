@@ -21,12 +21,12 @@
           <v-list-item
             @click="download('tiff')"
           >
-            <v-list-item-title>TIFF</v-list-item-title>
+            <v-list-item-title>Export TIFF</v-list-item-title>
           </v-list-item>
           <v-list-item
             @click="download('png')"
           >
-            <v-list-item-title>PNG</v-list-item-title>
+            <v-list-item-title>Export PNG</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>

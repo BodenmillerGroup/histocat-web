@@ -7,17 +7,17 @@
     "name": "Anton Rau",
     "email": "anton.rau@uzh.ch"
   },
-  "homepage": "https://github.com/plankter/histocat#readme",
+  "homepage": "https://github.com/BodenmillerGroup/histocat-web#readme",
   "keywords": [
     "HistoCAT",
     "BodenmillerLab"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/plankter/histocat.git"
+    "url": "git+https://github.com/BodenmillerGroup/histocat-web.git"
   },
   "bugs": {
-    "url": "https://github.com/plankter/histocat.git/issues"
+    "url": "https://github.com/BodenmillerGroup/histocat-web/issues"
   },
   "scripts": {
     "serve": "FRONTEND_ENV=development && VUE_APP_ENV=development && vue-cli-service serve",
@@ -26,7 +26,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@babel/polyfill": "7.4.4",
+    "core-js": "2.6.9",
+    "cwl-svg": "2.1.4",
+    "cwlts": "1.15.32",
     "d3": "5.9.7",
     "file-saver": "2.0.2",
     "ky": "0.11.2",
@@ -34,20 +36,13 @@
     "ol": "5.3.3",
     "ramda": "0.26.1",
     "register-service-worker": "1.6.2",
-    "rete": "1.4.1-rc.1",
-    "rete-comment-plugin": "0.6.0",
-    "rete-connection-plugin": "0.8.2-rc.1",
-    "rete-context-menu-plugin": "0.4.1",
-    "rete-dock-plugin": "0.2.0",
-    "rete-minimap-plugin": "0.1.0",
-    "rete-vue-render-plugin": "0.4.0",
     "tslib": "1.10.0",
     "vee-validate": "2.2.13",
     "vue": "2.6.10",
     "vue-class-component": "7.1.0",
     "vue-property-decorator": "8.2.1",
     "vue-router": "3.0.7",
-    "vuetify": "2.0.2",
+    "vuetify": "2.0.3",
     "vuex": "3.1.1",
     "vuex-persist": "2.0.1",
     "vuex-smart-module": "0.3.0"
@@ -59,11 +54,13 @@
     "@types/jest": "24.0.16",
     "@types/ol": "5.3.3",
     "@types/ramda": "types/npm-ramda#dist",
+    "@vue/cli-plugin-babel": "3.9.2",
     "@vue/cli-plugin-pwa": "3.9.0",
     "@vue/cli-plugin-typescript": "3.9.0",
     "@vue/cli-plugin-unit-jest": "3.9.0",
     "@vue/cli-service": "3.9.3",
     "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
     "deepmerge": "4.0.0",
     "fibers": "4.0.1",
     "prettier": "1.18.2",
