@@ -162,7 +162,7 @@
     }
 
     get user() {
-      return this.userContext.getters.adminOneUser(+this.$router.currentRoute.params.id);
+      return this.userContext.getters.getUser(+this.$router.currentRoute.params.id);
     }
   }
 </script>

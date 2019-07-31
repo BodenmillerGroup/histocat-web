@@ -8,7 +8,6 @@
         single-line
         hide-details
         clearable
-        solo-inverted
         flat
       />
       <v-tooltip bottom>

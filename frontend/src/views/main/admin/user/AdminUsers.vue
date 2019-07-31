@@ -79,7 +79,7 @@
     ];
 
     get users() {
-      return this.userContext.getters.adminUsers;
+      return this.userContext.getters.users;
     }
 
     async mounted() {

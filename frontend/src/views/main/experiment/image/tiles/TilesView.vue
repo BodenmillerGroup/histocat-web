@@ -67,9 +67,9 @@
 
     get layoutSize() {
       const l = this.items.length;
-      if (l < 2) {
+      if (l === 1) {
         return 'xs12';
-      } else if (l < 3) {
+      } else if (l < 5) {
         return 'xs6';
       }
       return 'xs4';

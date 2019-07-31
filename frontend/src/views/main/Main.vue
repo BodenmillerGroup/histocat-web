@@ -33,6 +33,12 @@
             </v-list-item-action>
             <v-list-item-title>Manage Experiments</v-list-item-title>
           </v-list-item>
+          <v-list-item to="/main/admin/workflows/all">
+            <v-list-item-action>
+              <v-icon>mdi-sitemap</v-icon>
+            </v-list-item-action>
+            <v-list-item-title>Manage Workflows</v-list-item-title>
+          </v-list-item>
         </v-list>
         <v-spacer></v-spacer>
         <v-list>

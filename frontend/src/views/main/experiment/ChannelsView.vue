@@ -1,8 +1,6 @@
 <template>
   <v-card tile>
     <v-card-title>
-      Channels
-      <v-spacer/>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"

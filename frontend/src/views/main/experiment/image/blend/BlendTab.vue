@@ -6,6 +6,7 @@
           <v-btn
             text
             small
+            color="primary"
             v-on="on"
           >
             <v-icon left>mdi-cloud-download-outline</v-icon>
