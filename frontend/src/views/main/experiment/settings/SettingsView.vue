@@ -17,7 +17,7 @@
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
-  import ChannelSettingsView from '@/views/main/experiment/settings/ChannelSettingsView.vue';
+  import ChannelSettingsView from '@/views/main/experiment/settings/channel/ChannelSettingsView.vue';
   import GeneralSettingsView from '@/views/main/experiment/settings/general/GeneralSettingsView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 

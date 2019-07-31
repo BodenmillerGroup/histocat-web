@@ -69,7 +69,7 @@
   import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
-  import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
+  import CreateDatasetDialog from '@/views/main/experiment/dataset/CreateDatasetDialog.vue';
 
   @Component({
     components: { InfoCard, CreateDatasetDialog, },

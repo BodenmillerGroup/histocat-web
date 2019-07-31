@@ -4,17 +4,12 @@
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn
-            icon
+            text
+            small
             v-on="on"
           >
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on">
-                  <v-icon>mdi-cloud-download-outline</v-icon>
-                </v-btn>
-              </template>
-              <span>Export image</span>
-            </v-tooltip>
+            <v-icon left>mdi-cloud-download-outline</v-icon>
+            Export image
           </v-btn>
         </template>
         <v-list dense>
@@ -35,16 +30,17 @@
       <v-flex pa-0>
         <BlendView class="blend-view"/>
       </v-flex>
-      <IntensityView class="intensity-view"/>
+      <IntensityView/>
     </v-layout>
   </v-flex>
 </template>
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
+  import { ExportTypes } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
-  import BlendView from '@/views/main/experiment/BlendView.vue';
-  import IntensityView from '@/views/main/experiment/IntensityView.vue';
+  import BlendView from '@/views/main/experiment/image/blend/BlendView.vue';
+  import IntensityView from '@/views/main/experiment/image/blend/IntensityView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
@@ -62,7 +58,7 @@
       return this.mainContext.getters.showChannels;
     }
 
-    download(type: 'png' | 'tiff') {
+    download(type: ExportTypes) {
       this.experimentContext.actions.exportChannelStackImage(type);
     }
   }
@@ -71,8 +67,5 @@
 <style scoped>
   .blend-view {
     height: calc(100vh - 162px);
-  }
-
-  .intensity-view {
   }
 </style>

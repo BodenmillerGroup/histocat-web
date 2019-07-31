@@ -222,3 +222,5 @@ export interface IShare {
   experiment_id: number;
   permissions?: string[];
 }
+
+export type ExportTypes = 'tiff' | 'png';

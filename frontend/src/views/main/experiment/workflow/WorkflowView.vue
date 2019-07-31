@@ -28,8 +28,7 @@
   import 'cwl-svg/src/plugins/selection/theme.scss';
   import { WorkflowFactory } from 'cwlts/models';
   import { Component, Vue } from 'vue-property-decorator';
-
-  const sample = require('./rna-seq-alignment.json');
+  import sample from './rna-seq-alignment.json';
 
   @Component
   export default class WorkflowView extends Vue {
@@ -58,6 +57,9 @@
           new SVGValidatePlugin(),
         ],
       });
+
+      // workflow.getPlugin(SVGArrangePlugin).arrange();
+      window['wf'] = workflow;
     }
   }
 </script>

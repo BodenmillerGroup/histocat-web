@@ -56,6 +56,24 @@
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{appName}}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn-toggle v-model="toggleUI" multiple>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" tile v-on="on" value='workspace'>
+              <v-icon>mdi-file-tree</v-icon>
+            </v-btn>
+          </template>
+          <span>Show workspace</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" tile v-on="on" value='channels'>
+              <v-icon>mdi-format-list-checkbox</v-icon>
+            </v-btn>
+          </template>
+          <span>Show channels</span>
+        </v-tooltip>
+      </v-btn-toggle>
       <v-menu
         bottom
         left
@@ -92,7 +110,7 @@
 <script lang="ts">
   import { appName } from '@/env';
   import { mainModule } from '@/modules/main';
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   const routeGuardMain = async (to, from, next) => {
     if (to.path === '/main') {
@@ -107,6 +125,7 @@
     readonly mainContext = mainModule.context(this.$store);
 
     appName = appName;
+    toggleUI = ['workspace', 'channels'];
 
     beforeRouteEnter(to, from, next) {
       routeGuardMain(to, from, next);
@@ -114,6 +133,14 @@
 
     beforeRouteUpdate(to, from, next) {
       routeGuardMain(to, from, next);
+    }
+
+    @Watch('toggleUI')
+    onToggleMultiple(items: string[]) {
+      const showWorkspace = items.includes('workspace');
+      const showChannels = items.includes('channels');
+      this.mainContext.mutations.setShowWorkspace(showWorkspace);
+      this.mainContext.mutations.setShowChannels(showChannels);
     }
 
     get miniDrawer() {
