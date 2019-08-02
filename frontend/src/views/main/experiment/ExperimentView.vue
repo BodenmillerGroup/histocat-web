@@ -8,9 +8,13 @@
       <v-flex :class="viewerClass">
         <v-tabs v-model="tabExperiment">
           <v-tab>Image</v-tab>
+          <v-tab>Analysis</v-tab>
           <v-tab>Workflow</v-tab>
           <v-tab-item>
             <ImageView/>
+          </v-tab-item>
+          <v-tab-item>
+            <AnalysisView/>
           </v-tab-item>
           <v-tab-item>
             <WorkflowTab/>
@@ -25,6 +29,7 @@
   import LoadingView from '@/components/LoadingView.vue';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
+  import AnalysisView from '@/views/main/experiment/analysis/AnalysisView.vue';
   import ImageView from '@/views/main/experiment/image/ImageView.vue';
   import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';
   import WorkspaceView from '@/views/main/experiment/workspace/WorkspaceView.vue';
@@ -32,6 +37,7 @@
 
   @Component({
     components: {
+      AnalysisView,
       WorkspaceView,
       WorkflowTab,
       ImageView,

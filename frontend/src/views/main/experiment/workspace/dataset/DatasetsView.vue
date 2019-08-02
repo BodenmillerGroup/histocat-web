@@ -67,6 +67,7 @@
 <script lang="ts">
   import InfoCard from '@/components/InfoCard.vue';
   import { apiUrl } from '@/env';
+  import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
   import CreateDatasetDialog from '@/views/main/experiment/workspace/dataset/CreateDatasetDialog.vue';
@@ -76,6 +77,7 @@
   })
   export default class DatasetsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly datasetContext = datasetModule.context(this.$store);
 
     search = '';
     apiUrl = apiUrl;
@@ -85,7 +87,7 @@
     };
 
     get datasets() {
-      return this.experimentContext.getters.datasets;
+      return this.datasetContext.getters.datasets;
     }
 
     get items() {
@@ -102,19 +104,19 @@
     }
 
     async downloadDataset(event, id: number, filename: string) {
-      await this.experimentContext.actions.downloadDataset({ datasetId: id, filename: filename });
+      await this.datasetContext.actions.downloadDataset({ datasetId: id, filename: filename });
     }
 
     async deleteDataset(event, id: number) {
       if (self.confirm('Do you really want to delete dataset?')) {
-        await this.experimentContext.actions.deleteDataset(id);
+        await this.datasetContext.actions.deleteDataset(id);
       }
     }
 
     async refreshStatus() {
       const experimentId = this.experimentContext.getters.activeExperimentId;
       if (experimentId) {
-        await this.experimentContext.actions.getOwnDatasets(experimentId);
+        await this.datasetContext.actions.getExperimentDatasets(experimentId);
       }
     }
 
@@ -123,7 +125,7 @@
     }
 
     beforeDestroy() {
-      this.experimentContext.mutations.setDatasets([]);
+      this.datasetContext.mutations.setDatasets([]);
     }
   }
 </script>

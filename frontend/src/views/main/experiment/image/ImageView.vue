@@ -1,7 +1,7 @@
 <template>
   <v-layout row>
     <v-flex :class="mainClass">
-      <v-tabs vertical v-model="tabImageView">
+      <v-tabs v-model="tabImageView">
         <v-tab>Blend</v-tab>
         <v-tab>Tiles</v-tab>
         <v-spacer></v-spacer>

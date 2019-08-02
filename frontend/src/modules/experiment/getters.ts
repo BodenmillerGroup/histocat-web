@@ -6,16 +6,12 @@ export class ExperimentGetters extends Getters<ExperimentState> {
     return this.state.experiments;
   }
 
-  get datasets() {
-    return this.state.datasets;
-  }
-
   get shares() {
     return this.state.shares;
   }
 
   get activeExperiment() {
-    return this.state.experiments.find((item) => item.id === this.state.activeExperimentId);
+    return this.experiments.find((item) => item.id === this.state.activeExperimentId);
   }
 
   get activeAcquisition() {
@@ -41,7 +37,7 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   get selectedChannels() {
     if (this.activeAcquisition) {
       return this.activeAcquisition.channels.filter((channel) => {
-        if (this.state.selectedMetals.includes(channel.metal)) {
+        if (this.selectedMetals.includes(channel.metal)) {
           return channel;
         }
       });
@@ -70,8 +66,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
     return this.state.activePanoramaId;
   }
 
-  adminOneExperiment(id: number) {
-    return this.state.experiments.find((item) => item.id === id);
+  getExperiment(id: number) {
+    return this.experiments.find((item) => item.id === id);
   }
 
   get activeWorkspaceNode() {

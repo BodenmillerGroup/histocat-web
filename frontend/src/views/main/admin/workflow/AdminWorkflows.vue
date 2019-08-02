@@ -15,7 +15,7 @@
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" icon :to="{name: 'main-admin-experiments-edit', params: {id: item.id}}">
+            <v-btn v-on="on" icon :to="{name: 'main-admin-workflows-edit', params: {id: item.id}}">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>
@@ -23,7 +23,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" icon @click="deleteExperiment($event, item.id)">
+            <v-btn v-on="on" icon @click="deleteWorkflow($event, item.id)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -37,14 +37,14 @@
 
 <script lang="ts">
   import UploadButton from '@/components/UploadButton.vue';
-  import { experimentModule } from '@/modules/experiment';
+  import { workflowModule } from '@/modules/workflows';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: { UploadButton },
   })
   export default class AdminWorkflows extends Vue {
-    readonly experimentContext = experimentModule.context(this.$store);
+    readonly workflowContext = workflowModule.context(this.$store);
 
     headers = [
       {
@@ -60,12 +60,6 @@
         align: 'left',
       },
       {
-        text: 'Location',
-        sortable: true,
-        value: 'location',
-        align: 'left',
-      },
-      {
         text: 'Actions',
         value: 'action',
         sortable: false,
@@ -73,16 +67,16 @@
     ];
 
     get workflows() {
-      return this.experimentContext.getters.experiments;
+      return this.workflowContext.getters.workflows;
     }
 
     async mounted() {
-      await this.experimentContext.actions.getExperiments();
+      await this.workflowContext.actions.getWorkflows();
     }
 
-    async deleteExperiment(event, id: number) {
-      if (self.confirm('Are you sure you want to delete this item?')) {
-        await this.experimentContext.actions.deleteExperiment(id);
+    async deleteWorkflow(event, id: number) {
+      if (self.confirm('Are you sure you want to delete the workflow?')) {
+        await this.workflowContext.actions.deleteWorkflow(id);
       }
     }
   }

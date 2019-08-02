@@ -1,8 +1,9 @@
 <template>
-  <div id="blend-map"></div>
+  <div id="segmentation-map"></div>
 </template>
 
 <script lang="ts">
+  import { analysisModule } from '@/modules/analysis';
   import { experimentModule } from '@/modules/experiment';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
@@ -20,9 +21,10 @@
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
-  export default class BlendView extends Vue {
+  export default class SegmentationView extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly analysisContext = analysisModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
 
     // TODO: check for a better solution
@@ -41,8 +43,8 @@
       return this.experimentContext.getters.activeAcquisition;
     }
 
-    get channelStackImage() {
-      return this.experimentContext.getters.channelStackImage;
+    get analysisImage() {
+      return this.analysisContext.getters.analysisImage;
     }
 
     get showWorkspace() {
@@ -54,14 +56,13 @@
     }
 
     @Watch('showWorkspace')
-    @Watch('showChannels')
     onRefreshImageView() {
       if (this.map) {
         this.map.updateSize();
       }
     }
 
-    @Watch('channelStackImage')
+    @Watch('analysisImage')
     onChannelStackImageChanged(image: string | ArrayBuffer | null) {
       if (!this.map) {
         this.initMap();
@@ -102,7 +103,7 @@
 
     @Watch('metalColorMap')
     onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
-      this.experimentContext.actions.getChannelStackImage();
+      this.analysisContext.actions.getAnalysisImage();
     }
 
     @Watch('selectedChannels')
@@ -112,7 +113,7 @@
       }
 
       if (channels && channels.length > 0) {
-        this.experimentContext.actions.getChannelStackImage();
+        this.analysisContext.actions.getAnalysisImage();
       } else {
         this.experimentContext.mutations.setChannelStackImage(null);
         this.map.getLayers().clear();
@@ -170,8 +171,14 @@
           new MouseWheelZoom({ duration: 0 }),
         ],
         view: view,
-        target: 'blend-map',
+        target: 'segmentation-map',
       });
+    }
+
+    mounted() {
+      if (this.activeAcquisition) {
+        this.onActiveAcquisitionChanged(this.activeAcquisition);
+      }
     }
   }
 </script>

@@ -1,7 +1,10 @@
+import { analysisModule } from '@/modules/analysis';
+import { datasetModule } from '@/modules/datasets';
 import { experimentModule } from '@/modules/experiment';
 import { mainModule } from '@/modules/main';
 import { settingsModule } from '@/modules/settings';
 import { userModule } from '@/modules/user';
+import { workflowModule } from '@/modules/workflows';
 import localforage from 'localforage';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -18,6 +21,9 @@ const rootModule = new Module({
     main: mainModule,
     user: userModule,
     experiment: experimentModule,
+    dataset: datasetModule,
+    workflow: workflowModule,
+    analysis: analysisModule,
     settings: settingsModule,
   },
 });
@@ -40,7 +46,7 @@ export const store = createStore(rootModule, {
     vuexStorage.plugin,
   ],
   mutations: {
-    RESTORE_MUTATION: vuexStorage.RESTORE_MUTATION // this mutation **MUST** be named "RESTORE_MUTATION"
+    RESTORE_MUTATION: vuexStorage.RESTORE_MUTATION, // this mutation **MUST** be named "RESTORE_MUTATION"
   },
 });
 export default store;
