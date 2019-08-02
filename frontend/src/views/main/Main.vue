@@ -62,22 +62,14 @@
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{appName}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn-toggle v-model="toggleUI" multiple>
+      <v-btn-toggle v-model="toggleWorkspace">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" tile v-on="on" value='workspace'>
+            <v-btn color="primary" tile v-on="on" value='show'>
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
           <span>Show workspace</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn color="primary" tile v-on="on" value='channels'>
-              <v-icon>mdi-format-list-checkbox</v-icon>
-            </v-btn>
-          </template>
-          <span>Show channels</span>
         </v-tooltip>
       </v-btn-toggle>
       <v-menu
@@ -131,7 +123,7 @@
     readonly mainContext = mainModule.context(this.$store);
 
     appName = appName;
-    toggleUI = ['workspace', 'channels'];
+    toggleWorkspace = 'show';
 
     beforeRouteEnter(to, from, next) {
       routeGuardMain(to, from, next);
@@ -141,12 +133,9 @@
       routeGuardMain(to, from, next);
     }
 
-    @Watch('toggleUI')
-    onToggleMultiple(items: string[]) {
-      const showWorkspace = items.includes('workspace');
-      const showChannels = items.includes('channels');
-      this.mainContext.mutations.setShowWorkspace(showWorkspace);
-      this.mainContext.mutations.setShowChannels(showChannels);
+    @Watch('toggleWorkspace')
+    onToggleWorkspace(value: string) {
+      this.mainContext.mutations.setShowWorkspace(value === 'show');
     }
 
     get miniDrawer() {

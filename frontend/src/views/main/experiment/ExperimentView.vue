@@ -3,25 +3,19 @@
   <v-container v-else fluid grid-list-md pa-1>
     <v-layout row>
       <v-flex v-if="showWorkspace" md3>
-        <v-tabs v-model="tabWorkspace">
-          <v-tab>Workspace</v-tab>
-          <v-tab>Datasets</v-tab>
+        <WorkspaceView :experiment="experimentData"/>
+      </v-flex>
+      <v-flex :class="viewerClass">
+        <v-tabs v-model="tabExperiment">
+          <v-tab>Image</v-tab>
+          <v-tab>Workflow</v-tab>
           <v-tab-item>
-            <WorkspaceView :experiment="experimentData"/>
+            <ImageView/>
           </v-tab-item>
           <v-tab-item>
-            <DatasetsView/>
+            <WorkflowTab/>
           </v-tab-item>
         </v-tabs>
-      </v-flex>
-      <ImageView/>
-      <v-flex v-if="showChannels" md3>
-        <v-flex>
-          <ChannelsView/>
-        </v-flex>
-        <v-flex>
-          <SettingsView/>
-        </v-flex>
       </v-flex>
     </v-layout>
   </v-container>
@@ -31,28 +25,24 @@
   import LoadingView from '@/components/LoadingView.vue';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
-  import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
-  import DatasetsView from '@/views/main/experiment/dataset/DatasetsView.vue';
   import ImageView from '@/views/main/experiment/image/ImageView.vue';
-  import SettingsView from '@/views/main/experiment/settings/SettingsView.vue';
-  import WorkspaceView from '@/views/main/experiment/WorkspaceView.vue';
+  import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';
+  import WorkspaceView from '@/views/main/experiment/workspace/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: {
-      ImageView,
-      DatasetsView,
-      ChannelsView,
       WorkspaceView,
+      WorkflowTab,
+      ImageView,
       LoadingView,
-      SettingsView,
     },
   })
   export default class ExperimentView extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
 
-    tabWorkspace = 0;
+    tabExperiment = 0;
 
     get experiment() {
       return this.experimentContext.getters.activeExperiment;
@@ -66,8 +56,8 @@
       return this.mainContext.getters.showWorkspace;
     }
 
-    get showChannels() {
-      return this.mainContext.getters.showChannels;
+    get viewerClass() {
+      return this.showWorkspace ? 'md9' : 'md12';
     }
 
     async mounted() {

@@ -21,14 +21,14 @@
   },
   "scripts": {
     "serve": "FRONTEND_ENV=development && VUE_APP_ENV=development && vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
     "core-js": "2.6.9",
-    "cwl-svg": "2.1.4",
-    "cwlts": "1.15.32",
+    "cwl-svg": "2.1.5",
+    "cwlts": "1.15.33",
     "d3": "5.9.7",
     "file-saver": "2.0.2",
     "ky": "0.11.2",
@@ -42,7 +42,7 @@
     "vue-class-component": "7.1.0",
     "vue-property-decorator": "8.2.1",
     "vue-router": "3.0.7",
-    "vuetify": "2.0.3",
+    "vuetify": "2.0.4",
     "vuex": "3.1.1",
     "vuex-persist": "2.0.1",
     "vuex-smart-module": "0.3.0"
