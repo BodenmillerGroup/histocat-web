@@ -15,12 +15,12 @@
         </template>
         <v-list dense>
           <v-list-item
-            @click="download('tiff')"
+            @click="exportImage('tiff')"
           >
             <v-list-item-title>Export TIFF</v-list-item-title>
           </v-list-item>
           <v-list-item
-            @click="download('png')"
+            @click="exportImage('png')"
           >
             <v-list-item-title>Export PNG</v-list-item-title>
           </v-list-item>
@@ -39,9 +39,15 @@
     </v-toolbar>
     <v-layout row>
       <v-flex :class="mainClass">
-        <SegmentationView class="segmentation-view" ref="segmentationView"></SegmentationView>
+        <SegmentationView
+          class="segmentation-view"
+          ref="segmentationView"
+        ></SegmentationView>
       </v-flex>
-      <v-flex v-if="showSettings" md4>
+      <v-flex
+        v-if="showSettings"
+        md4
+      >
         <SegmentationSettingsView></SegmentationSettingsView>
       </v-flex>
     </v-layout>
@@ -49,9 +55,9 @@
 </template>
 
 <script lang="ts">
-  import { experimentModule } from '@/modules/experiment';
-  import { ExportTypes } from '@/modules/experiment/models';
-  import { mainModule } from '@/modules/main';
+  import { analysisModule } from '@/modules/analysis';
+  import { ExportFormat } from '@/modules/experiment/models';
+  import { settingsModule } from '@/modules/settings';
   import SegmentationSettingsView from '@/views/main/experiment/analysis/segmentation/SegmentationSettingsView.vue';
   import SegmentationView from '@/views/main/experiment/analysis/segmentation/SegmentationView.vue';
   import { Component, Vue } from 'vue-property-decorator';
@@ -60,8 +66,8 @@
     components: { SegmentationSettingsView, SegmentationView },
   })
   export default class SegmentationTab extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
-    readonly experimentContext = experimentModule.context(this.$store);
+    readonly analysisContext = analysisModule.context(this.$store);
+    readonly settingsContext = settingsModule.context(this.$store);
 
     showSettings = true;
 
@@ -72,14 +78,18 @@
       return 'md12';
     }
 
-    download(type: ExportTypes) {
-      this.experimentContext.actions.exportChannelStackImage(type);
+    exportImage(format: ExportFormat) {
+      const settings = this.settingsContext.getters.segmentationSettings;
+      this.analysisContext.actions.exportSegmentationImage({
+        format: format,
+        settings: settings,
+      });
     }
   }
 </script>
 
 <style scoped>
   .segmentation-view {
-    height: calc(100vh - 162px);
+    height: calc(100vh - 212px);
   }
 </style>

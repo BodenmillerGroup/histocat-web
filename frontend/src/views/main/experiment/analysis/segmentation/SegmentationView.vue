@@ -27,16 +27,8 @@
     readonly analysisContext = analysisModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
 
-    // TODO: check for a better solution
-    map!: Map;
-    overviewMap!: OverviewMap;
-
     get selectedChannels() {
       return this.experimentContext.getters.selectedChannels;
-    }
-
-    get metalColorMap() {
-      return this.settingsContext.getters.metalColorMap;
     }
 
     get activeAcquisition() {
@@ -54,6 +46,10 @@
     get showChannels() {
       return this.mainContext.getters.showChannels;
     }
+
+    // TODO: check for a better solution
+    map!: Map;
+    overviewMap!: OverviewMap;
 
     @Watch('showWorkspace')
     onRefreshImageView() {
@@ -101,22 +97,21 @@
       }
     }
 
-    @Watch('metalColorMap')
-    onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
-      this.analysisContext.actions.getAnalysisImage();
-    }
-
     @Watch('selectedChannels')
     onSelectedChannelsChanged(channels: IChannel[]) {
       if (!this.map) {
         this.initMap();
       }
 
-      if (channels && channels.length > 0) {
-        this.analysisContext.actions.getAnalysisImage();
-      } else {
+      if (!channels || channels.length === 0) {
         this.experimentContext.mutations.setChannelStackImage(null);
         this.map.getLayers().clear();
+      }
+    }
+
+    mounted() {
+      if (this.activeAcquisition) {
+        this.onActiveAcquisitionChanged(this.activeAcquisition);
       }
     }
 
@@ -173,12 +168,6 @@
         view: view,
         target: 'segmentation-map',
       });
-    }
-
-    mounted() {
-      if (this.activeAcquisition) {
-        this.onActiveAcquisitionChanged(this.activeAcquisition);
-      }
     }
   }
 </script>

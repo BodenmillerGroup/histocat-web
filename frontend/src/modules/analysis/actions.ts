@@ -1,5 +1,6 @@
+import { IImageSegmentationSettings } from '@/modules/analysis/models';
 import { experimentModule } from '@/modules/experiment';
-import { ExportTypes } from '@/modules/experiment/models';
+import { ExportFormat } from '@/modules/experiment/models';
 import { mainModule } from '@/modules/main';
 import { settingsModule } from '@/modules/settings';
 import { saveAs } from 'file-saver';
@@ -25,13 +26,13 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     this.experiment = experimentModule.context(store);
   }
 
-  async getAnalysisImage() {
-    const params = this.prepareStackParams();
+  async getSegmentationImage(settings: IImageSegmentationSettings) {
+    const params = this.prepareSegmentationParams(settings);
     if (params.channels.length === 0) {
       return;
     }
     try {
-      const response = await api.downloadAnalysisImage(this.main!.getters.token, params);
+      const response = await api.produceSegmentationImage(this.main!.getters.token, params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -43,10 +44,10 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async exportAnalysisImage(format: ExportTypes = 'png') {
-    const params = this.prepareStackParams(format);
+  async exportSegmentationImage(payload: { settings: IImageSegmentationSettings, format: ExportFormat }) {
+    const params = this.prepareSegmentationParams(payload.settings, payload.format);
     try {
-      const response = await api.downloadAnalysisImage(this.main!.getters.token, params);
+      const response = await api.produceSegmentationImage(this.main!.getters.token, params);
       const blob = await response.blob();
       saveAs(blob);
     } catch (error) {
@@ -54,7 +55,20 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  private prepareStackParams(format: 'png' | 'tiff' = 'png') {
+  async produceSegmentationContours(settings: IImageSegmentationSettings) {
+    const params = this.prepareSegmentationParams(settings);
+    if (params.channels.length === 0) {
+      return;
+    }
+    try {
+      const response = await api.produceSegmentationContours(this.main!.getters.token, params);
+      return response;
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  private prepareSegmentationParams(settings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
       const settings = this.settings!.getters.channelSettings(channel.id);
@@ -78,6 +92,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       filter: filter,
       scalebar: scalebar,
       channels: channels,
+      settings: settings,
     };
   }
 }

@@ -37,6 +37,6 @@
 
 <style scoped>
   .channel-settings-view {
-    height: calc(50vh - 92px);
+    height: calc(50vh - 140px);
   }
 </style>

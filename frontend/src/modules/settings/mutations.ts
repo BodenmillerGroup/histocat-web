@@ -1,3 +1,4 @@
+import { IImageSegmentationSettings } from '@/modules/analysis/models';
 import { Mutations } from 'vuex-smart-module';
 import { SettingsState } from '.';
 import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar } from './models';
@@ -26,6 +27,13 @@ export class SettingsMutations extends Mutations<SettingsState> {
         scale: 1.0,
       },
     };
+    this.state.segmentationSettings = {
+      algorithm: 'Otsu Hue',
+      iterations: 1,
+      kernel_size: 3,
+      mask_color: '#00AAFF40',
+      result_type: 'origin',
+    };
   }
 
   setChannelSettings(channelSettings: IChannelSettings) {
@@ -48,5 +56,9 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setScalebar(scalebar: IImageScalebar) {
     this.state.scalebar = scalebar;
+  }
+
+  setSegmentationSettings(settings: IImageSegmentationSettings) {
+    this.state.segmentationSettings = settings;
   }
 }

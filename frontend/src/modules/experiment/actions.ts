@@ -6,7 +6,7 @@ import { Actions, Context } from 'vuex-smart-module';
 import { ExperimentState } from '.';
 import { api } from './api';
 import { ExperimentGetters } from './getters';
-import { ExportTypes, IExperimentCreate, IExperimentUpdate, IShareCreate } from './models';
+import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from './models';
 import { ExperimentMutations } from './mutations';
 
 export class ExperimentActions extends Actions<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions> {
@@ -147,7 +147,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
-  async exportChannelStackImage(format: ExportTypes = 'png') {
+  async exportChannelStackImage(format: ExportFormat = 'png') {
     const params = this.prepareStackParams(format);
     try {
       const response = await api.downloadChannelStackImage(this.main!.getters.token, params);

@@ -190,4 +190,4 @@ export interface IShare {
   permissions?: string[];
 }
 
-export type ExportTypes = 'tiff' | 'png';
+export type ExportFormat = 'tiff' | 'png';

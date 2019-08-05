@@ -1,6 +1,16 @@
 import { IImageFilter, IImageScalebar } from '@/modules/settings/models';
 
-export interface IAnalysisSubmission {
+export type ImageResultType = 'origin' | 'mask';
+
+export interface IImageSegmentationSettings {
+  algorithm: string;
+  iterations: number;
+  kernel_size: number;
+  mask_color: string;
+  result_type: ImageResultType
+}
+
+export interface IImageSegmentationSubmission {
   format?: string;
   filter: IImageFilter;
   scalebar: IImageScalebar;
@@ -11,4 +21,5 @@ export interface IAnalysisSubmission {
     min?: number;
     max?: number;
   }>;
+  settings: IImageSegmentationSettings;
 }

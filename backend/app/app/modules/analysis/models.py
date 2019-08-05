@@ -6,8 +6,17 @@ from pydantic import BaseModel
 from app.modules.channel.models import FilterModel, ScalebarModel, ChannelSettingsModel
 
 
+class SegmentationSettingsModel(BaseModel):
+    algorithm: str
+    iterations: int
+    kernel_size: int
+    mask_color: str
+    result_type: str
+
+
 class AnalysisModel(BaseModel):
     filter: FilterModel
     scalebar: ScalebarModel
     channels: List[ChannelSettingsModel]
     format: Optional[str] = 'png'
+    settings: SegmentationSettingsModel

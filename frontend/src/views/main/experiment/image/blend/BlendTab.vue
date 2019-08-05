@@ -15,12 +15,12 @@
         </template>
         <v-list dense>
           <v-list-item
-            @click="download('tiff')"
+            @click="exportImage('tiff')"
           >
             <v-list-item-title>Export TIFF</v-list-item-title>
           </v-list-item>
           <v-list-item
-            @click="download('png')"
+            @click="exportImage('png')"
           >
             <v-list-item-title>Export PNG</v-list-item-title>
           </v-list-item>
@@ -38,7 +38,7 @@
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
-  import { ExportTypes } from '@/modules/experiment/models';
+  import { ExportFormat } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
   import BlendView from '@/views/main/experiment/image/blend/BlendView.vue';
   import IntensityView from '@/views/main/experiment/image/blend/IntensityView.vue';
@@ -59,8 +59,8 @@
       return this.mainContext.getters.showChannels;
     }
 
-    download(type: ExportTypes) {
-      this.experimentContext.actions.exportChannelStackImage(type);
+    exportImage(format: ExportFormat) {
+      this.experimentContext.actions.exportChannelStackImage(format);
     }
   }
 </script>
