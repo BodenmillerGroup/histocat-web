@@ -13,7 +13,7 @@ export class SettingsState {
     type: 'gaussian',
     settings: {
       sigma: 1.0,
-      mode: 'nearest',
+      kernel_size: 1,
     },
   };
   legend: IImageLegend = {

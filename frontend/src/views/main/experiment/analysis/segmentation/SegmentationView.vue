@@ -5,17 +5,22 @@
 <script lang="ts">
   import { analysisModule } from '@/modules/analysis';
   import { experimentModule } from '@/modules/experiment';
-  import { IAcquisition, IChannel } from '@/modules/experiment/models';
+  import { IAcquisition } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
   import { settingsModule } from '@/modules/settings';
   import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from 'ol/control';
   import { getCenter } from 'ol/extent';
+  import Feature from 'ol/Feature';
+  import Polygon from 'ol/geom/Polygon';
   import { DragPan, MouseWheelZoom } from 'ol/interaction';
   import ImageLayer from 'ol/layer/Image';
+  import VectorLayer from 'ol/layer/Vector';
   import Map from 'ol/Map';
   import 'ol/ol.css';
   import Projection from 'ol/proj/Projection';
   import Static from 'ol/source/ImageStatic';
+  import VectorSource from 'ol/source/Vector';
+  import { Fill, Stroke, Style } from 'ol/style.js';
   import View from 'ol/View';
   import { equals } from 'ramda';
   import { Component, Vue, Watch } from 'vue-property-decorator';
@@ -27,16 +32,24 @@
     readonly analysisContext = analysisModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
 
-    get selectedChannels() {
-      return this.experimentContext.getters.selectedChannels;
-    }
+    // TODO: check for a better solution
+    map!: Map;
+    overviewMap!: OverviewMap;
+    vectorLayer!: VectorLayer;
+    imageLayer!: ImageLayer;
+    featureLayer!: VectorLayer;
+    highlight: any = undefined;
 
     get activeAcquisition() {
       return this.experimentContext.getters.activeAcquisition;
     }
 
-    get analysisImage() {
-      return this.analysisContext.getters.analysisImage;
+    get segmentationImage() {
+      return this.analysisContext.getters.segmentationImage;
+    }
+
+    get segmentationContours() {
+      return this.analysisContext.getters.segmentationContours;
     }
 
     get showWorkspace() {
@@ -47,10 +60,6 @@
       return this.mainContext.getters.showChannels;
     }
 
-    // TODO: check for a better solution
-    map!: Map;
-    overviewMap!: OverviewMap;
-
     @Watch('showWorkspace')
     onRefreshImageView() {
       if (this.map) {
@@ -58,25 +67,56 @@
       }
     }
 
-    @Watch('analysisImage')
-    onChannelStackImageChanged(image: string | ArrayBuffer | null) {
+    @Watch('segmentationImage')
+    onSegmentationImageChanged(image: string | ArrayBuffer | null) {
       if (!this.map) {
         this.initMap();
       }
 
       if (image !== null) {
         const projection = this.map.getView().getProjection();
-        const layer = new ImageLayer({
-          source: new Static({
-            url: ``,
-            imageExtent: projection.getExtent(),
-            imageLoadFunction: (view, src: string) => {
-              (view.getImage() as any).src = image;
-            },
-          }),
+        const source = new Static({
+          url: ``,
+          imageExtent: projection.getExtent(),
+          imageLoadFunction: (view, src: string) => {
+            (view.getImage() as any).src = image;
+          },
         });
         this.map.getLayers().clear();
-        this.map.getLayers().extend([layer]);
+        this.imageLayer.setSource(source);
+        this.map.getLayers().extend([
+          this.imageLayer,
+        ]);
+      }
+    }
+
+    @Watch('segmentationContours')
+    onSegmentationContoursChanged(contours: number[][]) {
+      if (!this.map) {
+        this.initMap();
+      }
+
+      if (contours.length > 0) {
+        const projection = this.map.getView().getProjection();
+        const source = new VectorSource({});
+        const features = contours.map((contour: any) => {
+          const points = contour.map((p) => {
+            return p[0];
+          });
+          return new Feature({
+            geometry: new Polygon([points]),
+          });
+        });
+        source.addFeatures(features);
+        this.map.getLayers().clear();
+        this.vectorLayer.setSource(source);
+        this.vectorLayer.setExtent(projection.getExtent());
+        this.map.getLayers().extend([
+          this.imageLayer,
+          this.vectorLayer,
+          this.featureLayer,
+        ]);
+        this.analysisContext.mutations.setSegmentationImage(null);
       }
     }
 
@@ -97,23 +137,27 @@
       }
     }
 
-    @Watch('selectedChannels')
-    onSelectedChannelsChanged(channels: IChannel[]) {
-      if (!this.map) {
-        this.initMap();
-      }
-
-      if (!channels || channels.length === 0) {
-        this.experimentContext.mutations.setChannelStackImage(null);
-        this.map.getLayers().clear();
-      }
-    }
-
     mounted() {
       if (this.activeAcquisition) {
         this.onActiveAcquisitionChanged(this.activeAcquisition);
       }
     }
+
+    displayFeatureInfo(pixel) {
+      const feature = this.map.forEachFeatureAtPixel(pixel, (f) => {
+        return f;
+      });
+
+      if (feature !== this.highlight) {
+        if (this.highlight) {
+          this.featureLayer.getSource().removeFeature(this.highlight);
+        }
+        if (feature) {
+          this.featureLayer.getSource().addFeature(feature as any);
+        }
+        this.highlight = feature;
+      }
+    };
 
     private initMap() {
       if (!this.activeAcquisition) {
@@ -151,6 +195,23 @@
           projection: projection,
         }),
       });
+
+      this.imageLayer = new ImageLayer();
+      this.vectorLayer = new VectorLayer();
+      this.featureLayer = new VectorLayer({
+        source: new VectorSource(),
+        map: this.map,
+        style: new Style({
+          stroke: new Stroke({
+            color: '#f00',
+            width: 1,
+          }),
+          fill: new Fill({
+            color: 'rgba(255,0,0,0.1)',
+          }),
+        }),
+      });
+
       this.map = new Map({
         controls: defaultControls({
           zoom: false,
@@ -167,6 +228,23 @@
         ],
         view: view,
         target: 'segmentation-map',
+        layers: [
+          this.imageLayer,
+          this.vectorLayer,
+          this.featureLayer,
+        ],
+      });
+
+      this.map.on('pointermove', (evt) => {
+        if (evt.dragging) {
+          return;
+        }
+        const pixel = this.map.getEventPixel(evt.originalEvent);
+        this.displayFeatureInfo(pixel);
+      });
+
+      this.map.on('click', (evt) => {
+        this.displayFeatureInfo(evt.pixel);
       });
     }
   }

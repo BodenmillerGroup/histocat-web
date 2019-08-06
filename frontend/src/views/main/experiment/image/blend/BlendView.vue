@@ -119,6 +119,12 @@
       }
     }
 
+    mounted() {
+      if (this.activeAcquisition) {
+        this.onActiveAcquisitionChanged(this.activeAcquisition);
+      }
+    }
+
     private initMap() {
       if (!this.activeAcquisition) {
         return;

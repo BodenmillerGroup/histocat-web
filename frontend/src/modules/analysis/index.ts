@@ -4,7 +4,8 @@ import { AnalysisGetters } from './getters';
 import { AnalysisMutations } from './mutations';
 
 export class AnalysisState {
-  analysisImage: string | ArrayBuffer | null = null;
+  segmentationImage: string | ArrayBuffer | null = null;
+  segmentationContours: number[][] = [];
 }
 
 export const analysisModule = new Module({

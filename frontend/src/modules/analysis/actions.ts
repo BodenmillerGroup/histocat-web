@@ -37,7 +37,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        this.mutations.setAnalysisImage(reader.result);
+        this.mutations.setSegmentationImage(reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -62,13 +62,13 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
     try {
       const response = await api.produceSegmentationContours(this.main!.getters.token, params);
-      return response;
+      this.mutations.setSegmentationContours(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  private prepareSegmentationParams(settings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
+  private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
       const settings = this.settings!.getters.channelSettings(channel.id);
@@ -92,7 +92,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       filter: filter,
       scalebar: scalebar,
       channels: channels,
-      settings: settings,
+      settings: segmentationSettings,
     };
   }
 }

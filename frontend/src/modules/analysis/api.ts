@@ -17,6 +17,6 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
       json: params,
-    });
+    }).json<number[][]>();
   },
 };

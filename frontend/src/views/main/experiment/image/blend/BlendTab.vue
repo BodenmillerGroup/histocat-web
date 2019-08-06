@@ -67,6 +67,6 @@
 
 <style scoped>
   .blend-view {
-    height: calc(100vh - 162px);
+    height: calc(100vh - 204px);
   }
 </style>

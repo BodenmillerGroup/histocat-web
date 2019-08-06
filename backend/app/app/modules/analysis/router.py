@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends
 from matplotlib.colors import to_rgba
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, UJSONResponse
+from starlette.responses import StreamingResponse, UJSONResponse, JSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
@@ -108,6 +108,6 @@ async def produce_segmentation_contours(
     if params.settings.iterations > 0:
         mask = apply_morphology(mask, params.settings)
 
-    contours0, hierarchy = cv2.findContours(mask, mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE, offset=(0, 0))
-    contours = [cv2.approxPolyDP(cnt, 3, True) for cnt in contours0]
+    contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
+    contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
     return UJSONResponse(content=contours)

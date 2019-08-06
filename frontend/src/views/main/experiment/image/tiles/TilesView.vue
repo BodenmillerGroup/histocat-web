@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-sm fluid class="overflow-y-auto">
+  <v-container grid-list-sm fluid class="overflow-y-auto tiles-view">
     <v-layout row wrap>
       <v-flex
         v-for="item in items"
@@ -76,3 +76,9 @@
     }
   }
 </script>
+
+<style scoped>
+  .tiles-view {
+    height: calc(100vh - 154px);
+  }
+</style>

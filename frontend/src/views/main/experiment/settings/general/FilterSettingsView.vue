@@ -14,6 +14,12 @@
         label="Filter Type"
         hide-details
       ></v-select>
+      <v-select
+        :items="kernelSizes"
+        v-model="kernelSize"
+        label="Kernel Size"
+        hide-details
+      ></v-select>
       <v-text-field
         v-if="filterType === 'gaussian'"
         type="number"
@@ -24,12 +30,6 @@
         :rules="[required]"
         hide-details
       ></v-text-field>
-      <v-select
-        :items="modes"
-        v-model="mode"
-        label="Mode"
-        hide-details
-      ></v-select>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -48,9 +48,12 @@
     readonly experimentContext = experimentModule.context(this.$store);
 
     filterTypes = ['gaussian', 'median'];
-    modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap'];
 
     readonly required = required;
+
+    get kernelSizes() {
+      return this.filterType === 'gaussian' ? [0, 1, 3, 5, 7, 9] : [3, 5, 7, 9];
+    }
 
     get apply() {
       return this.settingsContext.getters.filter.apply;
@@ -94,15 +97,15 @@
       }
     }
 
-    get mode() {
-      return this.settingsContext.getters.filter.settings.mode ? this.settingsContext.getters.filter.settings.mode : 'nearest';
+    get kernelSize() {
+      return this.settingsContext.getters.filter.settings.kernel_size ? this.settingsContext.getters.filter.settings.kernel_size : 1;
     }
 
-    set mode(value: string) {
+    set kernelSize(value: string) {
       this.settingsContext.mutations.setFilter({
         ...this.settingsContext.getters.filter,
         settings: {
-          mode: value,
+          kernel_size: value,
         },
       });
       if (this.apply) {

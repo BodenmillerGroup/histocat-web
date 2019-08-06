@@ -3,11 +3,15 @@ import { AnalysisState } from '.';
 
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
-  setAnalysisImage(base64Image: string | ArrayBuffer | null) {
-    this.state.analysisImage = base64Image;
+  setSegmentationImage(base64Image: string | ArrayBuffer | null) {
+    this.state.segmentationImage = base64Image;
+  }
+
+  setSegmentationContours(contours: number[][]) {
+    this.state.segmentationContours = contours;
   }
 
   resetAnalysis() {
-    this.setAnalysisImage(null);
+    this.setSegmentationImage(null);
   }
 }
