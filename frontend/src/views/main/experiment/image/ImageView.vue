@@ -1,7 +1,7 @@
 <template>
   <v-layout row>
     <v-flex :class="mainClass">
-      <v-tabs v-model="tabImageView">
+      <v-tabs v-model="tab">
         <v-tab>Blend</v-tab>
         <v-tab>Tiles</v-tab>
         <v-spacer></v-spacer>
@@ -24,7 +24,7 @@
         </v-tab-item>
       </v-tabs>
     </v-flex>
-    <v-flex v-if="showChannels" md3>
+    <v-flex v-show="showChannels" md3>
       <v-flex>
         <ChannelsView/>
       </v-flex>
@@ -57,7 +57,7 @@
     readonly mainContext = mainModule.context(this.$store);
 
     toggleChannels = 'show';
-    tabImageView = 0;
+    tab = 0;
 
     get showChannels() {
       return this.mainContext.getters.showChannels;

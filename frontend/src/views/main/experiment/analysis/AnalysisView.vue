@@ -1,7 +1,7 @@
 <template>
   <v-layout row>
     <v-flex>
-      <v-tabs v-model="tabAnalysis">
+      <v-tabs v-model="tab">
         <v-tab>Segmentation</v-tab>
         <v-tab-item>
           <SegmentationTab/>
@@ -21,6 +21,6 @@
     },
   })
   export default class AnalysisView extends Vue {
-    tabAnalysis = 0;
+    tab = 0;
   }
 </script>

@@ -39,16 +39,18 @@
     </v-toolbar>
     <v-layout row>
       <v-flex :class="mainClass">
-        <SegmentationView
-          class="segmentation-view"
-          ref="segmentationView"
-        ></SegmentationView>
+        <keep-alive>
+          <SegmentationView
+            class="segmentation-view"
+            ref="segmentationView"
+          ></SegmentationView>
+        </keep-alive>
       </v-flex>
       <v-flex
         v-if="showSettings"
         md4
       >
-        <SegmentationSettingsView></SegmentationSettingsView>
+        <SegmentationSettingsView/>
       </v-flex>
     </v-layout>
   </v-flex>

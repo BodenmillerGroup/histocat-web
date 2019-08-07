@@ -54,7 +54,7 @@
     selected: IUserProfile[] = [];
     search = '';
 
-    headers = [
+    readonly headers = [
       {
         text: 'Email',
         sortable: true,

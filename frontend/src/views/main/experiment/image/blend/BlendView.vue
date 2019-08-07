@@ -55,7 +55,7 @@
 
     @Watch('showWorkspace')
     @Watch('showChannels')
-    onRefreshImageView() {
+    refreshImageView() {
       if (this.map) {
         this.map.updateSize();
       }
@@ -176,7 +176,7 @@
           new MouseWheelZoom({ duration: 0 }),
         ],
         view: view,
-        target: 'blend-map',
+        target: this.$el as HTMLElement,
       });
     }
   }

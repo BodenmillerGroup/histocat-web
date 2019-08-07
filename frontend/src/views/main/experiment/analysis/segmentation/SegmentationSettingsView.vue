@@ -79,7 +79,7 @@
     readonly resultTypes: ImageResultType[] = ['origin', 'mask'];
     readonly algorithms = ['Otsu Grayscale', 'Otsu Hue', 'Otsu Saturation', 'Otsu Lightness'];
     resultType: ImageResultType = 'origin';
-    algorithm = 'Otsu Hue';
+    algorithm = 'Otsu Grayscale';
     iterations = 1;
     kernelSize = 3;
     color = '#00AAFF40';

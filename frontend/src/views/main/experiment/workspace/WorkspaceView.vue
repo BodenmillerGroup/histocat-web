@@ -1,8 +1,8 @@
 <template>
-  <v-tabs v-model="tabWorkspace">
+  <v-tabs v-model="tab">
     <v-tab>Slides</v-tab>
     <v-tab>Datasets</v-tab>
-    <v-tab-item eager>
+    <v-tab-item>
       <SlidesTreeView :experiment="experiment"/>
     </v-tab-item>
     <v-tab-item>
@@ -24,8 +24,8 @@
     },
   })
   export default class WorkspaceView extends Vue {
-    @Prop(Object) experiment!: IExperiment;
+    @Prop(Object) readonly experiment!: IExperiment;
 
-    tabWorkspace = 0;
+    tab = 0;
   }
 </script>

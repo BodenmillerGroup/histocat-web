@@ -80,9 +80,9 @@
     readonly datasetContext = datasetModule.context(this.$store);
 
     search = '';
-    apiUrl = apiUrl;
+    readonly apiUrl = apiUrl;
 
-    icons = {
+    readonly icons = {
       pending: 'mdi-progress-upload',
     };
 

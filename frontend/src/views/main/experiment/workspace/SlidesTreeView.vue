@@ -77,7 +77,7 @@
   export default class SlidesTreeView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
 
-    @Prop(Object) experiment?: IExperiment;
+    @Prop(Object) readonly experiment!: IExperiment;
 
     selected = [];
     search = null;
@@ -118,7 +118,7 @@
     }
 
     get items() {
-      if (this.experiment && this.experiment.slides) {
+      if (this.experiment.slides) {
         return this.experiment.slides.map((slide) => {
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {

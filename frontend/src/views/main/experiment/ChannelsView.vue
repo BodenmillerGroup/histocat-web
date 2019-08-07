@@ -56,7 +56,7 @@
 
     search = '';
 
-    headers = [
+    readonly headers = [
       {
         text: 'Label',
         sortable: true,

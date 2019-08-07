@@ -29,7 +29,9 @@
     </v-toolbar>
     <v-layout>
       <v-flex pa-0>
-        <BlendView class="blend-view"/>
+        <keep-alive>
+          <BlendView class="blend-view"/>
+        </keep-alive>
       </v-flex>
       <IntensityView/>
     </v-layout>

@@ -24,7 +24,7 @@
   export default class IntensityBar extends Vue {
     readonly settingsContext = settingsModule.context(this.$store);
 
-    @Prop(Object) channel!: IChannel;
+    @Prop(Object) readonly channel!: IChannel;
 
     get caption() {
       const settings = this.settingsContext.getters.channelSettings(this.channel.id);

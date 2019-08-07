@@ -61,7 +61,7 @@
     }
 
     @Watch('showWorkspace')
-    onRefreshImageView() {
+    refreshImageView() {
       if (this.map) {
         this.map.updateSize();
       }
@@ -227,7 +227,7 @@
           new MouseWheelZoom({ duration: 0 }),
         ],
         view: view,
-        target: 'segmentation-map',
+        target: this.$el as HTMLElement,
         layers: [
           this.imageLayer,
           this.vectorLayer,
