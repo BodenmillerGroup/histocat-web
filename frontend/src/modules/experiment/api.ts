@@ -3,11 +3,11 @@ import ky from 'ky';
 import {
   IChannelStack,
   IChannelStats,
-  IDataset,
-  IDatasetCreate,
   IExperiment,
   IExperimentCreate,
-  IExperimentUpdate, IShare, IShareCreate,
+  IExperimentUpdate,
+  IShare,
+  IShareCreate,
 } from './models';
 
 const cacheAvailable = false; // 'caches' in self;
@@ -96,28 +96,6 @@ export const api = {
     }
     return response.json() as Promise<IChannelStats>;
   },
-  async createDataset(token: string, data: IDatasetCreate) {
-    return ky.post(`${apiUrl}/api/v1/datasets/`, {
-      json: data,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).json();
-  },
-  async deleteDataset(token: string, id: number) {
-    return ky.delete(`${apiUrl}/api/v1/datasets/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).json();
-  },
-  async getOwnDatasets(token: string, experimentId: number) {
-    return ky.get(`${apiUrl}/api/v1/datasets/experiment/${experimentId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).json<IDataset[]>();
-  },
   async downloadChannelStackImage(token: string, params: IChannelStack) {
     return ky.post(`${apiUrl}/api/v1/channels/stack`, {
       headers: {
@@ -134,8 +112,8 @@ export const api = {
       },
     }).json();
   },
-  async getExperimentShares(token: string, experimentId: number) {
-    return ky.get(`${apiUrl}/api/v1/share/${experimentId}`, {
+  async getExperimentShares(token: string, id: number) {
+    return ky.get(`${apiUrl}/api/v1/share/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

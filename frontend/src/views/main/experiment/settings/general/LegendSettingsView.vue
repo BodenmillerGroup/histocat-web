@@ -30,6 +30,7 @@
   import { experimentModule } from '@/modules/experiment';
   import { settingsModule } from '@/modules/settings';
   import { Component, Vue } from 'vue-property-decorator';
+  import { required } from '@/utils';
 
   @Component({
     components: {},
@@ -38,7 +39,7 @@
     readonly settingsContext = settingsModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
 
-    required = value => !!value || 'Required';
+    readonly required = required;
 
     get apply() {
       return this.settingsContext.getters.legend.apply;

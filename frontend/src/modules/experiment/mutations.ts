@@ -1,15 +1,11 @@
 import { Mutations } from 'vuex-smart-module';
 import { ExperimentState } from '.';
-import { IDataset, IExperiment, IShare } from './models';
+import { IExperiment, IShare } from './models';
 
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
   setExperiments(experiments: IExperiment[]) {
     this.state.experiments = experiments;
-  }
-
-  setDatasets(datasets: IDataset[]) {
-    this.state.datasets = datasets;
   }
 
   setShares(shares: IShare[]) {
@@ -26,18 +22,8 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.experiments = items;
   }
 
-  setDataset(dataset: IDataset) {
-    const items = this.state.datasets.filter((item) => item.id !== dataset.id);
-    items.push(dataset);
-    this.state.datasets = items;
-  }
-
   deleteExperiment(id: number) {
     this.state.experiments = this.state.experiments.filter((item) => item.id !== id);
-  }
-
-  deleteDataset(id: number) {
-    this.state.datasets = this.state.datasets.filter((item) => item.id !== id);
   }
 
   setSelectedMetals(metals: string[]) {

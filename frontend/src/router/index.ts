@@ -21,6 +21,13 @@ export default new Router({
           component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
         },
         {
+          path: 'signup',
+          // route level code-splitting
+          // this generates a separate chunk (about.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import(/* webpackChunkName: "login" */ '@/views/SignUp.vue'),
+        },
+        {
           path: 'recover-password',
           component: () => import(/* webpackChunkName: "recover-password" */ '@/views/PasswordRecovery.vue'),
         },
@@ -96,6 +103,7 @@ export default new Router({
                   component: () => import(
                     /* webpackChunkName: "main-admin-users-create" */ '@/views/main/admin/user/CreateUser.vue'),
                 },
+
                 {
                   path: 'experiments',
                   redirect: 'experiments/all',
@@ -116,6 +124,28 @@ export default new Router({
                   name: 'main-admin-experiments-edit',
                   component: () => import(
                     /* webpackChunkName: "main-admin-experiments-edit" */ '@/views/main/admin/experiment/EditExperiment.vue'),
+                },
+
+                {
+                  path: 'workflows',
+                  redirect: 'workflows/all',
+                },
+                {
+                  path: 'workflows/all',
+                  component: () => import(
+                    /* webpackChunkName: "main-admin-workflows" */ '@/views/main/admin/workflow/AdminWorkflows.vue'),
+                },
+                {
+                  path: 'workflows/create',
+                  name: 'main-admin-workflows-create',
+                  component: () => import(
+                    /* webpackChunkName: "main-admin-workflows-create" */ '@/views/main/admin/workflow/CreateWorkflow.vue'),
+                },
+                {
+                  path: 'workflows/edit/:id',
+                  name: 'main-admin-workflows-edit',
+                  component: () => import(
+                    /* webpackChunkName: "main-admin-workflows-edit" */ '@/views/main/admin/workflow/EditWorkflow.vue'),
                 },
               ],
             },

@@ -1,12 +1,11 @@
 import { Module } from 'vuex-smart-module';
 import { ExperimentActions } from './actions';
 import { ExperimentGetters } from './getters';
-import { IDataset, IExperiment, IShare } from './models';
+import { IExperiment, IShare } from './models';
 import { ExperimentMutations } from './mutations';
 
 export class ExperimentState {
   experiments: IExperiment[] = [];
-  datasets: IDataset[] = [];
   tags: string[] = [];
   shares: IShare[] = [];
   activeExperimentId?: number = undefined;

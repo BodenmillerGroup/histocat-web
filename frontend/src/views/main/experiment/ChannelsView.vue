@@ -1,8 +1,6 @@
 <template>
   <v-card tile>
     <v-card-title>
-      Channels
-      <v-spacer/>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
@@ -49,14 +47,7 @@
   import { IChannel } from '@/modules/experiment/models';
   import { settingsModule } from '@/modules/settings';
   import * as R from 'ramda';
-  import { Component, Vue, Watch } from 'vue-property-decorator';
-
-  interface IChannelRow {
-    id: number;
-    label: string;
-    metal: string;
-    mass: number;
-  }
+  import { Component, Vue } from 'vue-property-decorator';
 
   @Component
   export default class ChannelsView extends Vue {
@@ -64,9 +55,8 @@
     readonly experimentContext = experimentModule.context(this.$store);
 
     search = '';
-    items: IChannelRow[] = [];
 
-    headers = [
+    readonly headers = [
       {
         text: 'Label',
         sortable: true,
@@ -79,7 +69,7 @@
         sortable: true,
         value: 'metal',
         align: 'left',
-        width: '20%',
+        width: '30%',
       },
       {
         text: 'Mass',
@@ -92,9 +82,13 @@
 
     max25chars = v => v.length <= 25 || 'Input too long!';
 
-    @Watch('channels')
-    onChannelsChange(channels: IChannel[]) {
-      this.items = channels.map((channel) => {
+    get channels() {
+      const acquisition = this.experimentContext.getters.activeAcquisition;
+      return acquisition && acquisition.channels ? acquisition.channels : [];
+    }
+
+    get items() {
+      return this.channels.map((channel) => {
         const settings = this.settingsModule.getters.channelSettings(channel.id);
         return {
           id: channel.id,
@@ -103,11 +97,6 @@
           mass: channel.mass,
         };
       });
-    }
-
-    get channels() {
-      const acquisition = this.experimentContext.getters.activeAcquisition;
-      return acquisition && acquisition.channels ? acquisition.channels : [];
     }
 
     get selectedMetals() {

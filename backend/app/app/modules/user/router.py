@@ -89,7 +89,7 @@ def read_me(
     return current_user
 
 
-@router.post("/open", response_model=UserModel)
+@router.post("/signup", response_model=UserModel)
 def create_open(
     *,
     db: Session = Depends(get_db),
@@ -155,3 +155,22 @@ def update(
         )
     item = crud.update(db, item=item, params=params)
     return item
+
+
+@router.get("/check/{email}")
+def check_user_exists(
+    email: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Check if user with the email exists
+    """
+    user = crud.get_by_email(db, email=email)
+    if user:
+        return {
+            'exists': True
+        }
+    else:
+        return {
+            'exists': False
+        }

@@ -4,24 +4,29 @@ from typing import Tuple, List
 import cv2
 import numpy as np
 from matplotlib.colors import to_rgb, LinearSegmentedColormap
-from skimage import filters
 
+from app.modules.analysis.models import SegmentationSettingsModel
 from app.modules.channel.models import FilterModel, ScalebarModel, LegendModel
 
 logger = logging.getLogger(__name__)
+
+OTSU_GRAYSCALE = 'Otsu Grayscale'
+OTSU_HUE_ALGORITHM = 'Otsu Hue'
+OTSU_SATURATION_ALGORITHM = 'Otsu Saturation'
+OTSU_LIGHTNESS_ALGORITHM = 'Otsu Lightness'
 
 
 def apply_filter(image: np.ndarray, filter: FilterModel):
     if filter.type == 'gaussian':
         sigma = filter.settings.get('sigma')
         sigma = float(sigma) if sigma is not None and sigma != '' else 1.0
-        mode = filter.settings.get('mode')
-        mode = mode if mode is not None and mode != '' else 'nearest'
-        return filters.gaussian(image, sigma=sigma, mode=mode, output=image, preserve_range=True)
+        kernel_size = filter.settings.get('kernel_size')
+        kernel_size = (kernel_size, kernel_size) if kernel_size is not None and kernel_size != '' else (0, 0)
+        return cv2.GaussianBlur(image, kernel_size, sigma)
     elif filter.type == 'median':
-        mode = filter.settings.get('mode')
-        mode = mode if mode is not None and mode != '' else 'nearest'
-        return filters.median(image, behavior='ndimage', mode=mode, out=image)
+        kernel_size = filter.settings.get('kernel_size')
+        kernel_size = kernel_size if kernel_size is not None and kernel_size != '' else 3
+        return cv2.medianBlur(image, kernel_size)
 
 
 def colorize(image: np.ndarray, color: str):
@@ -121,3 +126,57 @@ def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], 
             cv2.LINE_AA
         )
     return image
+
+
+def otsu_grayscale(image_rgb):
+    image_gray = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2GRAY)
+    _, mask = cv2.threshold(image_gray.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return mask
+
+
+def _otsu_hls(image_rgb, channel_name: str, flip: bool):
+    image_gray = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2HLS)
+    hue, lightness, saturation = np.split(image_gray, 3, axis=2)
+
+    hsl = locals()[channel_name]
+    hsl = hsl.reshape((hsl.shape[0], hsl.shape[1]))
+
+    _, mask = cv2.threshold(hsl.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    if flip:
+        mask = ~mask
+
+    return mask
+
+
+def otsu_hue(image_rgb):
+    return _otsu_hls(image_rgb, channel_name='hue', flip=False)
+
+
+def otsu_saturation(image_rgb):
+    return _otsu_hls(image_rgb, channel_name='saturation', flip=False)
+
+
+def otsu_lightness(image_rgb):
+    return _otsu_hls(image_rgb, channel_name='lightness', flip=False)
+
+
+def get_mask(image_rgb, settings: SegmentationSettingsModel):
+    if settings.algorithm == OTSU_GRAYSCALE:
+        return otsu_grayscale(image_rgb)
+    elif settings.algorithm == OTSU_HUE_ALGORITHM:
+        return otsu_hue(image_rgb)
+    elif settings.algorithm == OTSU_SATURATION_ALGORITHM:
+        return otsu_saturation(image_rgb)
+    elif settings.algorithm == OTSU_LIGHTNESS_ALGORITHM:
+        return otsu_lightness(image_rgb)
+    return image_rgb
+
+
+def apply_morphology(mask, settings: SegmentationSettingsModel):
+    kernel = np.ones((settings.kernel_size, settings.kernel_size), np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=settings.iterations)
+    mask = cv2.erode(mask, kernel, iterations=2)
+    mask = cv2.dilate(mask, kernel, iterations=5)
+
+    return mask

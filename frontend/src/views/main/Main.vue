@@ -33,6 +33,12 @@
             </v-list-item-action>
             <v-list-item-title>Manage Experiments</v-list-item-title>
           </v-list-item>
+          <v-list-item to="/main/admin/workflows/all">
+            <v-list-item-action>
+              <v-icon>mdi-sitemap</v-icon>
+            </v-list-item-action>
+            <v-list-item-title>Manage Workflows</v-list-item-title>
+          </v-list-item>
         </v-list>
         <v-spacer></v-spacer>
         <v-list>
@@ -56,6 +62,16 @@
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{appName}}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn-toggle v-model="toggleWorkspace">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" tile v-on="on" value='show'>
+              <v-icon>mdi-file-tree</v-icon>
+            </v-btn>
+          </template>
+          <span>Show workspace</span>
+        </v-tooltip>
+      </v-btn-toggle>
       <v-menu
         bottom
         left
@@ -92,7 +108,7 @@
 <script lang="ts">
   import { appName } from '@/env';
   import { mainModule } from '@/modules/main';
-  import { Component, Vue } from 'vue-property-decorator';
+  import { Component, Vue, Watch } from 'vue-property-decorator';
 
   const routeGuardMain = async (to, from, next) => {
     if (to.path === '/main') {
@@ -107,6 +123,7 @@
     readonly mainContext = mainModule.context(this.$store);
 
     appName = appName;
+    toggleWorkspace = 'show';
 
     beforeRouteEnter(to, from, next) {
       routeGuardMain(to, from, next);
@@ -114,6 +131,11 @@
 
     beforeRouteUpdate(to, from, next) {
       routeGuardMain(to, from, next);
+    }
+
+    @Watch('toggleWorkspace')
+    onToggleWorkspace(value: string) {
+      this.mainContext.mutations.setShowWorkspace(value === 'show');
     }
 
     get miniDrawer() {

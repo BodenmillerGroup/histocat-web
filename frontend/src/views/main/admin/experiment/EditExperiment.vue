@@ -141,7 +141,7 @@
     }
 
     get experiment() {
-      return this.experimentContext.getters.adminOneExperiment(+this.$router.currentRoute.params.id);
+      return this.experimentContext.getters.getExperiment(+this.$router.currentRoute.params.id);
     }
 
     async mounted() {

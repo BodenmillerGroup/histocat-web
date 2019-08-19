@@ -1,5 +1,5 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:12.7.0-alpine as build-stage
+FROM node:12.8.1-alpine as build-stage
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ RUN yarn build
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1.16.0-alpine
+FROM nginx:1.16.1-alpine
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 

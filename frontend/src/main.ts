@@ -1,7 +1,6 @@
 // Import Component hooks before component definitions
-
-import App from '@/App.vue';
 import '@/component-hooks';
+import App from '@/App.vue';
 import '@/plugins/masonry-css';
 import '@/plugins/vee-validate';
 import vuetify from '@/plugins/vuetify';

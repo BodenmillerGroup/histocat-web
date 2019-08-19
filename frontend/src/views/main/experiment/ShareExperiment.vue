@@ -54,7 +54,7 @@
     selected: IUserProfile[] = [];
     search = '';
 
-    headers = [
+    readonly headers = [
       {
         text: 'Email',
         sortable: true,
@@ -70,7 +70,7 @@
     ];
 
     get users() {
-      return this.userContext.getters.adminUsers.filter((user) => {
+      return this.userContext.getters.users.filter((user) => {
         if (user.id !== this.mainContext.getters.userProfile!.id) {
           return user;
         }

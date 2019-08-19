@@ -81,7 +81,7 @@
     }
 
     async deleteExperiment(event, id: number) {
-      if (self.confirm('Are you sure you want to delete this item?')) {
+      if (self.confirm('Are you sure you want to delete the experiment?')) {
         await this.experimentContext.actions.deleteExperiment(id);
       }
     }

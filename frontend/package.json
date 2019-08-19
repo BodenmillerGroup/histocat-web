@@ -7,64 +7,69 @@
     "name": "Anton Rau",
     "email": "anton.rau@uzh.ch"
   },
-  "homepage": "https://github.com/plankter/histocat#readme",
+  "homepage": "https://github.com/BodenmillerGroup/histocat-web#readme",
   "keywords": [
     "HistoCAT",
     "BodenmillerLab"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/plankter/histocat.git"
+    "url": "git+https://github.com/BodenmillerGroup/histocat-web.git"
   },
   "bugs": {
-    "url": "https://github.com/plankter/histocat.git/issues"
+    "url": "https://github.com/BodenmillerGroup/histocat-web/issues"
   },
   "scripts": {
     "serve": "FRONTEND_ENV=development && VUE_APP_ENV=development && vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "core-js": "2.6.9",
+    "cwl-svg": "2.1.5",
+    "cwlts": "1.15.34",
     "d3": "5.9.7",
     "file-saver": "2.0.2",
-    "ky": "0.11.2",
+    "ky": "0.12.0",
     "localforage": "1.7.3",
     "ol": "5.3.3",
     "ramda": "0.26.1",
     "register-service-worker": "1.6.2",
     "tslib": "1.10.0",
-    "vee-validate": "2.2.13",
+    "vee-validate": "2.2.15",
     "vue": "2.6.10",
     "vue-class-component": "7.1.0",
     "vue-property-decorator": "8.2.1",
-    "vue-router": "3.0.7",
-    "vuetify": "2.0.2",
+    "vue-router": "3.1.2",
+    "vuetify": "2.0.7",
     "vuex": "3.1.1",
     "vuex-persist": "2.0.1",
     "vuex-smart-module": "0.3.0"
   },
   "devDependencies": {
-    "@mdi/font": "3.8.95",
+    "@mdi/font": "4.0.96",
     "@types/d3": "5.7.2",
     "@types/file-saver": "2.0.1",
-    "@types/jest": "24.0.15",
-    "@types/ol": "5.3.3",
+    "@types/jest": "24.0.17",
+    "@types/ol": "5.3.5",
     "@types/ramda": "types/npm-ramda#dist",
-    "@vue/cli-plugin-pwa": "3.9.0",
-    "@vue/cli-plugin-typescript": "3.9.0",
-    "@vue/cli-plugin-unit-jest": "3.9.0",
-    "@vue/cli-service": "3.9.3",
+    "@vue/cli-plugin-babel": "3.10.0",
+    "@vue/cli-plugin-pwa": "3.10.0",
+    "@vue/cli-plugin-typescript": "3.10.0",
+    "@vue/cli-plugin-unit-jest": "3.10.0",
+    "@vue/cli-service": "3.10.0",
     "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
     "deepmerge": "4.0.0",
     "fibers": "4.0.1",
     "prettier": "1.18.2",
-    "sass": "1.22.8",
-    "sass-loader": "7.1.0",
+    "sass": "1.22.10",
+    "sass-loader": "7.2.0",
     "ts-jest": "24.0.2",
     "tslint-config-prettier": "1.18.0",
     "typescript": "3.5.3",
-    "vue-cli-plugin-vuetify": "0.6.1",
+    "vue-cli-plugin-vuetify": "0.6.3",
     "vue-masonry-css": "1.0.3",
     "vue-template-compiler": "2.6.10"
   }

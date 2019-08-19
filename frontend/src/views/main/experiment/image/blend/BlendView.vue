@@ -1,9 +1,8 @@
 <template>
-  <div id="map"></div>
+  <div id="blend-map"></div>
 </template>
 
 <script lang="ts">
-  import { apiUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
   import { IAcquisition, IChannel } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
@@ -56,7 +55,7 @@
 
     @Watch('showWorkspace')
     @Watch('showChannels')
-    onRefreshImageView() {
+    refreshImageView() {
       if (this.map) {
         this.map.updateSize();
       }
@@ -72,7 +71,7 @@
         const projection = this.map.getView().getProjection();
         const layer = new ImageLayer({
           source: new Static({
-            url: `${apiUrl}/api/v1/channels/stack`,
+            url: ``,
             imageExtent: projection.getExtent(),
             imageLoadFunction: (view, src: string) => {
               (view.getImage() as any).src = image;
@@ -120,6 +119,12 @@
       }
     }
 
+    mounted() {
+      if (this.activeAcquisition) {
+        this.onActiveAcquisitionChanged(this.activeAcquisition);
+      }
+    }
+
     private initMap() {
       if (!this.activeAcquisition) {
         return;
@@ -160,7 +165,7 @@
         controls: defaultControls({
           zoom: false,
           attribution: false,
-          rotate: false
+          rotate: false,
         }).extend([
           new ScaleLine(),
           new FullScreen(),
@@ -171,7 +176,7 @@
           new MouseWheelZoom({ duration: 0 }),
         ],
         view: view,
-        target: 'map',
+        target: this.$el as HTMLElement,
       });
     }
   }

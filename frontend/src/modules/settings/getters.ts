@@ -21,4 +21,8 @@ export class SettingsGetters extends Getters<SettingsState> {
   get scalebar() {
     return this.state.scalebar;
   }
+
+  get segmentationSettings() {
+    return this.state.segmentationSettings;
+  }
 }

@@ -4,47 +4,46 @@
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn
-            icon
+            text
+            small
+            color="primary"
             v-on="on"
           >
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on">
-                  <v-icon>mdi-cloud-download-outline</v-icon>
-                </v-btn>
-              </template>
-              <span>Export image</span>
-            </v-tooltip>
+            <v-icon left>mdi-cloud-download-outline</v-icon>
+            Export image
           </v-btn>
         </template>
         <v-list dense>
           <v-list-item
-            @click="download('tiff')"
+            @click="exportImage('tiff')"
           >
-            <v-list-item-title>TIFF</v-list-item-title>
+            <v-list-item-title>Export TIFF</v-list-item-title>
           </v-list-item>
           <v-list-item
-            @click="download('png')"
+            @click="exportImage('png')"
           >
-            <v-list-item-title>PNG</v-list-item-title>
+            <v-list-item-title>Export PNG</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
     </v-toolbar>
     <v-layout>
       <v-flex pa-0>
-        <BlendView class="blend-view"/>
+        <keep-alive>
+          <BlendView class="blend-view"/>
+        </keep-alive>
       </v-flex>
-      <IntensityView class="intensity-view"/>
+      <IntensityView/>
     </v-layout>
   </v-flex>
 </template>
 
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
+  import { ExportFormat } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
-  import BlendView from '@/views/main/experiment/BlendView.vue';
-  import IntensityView from '@/views/main/experiment/IntensityView.vue';
+  import BlendView from '@/views/main/experiment/image/blend/BlendView.vue';
+  import IntensityView from '@/views/main/experiment/image/blend/IntensityView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
@@ -62,17 +61,14 @@
       return this.mainContext.getters.showChannels;
     }
 
-    download(type: 'png' | 'tiff') {
-      this.experimentContext.actions.exportChannelStackImage(type);
+    exportImage(format: ExportFormat) {
+      this.experimentContext.actions.exportChannelStackImage(format);
     }
   }
 </script>
 
 <style scoped>
   .blend-view {
-    height: calc(100vh - 162px);
-  }
-
-  .intensity-view {
+    height: calc(100vh - 204px);
   }
 </style>

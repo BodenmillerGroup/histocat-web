@@ -8,7 +8,6 @@
         single-line
         hide-details
         clearable
-        solo-inverted
         flat
       />
       <v-tooltip bottom>
@@ -75,14 +74,13 @@
   @Component({
     components: { InfoCard },
   })
-  export default class WorkspaceView extends Vue {
+  export default class SlidesTreeView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
 
-    @Prop(Object) experiment?: IExperiment;
+    @Prop(Object) readonly experiment!: IExperiment;
 
     selected = [];
     search = null;
-    active = [];
     showROI = false;
 
     readonly icons = {
@@ -96,13 +94,15 @@
       this.showROI = !this.showROI;
     }
 
-    @Watch('active')
-    onActiveChanged(item) {
-      if (this.active.length === 0 || !item) {
+    get active() {
+      return [this.experimentContext.getters.activeWorkspaceNode];
+    }
+
+    set active(items: any[]) {
+      if (!items || items.length === 0) {
         return;
       }
-      item = item[0];
-      this.experimentContext.mutations.setActiveWorkspaceNode(item);
+      this.experimentContext.mutations.setActiveWorkspaceNode(items[0]);
     }
 
     @Watch('selected')
@@ -118,7 +118,7 @@
     }
 
     get items() {
-      if (this.experiment && this.experiment.slides) {
+      if (this.experiment.slides) {
         return this.experiment.slides.map((slide) => {
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {
@@ -126,13 +126,13 @@
                 return Object.assign({}, acquisition, {
                   type: 'acquisition',
                   name: acquisition.meta.Description,
-                  uid: Math.random(),
+                  uid: `acquisition-${acquisition.id}`,
                 });
               });
               return Object.assign({}, roi, {
                 type: 'roi',
                 name: `ROI ${roi.original_id}`,
-                uid: Math.random(),
+                uid: `roi-${roi.id}`,
                 children: acquisitions,
               });
             });
@@ -144,7 +144,7 @@
             return Object.assign({}, panorama, {
               type: 'panorama',
               name: panorama.meta.Description,
-              uid: Math.random(),
+              uid: `panorama-${panorama.id}`,
               children: panoramaChildren,
             });
           });
@@ -152,7 +152,7 @@
             type: 'slide',
             name: slide.metaname,
             children: panoramas,
-            uid: Math.random(),
+            uid: `slide-${slide.id}`,
           });
         });
       }

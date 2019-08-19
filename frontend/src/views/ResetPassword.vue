@@ -9,16 +9,35 @@
             </v-toolbar>
             <v-card-text>
               <p class="subtitle-3">Enter your new password below</p>
-              <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
-                <v-text-field type="password" ref="password" label="Password" data-vv-name="password"
-                              data-vv-delay="100" data-vv-rules="required" v-validate="'required'" v-model="password1"
-                              :error-messages="errors.first('password')">
-                </v-text-field>
-                <v-text-field type="password" label="Confirm Password" data-vv-name="password_confirmation"
-                              data-vv-delay="100" data-vv-rules="required|confirmed:$password" data-vv-as="password"
-                              v-validate="'required|confirmed:password'" v-model="password2"
-                              :error-messages="errors.first('password_confirmation')">
-                </v-text-field>
+              <v-form
+                @keyup.enter="submit"
+                v-model="valid"
+                ref="form"
+                @submit.prevent=""
+                lazy-validation
+              >
+                <v-text-field
+                  type="password"
+                  ref="password"
+                  label="Password"
+                  data-vv-name="password"
+                  data-vv-delay="100"
+                  data-vv-rules="required"
+                  v-validate="'required'"
+                  v-model="password1"
+                  :error-messages="errors.first('password')"
+                ></v-text-field>
+                <v-text-field
+                  type="password"
+                  label="Confirm Password"
+                  data-vv-name="password_confirmation"
+                  data-vv-delay="100"
+                  data-vv-rules="required|confirmed:$password"
+                  data-vv-as="password"
+                  v-validate="'required|confirmed:password'"
+                  v-model="password2"
+                  :error-messages="errors.first('password_confirmation')"
+                ></v-text-field>
               </v-form>
             </v-card-text>
             <v-card-actions>

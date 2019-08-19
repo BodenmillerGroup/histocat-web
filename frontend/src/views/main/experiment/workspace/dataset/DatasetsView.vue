@@ -54,7 +54,8 @@
             </v-card-title>
 
             <v-card-actions>
-              <v-btn text color="red" @click="deleteDataset($event, item.id)">Delete</v-btn>
+              <v-btn text download :href="`${apiUrl}/api/v1/datasets/${item.id}/download`">Download</v-btn>
+              <v-btn text color="error" @click="deleteDataset($event, item.id)">Delete</v-btn>
             </v-card-actions>
           </v-card>
         </v-list-group>
@@ -65,24 +66,28 @@
 
 <script lang="ts">
   import InfoCard from '@/components/InfoCard.vue';
+  import { apiUrl } from '@/env';
+  import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
-  import CreateDatasetDialog from '@/views/main/experiment/CreateDatasetDialog.vue';
+  import CreateDatasetDialog from '@/views/main/experiment/workspace/dataset/CreateDatasetDialog.vue';
 
   @Component({
     components: { InfoCard, CreateDatasetDialog, },
   })
   export default class DatasetsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly datasetContext = datasetModule.context(this.$store);
 
     search = '';
+    readonly apiUrl = apiUrl;
 
-    icons = {
+    readonly icons = {
       pending: 'mdi-progress-upload',
     };
 
     get datasets() {
-      return this.experimentContext.getters.datasets;
+      return this.datasetContext.getters.datasets;
     }
 
     get items() {
@@ -98,16 +103,20 @@
       }
     }
 
+    async downloadDataset(event, id: number, filename: string) {
+      await this.datasetContext.actions.downloadDataset({ datasetId: id, filename: filename });
+    }
+
     async deleteDataset(event, id: number) {
       if (self.confirm('Do you really want to delete dataset?')) {
-        await this.experimentContext.actions.deleteDataset(id);
+        await this.datasetContext.actions.deleteDataset(id);
       }
     }
 
     async refreshStatus() {
       const experimentId = this.experimentContext.getters.activeExperimentId;
       if (experimentId) {
-        await this.experimentContext.actions.getOwnDatasets(experimentId);
+        await this.datasetContext.actions.getExperimentDatasets(experimentId);
       }
     }
 
@@ -116,7 +125,7 @@
     }
 
     beforeDestroy() {
-      this.experimentContext.mutations.setDatasets([]);
+      this.datasetContext.mutations.setDatasets([]);
     }
   }
 </script>
