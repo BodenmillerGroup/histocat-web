@@ -45,7 +45,7 @@ services:
 
   db:
     restart: always
-    image: postgres:11.4-alpine
+    image: postgres:11.5-alpine
     env_file:
       - env-postgres.env
     environment:
@@ -93,7 +93,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:v1.7.12-alpine
+    image: traefik:v1.7.14-alpine
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:

@@ -69,7 +69,7 @@
         sortable: true,
         value: 'metal',
         align: 'left',
-        width: '20%',
+        width: '30%',
       },
       {
         text: 'Mass',
