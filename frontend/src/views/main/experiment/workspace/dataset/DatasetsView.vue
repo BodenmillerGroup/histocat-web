@@ -10,6 +10,7 @@
         <span>Refresh datasets status</span>
       </v-tooltip>
       <CreateDatasetDialog/>
+      <UploadDatasetDialog class="ml-2"/>
     </v-toolbar>
     <v-card-title class="card-title">
       <v-text-field
@@ -69,11 +70,12 @@
   import { apiUrl } from '@/env';
   import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
+  import UploadDatasetDialog from '@/views/main/experiment/workspace/dataset/UploadDatasetDialog.vue';
   import { Component, Vue } from 'vue-property-decorator';
   import CreateDatasetDialog from '@/views/main/experiment/workspace/dataset/CreateDatasetDialog.vue';
 
   @Component({
-    components: { InfoCard, CreateDatasetDialog, },
+    components: { UploadDatasetDialog, InfoCard, CreateDatasetDialog, },
   })
   export default class DatasetsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);

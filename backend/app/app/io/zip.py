@@ -52,11 +52,16 @@ def import_zip(db: Session, uri: str, experiment_id: int):
     basename = slide_meta_csv.stem.replace(f'_{mcdxmlparser.SLIDE}_meta', '')
 
     slide_data = _load_meta_csv(slide_meta_csv)
-    panorama_data = _load_meta_csv(dir / '_'.join([basename, mcdxmlparser.PANORAMA, 'meta.csv']))
-    roi_data = _load_meta_csv(dir / '_'.join([basename, mcdxmlparser.ACQUISITIONROI, 'meta.csv']))
-    roi_point_data = _load_meta_csv(dir / '_'.join([basename, mcdxmlparser.ROIPOINT, 'meta.csv']))
-    acquisition_data = _load_meta_csv(dir / '_'.join([basename, mcdxmlparser.ACQUISITION, 'meta.csv']))
-    channel_data = _load_meta_csv(dir / '_'.join([basename, mcdxmlparser.ACQUISITIONCHANNEL, 'meta.csv']))
+    panorama_csv_filename = dir / '_'.join([basename, mcdxmlparser.PANORAMA, 'meta.csv'])
+    panorama_data = _load_meta_csv(panorama_csv_filename)
+    roi_csv_filename = dir / '_'.join([basename, mcdxmlparser.ACQUISITIONROI, 'meta.csv'])
+    roi_data = _load_meta_csv(roi_csv_filename)
+    roi_point_csv_filename = dir / '_'.join([basename, mcdxmlparser.ROIPOINT, 'meta.csv'])
+    roi_point_data = _load_meta_csv(roi_point_csv_filename)
+    acquisition_csv_filename = dir / '_'.join([basename, mcdxmlparser.ACQUISITION, 'meta.csv'])
+    acquisition_data = _load_meta_csv(acquisition_csv_filename)
+    channel_csv_filename = dir / '_'.join([basename, mcdxmlparser.ACQUISITIONCHANNEL, 'meta.csv'])
+    channel_data = _load_meta_csv(channel_csv_filename)
 
     slide_map: Dict[str, Slide] = dict()
     for slide_item in slide_data.values():
@@ -76,31 +81,41 @@ def import_zip(db: Session, uri: str, experiment_id: int):
 
         _copy_file(xml_metadata_file, slide.location)
         _copy_file(slide_meta_csv, slide.location)
-        _copy_file(dir / '_'.join([basename, f's{slide.original_id}_slide.png']), slide.location)
+        _copy_file(dir / '_'.join([basename, f's{slide.original_id}', 'slide.png']), slide.location)
+
+        _copy_file(panorama_csv_filename, slide.location)
+        _copy_file(roi_csv_filename, slide.location)
+        _copy_file(roi_point_csv_filename, slide.location)
+        _copy_file(acquisition_csv_filename, slide.location)
+        _copy_file(channel_csv_filename, slide.location)
 
     panorama_map: Dict[str, Panorama] = dict()
     for panorama_item in panorama_data.values():
-        panorama = _import_panorama(db, panorama_item, slide_map.get(panorama_item.get(mcdxmlparser.SLIDEID)), basename)
+        slide = slide_map.get(panorama_item.get(mcdxmlparser.SLIDEID))
+        panorama = _import_panorama(db, panorama_item, slide, basename)
         panorama_map[str(panorama.original_id)] = panorama
-        _copy_file(dir / '_'.join([basename, f's{panorama.slide.original_id}_p{panorama.original_id}_pano.png']),
-                   panorama.location)
+        _copy_file(dir / '_'.join([basename, f's{panorama.slide.original_id}', f'p{panorama.original_id}', 'pano.png']),
+                   slide.location)
 
     roi_map: Dict[str, ROI] = dict()
     for roi_item in roi_data.values():
-        roi = _import_roi(db, roi_item, panorama_map.get(roi_item.get(mcdxmlparser.PANORAMAID)), basename)
+        panorama = panorama_map.get(roi_item.get(mcdxmlparser.PANORAMAID))
+        roi = _import_roi(db, roi_item, panorama, basename)
         roi_map[str(roi.original_id)] = roi
 
     roi_point_map: Dict[str, ROIPoint] = dict()
     for roi_point_item in roi_point_data.values():
-        roi_point = _import_roi_point(db, roi_point_item,
-                                      roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID)), basename)
+        roi = roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID))
+        roi_point = _import_roi_point(db, roi_point_item, roi, basename)
         roi_point_map[str(roi_point.original_id)] = roi_point
 
     acquisition_map: Dict[str, Acquisition] = dict()
     for acquisition_item in acquisition_data.values():
-        acquisition = _import_acquisition(db, acquisition_item,
-                                          roi_map.get(acquisition_item.get(mcdxmlparser.ACQUISITIONROIID)), basename)
+        roi = roi_map.get(acquisition_item.get(mcdxmlparser.ACQUISITIONROIID))
+        acquisition = _import_acquisition(db, acquisition_item, roi, basename)
         acquisition_map[str(acquisition.original_id)] = acquisition
+        ome_tiff_filename = '_'.join([basename, f's{roi.panorama.slide.original_id}', f'p{roi.panorama.original_id}', f'r{roi.original_id}', f'a{acquisition.original_id}', 'ac.ome.tiff'])
+        _copy_file(dir / ome_tiff_filename, acquisition.location)
 
     for channel_item in channel_data.values():
         channel = _import_channel(db, channel_item, acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID)),
@@ -128,6 +143,7 @@ def _import_panorama(db: Session, meta: Dict[str, str], slide: Slide, basename: 
         slide_id=slide.id,
         metaname=metaname,
         original_id=original_id,
+        location=slide.location,
         meta=meta,
     )
     panorama = panorama_crud.create(db, params=params)
@@ -141,6 +157,7 @@ def _import_roi(db: Session, meta: Dict[str, str], panorama: Panorama, basename:
         panorama_id=panorama.id,
         metaname=metaname,
         original_id=original_id,
+        location=panorama.location,
         meta=meta,
     )
     roi = roi_crud.create(db, params=params)
@@ -167,6 +184,7 @@ def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: s
         roi_id=roi.id,
         metaname=metaname,
         original_id=original_id,
+        location=roi.location,
         meta=meta,
     )
     acquisition = acquisition_crud.create(db, params=params)
@@ -196,6 +214,7 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition,
         metal=metal,
         label=label,
         mass=mass,
+        location=acquisition.location,
         max_intensity=img.max(),
         min_intensity=img.min(),
         meta=meta

@@ -5,16 +5,11 @@ import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
-from app.core.utils import remove_location_upon_delete
 from app.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for channel locations
-CHANNEL_LOCATION_FORMAT = "channel_{id}"
 
-
-@remove_location_upon_delete
 class Channel(Base):
     """
     Channel

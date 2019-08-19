@@ -14,7 +14,7 @@ from app.core.errors import SlideImportError
 from app.db.session import db_session
 from app.io.mcd import import_mcd
 from app.io import dataset
-from app.io.zip import import_zip
+from app.io import zip
 
 from app.modules.dataset import crud as dataset_crud
 
@@ -79,7 +79,7 @@ def import_slide(uri: str, experiment_id: int):
         if file_extension == MCD_FILENDING:
             import_mcd(db_session, uri, experiment_id)
         elif file_extension == ZIP_FILENDING:
-            import_zip(db_session, uri, experiment_id)
+            zip.import_zip(db_session, uri, experiment_id)
     except SlideImportError as error:
         logger.warn(error)
     finally:
@@ -107,3 +107,20 @@ def prepare_dataset(dataset_id: int):
         db_session.add(item)
         db_session.commit()
         logger.error(error)
+
+
+@dramatiq.actor(queue_name='processing')
+def import_dataset(uri: str, user_id: int, experiment_id: int):
+    logger.info(f'Importing dataset into experiment [{experiment_id}] from {uri} by user {user_id}')
+
+    path = os.path.dirname(os.path.abspath(uri))
+    filename, file_extension = os.path.splitext(uri)
+    file_extension = file_extension.lower()
+
+    try:
+        if file_extension == ZIP_FILENDING:
+            dataset.import_zip(db_session, uri, user_id, experiment_id)
+    except SlideImportError as error:
+        logger.warn(error)
+    finally:
+        shutil.rmtree(path)

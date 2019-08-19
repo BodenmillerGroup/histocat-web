@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import datetime
 from typing import Optional
 
@@ -8,16 +7,11 @@ from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
-from app.core.utils import autocreate_directory_property, remove_location_upon_delete
 from app.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for acquisition locations
-ACQUISITION_LOCATION_FORMAT = "acquisition_{id}"
 
-
-@remove_location_upon_delete
 class Acquisition(Base):
     """
     An *acquisition* contains all files belonging to one microscope image acquisition process.
@@ -147,11 +141,6 @@ class Acquisition(Base):
     @property
     def Template(self) -> Optional[str]:
         return self.meta.get(mcdxmlparser.TEMPLATE)
-
-    @autocreate_directory_property
-    def channels_location(self) -> str:
-        """str: location where channels files are stored"""
-        return os.path.join(self.location, "channels")
 
     def __repr__(self):
         return f"<Acquisition(id={self.id}, metaname={self.metaname})>"

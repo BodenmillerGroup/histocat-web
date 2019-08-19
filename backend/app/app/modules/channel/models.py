@@ -12,6 +12,7 @@ class ChannelCreateModel(BaseModel):
     metal: str
     label: str
     mass: int
+    location: str
     max_intensity: Optional[float]
     min_intensity: Optional[float]
     meta: Dict[str, Optional[str]]
@@ -26,10 +27,10 @@ class ChannelModel(BaseModel):
     metal: str
     label: str
     mass: int
+    location: str
     max_intensity: Optional[float]
     min_intensity: Optional[float]
     meta: Dict[str, Optional[str]]
-    location: Optional[str]
     created_at: datetime
 
     class Config:

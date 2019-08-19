@@ -11,6 +11,7 @@ class PanoramaCreateModel(BaseModel):
     slide_id: int
     metaname: str
     original_id: int
+    location: str
     meta: Dict[str, Optional[str]]
 
 
@@ -20,8 +21,8 @@ class PanoramaModel(BaseModel):
     slide_id: int
     metaname: str
     original_id: int
+    location: str
     meta: Dict[str, Optional[str]]
-    location: Optional[str]
     created_at: datetime
 
     class Config:

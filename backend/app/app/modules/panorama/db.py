@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import datetime
 from typing import Optional
 
@@ -8,16 +7,11 @@ from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
-from app.core.utils import remove_location_upon_delete, autocreate_directory_property
 from app.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for panorama locations
-PANORAMA_LOCATION_FORMAT = "panorama_{id}"
 
-
-@remove_location_upon_delete
 class Panorama(Base):
     """
     Panorama
@@ -95,13 +89,6 @@ class Panorama(Base):
     @property
     def PixelScaleCoef(self) -> Optional[str]:
         return self.meta.get(mcdxmlparser.PIXELSCALECOEF)
-
-    @autocreate_directory_property
-    def rois_location(self) -> str:
-        """
-        Location where ROIs are stored
-        """
-        return os.path.join(self.location, "rois")
 
     def __repr__(self):
         return f"<Panorama(id={self.id}, metaname={self.metaname})>"
