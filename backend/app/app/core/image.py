@@ -56,22 +56,6 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
         2,
         cv2.LINE_4
     )
-    cv2.line(
-        image,
-        (width - 60, height - 55),
-        (width - 60, height - 65),
-        (255, 255, 255),
-        2,
-        cv2.LINE_4
-    )
-    cv2.line(
-        image,
-        (width - 60 - length, height - 55),
-        (width - 60 - length, height - 65),
-        (255, 255, 255),
-        2,
-        cv2.LINE_4
-    )
 
     scale_text = length
     if scalebar.settings is not None and 'scale' in scalebar.settings:
@@ -178,5 +162,4 @@ def apply_morphology(mask, settings: SegmentationSettingsModel):
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=settings.iterations)
     mask = cv2.erode(mask, kernel, iterations=2)
     mask = cv2.dilate(mask, kernel, iterations=5)
-
     return mask

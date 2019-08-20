@@ -1,25 +1,44 @@
 <template>
   <v-flex>
-    <v-select
-      v-model="tags"
-      :items="items"
-      chips
-      deletable-chips
-      clearable
-      label="Tags"
-      multiple
-      solo
-      class="mt-6 mx-6"
-    ></v-select>
-
+    <v-flex row class="mt-6 mx-6">
+      <v-select
+        v-model="tags"
+        :items="items"
+        chips
+        deletable-chips
+        clearable
+        label="Tags"
+        multiple
+        solo
+        class="mt-1"
+      ></v-select>
+      <v-tooltip
+        bottom
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            dark
+            fab
+            color="secondary"
+            to="/main/experiments/create"
+            class="ml-2"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Create experiment</span>
+      </v-tooltip>
+    </v-flex>
     <masonry
-      cols="3"
-      gutter="30"
+      :cols="{default: 4, 1000: 3, 700: 2, 400: 1}"
+      :gutter="{default: '0px'}"
     >
       <ExperimentCard
         v-for="experiment in experiments"
-        :experiment="experiment"
         :key="experiment.id"
+        :experiment="experiment"
+        :user="userProfile"
       />
     </masonry>
   </v-flex>
@@ -28,12 +47,14 @@
 <script lang="ts">
   import ExperimentCard from '@/components/ExperimentCard.vue';
   import { experimentModule } from '@/modules/experiment';
+  import { mainModule } from '@/modules/main';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: { ExperimentCard },
   })
   export default class Dashboard extends Vue {
+    mainContext = mainModule.context(this.$store);
     experimentContext = experimentModule.context(this.$store);
 
     tags: string[] = [];
@@ -45,6 +66,10 @@
           text: item,
         };
       });
+    }
+
+    get userProfile() {
+      return this.mainContext.getters.userProfile;
     }
 
     get experiments() {

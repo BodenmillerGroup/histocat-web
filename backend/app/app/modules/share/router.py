@@ -29,7 +29,7 @@ def create(
     *,
     db: Session = Depends(get_db),
     params: ShareCreateModel,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create new share

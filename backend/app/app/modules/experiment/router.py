@@ -54,11 +54,17 @@ def create(
     *,
     db: Session = Depends(get_db),
     params: ExperimentCreateModel,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create new experiment
     """
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=401,
+            detail="The user cannot create experiments.",
+        )
+
     item = crud.get_by_name(db, name=params.name)
     if item:
         raise HTTPException(

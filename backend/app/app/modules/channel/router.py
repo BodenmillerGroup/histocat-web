@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import List
 
 import cv2
@@ -7,6 +6,7 @@ import numpy as np
 import redis
 import ujson
 from fastapi import APIRouter, Depends
+from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
@@ -70,7 +70,10 @@ async def read_channel_stats(
 
     item = crud.get(db, id=id)
 
-    data = np.load(os.path.join(item.location, "origin.npy"))
+    parser = OmetiffParser(item.location)
+    acq = parser.get_imc_acquisition()
+    data = acq.get_img_by_metal(item.metal)
+
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
     r.set(request.url.path, ujson.dumps(content))
@@ -91,7 +94,9 @@ async def read_channel_image(
     """
     item = crud.get(db, id=id)
 
-    data = np.load(os.path.join(item.location, "origin.npy"))
+    parser = OmetiffParser(item.location)
+    acq = parser.get_imc_acquisition()
+    data = acq.get_img_by_metal(item.metal)
 
     levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
     data = scale_image(data, levels)

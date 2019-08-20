@@ -24,7 +24,6 @@ class Panorama(Base):
     metaname: str = sa.Column('metaname', sa.String(4096))
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     meta: dict = sa.Column('meta', JSONB())
-    location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     slide = relationship("Slide", back_populates="panoramas")

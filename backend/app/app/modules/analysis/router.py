@@ -1,15 +1,15 @@
 import logging
-import os
 from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
 import redis
 from fastapi import APIRouter, Depends
+from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, UJSONResponse, JSONResponse
+from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
@@ -32,9 +32,16 @@ RESULT_TYPE_MASK = 'mask'
 def get_additive_image(db: Session, channels: List[ChannelSettingsModel]):
     additive_image: Optional[np.ndarray] = None
     legend_labels: List[Tuple[str, str, float]] = list()
+
+    item = channels[0]
+    first = crud.get(db, id=item.id)
+    parser = OmetiffParser(first.location)
+    acq = parser.get_imc_acquisition()
+
     for channel in channels:
         item = crud.get(db, id=channel.id)
-        data = np.load(os.path.join(item.location, "origin.npy"))
+
+        data = acq.get_img_by_metal(item.metal)
 
         levels = (channel.min, channel.max) if channel.min is not None and channel.max is not None else (
             item.min_intensity, item.max_intensity)

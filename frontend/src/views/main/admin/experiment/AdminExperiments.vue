@@ -5,7 +5,7 @@
         Manage Experiments
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn small color="primary" to="/main/admin/experiments/create">Create Experiment</v-btn>
+      <v-btn small color="primary" to="/main/experiments/create">Create Experiment</v-btn>
     </v-toolbar>
 
     <v-data-table
@@ -29,20 +29,16 @@
           </template>
           <span>Delete</span>
         </v-tooltip>
-        <UploadButton :id="item.id"/>
       </template>
     </v-data-table>
   </div>
 </template>
 
 <script lang="ts">
-  import UploadButton from '@/components/UploadButton.vue';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
 
-  @Component({
-    components: { UploadButton },
-  })
+  @Component
   export default class AdminExperiments extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
 

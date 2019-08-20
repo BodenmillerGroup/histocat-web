@@ -1,6 +1,9 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
+      <CreateDatasetDialog/>
+      <UploadDatasetDialog class="ml-2"/>
+      <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" @click="refreshStatus">
@@ -9,20 +12,18 @@
         </template>
         <span>Refresh datasets status</span>
       </v-tooltip>
-      <CreateDatasetDialog/>
-      <UploadDatasetDialog class="ml-2"/>
     </v-toolbar>
-    <v-card-title class="card-title">
+    <v-toolbar dense flat>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
         label="Search"
         single-line
         hide-details
-        solo-inverted
+        clearable
         flat
       />
-    </v-card-title>
+    </v-toolbar>
     <v-card-text>
       <v-list class="overflow-y-auto scroll-view">
         <v-list-group
@@ -138,7 +139,7 @@
   }
 
   .scroll-view {
-    height: calc(100vh - 220px);
+    height: calc(100vh - 232px);
   }
 </style>
 
