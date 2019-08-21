@@ -29,6 +29,7 @@ class Acquisition(Base):
 
     roi = relationship("ROI", back_populates="acquisitions")
     channels = relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
+    artifacts = relationship("AcquisitionArtifact", back_populates="acquisition", cascade="all, delete, delete-orphan")
 
     @property
     def Description(self) -> Optional[str]:

@@ -6,11 +6,11 @@
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" @click="refreshStatus">
-            <v-icon>mdi-refresh</v-icon>
+          <v-btn icon small v-on="on" @click="refreshDatasets">
+            <v-icon small>mdi-refresh</v-icon>
           </v-btn>
         </template>
-        <span>Refresh datasets status</span>
+        <span>Refresh datasets</span>
       </v-tooltip>
     </v-toolbar>
     <v-toolbar dense flat>
@@ -116,7 +116,7 @@
       }
     }
 
-    async refreshStatus() {
+    async refreshDatasets() {
       const experimentId = this.experimentContext.getters.activeExperimentId;
       if (experimentId) {
         await this.datasetContext.actions.getExperimentDatasets(experimentId);
@@ -124,7 +124,7 @@
     }
 
     async mounted() {
-      this.refreshStatus();
+      this.refreshDatasets();
     }
 
     beforeDestroy() {

@@ -5,6 +5,14 @@
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
+          <v-btn icon small v-on="on" @click="refreshSlides">
+            <v-icon small>mdi-refresh</v-icon>
+          </v-btn>
+        </template>
+        <span>Refresh slides</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" @click="toggleShowROI">
             <v-icon v-if="showROI" color="blue">mdi-blur</v-icon>
             <v-icon v-else color="grey">mdi-blur</v-icon>
@@ -36,7 +44,6 @@
       transition
       return-object
       open-all
-      open-on-click
       selectable
       class="overflow-y-auto scroll-view"
     >
@@ -46,18 +53,34 @@
         </v-icon>
       </template>
       <template v-slot:append="{ item }">
+        <v-tooltip
+          v-if="item.type === 'slide'"
+          bottom
+        >
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              small
+              icon
+              color="grey"
+              @click="uploadArtifacts"
+            >
+              <v-icon small>mdi-cloud-upload</v-icon>
+            </v-btn>
+          </template>
+          <span>Upload artifacts</span>
+        </v-tooltip>
         <v-menu
           :close-on-content-click="false"
           :nudge-width="200"
           offset-x
-          open-on-hover
         >
           <template v-slot:activator="{ on }">
             <v-btn
-              text
+              v-on="on"
+              small
               icon
               color="grey"
-              v-on="on"
             >
               <v-icon small>mdi-information-outline</v-icon>
             </v-btn>
@@ -120,6 +143,14 @@
 
     get filter() {
       return (item, search, textKey) => item[textKey].indexOf(search) > -1;
+    }
+
+    async refreshSlides() {
+      await this.experimentContext.actions.getExperimentData(this.experiment.id);
+    }
+
+    async uploadArtifacts() {
+
     }
 
     get items() {

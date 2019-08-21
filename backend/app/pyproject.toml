@@ -17,11 +17,8 @@ email-validator = "^1.0"
 emails = "^0.5.15"
 fastapi = "^0.35"
 gunicorn = { version = "^19.9", optional = true }
-h5py = "^2.9"
-hiredis = "^1.0"
 imctools = "^1.0.3"
 jinja2 = "^2.10"
-mahotas = "^1.4"
 opencv-python-headless = "^4.1"
 psycopg2-binary = "^2.8"
 passlib = { version = "^1.7", extras = ["bcrypt"] }
@@ -37,7 +34,7 @@ uvicorn = { version = "^0.8", optional = true }
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
-ptvsd = "^4.2"
+ptvsd = "^4.3"
 pydevd-pycharm = "^192.*"
 pytest = "*"
 vulture = "^1.0"

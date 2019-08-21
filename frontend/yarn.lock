@@ -716,10 +716,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@mdi/font@4.0.96":
-  version "4.0.96"
-  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-4.0.96.tgz#6f31f6b7f7205c6c66a3488aefb8873ed8102e01"
-  integrity sha512-kIHgEJcwWzd0jK/H/3MWIT20V3Mjy40RnNiYzcwdS5XNzl9MpByBOigsyS1uEVb8uomRXPq1xcXYWWMaU8zFSA==
+"@mdi/font@4.1.95":
+  version "4.1.95"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-4.1.95.tgz#8a1ee05601757c57eb073f21c28e259ca2fe1102"
+  integrity sha512-/XhFVHkaBEVSaskmfhe/9sne+Sxkl8rUVdtSk5SCUAiPlFKidzYPDOWi9WGRiYYy8/OC4KuAHTRHvCNPywCxgg==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -3410,10 +3410,10 @@ d3-zoom@1:
     d3-selection "1"
     d3-transition "1"
 
-d3@5.10.0:
-  version "5.10.0"
-  resolved "https://registry.yarnpkg.com/d3/-/d3-5.10.0.tgz#fcf51fa8d67740bcfb21dcc0908efc379c0d5071"
-  integrity sha512-BFYD1rZk0dYR5/aYLv5P9sB0Ta1COZXAqwj+mb/8Xp9WDJTIY2h9OMGHtKW36QsDEQmx+adA2+C++K7YmlyQWA==
+d3@5.11.0:
+  version "5.11.0"
+  resolved "https://registry.yarnpkg.com/d3/-/d3-5.11.0.tgz#d5ffc84f930eeb895d88699195d2d852778ab158"
+  integrity sha512-LXgMVUAEAzQh6WfEEOa8tJX4RA64ZJ6twC3CJ+Xzid+fXWLTZkkglagXav/eOoQgzQi5rzV0xC4Sfspd6hFDHA==
   dependencies:
     d3-array "1"
     d3-axis "1"
@@ -8569,16 +8569,16 @@ sane@^2.0.0:
   optionalDependencies:
     fsevents "^1.2.3"
 
-sass-loader@7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-7.2.0.tgz#e34115239309d15b2527cb62b5dfefb62a96ff7f"
-  integrity sha512-h8yUWaWtsbuIiOCgR9fd9c2lRXZ2uG+h8Dzg/AGNj+Hg/3TO8+BBAW9mEP+mh8ei+qBKqSJ0F1FLlYjNBc61OA==
+sass-loader@7.3.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-7.3.1.tgz#a5bf68a04bcea1c13ff842d747150f7ab7d0d23f"
+  integrity sha512-tuU7+zm0pTCynKYHpdqaPpe+MMTQ76I9TPZ7i4/5dZsigE350shQWe5EZNl5dBidM49TPET75tNqRbcsUZWeNA==
   dependencies:
     clone-deep "^4.0.1"
     loader-utils "^1.0.1"
     neo-async "^2.5.0"
     pify "^4.0.1"
-    semver "^5.5.0"
+    semver "^6.3.0"
 
 sass@1.22.10:
   version "1.22.10"
@@ -8626,7 +8626,7 @@ selfsigned@^1.10.4:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.0.tgz#790a7cf6fea5459bac96110b29b60412dc8ff96b"
   integrity sha512-Ya52jSX2u7QKghxeoFGpLwCtGlt7j0oY9DYb5apt9nPlJ42ID+ulTXESnt/qAQcoSERyZ5sl3LDIOw0nAn/5DA==
 
-semver@^6.0.0, semver@^6.1.1:
+semver@^6.0.0, semver@^6.1.1, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
@@ -9880,10 +9880,10 @@ vue@2.6.10, vue@^2.6.10:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
 
-vuetify@2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.7.tgz#a5985aca904c147e2febe4ca14e9c7ed26c4f011"
-  integrity sha512-dnW6VowHOXaq6cxYjn6RXcTWVCJnWh3ajh4e4pP84grb4Smebka6yUQSG8rSalPyFzkPeNGuXrXWVsbTAIqv7w==
+vuetify@2.0.9:
+  version "2.0.9"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.9.tgz#8b33393e530261d77224b808f37d590b8cf21bad"
+  integrity sha512-cXtsJXQT7pdkyojRkWoPi8PixQGbdUEkpWYaPamrxd33eLoOvLr7vIFN2tRERuB8nTBkgKiCHh2/ml/l0s/gDg==
 
 vuex-persist@2.0.1:
   version "2.0.1"
@@ -9893,10 +9893,10 @@ vuex-persist@2.0.1:
     flatted "^2.0.0"
     lodash.merge "^4.6.1"
 
-vuex-smart-module@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/vuex-smart-module/-/vuex-smart-module-0.3.0.tgz#32b2dc6d1867f368280ea869596204e9a8bd2de2"
-  integrity sha512-DclEP9uF/qnWwSSjgU9f7+2ag37V1+RtQ80TZQrBPfIcqU+69IKU8jcLry4s3bCx00JImB66jQRm+2E3eil6bA==
+vuex-smart-module@0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/vuex-smart-module/-/vuex-smart-module-0.3.1.tgz#02293e913542b310192388a31dafb845f1aba1e7"
+  integrity sha512-T44uJSXC46i7nCWfAclhSgeuDTBKE2+cdfstq8aAaob21rMfVCl8cpGhXHwRdmraqLdXVj9Jf9TsNI9/7unGeQ==
 
 vuex@3.1.1:
   version "3.1.1"
