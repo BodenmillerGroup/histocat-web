@@ -12,7 +12,6 @@ from imctools.io.imcacquisition import ImcAcquisition
 from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
 
-from app.core.errors import SlideImportError
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.acquisition.db import Acquisition
 from app.modules.acquisition.models import AcquisitionCreateModel
@@ -33,26 +32,39 @@ from app.modules.slide.models import SlideCreateModel
 
 logger = logging.getLogger(__name__)
 
+SLIDE_META_CSV_ENDING = f"_{mcdxmlparser.SLIDE}{mcdxmlparser.META_CSV}"
+PANORAMA_META_CSV_ENDING = f"_{mcdxmlparser.PANORAMA}{mcdxmlparser.META_CSV}"
+ROI_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONROI}{mcdxmlparser.META_CSV}"
+ROI_POINT_META_CSV_ENDING = f"_{mcdxmlparser.ROIPOINT}{mcdxmlparser.META_CSV}"
+ACQUISITION_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITION}{mcdxmlparser.META_CSV}"
+CHANNEL_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONCHANNEL}{mcdxmlparser.META_CSV}"
 
-def import_imcfolder(db: Session, dir: str, experiment_id: int):
-    dir = Path(dir)
-    subdirs = next(os.walk(dir))[1]
-    if len(subdirs) > 0:
-        dir = dir / subdirs[0]
 
-    slide_meta_csv = _find_filename(dir, '_'.join([mcdxmlparser.SLIDE, 'meta.csv']))
-    basename = slide_meta_csv.stem.replace(f'_{mcdxmlparser.SLIDE}_meta', '')
+def import_imcfolder(db: Session, schema_filename: str, experiment_id: int):
+    """
+    Import slides from the folder compatible with IMC pipeline
+    """
 
-    slide_data = _load_meta_csv(slide_meta_csv)
-    panorama_csv_filename = dir / '_'.join([basename, mcdxmlparser.PANORAMA, 'meta.csv'])
+    schema_path = Path(schema_filename)
+    src_folder = schema_path.parent
+    basename = schema_path.stem.replace('_schema', '')
+
+    slide_csv_filename = src_folder / f"{basename}{SLIDE_META_CSV_ENDING}"
+    slide_data = _load_meta_csv(slide_csv_filename)
+
+    panorama_csv_filename = src_folder / f"{basename}{PANORAMA_META_CSV_ENDING}"
     panorama_data = _load_meta_csv(panorama_csv_filename)
-    roi_csv_filename = dir / '_'.join([basename, mcdxmlparser.ACQUISITIONROI, 'meta.csv'])
+
+    roi_csv_filename = src_folder / f"{basename}{ROI_META_CSV_ENDING}"
     roi_data = _load_meta_csv(roi_csv_filename)
-    roi_point_csv_filename = dir / '_'.join([basename, mcdxmlparser.ROIPOINT, 'meta.csv'])
+
+    roi_point_csv_filename = src_folder / f"{basename}{ROI_POINT_META_CSV_ENDING}"
     roi_point_data = _load_meta_csv(roi_point_csv_filename)
-    acquisition_csv_filename = dir / '_'.join([basename, mcdxmlparser.ACQUISITION, 'meta.csv'])
+
+    acquisition_csv_filename = src_folder / f"{basename}{ACQUISITION_META_CSV_ENDING}"
     acquisition_data = _load_meta_csv(acquisition_csv_filename)
-    channel_csv_filename = dir / '_'.join([basename, mcdxmlparser.ACQUISITIONCHANNEL, 'meta.csv'])
+
+    channel_csv_filename = src_folder / f"{basename}{CHANNEL_META_CSV_ENDING}"
     channel_data = _load_meta_csv(channel_csv_filename)
 
     slide_map: Dict[str, Slide] = dict()
@@ -61,18 +73,17 @@ def import_imcfolder(db: Session, dir: str, experiment_id: int):
         metaname = f'{basename}_s{original_id}'
         item = slide_crud.get_by_metaname(db, experiment_id=experiment_id, metaname=metaname)
         if item:
-            raise SlideImportError(
-                f"The slide with metaname [{metaname}] already exists in the experiment [{experiment_id}]")
+            logger.warn(f"The slide with metaname [{metaname}] already exists in the experiment [{experiment_id}]")
+            return
 
-        xml_metadata_file: Path = dir / '_'.join([basename, "schema.xml"])
-        with xml_metadata_file.open('rt') as f:
+        with open(schema_filename, 'rt') as f:
             original_metadata = f.read()
 
         slide = _import_slide(db, slide_item, original_metadata, experiment_id, basename)
         slide_map[str(slide.original_id)] = slide
-        origin_location = os.path.join(slide.location, 'origin')
 
-        _copy_dir(dir, origin_location)
+        origin_location = os.path.join(slide.location, 'origin')
+        _copy_dir(src_folder, origin_location)
 
     panorama_map: Dict[str, Panorama] = dict()
     for panorama_item in panorama_data.values():
@@ -99,7 +110,8 @@ def import_imcfolder(db: Session, dir: str, experiment_id: int):
         acquisition_map[str(acquisition.original_id)] = acquisition
 
     for channel_item in channel_data.values():
-        _import_channel(db, channel_item, acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID)), basename, dir)
+        acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
+        _import_channel(db, channel_item, acquisition, basename)
 
 
 def _import_slide(db: Session, meta: Dict[str, str], original_metadata: str, experiment_id: int, basename: str):
@@ -171,7 +183,7 @@ def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: s
     return acquisition
 
 
-def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition, basename: str, dir: Path):
+def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition, basename: str):
     original_id = meta.get(mcdxmlparser.ID)
     metaname = f'{basename}_s{acquisition.roi.panorama.slide.original_id}_p{acquisition.roi.panorama.original_id}_r{acquisition.roi.original_id}_a{acquisition.original_id}_c{original_id}'
 
@@ -182,8 +194,7 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition,
     label = meta.get(mcdxmlparser.CHANNELLABEL).replace('(', '').replace(')', '').strip()
     mass = ''.join([m for m in metal if m.isdigit()])
 
-    filename = dir / '_'.join([acquisition.metaname, 'ac.ome.tiff'])
-    parser = OmetiffParser(filename)
+    parser = OmetiffParser(acquisition.location)
     imc_acquisition: ImcAcquisition = parser.get_imc_acquisition()
     img = imc_acquisition.get_img_by_label(label)
 
@@ -201,18 +212,6 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition,
     )
     channel = channel_crud.create(db, params=params)
     return channel
-
-
-def _find_filename(dir: Path, ending: str) -> Path:
-    filename = None
-    for file in os.listdir(dir):
-        if file.endswith(ending):
-            filename = dir / file
-
-    if not filename:
-        raise SlideImportError(f"No file [{ending}] in zip folder [{dir}]")
-
-    return filename
 
 
 def _load_meta_csv(filepath: Path) -> Dict[str, Dict[str, str]]:
@@ -236,7 +235,3 @@ def _load_meta_csv(filepath: Path) -> Dict[str, Dict[str, str]]:
 
 def _copy_dir(src: Path, dst: str):
     return shutil.copytree(src, dst)
-
-
-def _copy_file(src: Path, dst: str):
-    return shutil.copy2(src, dst)

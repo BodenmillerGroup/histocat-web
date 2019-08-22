@@ -53,23 +53,9 @@
         </v-icon>
       </template>
       <template v-slot:append="{ item }">
-        <v-tooltip
+        <UploadArtifactsDialog
           v-if="item.type === 'slide'"
-          bottom
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              small
-              icon
-              color="grey"
-              @click="uploadArtifacts"
-            >
-              <v-icon small>mdi-cloud-upload</v-icon>
-            </v-btn>
-          </template>
-          <span>Upload artifacts</span>
-        </v-tooltip>
+        ></UploadArtifactsDialog>
         <v-menu
           :close-on-content-click="false"
           :nudge-width="200"
@@ -97,10 +83,11 @@
   import UploadButton from '@/components/UploadButton.vue';
   import { experimentModule } from '@/modules/experiment';
   import { IExperiment } from '@/modules/experiment/models';
+  import UploadArtifactsDialog from '@/views/main/experiment/workspace/slide/UploadArtifactsDialog.vue';
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
   @Component({
-    components: { UploadButton, InfoCard },
+    components: { UploadArtifactsDialog, UploadButton, InfoCard },
   })
   export default class SlidesTreeView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
@@ -147,10 +134,6 @@
 
     async refreshSlides() {
       await this.experimentContext.actions.getExperimentData(this.experiment.id);
-    }
-
-    async uploadArtifacts() {
-
     }
 
     get items() {

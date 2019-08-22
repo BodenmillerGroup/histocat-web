@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.utils import timeit
 from app.io.imcfolder import import_imcfolder
+from app.io.utils import locate, SCHEMA_XML_ENDING
 
 logger = logging.getLogger(__name__)
 
@@ -15,4 +16,6 @@ def import_mcd(db: Session, uri: str, experiment_id: int):
     input_dir = os.path.dirname(uri)
     output_dir = os.path.join(input_dir, 'output')
     convert_folder2imcfolder(input_dir, output_dir, dozip=False)
-    import_imcfolder(db, output_dir, experiment_id)
+
+    for schema_filename in locate(output_dir, f"*{SCHEMA_XML_ENDING}"):
+        import_imcfolder(db, schema_filename, experiment_id)

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.utils import timeit
 from app.io.imcfolder import import_imcfolder
+from app.io.utils import locate, SCHEMA_XML_ENDING
 
 logger = logging.getLogger(__name__)
 
@@ -17,4 +18,5 @@ def import_zip(db: Session, uri: str, experiment_id: int):
     with zipfile.ZipFile(path, 'r') as zip:
         zip.extractall(output_dir)
 
-    import_imcfolder(db, output_dir.absolute(), experiment_id)
+    for schema_filename in locate(output_dir, f"*{SCHEMA_XML_ENDING}"):
+        import_imcfolder(db, schema_filename, experiment_id)
