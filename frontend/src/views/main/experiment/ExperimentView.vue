@@ -32,6 +32,7 @@
 
 <script lang="ts">
   import LoadingView from '@/components/LoadingView.vue';
+  import { wsUrl } from '@/env';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
   import AnalysisView from '@/views/main/experiment/analysis/AnalysisView.vue';
@@ -75,6 +76,19 @@
       const experimentId = parseInt(this.$router.currentRoute.params.id, 10);
       this.experimentContext.mutations.setActiveExperimentId(experimentId);
       await this.experimentContext.actions.getExperimentData(experimentId);
+
+      // Create WebSocket connection.
+      const socket = new WebSocket(`${wsUrl}/ws`);
+
+      // Connection opened
+      socket.addEventListener('open', function(event) {
+        socket.send('Hello Server!');
+      });
+
+      // Listen for messages
+      socket.addEventListener('message', function(event) {
+        console.log('Message from server ', event.data);
+      });
     }
 
     beforeDestroy() {

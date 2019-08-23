@@ -3,7 +3,6 @@ from __future__ import annotations
 import csv
 import logging
 import os
-import shutil
 from pathlib import Path
 from typing import Dict
 
@@ -12,6 +11,7 @@ from imctools.io.imcacquisition import ImcAcquisition
 from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
 
+from app.io.utils import copy_dir
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.acquisition.db import Acquisition
 from app.modules.acquisition.models import AcquisitionCreateModel
@@ -83,7 +83,7 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int):
         slide_map[str(slide.original_id)] = slide
 
         origin_location = os.path.join(slide.location, 'origin')
-        _copy_dir(src_folder, origin_location)
+        copy_dir(src_folder, origin_location)
 
     panorama_map: Dict[str, Panorama] = dict()
     for panorama_item in panorama_data.values():
@@ -231,7 +231,3 @@ def _load_meta_csv(filepath: Path) -> Dict[str, Dict[str, str]]:
                 data[id] = meta
             line_count += 1
         return data
-
-
-def _copy_dir(src: Path, dst: str):
-    return shutil.copytree(src, dst)

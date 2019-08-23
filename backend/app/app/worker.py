@@ -32,9 +32,9 @@ if os.environ.get("BACKEND_ENV") == "development":
         # ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
 
         # PyCharm Debugging
-        # import pydevd_pycharm
+        import pydevd_pycharm
         # TODO: Don't forget to modify IP address!!
-        # pydevd_pycharm.settrace('130.60.106.36', port=5679, stdoutToServer=True, stderrToServer=True)
+        pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:

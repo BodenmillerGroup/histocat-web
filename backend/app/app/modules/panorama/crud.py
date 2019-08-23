@@ -14,6 +14,10 @@ def get(session: Session, *, id: int) -> Optional[Panorama]:
     return session.query(Panorama).filter(Panorama.id == id).first()
 
 
+def get_by_metaname(session: Session, *, slide_id: int, metaname: str) -> Optional[Panorama]:
+    return session.query(Panorama).filter(Panorama.metaname == metaname, Panorama.slide_id == slide_id).first()
+
+
 def get_by_slide_id(session: Session, *, slide_id: int) -> List[Panorama]:
     return session.query(Panorama).filter(Panorama.slide_id == slide_id).all()
 

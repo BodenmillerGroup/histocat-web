@@ -14,6 +14,10 @@ def get(session: Session, *, id: int) -> Optional[ROI]:
     return session.query(ROI).filter(ROI.id == id).first()
 
 
+def get_by_metaname(session: Session, *, panorama_id: int, metaname: str) -> Optional[ROI]:
+    return session.query(ROI).filter(ROI.metaname == metaname, ROI.panorama_id == panorama_id).first()
+
+
 def get_by_panorama_id(session: Session, *, panorama_id: int) -> List[ROI]:
     return session.query(ROI).filter(ROI.panorama_id == panorama_id).all()
 

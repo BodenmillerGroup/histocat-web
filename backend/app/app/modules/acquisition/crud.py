@@ -14,6 +14,10 @@ def get(session: Session, *, id: int) -> Optional[Acquisition]:
     return session.query(Acquisition).filter(Acquisition.id == id).first()
 
 
+def get_by_metaname(session: Session, *, roi_id: int, metaname: str) -> Optional[Acquisition]:
+    return session.query(Acquisition).filter(Acquisition.metaname == metaname, Acquisition.roi_id == roi_id).first()
+
+
 def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Acquisition]]:
     return session.query(Acquisition).offset(skip).limit(limit).all()
 

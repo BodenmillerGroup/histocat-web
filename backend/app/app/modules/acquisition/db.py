@@ -21,7 +21,7 @@ class Acquisition(Base):
 
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     roi_id: int = sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
-    metaname: str = sa.Column('metaname', sa.String(4096))
+    metaname: str = sa.Column('metaname', sa.String(4096), index=True)
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))

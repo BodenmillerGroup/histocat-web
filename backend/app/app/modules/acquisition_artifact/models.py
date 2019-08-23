@@ -10,7 +10,7 @@ class AcquisitionArtifactCreateModel(BaseModel):
     type: str
     description: Optional[str]
     location: Optional[str]
-    meta: Dict[str, Optional[str]]
+    meta: Dict[str, Dict[str, str]]
 
 
 # Shared properties
@@ -20,7 +20,7 @@ class AcquisitionArtifactModel(BaseModel):
     type: str
     description: Optional[str]
     location: Optional[str]
-    meta: Dict[str, Optional[str]]
+    meta: Dict[str, Dict[str, str]]
     created_at: datetime
 
     class Config:

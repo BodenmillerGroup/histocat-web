@@ -20,7 +20,7 @@
             v-on="on"
             dark
             fab
-            color="secondary"
+            color="primary lighten-2"
             to="/main/experiments/create"
             class="ml-2"
           >
