@@ -4,14 +4,16 @@ import os
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-from starlette.websockets import WebSocket
+from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.api.api_v1.api import api_router
 from app.core import config
+from app.core.notifier import notifier
 from app.db.session import Session
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
 
 if os.environ.get("BACKEND_ENV") == "development":
     try:
@@ -22,6 +24,7 @@ if os.environ.get("BACKEND_ENV") == "development":
 
         # PyCharm Debugging
         import pydevd_pycharm
+
         # TODO: Don't forget to modify IP address!!
         pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
@@ -62,7 +65,23 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    await websocket.send_text(f"WebSocket client connected")
+@app.websocket("/ws/{experiment_id}")
+async def experiment_websocket_endpoint(
+    websocket: WebSocket,
+    experiment_id: int,
+    token: str = None,
+):
+    if token is not None:
+        logger.info(token)
+    await notifier.connect(websocket, experiment_id)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        notifier.remove(websocket, experiment_id)
+
+
+@app.on_event("startup")
+async def startup():
+    # Prime the push notification generator
+    await notifier.generator.asend(None)

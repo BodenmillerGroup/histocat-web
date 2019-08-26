@@ -14,7 +14,7 @@ services:
     volumes:
       - app-data:/data
     labels:
-      - traefik.frontend.rule=PathPrefix:/api,/docs,/redoc
+      - traefik.frontend.rule=PathPrefix:/api,/ws,/docs,/redoc
       - traefik.enable=true
       - traefik.port=80
       - traefik.tags=${TRAEFIK_TAG}
@@ -63,7 +63,7 @@ services:
 
   redis:
     restart: always
-    image: redis:5.0.5-alpine3.9
+    image: redis:5.0.5-alpine3.10
     env_file:
       - env-redis.env
     volumes:
@@ -93,7 +93,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:v1.7.14-alpine
+    image: traefik:1.7.14-alpine
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
