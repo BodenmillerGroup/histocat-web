@@ -10,8 +10,6 @@ import app.worker as worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core import config
-from app.core.notifier import notifier, Message
-from app.core.redis_manager import subscribe, publish
 from app.modules.user.db import User
 from . import crud
 from .models import (
@@ -21,15 +19,7 @@ from .models import (
     ExperimentUpdateModel)
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter()
-
-
-async def _update_handler(message):
-    logger.info(message)
-    await notifier.push(message)
-
-subscribe("updates", _update_handler)
 
 
 @router.get("/", response_model=List[ExperimentModel])
@@ -157,6 +147,5 @@ async def read_data(
     """
     Get all experiment data
     """
-    await publish("updates", Message(id, "test", {"key1": "value1"}))
     item = crud.get_data(db, id=id)
     return item

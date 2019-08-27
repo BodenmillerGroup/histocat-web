@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from starlette.websockets import WebSocket
 
@@ -8,13 +8,21 @@ from starlette.websockets import WebSocket
 class Message:
     experiment_id: int
     type: str
-    data: dict
+    payload: Any = None
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]):
+        return Message(
+            json.get("experiment_id"),
+            json.get("type"),
+            json.get("payload"),
+        )
 
     def to_json(self):
         return {
             "experiment_id": self.experiment_id,
             "type": self.type,
-            "data": self.data,
+            "payload": self.payload,
         }
 
 
@@ -22,6 +30,13 @@ class Notifier:
     def __init__(self):
         self.connections: Dict[int, List[WebSocket]] = {}
         self.generator = self.get_notification_generator()
+
+    async def start(self):
+        # Prime the push notification generator
+        await self.generator.asend(None)
+
+    async def stop(self):
+        await self.generator.aclose()
 
     async def get_notification_generator(self):
         while True:

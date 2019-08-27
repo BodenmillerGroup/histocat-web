@@ -9,6 +9,18 @@ import { MainMutations } from '@/modules/main/mutations';
 import { Store } from 'vuex';
 import { Context, Module } from 'vuex-smart-module';
 
+export class WebSocketMessage {
+  readonly experimentId: number;
+  readonly type: string;
+  readonly payload: object;
+
+  constructor(json: object) {
+    this.experimentId = json['experiment_id'];
+    this.type = json['type'];
+    this.payload = json['payload'];
+  }
+}
+
 export class WebSocketManager {
   static socket: WebSocket;
   static token: string;
@@ -41,7 +53,14 @@ export class WebSocketManager {
     };
 
     WebSocketManager.socket.onmessage = (event: MessageEvent) => {
-      console.log('WebSocket message: ', event);
+      console.log(event);
+      const json = JSON.parse(event.data);
+      const message = new WebSocketMessage(json);
+      switch (message.type) {
+        case 'slide_imported': {
+          WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
+        }
+      }
     };
 
     WebSocketManager.socket.onerror = (event: Event) => {

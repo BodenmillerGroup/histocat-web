@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
-import redis
 from fastapi import APIRouter, Depends
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
@@ -21,7 +20,6 @@ from app.modules.user.db import User
 from .models import AnalysisModel
 
 logger = logging.getLogger(__name__)
-r = redis.Redis(host="redis")
 
 router = APIRouter()
 

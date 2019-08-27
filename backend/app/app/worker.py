@@ -11,6 +11,8 @@ from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDIN
 
 from app.core import config
 from app.core.errors import SlideImportError
+from app.core.notifier import Message
+from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
 from app.db.session import db_session
 from app.io import dataset, mcd
 from app.io import zip
@@ -32,9 +34,9 @@ if os.environ.get("BACKEND_ENV") == "development":
         # ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
 
         # PyCharm Debugging
-        import pydevd_pycharm
+        # import pydevd_pycharm
         # TODO: Don't forget to modify IP address!!
-        pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
+        # pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:
@@ -83,6 +85,7 @@ def import_slide(uri: str, experiment_id: int):
         logger.warn(error)
     finally:
         shutil.rmtree(path)
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
 
 
 @dramatiq.actor(queue_name='import', max_retries=0)

@@ -9,6 +9,7 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from app.api.api_v1.api import api_router
 from app.core import config
 from app.core.notifier import notifier
+from app.core.redis_manager import redis_manager
 from app.db.session import Session
 
 logger = logging.getLogger(__name__)
@@ -23,10 +24,10 @@ if os.environ.get("BACKEND_ENV") == "development":
         # ptvsd.enable_attach(address=('0.0.0.0', 5678), redirect_output=True)
 
         # PyCharm Debugging
-        import pydevd_pycharm
+        # import pydevd_pycharm
 
         # TODO: Don't forget to modify IP address!!
-        pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
+        # pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:
@@ -71,8 +72,9 @@ async def experiment_websocket_endpoint(
     experiment_id: int,
     token: str = None,
 ):
-    if token is not None:
-        logger.info(token)
+    if not token:
+        raise Exception("WebSocket authorization token is missing")
+
     await notifier.connect(websocket, experiment_id)
     try:
         while True:
@@ -83,5 +85,11 @@ async def experiment_websocket_endpoint(
 
 @app.on_event("startup")
 async def startup():
-    # Prime the push notification generator
-    await notifier.generator.asend(None)
+    await notifier.start()
+    await redis_manager.start()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await notifier.stop()
+    await redis_manager.stop()

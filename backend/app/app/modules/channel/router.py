@@ -12,8 +12,8 @@ from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.core.redis_manager import redis_manager
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend
-from app.core.redis_manager import redis
 from app.core.utils import stream_bytes
 from app.modules.analysis.router import get_additive_image
 from app.modules.user.db import User
@@ -23,7 +23,6 @@ from .models import ChannelModel, ChannelStatsModel, ChannelStackModel
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-
 
 @router.get("/", response_model=List[ChannelModel])
 def read_channels(
@@ -63,7 +62,7 @@ async def read_channel_stats(
     """
     Get channel stats by id
     """
-    content = redis.get(request.url.path)
+    content = await redis_manager.cache.get(request.url.path)
     if content:
         return UJSONResponse(content=ujson.loads(content))
 
@@ -75,7 +74,7 @@ async def read_channel_stats(
 
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
-    redis.set(request.url.path, ujson.dumps(content))
+    await redis_manager.cache.set(request.url.path, ujson.dumps(content))
     return UJSONResponse(content=content)
 
 
