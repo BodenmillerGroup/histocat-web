@@ -102,6 +102,7 @@ def prepare_dataset(dataset_id: int):
         item.status = 'imported'
         db_session.add(item)
         db_session.commit()
+        redis_manager.publish(UPDATES_CHANNEL_NAME, Message(item.experiment_id, "dataset_prepared", {"dataset_id": dataset_id}))
     except Exception as error:
         if not item.errors:
             item.errors = dict()
@@ -126,3 +127,4 @@ def import_dataset(uri: str, user_id: int, experiment_id: int):
         logger.warn(error)
     finally:
         shutil.rmtree(path)
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported", {"user_id": user_id}))
