@@ -56,9 +56,13 @@ export class WebSocketManager {
       console.log(event);
       const json = JSON.parse(event.data);
       const message = new WebSocketMessage(json);
-      switch (message.type) {
-        case 'slide_imported': {
-          WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
+      if (message.experimentId === WebSocketManager.experimentContext.getters.activeExperimentId) {
+        switch (message.type) {
+          case 'slide_imported': {
+            WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
+            WebSocketManager.mainContext.mutations.addNotification({ content: 'Slide successfully imported', color: 'success' });
+            break;
+          }
         }
       }
     };

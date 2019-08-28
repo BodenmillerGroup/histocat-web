@@ -3,6 +3,7 @@ from typing import List, Optional, Dict
 
 from pydantic import BaseModel
 
+from app.modules.acquisition_artifact.models import AcquisitionArtifactModel
 from app.modules.channel.models import ChannelModel
 
 
@@ -32,6 +33,7 @@ class AcquisitionModel(BaseModel):
 # Acquisition dataset with children items
 class AcquisitionDatasetModel(AcquisitionModel):
     channels: Optional[List[ChannelModel]]
+    artifacts: Optional[List[AcquisitionArtifactModel]]
 
     class Config:
         orm_mode = True

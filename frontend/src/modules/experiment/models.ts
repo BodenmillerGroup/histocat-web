@@ -141,6 +141,17 @@ export interface IAcquisition {
   location: string;
   created_at: string;
   channels: IChannel[];
+  atifacts: IAcquisitionArtifact[];
+}
+
+export interface IAcquisitionArtifact {
+  id: number;
+  acquisition_id: number;
+  type: string;
+  description: string;
+  meta: object;
+  location: string;
+  created_at: string;
 }
 
 export interface IChannel {
