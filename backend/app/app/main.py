@@ -4,13 +4,17 @@ import os
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
+from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.api.api_v1.api import api_router
 from app.core import config
+from app.core.notifier import notifier
+from app.core.redis_manager import redis_manager
 from app.db.session import Session
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
 
 if os.environ.get("BACKEND_ENV") == "development":
     try:
@@ -20,16 +24,18 @@ if os.environ.get("BACKEND_ENV") == "development":
         # ptvsd.enable_attach(address=('0.0.0.0', 5678), redirect_output=True)
 
         # PyCharm Debugging
-        import pydevd_pycharm
+        # import pydevd_pycharm
+
         # TODO: Don't forget to modify IP address!!
-        pydevd_pycharm.settrace('130.60.106.36', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
+        # pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:
         logger.error(e)
 
 app = FastAPI(
-    title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json"
+    title=config.PROJECT_NAME,
+    openapi_url=f"{config.API_V1_STR}/openapi.json",
 )
 
 # CORS
@@ -58,3 +64,32 @@ async def db_session_middleware(request: Request, call_next):
     response = await call_next(request)
     request.state.db.close()
     return response
+
+
+@app.websocket("/ws/{experiment_id}")
+async def experiment_websocket_endpoint(
+    websocket: WebSocket,
+    experiment_id: int,
+    token: str = None,
+):
+    if not token:
+        raise Exception("WebSocket authorization token is missing")
+
+    await notifier.connect(websocket, experiment_id)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        notifier.remove(websocket, experiment_id)
+
+
+@app.on_event("startup")
+async def startup():
+    await notifier.start()
+    await redis_manager.start()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await notifier.stop()
+    await redis_manager.stop()

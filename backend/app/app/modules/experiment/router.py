@@ -19,7 +19,6 @@ from .models import (
     ExperimentUpdateModel)
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter()
 
 
@@ -54,11 +53,17 @@ def create(
     *,
     db: Session = Depends(get_db),
     params: ExperimentCreateModel,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create new experiment
     """
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=401,
+            detail="The user cannot create experiments.",
+        )
+
     item = crud.get_by_name(db, name=params.name)
     if item:
         raise HTTPException(
@@ -134,7 +139,7 @@ def upload_slide(
 
 
 @router.get("/{id}/data", response_model=ExperimentDatasetModel)
-def read_data(
+async def read_data(
     id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),

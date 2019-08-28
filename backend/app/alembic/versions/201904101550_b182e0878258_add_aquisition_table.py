@@ -21,7 +21,7 @@ def upgrade():
         'acquisition',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True),
-        sa.Column('metaname', sa.String(4096)),
+        sa.Column('metaname', sa.String(4096), index=True),
         sa.Column('original_id', sa.Integer(), index=True),
         sa.Column('meta', JSONB()),
         sa.Column('location', sa.String(4096)),

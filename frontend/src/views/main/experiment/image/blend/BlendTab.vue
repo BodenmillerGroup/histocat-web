@@ -4,12 +4,12 @@
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn
-            text
-            small
-            color="primary"
             v-on="on"
+            small
+            color="primary lighten-2"
+            elevation="1"
           >
-            <v-icon left>mdi-cloud-download-outline</v-icon>
+            <v-icon left small>mdi-cloud-download-outline</v-icon>
             Export image
           </v-btn>
         </template>

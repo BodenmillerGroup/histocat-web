@@ -37,6 +37,9 @@ update: update-frontend update-backend
 mypy:
 	cd backend/app && mypy app
 
+pyright:
+	cd backend/app && pyright
+
 isort:
 	cd backend/app && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply app
 

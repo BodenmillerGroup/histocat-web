@@ -97,12 +97,9 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       return;
     }
     try {
-      const notification = { content: 'saving', showProgress: true };
+      const notification = { content: 'uploading', showProgress: true };
       this.main!.mutations.addNotification(notification);
-      const response = (await Promise.all([
-        api.uploadSlide(this.main!.getters.token, payload.id, payload.data),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
-      ]))[0];
+      await api.uploadSlide(this.main!.getters.token, payload.id, payload.data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'File successfully uploaded', color: 'success' });
     } catch (error) {

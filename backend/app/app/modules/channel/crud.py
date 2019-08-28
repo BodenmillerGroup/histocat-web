@@ -1,11 +1,10 @@
 import logging
-import os
 from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from .db import Channel, CHANNEL_LOCATION_FORMAT
+from .db import Channel
 from .models import ChannelCreateModel
 
 logger = logging.getLogger(__name__)
@@ -23,17 +22,6 @@ def create(session: Session, *, params: ChannelCreateModel) -> Channel:
     data = jsonable_encoder(params)
     entity = Channel(**data)
     session.add(entity)
-    session.commit()
-    session.refresh(entity)
-
-    entity.location = os.path.join(
-        entity.acquisition.channels_location,
-        CHANNEL_LOCATION_FORMAT.format(id=entity.id),
-    )
-    if not os.path.exists(entity.location):
-        logger.debug(f'Create location for channel {entity.id}: {entity.location}')
-        os.makedirs(entity.location)
-
     session.commit()
     session.refresh(entity)
     return entity

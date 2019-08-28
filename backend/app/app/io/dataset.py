@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 import csv
 import logging
 import os
 import re
 import shutil
+import zipfile
 from collections import namedtuple
+from pathlib import Path
 from typing import Dict
 
 import numpy as np
@@ -11,8 +15,11 @@ from imctools.io.tiffwriter import TiffWriter
 from sqlalchemy.orm import Session
 
 from app.core.errors import DatasetInputError
+from app.core.utils import timeit
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.dataset.db import Dataset
+from app.modules.dataset import crud as dataset_crud
+from app.modules.dataset.models import DatasetCreateModel
 from app.modules.panorama.db import Panorama
 from app.modules.roi.db import ROI
 from app.modules.slide.db import Slide
@@ -130,7 +137,6 @@ def prepare_dataset(db: Session, dataset: Dataset):
 def _save_meta_csv(items: Dict[int, dict], filename: str):
     """
     Writes the xml data as csv tables
-
     """
     with open(filename, 'w') as f:
         cols = next(iter(items.values())).keys()
@@ -138,3 +144,25 @@ def _save_meta_csv(items: Dict[int, dict], filename: str):
         writer.writeheader()
         for row in items.values():
             writer.writerow(row)
+
+
+@timeit
+def import_zip(db: Session, uri: str, user_id: int, experiment_id: int):
+    path = Path(uri)
+    dir = path.parent
+    with zipfile.ZipFile(path, 'r') as zip:
+        zip.extractall(path.parent)
+
+    subdirs = next(os.walk(dir))[1]
+    if len(subdirs) > 0:
+        dir = dir / subdirs[0]
+
+    # params = DatasetCreateModel(
+    #     experiment_id=experiment_id,
+    #     name=
+    #     description: Optional[str]
+    #     input: Optional[dict]
+    #     meta: Optional[dict]
+    # )
+    #
+    # dataset = dataset_crud.create(db, user_id=user_id, params=params)

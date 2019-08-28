@@ -1,5 +1,9 @@
 <template>
   <v-card tile flat class="card overflow-y-auto">
+    <v-card-title>
+      Info
+    </v-card-title>
+    <v-divider></v-divider>
     <v-card-title v-if="imageUrl">
       <v-img
         :src="imageUrl"
@@ -18,10 +22,6 @@
         </template>
       </v-img>
     </v-card-title>
-    <v-card-title v-else>
-      Info
-    </v-card-title>
-    <v-divider></v-divider>
     <v-list dense>
       <template v-for="item in items">
         <v-list-item dense inactive :key="item.name">

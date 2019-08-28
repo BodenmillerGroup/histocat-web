@@ -11,10 +11,11 @@ from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDIN
 
 from app.core import config
 from app.core.errors import SlideImportError
+from app.core.notifier import Message
+from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
 from app.db.session import db_session
-from app.io.mcd import import_mcd
-from app.io import dataset
-from app.io.zip import import_zip
+from app.io import dataset, mcd
+from app.io import zip
 
 from app.modules.dataset import crud as dataset_crud
 
@@ -35,7 +36,7 @@ if os.environ.get("BACKEND_ENV") == "development":
         # PyCharm Debugging
         # import pydevd_pycharm
         # TODO: Don't forget to modify IP address!!
-        # pydevd_pycharm.settrace('130.60.106.36', port=5679, stdoutToServer=True, stderrToServer=True)
+        # pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:
@@ -67,7 +68,7 @@ def send_email(email_to: str, subject_template="", html_template="", environment
     logging.info(f"Send email result: {response}")
 
 
-@dramatiq.actor(queue_name='processing')
+@dramatiq.actor(queue_name='import', max_retries=0)
 def import_slide(uri: str, experiment_id: int):
     logger.info(f'Importing slide into experiment [{experiment_id}] from {uri}')
 
@@ -77,16 +78,17 @@ def import_slide(uri: str, experiment_id: int):
 
     try:
         if file_extension == MCD_FILENDING:
-            import_mcd(db_session, uri, experiment_id)
+            mcd.import_mcd(db_session, uri, experiment_id)
         elif file_extension == ZIP_FILENDING:
-            import_zip(db_session, uri, experiment_id)
+            zip.import_zip(db_session, uri, experiment_id)
     except SlideImportError as error:
         logger.warn(error)
     finally:
         shutil.rmtree(path)
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
 
 
-@dramatiq.actor(queue_name='processing')
+@dramatiq.actor(queue_name='import', max_retries=0)
 def prepare_dataset(dataset_id: int):
     logger.info(f'Preparing dataset [{dataset_id}].')
     item = dataset_crud.get(db_session, id=dataset_id)
@@ -100,6 +102,7 @@ def prepare_dataset(dataset_id: int):
         item.status = 'imported'
         db_session.add(item)
         db_session.commit()
+        redis_manager.publish(UPDATES_CHANNEL_NAME, Message(item.experiment_id, "dataset_prepared", {"dataset_id": dataset_id}))
     except Exception as error:
         if not item.errors:
             item.errors = dict()
@@ -107,3 +110,21 @@ def prepare_dataset(dataset_id: int):
         db_session.add(item)
         db_session.commit()
         logger.error(error)
+
+
+@dramatiq.actor(queue_name='import', max_retries=0)
+def import_dataset(uri: str, user_id: int, experiment_id: int):
+    logger.info(f'Importing dataset into experiment [{experiment_id}] from {uri} by user {user_id}')
+
+    path = os.path.dirname(os.path.abspath(uri))
+    filename, file_extension = os.path.splitext(uri)
+    file_extension = file_extension.lower()
+
+    try:
+        if file_extension == ZIP_FILENDING:
+            dataset.import_zip(db_session, uri, user_id, experiment_id)
+    except SlideImportError as error:
+        logger.warn(error)
+    finally:
+        shutil.rmtree(path)
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported", {"user_id": user_id}))

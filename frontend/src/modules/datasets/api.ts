@@ -11,6 +11,15 @@ export const api = {
       },
     }).json<IDataset>();
   },
+  async uploadDataset(token: string, experimentId: number, data) {
+    return ky.post(`${apiUrl}/api/v1/datasets/experiment/${experimentId}/upload`, {
+      body: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      timeout: false,
+    });
+  },
   async getExperimentDatasets(token: string, experimentId: number) {
     return ky.get(`${apiUrl}/api/v1/datasets/experiment/${experimentId}`, {
       headers: {

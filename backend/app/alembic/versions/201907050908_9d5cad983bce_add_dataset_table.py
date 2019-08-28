@@ -1,7 +1,7 @@
 """Add dataset table
 
 Revision ID: 9d5cad983bce
-Revises: 639adf01602f
+Revises: 96df6178591e
 Create Date: 2019-07-05 09:08:36.605840
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSONB
 # revision identifiers, used by Alembic.
 
 revision = '9d5cad983bce'
-down_revision = '639adf01602f'
+down_revision = '96df6178591e'
 branch_labels = None
 depends_on = None
 

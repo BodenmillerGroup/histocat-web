@@ -11,6 +11,7 @@ class AcquisitionCreateModel(BaseModel):
     roi_id: int
     metaname: str
     original_id: int
+    location: str
     meta: Dict[str, Optional[str]]
 
 
@@ -20,8 +21,8 @@ class AcquisitionModel(BaseModel):
     roi_id: int
     metaname: str
     original_id: int
+    location: str
     meta: Dict[str, Optional[str]]
-    location: Optional[str]
     created_at: datetime
 
     class Config:

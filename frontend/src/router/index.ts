@@ -1,7 +1,6 @@
+import RouterComponent from '@/components/RouterComponent.vue';
 import Vue from 'vue';
 import Router from 'vue-router';
-
-import RouterComponent from '@/components/RouterComponent.vue';
 
 Vue.use(Router);
 
@@ -42,6 +41,12 @@ export default new Router({
             {
               path: 'dashboard',
               component: () => import(/* webpackChunkName: "main-dashboard" */ '@/views/main/Dashboard.vue'),
+            },
+            {
+              path: 'experiments/create',
+              name: 'main-experiment-create',
+              component: () => import(
+                /* webpackChunkName: "main-admin-experiments-create" */ '@/views/main/admin/experiment/CreateExperiment.vue'),
             },
             {
               path: 'experiments/:id',
@@ -112,12 +117,6 @@ export default new Router({
                   path: 'experiments/all',
                   component: () => import(
                     /* webpackChunkName: "main-admin-experiments" */ '@/views/main/admin/experiment/AdminExperiments.vue'),
-                },
-                {
-                  path: 'experiments/create',
-                  name: 'main-admin-experiments-create',
-                  component: () => import(
-                    /* webpackChunkName: "main-admin-experiments-create" */ '@/views/main/admin/experiment/CreateExperiment.vue'),
                 },
                 {
                   path: 'experiments/edit/:id',

@@ -6,10 +6,23 @@
       </v-card-title>
       <v-card-text>
         <template>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Name" v-model="name" v-validate="'required'" data-vv-name="name"
-                          :error-messages="errors.collect('name')" required></v-text-field>
-            <v-text-field label="Description" v-model="description"></v-text-field>
+          <v-form
+            v-model="valid"
+            ref="form"
+            lazy-validation
+          >
+            <v-text-field
+              label="Name"
+              v-model="name"
+              v-validate="'required'"
+              data-vv-name="name"
+              :error-messages="errors.collect('name')"
+              required
+            ></v-text-field>
+            <v-text-field
+              label="Description"
+              v-model="description"
+            ></v-text-field>
             <v-combobox
               v-model="tags"
               :filter="filter"
@@ -191,7 +204,7 @@
           params.tags = this.tags.map(tag => tag.text);
         }
         await this.experimentContext.actions.createExperiment(params);
-        this.$router.push('/main/admin/experiments');
+        this.$router.back();
       }
     }
   }

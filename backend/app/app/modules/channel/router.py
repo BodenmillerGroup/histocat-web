@@ -1,18 +1,18 @@
 import logging
-import os
 from typing import List
 
 import cv2
 import numpy as np
-import redis
 import ujson
 from fastapi import APIRouter, Depends
+from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.core.redis_manager import redis_manager
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend
 from app.core.utils import stream_bytes
 from app.modules.analysis.router import get_additive_image
@@ -21,10 +21,8 @@ from . import crud
 from .models import ChannelModel, ChannelStatsModel, ChannelStackModel
 
 logger = logging.getLogger(__name__)
-r = redis.Redis(host="redis")
 
 router = APIRouter()
-
 
 @router.get("/", response_model=List[ChannelModel])
 def read_channels(
@@ -64,16 +62,19 @@ async def read_channel_stats(
     """
     Get channel stats by id
     """
-    content = r.get(request.url.path)
+    content = await redis_manager.cache.get(request.url.path)
     if content:
         return UJSONResponse(content=ujson.loads(content))
 
     item = crud.get(db, id=id)
 
-    data = np.load(os.path.join(item.location, "origin.npy"))
+    parser = OmetiffParser(item.location)
+    acq = parser.get_imc_acquisition()
+    data = acq.get_img_by_metal(item.metal)
+
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
-    r.set(request.url.path, ujson.dumps(content))
+    await redis_manager.cache.set(request.url.path, ujson.dumps(content))
     return UJSONResponse(content=content)
 
 
@@ -91,7 +92,9 @@ async def read_channel_image(
     """
     item = crud.get(db, id=id)
 
-    data = np.load(os.path.join(item.location, "origin.npy"))
+    parser = OmetiffParser(item.location)
+    acq = parser.get_imc_acquisition()
+    data = acq.get_img_by_metal(item.metal)
 
     levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
     data = scale_image(data, levels)

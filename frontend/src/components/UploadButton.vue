@@ -1,13 +1,16 @@
 <template>
-  <v-tooltip bottom>
-    <template v-slot:activator="{ on }">
-      <v-btn v-on="on" icon @click="trigger">
-        <v-icon>mdi-cloud-upload</v-icon>
-      </v-btn>
-    </template>
-    <span>Upload Slide</span>
-    <input :multiple="multiple" class="visually-hidden" type="file" v-on:change="files" ref="fileInput">
-  </v-tooltip>
+  <span>
+    <v-btn
+      @click="trigger"
+      color="primary"
+      elevation="1"
+      small
+    >
+      <v-icon small left>mdi-cloud-upload</v-icon>
+      Upload
+    </v-btn>
+    <input :multiple="multiple" class="visually-hidden" type="file" v-on:change="files" ref="fileInput"/>
+  </span>
 </template>
 
 <script lang="ts">

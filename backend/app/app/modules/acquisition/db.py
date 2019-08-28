@@ -1,5 +1,4 @@
 import logging
-import os
 from datetime import datetime
 from typing import Optional
 
@@ -8,16 +7,11 @@ from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
-from app.core.utils import autocreate_directory_property, remove_location_upon_delete
 from app.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for acquisition locations
-ACQUISITION_LOCATION_FORMAT = "acquisition_{id}"
 
-
-@remove_location_upon_delete
 class Acquisition(Base):
     """
     An *acquisition* contains all files belonging to one microscope image acquisition process.
@@ -27,7 +21,7 @@ class Acquisition(Base):
 
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     roi_id: int = sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
-    metaname: str = sa.Column('metaname', sa.String(4096))
+    metaname: str = sa.Column('metaname', sa.String(4096), index=True)
     original_id: int = sa.Column('original_id', sa.Integer(), index=True)
     meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
@@ -35,6 +29,7 @@ class Acquisition(Base):
 
     roi = relationship("ROI", back_populates="acquisitions")
     channels = relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
+    artifacts = relationship("AcquisitionArtifact", back_populates="acquisition", cascade="all, delete, delete-orphan")
 
     @property
     def Description(self) -> Optional[str]:
@@ -147,11 +142,6 @@ class Acquisition(Base):
     @property
     def Template(self) -> Optional[str]:
         return self.meta.get(mcdxmlparser.TEMPLATE)
-
-    @autocreate_directory_property
-    def channels_location(self) -> str:
-        """str: location where channels files are stored"""
-        return os.path.join(self.location, "channels")
 
     def __repr__(self):
         return f"<Acquisition(id={self.id}, metaname={self.metaname})>"

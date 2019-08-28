@@ -21,7 +21,6 @@ class PanoramaModel(BaseModel):
     metaname: str
     original_id: int
     meta: Dict[str, Optional[str]]
-    location: Optional[str]
     created_at: datetime
 
     class Config:

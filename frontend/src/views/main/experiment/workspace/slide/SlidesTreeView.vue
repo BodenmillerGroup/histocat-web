@@ -1,15 +1,16 @@
 <template>
   <v-card tile>
-    <v-toolbar dense flat>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        clearable
-        flat
-      />
+    <v-toolbar flat dense color="grey lighten-4">
+      <UploadButton :id="experiment.id"/>
+      <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon small v-on="on" @click="refreshSlides">
+            <v-icon small>mdi-refresh</v-icon>
+          </v-btn>
+        </template>
+        <span>Refresh slides</span>
+      </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" @click="toggleShowROI">
@@ -20,6 +21,17 @@
         <span v-if="showROI">Hide ROI</span>
         <span v-else>Show ROI</span>
       </v-tooltip>
+    </v-toolbar>
+    <v-toolbar dense flat>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        clearable
+        flat
+      />
     </v-toolbar>
     <v-treeview
       v-model="selected"
@@ -32,7 +44,6 @@
       transition
       return-object
       open-all
-      open-on-click
       selectable
       class="overflow-y-auto scroll-view"
     >
@@ -42,18 +53,20 @@
         </v-icon>
       </template>
       <template v-slot:append="{ item }">
+        <UploadArtifactsDialog
+          v-if="item.type === 'slide'"
+        ></UploadArtifactsDialog>
         <v-menu
           :close-on-content-click="false"
           :nudge-width="200"
           offset-x
-          open-on-hover
         >
           <template v-slot:activator="{ on }">
             <v-btn
-              text
+              v-on="on"
+              small
               icon
               color="grey"
-              v-on="on"
             >
               <v-icon small>mdi-information-outline</v-icon>
             </v-btn>
@@ -67,12 +80,14 @@
 
 <script lang="ts">
   import InfoCard from '@/components/InfoCard.vue';
+  import UploadButton from '@/components/UploadButton.vue';
   import { experimentModule } from '@/modules/experiment';
   import { IExperiment } from '@/modules/experiment/models';
+  import UploadArtifactsDialog from '@/views/main/experiment/workspace/slide/UploadArtifactsDialog.vue';
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
   @Component({
-    components: { InfoCard },
+    components: { UploadArtifactsDialog, UploadButton, InfoCard },
   })
   export default class SlidesTreeView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
@@ -115,6 +130,10 @@
 
     get filter() {
       return (item, search, textKey) => item[textKey].indexOf(search) > -1;
+    }
+
+    async refreshSlides() {
+      await this.experimentContext.actions.getExperimentData(this.experiment.id);
     }
 
     get items() {
@@ -162,7 +181,7 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(100vh - 154px);
+    height: calc(100vh - 200px);
   }
 </style>
 

@@ -14,7 +14,7 @@
 <script lang="ts">
   import { IExperiment } from '@/modules/experiment/models';
   import DatasetsView from '@/views/main/experiment/workspace/dataset/DatasetsView.vue';
-  import SlidesTreeView from '@/views/main/experiment/workspace/SlidesTreeView.vue';
+  import SlidesTreeView from '@/views/main/experiment/workspace/slide/SlidesTreeView.vue';
   import { Component, Prop, Vue } from 'vue-property-decorator';
 
   @Component({

@@ -10,28 +10,23 @@ from app.db.base import Base
 logger = logging.getLogger(__name__)
 
 
-class Channel(Base):
+class AcquisitionArtifact(Base):
     """
-    Channel
+    Acquisition artifact (mask, image, csv file, etc.
     """
 
-    __tablename__ = "channel"
+    __tablename__ = "acquisition_artifact"
 
     id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
     acquisition_id: int = sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"),
                                     index=True)
-    metaname: str = sa.Column('metaname', sa.String(4096))
-    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
-    metal: str = sa.Column('metal', sa.String(), index=True)
-    label: str = sa.Column('label', sa.String(), index=True)
-    mass: int = sa.Column('mass', sa.Integer())
-    max_intensity: float = sa.Column('max_intensity', sa.Float())
-    min_intensity: float = sa.Column('min_intensity', sa.Float())
+    type: str = sa.Column('type', sa.String(64), nullable=False, index=True)
+    description: str = sa.Column('description', sa.String())
     meta: dict = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    acquisition = relationship("Acquisition", back_populates="channels")
+    acquisition = relationship("Acquisition", back_populates="artifacts")
 
     def __repr__(self):
-        return f"<Channel(id={self.id}, metal={self.metal}, label={self.label})>"
+        return f"<AcquisitionArtifact(id={self.id}, type={self.type}, description={self.description})>"

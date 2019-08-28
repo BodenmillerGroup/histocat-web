@@ -25,9 +25,18 @@
       </v-chip>
     </v-card-text>
     <v-card-actions>
-      <v-btn tile color="indigo" dark :to="{name: 'main-experiment', params: {id: experiment.id}}">Open</v-btn>
+      <v-btn
+        color="primary"
+        dark
+        :to="{name: 'main-experiment', params: {id: experiment.id}}"
+      >
+        Open
+      </v-btn>
       <v-spacer></v-spacer>
-      <v-tooltip bottom>
+      <v-tooltip
+        bottom
+        v-if="isOwner"
+      >
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" :to="{name: 'main-experiment-share', params: {id: experiment.id}}">
             <v-icon>mdi-share-variant</v-icon>
@@ -40,15 +49,21 @@
 </template>
 
 <script lang="ts">
+  import { IUserProfile } from '@/modules/user/models';
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import { IExperiment } from '@/modules/experiment/models';
 
   @Component
   export default class ExperimentCard extends Vue {
-    @Prop(Object) experiment?: IExperiment;
+    @Prop(Object) experiment!: IExperiment;
+    @Prop(Object) user!: IUserProfile;
 
     get createdAt() {
-      return this.experiment && new Date(this.experiment.created_at).toUTCString();
+      return new Date(this.experiment.created_at).toUTCString();
+    }
+
+    get isOwner() {
+      return this.experiment.user_id === this.user.id;
     }
   }
 </script>

@@ -1,8 +1,13 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template v-slot:activator="{ on }">
-      <v-btn small v-on="on">
-        Create Dataset
+      <v-btn
+        color="primary"
+        elevation="1"
+        small
+        v-on="on"
+      >
+        Create
       </v-btn>
     </template>
     <v-card>

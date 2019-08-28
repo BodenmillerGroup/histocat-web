@@ -108,6 +108,7 @@
 <script lang="ts">
   import { appName } from '@/env';
   import { mainModule } from '@/modules/main';
+  import { WebSocketManager } from '@/WebSocketManager';
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   const routeGuardMain = async (to, from, next) => {
@@ -168,6 +169,10 @@
 
     async logout() {
       await this.mainContext.actions.userLogOut();
+    }
+
+    mounted() {
+      WebSocketManager.init(this.$store);
     }
   }
 </script>

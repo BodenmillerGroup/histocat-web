@@ -122,4 +122,19 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
       await this.main!.actions.checkApiError(error);
     }
   }
+
+  async uploadDataset(payload: { experimentId?: number, data: any }) {
+    if (!payload.experimentId) {
+      return;
+    }
+    try {
+      const notification = { content: 'uploading', showProgress: true };
+      this.main!.mutations.addNotification(notification);
+      await api.uploadDataset(this.main!.getters.token, payload.experimentId, payload.data);
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: 'Dataset successfully uploaded', color: 'success' });
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
 }

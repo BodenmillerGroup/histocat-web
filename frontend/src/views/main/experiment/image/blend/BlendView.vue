@@ -115,7 +115,9 @@
         this.experimentContext.actions.getChannelStackImage();
       } else {
         this.experimentContext.mutations.setChannelStackImage(null);
-        this.map.getLayers().clear();
+        if (this.map) {
+          this.map.getLayers().clear();
+        }
       }
     }
 

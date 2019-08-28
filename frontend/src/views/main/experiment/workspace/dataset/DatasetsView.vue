@@ -1,27 +1,29 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
+      <CreateDatasetDialog/>
+      <UploadDatasetDialog class="ml-2"/>
+      <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" @click="refreshStatus">
-            <v-icon>mdi-refresh</v-icon>
+          <v-btn icon small v-on="on" @click="refreshDatasets">
+            <v-icon small>mdi-refresh</v-icon>
           </v-btn>
         </template>
-        <span>Refresh datasets status</span>
+        <span>Refresh datasets</span>
       </v-tooltip>
-      <CreateDatasetDialog/>
     </v-toolbar>
-    <v-card-title class="card-title">
+    <v-toolbar dense flat>
       <v-text-field
         v-model="search"
         append-icon="mdi-magnify"
         label="Search"
         single-line
         hide-details
-        solo-inverted
+        clearable
         flat
       />
-    </v-card-title>
+    </v-toolbar>
     <v-card-text>
       <v-list class="overflow-y-auto scroll-view">
         <v-list-group
@@ -69,11 +71,12 @@
   import { apiUrl } from '@/env';
   import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
+  import UploadDatasetDialog from '@/views/main/experiment/workspace/dataset/UploadDatasetDialog.vue';
   import { Component, Vue } from 'vue-property-decorator';
   import CreateDatasetDialog from '@/views/main/experiment/workspace/dataset/CreateDatasetDialog.vue';
 
   @Component({
-    components: { InfoCard, CreateDatasetDialog, },
+    components: { UploadDatasetDialog, InfoCard, CreateDatasetDialog, },
   })
   export default class DatasetsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
@@ -113,7 +116,7 @@
       }
     }
 
-    async refreshStatus() {
+    async refreshDatasets() {
       const experimentId = this.experimentContext.getters.activeExperimentId;
       if (experimentId) {
         await this.datasetContext.actions.getExperimentDatasets(experimentId);
@@ -121,7 +124,7 @@
     }
 
     async mounted() {
-      this.refreshStatus();
+      this.refreshDatasets();
     }
 
     beforeDestroy() {
@@ -136,7 +139,7 @@
   }
 
   .scroll-view {
-    height: calc(100vh - 220px);
+    height: calc(100vh - 232px);
   }
 </style>
 
