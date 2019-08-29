@@ -38,14 +38,6 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.activeExperimentId = id;
   }
 
-  setActiveSlideId(id?: number) {
-    this.state.activeSlideId = id;
-  }
-
-  setActivePanoramaId(id?: number) {
-    this.state.activePanoramaId = id;
-  }
-
   setActiveAcquisitionId(id?: number) {
     this.state.activeAcquisitionId = id;
   }
@@ -53,11 +45,7 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   setActiveWorkspaceNode(node?: { id: number, type: string }) {
     this.state.activeWorkspaceNode = node;
     if (node) {
-      if (node.type === 'slide') {
-        this.setActiveSlideId(node.id);
-      } else if (node.type === 'panorama') {
-        this.setActivePanoramaId(node.id);
-      } else if (node.type === 'acquisition') {
+      if (node.type === 'acquisition') {
         this.setActiveAcquisitionId(node.id);
       }
     }
@@ -68,8 +56,11 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   }
 
   resetExperiment() {
-    this.setActiveExperimentId(undefined);
-    this.setActiveAcquisitionId(undefined);
-    this.setSelectedMetals([]);
+    this.state.activeWorkspaceNode = undefined;
+    this.state.activeExperimentId = undefined;
+    this.state.activeAcquisitionId = undefined;
+    this.state.selectedAcquisitionIds = [];
+    this.state.selectedMetals = [];
+    this.state.channelStackImage = null;
   }
 }

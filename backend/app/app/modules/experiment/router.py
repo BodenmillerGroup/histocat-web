@@ -122,8 +122,8 @@ def update(
     return item
 
 
-@router.post("/{id}/upload_slide")
-def upload_slide(
+@router.post("/{id}/upload")
+def upload_data(
     id: int,
     file: UploadFile = File(None),
     db: Session = Depends(get_db),
@@ -134,7 +134,7 @@ def upload_slide(
     uri = os.path.join(path, file.filename)
     with open(uri, 'wb') as f:
         f.write(file.file.read())
-    worker.import_slide.send(uri, id)
+    worker.import_data.send(uri, id)
     return {"uri": uri}
 
 

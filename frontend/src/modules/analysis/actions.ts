@@ -71,7 +71,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
-      const settings = this.settings!.getters.channelSettings(channel.id);
+      const settings = this.settings!.getters.getChannelSettings(channel.id);
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;

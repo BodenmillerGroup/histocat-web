@@ -1,5 +1,17 @@
 import { IImageFilter, IImageLegend, IImageScalebar } from '@/modules/settings/models';
 
+export interface IExperimentUpdate {
+  name?: string;
+  description?: string;
+  tags?: string[];
+}
+
+export interface IExperimentCreate {
+  name: string;
+  description?: string;
+  tags?: string[];
+}
+
 export interface IExperiment {
   id: number;
   user_id: number;
@@ -11,18 +23,6 @@ export interface IExperiment {
   created_at: string;
 
   slides?: ISlide[];
-}
-
-export interface IExperimentUpdate {
-  name?: string;
-  description?: string;
-  tags?: string[];
-}
-
-export interface IExperimentCreate {
-  name: string;
-  description?: string;
-  tags?: string[];
 }
 
 export interface ISlide {

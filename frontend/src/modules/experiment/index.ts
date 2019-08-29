@@ -8,9 +8,8 @@ export class ExperimentState {
   experiments: IExperiment[] = [];
   tags: string[] = [];
   shares: IShare[] = [];
+
   activeExperimentId?: number = undefined;
-  activeSlideId?: number = undefined;
-  activePanoramaId?: number = undefined;
   activeAcquisitionId?: number = undefined;
   activeWorkspaceNode?: object = undefined;
   selectedAcquisitionIds: number[] = [];

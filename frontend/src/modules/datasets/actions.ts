@@ -74,7 +74,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
               if (acquisitionIds.includes(acquisition.id)) {
                 for (const channel of acquisition.channels) {
                   if (metals.includes(channel.metal)) {
-                    const settings = this.settings!.getters.channelSettings(channel.id);
+                    const settings = this.settings!.getters.getChannelSettings(channel.id);
                     if (settings) {
                       channelsSettings.push(settings);
                     }
@@ -105,7 +105,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
         api.createDataset(this.main!.getters.token, params),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      this.mutations.setDataset(data as any);
+      this.mutations.setDataset(data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'Dataset successfully created', color: 'success' });
     } catch (error) {

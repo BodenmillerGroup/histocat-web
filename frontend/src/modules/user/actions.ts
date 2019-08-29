@@ -38,7 +38,7 @@ export class UserActions extends Actions<UserState, UserGetters, UserMutations, 
         api.updateUser(this.main!.getters.token, payload.id, payload.user),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      this.mutations.setUser(data as any);
+      this.mutations.setUser(data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'User successfully updated', color: 'success' });
     } catch (error) {
@@ -54,7 +54,7 @@ export class UserActions extends Actions<UserState, UserGetters, UserMutations, 
         api.createUser(this.main!.getters.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      this.mutations.setUser(data as any);
+      this.mutations.setUser(data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'User successfully created', color: 'success' });
     } catch (error) {

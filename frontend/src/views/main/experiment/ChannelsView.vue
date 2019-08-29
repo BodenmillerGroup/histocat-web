@@ -89,7 +89,7 @@
 
     get items() {
       return this.channels.map((channel) => {
-        const settings = this.settingsModule.getters.channelSettings(channel.id);
+        const settings = this.settingsModule.getters.getChannelSettings(channel.id);
         return {
           id: channel.id,
           label: settings && settings.customLabel ? settings.customLabel : channel.label,
@@ -120,7 +120,7 @@
 
     save() {
       this.items.forEach((item) => {
-        const settings = this.settingsModule.getters.channelSettings(item.id);
+        const settings = this.settingsModule.getters.getChannelSettings(item.id);
         if (!settings) {
           this.settingsModule.mutations.setChannelSettings({
             id: item.id,

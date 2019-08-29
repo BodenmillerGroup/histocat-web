@@ -10,8 +10,12 @@ export class ExperimentGetters extends Getters<ExperimentState> {
     return this.state.shares;
   }
 
+  getExperiment(id?: number) {
+    return this.experiments.find((item) => item.id === id);
+  }
+
   get activeExperiment() {
-    return this.experiments.find((item) => item.id === this.state.activeExperimentId);
+    return this.getExperiment(this.activeExperimentId);
   }
 
   get activeAcquisition() {
@@ -56,18 +60,6 @@ export class ExperimentGetters extends Getters<ExperimentState> {
 
   get activeExperimentId() {
     return this.state.activeExperimentId;
-  }
-
-  get activeSlideId() {
-    return this.state.activeSlideId;
-  }
-
-  get activePanoramaId() {
-    return this.state.activePanoramaId;
-  }
-
-  getExperiment(id: number) {
-    return this.experiments.find((item) => item.id === id);
   }
 
   get activeWorkspaceNode() {

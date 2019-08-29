@@ -27,7 +27,7 @@
     @Prop(Object) readonly channel!: IChannel;
 
     get caption() {
-      const settings = this.settingsContext.getters.channelSettings(this.channel.id);
+      const settings = this.settingsContext.getters.getChannelSettings(this.channel.id);
       return settings && settings.levels ?
         settings.levels.max :
         this.channel.max_intensity.toFixed(0);

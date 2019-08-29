@@ -34,7 +34,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json();
+    }).json<IExperiment>();
   },
   async createExperiment(token: string, data: IExperimentCreate) {
     return ky.post(`${apiUrl}/api/v1/experiments/`, {
@@ -42,10 +42,10 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json();
+    }).json<IExperiment>();
   },
-  async uploadSlide(token: string, id: number, data) {
-    return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload_slide`, {
+  async upload(token: string, id: number, data) {
+    return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload`, {
       body: data,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -58,7 +58,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json();
+    }).json<IExperiment>();
   },
   async getExperiment(token: string, id: number) {
     return ky.get(`${apiUrl}/api/v1/experiments/${id}`, {
@@ -110,7 +110,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json();
+    }).json<IShare>();
   },
   async getExperimentShares(token: string, id: number) {
     return ky.get(`${apiUrl}/api/v1/share/${id}`, {

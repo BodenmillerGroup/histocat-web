@@ -58,7 +58,7 @@
     color = this.channel ? this.metalColor : '#ffffff';
 
     get settings() {
-      return this.settingsContext.getters.channelSettings(this.channel.id);
+      return this.settingsContext.getters.getChannelSettings(this.channel.id);
     }
 
     get label() {
@@ -76,7 +76,7 @@
     }
 
     submitLimit(range: number[]) {
-      let settings = this.settingsContext.getters.channelSettings(this.channel.id);
+      let settings = this.settings;
       if (!settings) {
         settings = {
           id: this.channel.id,
@@ -95,7 +95,7 @@
 
     setSharedChannelLevels() {
       const metal = this.channel.metal;
-      const settings = this.settingsContext.getters.channelSettings(this.channel.id);
+      const settings = this.settings;
       const levels = settings && settings.levels ?
         [settings.levels.min, settings.levels.max] :
         [this.channel.min_intensity, this.channel.max_intensity];

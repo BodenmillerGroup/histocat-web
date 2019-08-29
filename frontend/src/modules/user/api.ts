@@ -38,7 +38,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json();
+    }).json<IUserProfile>();
   },
   async createUser(token: string, data: IUserProfileCreate) {
     return ky.post(`${apiUrl}/api/v1/users/`, {
@@ -46,7 +46,7 @@ export const api = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).json();
+    }).json<IUserProfile>();
   },
   async passwordRecovery(email: string) {
     return ky.post(`${apiUrl}/api/v1/auth/password-recovery/${email}`).json();

@@ -116,7 +116,7 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int):
 
 def _import_slide(db: Session, meta: Dict[str, str], original_metadata: str, experiment_id: int, basename: str):
     original_id = meta.get(mcdxmlparser.ID)
-    metaname = f'{basename}_s{original_id}'
+    metaname = basename
     params = SlideCreateModel(
         experiment_id=experiment_id,
         metaname=metaname,

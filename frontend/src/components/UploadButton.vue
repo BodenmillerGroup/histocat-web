@@ -30,7 +30,7 @@
       const file = e.target.files[0];
       formData.append('file', file, file.name);
       e.target.value = '';
-      await this.experimentContext.actions.uploadSlide({ id: this.id, data: formData });
+      await this.experimentContext.actions.upload({ id: this.id, data: formData });
       return e.target.files;
     }
 

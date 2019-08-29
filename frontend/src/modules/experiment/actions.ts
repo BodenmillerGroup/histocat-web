@@ -52,7 +52,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
         api.updateExperiment(this.main!.getters.token, payload.id, payload.data),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      this.mutations.setExperiment(data as any);
+      this.mutations.setExperiment(data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'Experiment successfully updated', color: 'success' });
     } catch (error) {
@@ -84,7 +84,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
         api.createExperiment(this.main!.getters.token, payload),
         await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
       ]))[0];
-      this.mutations.setExperiment(data as any);
+      this.mutations.setExperiment(data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'Experiment successfully created', color: 'success' });
     } catch (error) {
@@ -92,14 +92,14 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
-  async uploadSlide(payload: { id: number, data: any }) {
+  async upload(payload: { id: number, data: any }) {
     if (!payload.id) {
       return;
     }
     try {
       const notification = { content: 'uploading', showProgress: true };
       this.main!.mutations.addNotification(notification);
-      await api.uploadSlide(this.main!.getters.token, payload.id, payload.data);
+      await api.upload(this.main!.getters.token, payload.id, payload.data);
       this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: 'File successfully uploaded', color: 'success' });
     } catch (error) {
@@ -164,7 +164,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
             for (const acquisition of roi.acquisitions) {
               for (const channel of acquisition.channels) {
                 if (channel.metal === payload.metal) {
-                  let settings = this.settings!.getters.channelSettings(channel.id);
+                  let settings = this.settings!.getters.getChannelSettings(channel.id);
                   if (!settings) {
                     settings = {
                       id: channel.id,
@@ -220,7 +220,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
   private prepareStackParams(format: 'png' | 'tiff' = 'png') {
     const channels = this.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
-      const settings = this.settings!.getters.channelSettings(channel.id);
+      const settings = this.settings!.getters.getChannelSettings(channel.id);
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;

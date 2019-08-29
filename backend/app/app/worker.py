@@ -69,8 +69,8 @@ def send_email(email_to: str, subject_template="", html_template="", environment
 
 
 @dramatiq.actor(queue_name='import', max_retries=0)
-def import_slide(uri: str, experiment_id: int):
-    logger.info(f'Importing slide into experiment [{experiment_id}] from {uri}')
+def import_data(uri: str, experiment_id: int):
+    logger.info(f'Importing data into experiment [{experiment_id}] from {uri}')
 
     path = os.path.dirname(os.path.abspath(uri))
     filename, file_extension = os.path.splitext(uri)

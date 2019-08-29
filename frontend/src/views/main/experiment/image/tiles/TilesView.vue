@@ -48,7 +48,7 @@
         if (color) {
           color = color.replace('#', '');
         }
-        const channelSettings = this.settingsContext.getters.channelSettings(channel.id);
+        const channelSettings = this.settingsContext.getters.getChannelSettings(channel.id);
         const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : '';
         const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : '';
         return {
