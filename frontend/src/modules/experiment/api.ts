@@ -102,6 +102,7 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
       json: params,
+      timeout: false,
     });
   },
   async createShare(token: string, data: IShareCreate) {

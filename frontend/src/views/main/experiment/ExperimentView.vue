@@ -81,7 +81,7 @@
 
     beforeDestroy() {
       WebSocketManager.close();
-      this.experimentContext.mutations.resetExperiment();
+      this.experimentContext.mutations.reset();
     }
   }
 </script>

@@ -23,3 +23,9 @@ export interface IImageScalebar {
   apply: boolean;
   settings?: any;
 }
+
+export interface IMaskSettings {
+  apply: boolean;
+  location?: string;
+  settings?: any;
+}

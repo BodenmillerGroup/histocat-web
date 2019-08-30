@@ -17,4 +17,13 @@ export class DatasetMutations extends Mutations<DatasetState> {
   deleteDataset(id: number) {
     this.state.datasets = this.state.datasets.filter((item) => item.id !== id);
   }
+
+  setActiveDataset(dataset?: IDataset) {
+    this.state.activeDataset = dataset;
+  }
+
+  reset() {
+    this.state.datasets = [];
+    this.state.activeDataset = undefined;
+  }
 }

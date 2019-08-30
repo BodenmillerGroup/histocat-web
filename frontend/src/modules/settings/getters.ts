@@ -25,4 +25,8 @@ export class SettingsGetters extends Getters<SettingsState> {
   get segmentationSettings() {
     return this.state.segmentationSettings;
   }
+
+  get maskSettings() {
+    return this.state.mask;
+  }
 }

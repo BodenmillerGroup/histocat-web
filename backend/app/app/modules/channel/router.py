@@ -12,7 +12,7 @@ from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
-from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend
+from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend, draw_mask
 from app.core.redis_manager import redis_manager
 from app.core.utils import stream_bytes
 from app.modules.analysis.router import get_additive_image
@@ -68,7 +68,7 @@ async def read_channel_stats(
 
     item = crud.get(db, id=id)
 
-    parser = OmetiffParser(item.location)
+    parser = OmetiffParser(item.acquisition.location)
     acq = parser.get_imc_acquisition()
     data = acq.get_img_by_metal(item.metal)
 
@@ -126,6 +126,9 @@ async def download_channel_stack(
 
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)
+
+    if params.datasetId and params.mask and params.mask.apply:
+        additive_image = draw_mask(additive_image, params.mask)
 
     if params.legend.apply:
         additive_image = draw_legend(additive_image, legend_labels, params.legend)

@@ -5,4 +5,8 @@ export class DatasetGetters extends Getters<DatasetState> {
   get datasets() {
     return this.state.datasets;
   }
+
+  get activeDataset() {
+    return this.state.activeDataset;
+  }
 }

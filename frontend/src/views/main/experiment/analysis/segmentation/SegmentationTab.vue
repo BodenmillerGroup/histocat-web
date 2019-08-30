@@ -9,7 +9,7 @@
             color="primary lighten-2"
             elevation="1"
           >
-            <v-icon left small>mdi-cloud-download-outline</v-icon>
+            <v-icon left small>mdi-download</v-icon>
             Export image
           </v-btn>
         </template>
@@ -26,15 +26,11 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-divider
-        class="mr-4"
-        inset
-        vertical
-      ></v-divider>
       <v-switch
         v-model="showSettings"
         label="Show settings"
         hide-details
+        class="ml-2"
       ></v-switch>
     </v-toolbar>
     <v-layout row>

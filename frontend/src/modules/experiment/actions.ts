@@ -1,3 +1,4 @@
+import { datasetModule } from '@/modules/datasets';
 import { mainModule } from '@/modules/main';
 import { settingsModule } from '@/modules/settings';
 import { saveAs } from 'file-saver';
@@ -14,12 +15,14 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
   // Declare context type
   main?: Context<typeof mainModule>;
   settings?: Context<typeof settingsModule>;
+  datasets?: Context<typeof datasetModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     // Create and retain main module context
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
+    this.datasets = datasetModule.context(store);
   }
 
   async getExperiments() {
@@ -237,12 +240,30 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     const legend = this.settings!.getters.legend;
     const scalebar = this.settings!.getters.scalebar;
 
-    return {
+    const result = {
       format: format,
       filter: filter,
       legend: legend,
       scalebar: scalebar,
       channels: channels,
     };
+
+    const activeDataset = this.datasets!.getters.activeDataset;
+    if (activeDataset) {
+      result['datasetId'] = activeDataset.id;
+      const maskSettings = this.settings!.getters.maskSettings;
+      const acquisition = this.getters.activeAcquisition;
+      if (acquisition && activeDataset.artifacts && activeDataset.artifacts.probability_masks) {
+        const mask = activeDataset.artifacts.probability_masks[acquisition.id];
+        if (mask) {
+          result['mask'] = {
+            apply: maskSettings.apply,
+            location: mask.location,
+          };
+        }
+      }
+    }
+
+    return result;
   }
 }

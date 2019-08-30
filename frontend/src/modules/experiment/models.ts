@@ -1,4 +1,4 @@
-import { IImageFilter, IImageLegend, IImageScalebar } from '@/modules/settings/models';
+import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from '@/modules/settings/models';
 
 export interface IExperimentUpdate {
   name?: string;
@@ -156,10 +156,12 @@ export interface IChannelStats {
 }
 
 export interface IChannelStack {
+  datasetId?: number;
   format?: string;
   filter: IImageFilter;
   legend: IImageLegend;
   scalebar: IImageScalebar;
+  mask?: IMaskSettings;
   channels: Array<{
     id: number;
     color?: string;

@@ -1,3 +1,4 @@
+import { IDatasetCreate } from '@/modules/datasets/models';
 import { experimentModule } from '@/modules/experiment';
 import { mainModule } from '@/modules/main';
 import { settingsModule } from '@/modules/settings';
@@ -8,7 +9,6 @@ import { Actions, Context } from 'vuex-smart-module';
 import { DatasetState } from '.';
 import { api } from './api';
 import { DatasetGetters } from './getters';
-import { IDatasetCreate } from './models';
 import { DatasetMutations } from './mutations';
 
 export class DatasetActions extends Actions<DatasetState, DatasetGetters, DatasetMutations, DatasetActions> {

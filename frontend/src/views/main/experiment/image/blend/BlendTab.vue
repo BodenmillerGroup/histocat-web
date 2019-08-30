@@ -9,7 +9,7 @@
             color="primary lighten-2"
             elevation="1"
           >
-            <v-icon left small>mdi-cloud-download-outline</v-icon>
+            <v-icon left small>mdi-download</v-icon>
             Export image
           </v-btn>
         </template>
@@ -26,6 +26,12 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <v-switch
+        v-model="applyMask"
+        label="Mask overlay"
+        hide-details
+        class="ml-2"
+      ></v-switch>
     </v-toolbar>
     <v-layout>
       <v-flex pa-0>
@@ -41,7 +47,7 @@
 <script lang="ts">
   import { experimentModule } from '@/modules/experiment';
   import { ExportFormat } from '@/modules/experiment/models';
-  import { mainModule } from '@/modules/main';
+  import { settingsModule } from '@/modules/settings';
   import BlendView from '@/views/main/experiment/image/blend/BlendView.vue';
   import IntensityView from '@/views/main/experiment/image/blend/IntensityView.vue';
   import { Component, Vue } from 'vue-property-decorator';
@@ -50,15 +56,19 @@
     components: { IntensityView, BlendView },
   })
   export default class BlendTab extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly settingsContext = settingsModule.context(this.$store);
 
-    get showWorkspace() {
-      return this.mainContext.getters.showWorkspace;
+    get applyMask() {
+      return this.settingsContext.getters.maskSettings.apply;
     }
 
-    get showChannels() {
-      return this.mainContext.getters.showChannels;
+    set applyMask(value: boolean) {
+      this.settingsContext.mutations.setMaskSettings({
+        ...this.settingsContext.getters.maskSettings,
+        apply: value,
+      });
+      this.experimentContext.actions.getChannelStackImage();
     }
 
     exportImage(format: ExportFormat) {

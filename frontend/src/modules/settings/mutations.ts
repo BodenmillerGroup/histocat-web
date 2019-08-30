@@ -1,7 +1,7 @@
 import { IImageSegmentationSettings } from '@/modules/analysis/models';
 import { Mutations } from 'vuex-smart-module';
 import { SettingsState } from '.';
-import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar } from './models';
+import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from './models';
 
 
 export class SettingsMutations extends Mutations<SettingsState> {
@@ -34,6 +34,10 @@ export class SettingsMutations extends Mutations<SettingsState> {
       mask_color: '#00AAFF40',
       result_type: 'origin',
     };
+    this.state.mask = {
+      apply: false,
+      location: undefined,
+    }
   }
 
   setChannelSettings(channelSettings: IChannelSettings) {
@@ -60,5 +64,9 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setSegmentationSettings(settings: IImageSegmentationSettings) {
     this.state.segmentationSettings = settings;
+  }
+
+  setMaskSettings(settings: IMaskSettings) {
+    this.state.mask = settings;
   }
 }

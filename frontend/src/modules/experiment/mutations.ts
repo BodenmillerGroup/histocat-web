@@ -55,7 +55,7 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.channelStackImage = base64Image;
   }
 
-  resetExperiment() {
+  reset() {
     this.state.activeWorkspaceNode = undefined;
     this.state.activeExperimentId = undefined;
     this.state.activeAcquisitionId = undefined;

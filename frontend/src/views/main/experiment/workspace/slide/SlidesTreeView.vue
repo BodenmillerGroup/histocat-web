@@ -53,9 +53,19 @@
         </v-icon>
       </template>
       <template v-slot:append="{ item }">
-        <UploadArtifactsDialog
-          v-if="item.type === 'slide'"
-        ></UploadArtifactsDialog>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              v-if="item.type === 'acquisition' && item.hasMask"
+              small
+              color="grey"
+              v-on="on"
+            >
+              mdi-transition-masked
+            </v-icon>
+          </template>
+          <span>Mask available</span>
+        </v-tooltip>
         <v-menu
           :close-on-content-click="false"
           :nudge-width="200"
@@ -67,6 +77,7 @@
               small
               icon
               color="grey"
+              @click.stop=""
             >
               <v-icon small>mdi-information-outline</v-icon>
             </v-btn>
@@ -81,16 +92,17 @@
 <script lang="ts">
   import InfoCard from '@/components/InfoCard.vue';
   import UploadButton from '@/components/UploadButton.vue';
+  import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
   import { IExperiment } from '@/modules/experiment/models';
-  import UploadArtifactsDialog from '@/views/main/experiment/workspace/slide/UploadArtifactsDialog.vue';
   import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
   @Component({
-    components: { UploadArtifactsDialog, UploadButton, InfoCard },
+    components: { UploadButton, InfoCard },
   })
   export default class SlidesTreeView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly datasetContext = datasetModule.context(this.$store);
 
     @Prop(Object) readonly experiment!: IExperiment;
 
@@ -136,16 +148,25 @@
       await this.experimentContext.actions.getExperimentData(this.experiment.id);
     }
 
+    get dataset() {
+      return this.datasetContext.getters.activeDataset;
+    }
+
     get items() {
       if (this.experiment.slides) {
         return this.experiment.slides.map((slide) => {
           const panoramas = slide.panoramas.map((panorama) => {
             const rois = panorama.rois.map((roi) => {
               const acquisitions = roi.acquisitions.map((acquisition) => {
+                let hasMask = false;
+                if (this.dataset && this.dataset.artifacts && this.dataset.artifacts.probability_masks) {
+                  hasMask = !!this.dataset.artifacts.probability_masks[acquisition.id];
+                }
                 return Object.assign({}, acquisition, {
                   type: 'acquisition',
                   name: acquisition.meta.Description,
                   uid: `acquisition-${acquisition.id}`,
+                  hasMask: hasMask,
                 });
               });
               return Object.assign({}, roi, {

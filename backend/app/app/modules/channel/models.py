@@ -64,9 +64,17 @@ class ScalebarModel(BaseModel):
     settings: Optional[dict]
 
 
+class MaskSettingsModel(BaseModel):
+    apply: bool
+    location: str
+    settings: Optional[dict]
+
+
 class ChannelStackModel(BaseModel):
+    datasetId: Optional[int]
     filter: FilterModel
     legend: LegendModel
     scalebar: ScalebarModel
     channels: List[ChannelSettingsModel]
+    mask: Optional[MaskSettingsModel]
     format: Optional[str] = 'png'

@@ -2,11 +2,13 @@ import logging
 from typing import Tuple, List
 
 import cv2
+import tifffile
 import numpy as np
 from matplotlib.colors import to_rgb, LinearSegmentedColormap
+from skimage.color import label2rgb
 
 from app.modules.analysis.models import SegmentationSettingsModel
-from app.modules.channel.models import FilterModel, ScalebarModel, LegendModel
+from app.modules.channel.models import FilterModel, ScalebarModel, LegendModel, MaskSettingsModel
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,18 @@ def scale_image(image: np.ndarray, levels: Tuple[float, float]):
     channel_image = image - levels[0]
     channel_image /= levels[1] - levels[0]
     return np.clip(channel_image, 0, 1, out=channel_image)
+
+
+def draw_mask(image: np.ndarray, mask: MaskSettingsModel):
+    width, height, _ = image.shape
+
+    mask_image = tifffile.imread(mask.location)
+    logger.info(image.shape)
+    logger.info(mask_image.shape)
+
+    rgb = label2rgb(mask_image, image, alpha=0.3, bg_label=0, image_alpha=1, kind='avg')
+    # rgb = cv2.applyColorMap(cv2.equalizeHist(segments), cv2.COLORMAP_JET)
+    return rgb
 
 
 def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):

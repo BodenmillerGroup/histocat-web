@@ -6,6 +6,7 @@ import { DatasetMutations } from './mutations';
 
 export class DatasetState {
   datasets: IDataset[] = [];
+  activeDataset?: IDataset = undefined;
 }
 
 export const datasetModule = new Module({
