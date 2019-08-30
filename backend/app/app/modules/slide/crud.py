@@ -15,8 +15,8 @@ def get(session: Session, *, id: int) -> Optional[Slide]:
     return session.query(Slide).filter(Slide.id == id).first()
 
 
-def get_by_metaname(session: Session, *, experiment_id: int, metaname: str) -> Optional[Slide]:
-    return session.query(Slide).filter(Slide.metaname == metaname, Slide.experiment_id == experiment_id).first()
+def get_by_name(session: Session, *, experiment_id: int, name: str) -> Optional[Slide]:
+    return session.query(Slide).filter(Slide.experiment_id == experiment_id, Slide.name == name).first()
 
 
 def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Slide]:

@@ -31,7 +31,7 @@ class Dataset(Base):
     uid: str = sa.Column('uid', UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True)
     name: str = sa.Column('name', sa.String())
     description: str = sa.Column('description', sa.String())
-    input: dict = sa.Column('input', JSONB())
+    artifacts: dict = sa.Column('artifacts', JSONB())
     meta: dict = sa.Column('meta', JSONB())
     status: str = sa.Column('status', sa.String(64), default="pending", nullable=False, index=True)
     errors: Optional[dict] = sa.Column('errors', JSONB())

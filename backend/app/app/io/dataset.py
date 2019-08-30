@@ -1,168 +1,196 @@
 from __future__ import annotations
 
-import csv
 import logging
 import os
 import re
-import shutil
-import zipfile
-from collections import namedtuple
 from pathlib import Path
-from typing import Dict
 
-import numpy as np
-from imctools.io.tiffwriter import TiffWriter
+import pandas as pd
 from sqlalchemy.orm import Session
 
-from app.core.errors import DatasetInputError
-from app.core.utils import timeit
+from app.io.utils import locate, copy_file
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.dataset.db import Dataset
+from app.modules.dataset.models import DatasetCreateModel, DatasetUpdateModel
+from app.modules.panorama import crud as panorama_crud
+from app.modules.roi import crud as roi_crud
+from app.modules.slide import crud as slide_crud
+from app.modules.experiment import crud as experiment_crud
 from app.modules.dataset import crud as dataset_crud
-from app.modules.dataset.models import DatasetCreateModel
-from app.modules.panorama.db import Panorama
-from app.modules.roi.db import ROI
-from app.modules.slide.db import Slide
 
 logger = logging.getLogger(__name__)
 
-FileLink = namedtuple('FileLink', ['src', 'dst'])
+CSV_FILE_EXTENSION = ".csv"
+FEATHER_FILE_EXTENSION = ".feather"
+
+EXPERIMENT_CSV_FILENAME = "Experiment"
+ACQUISITION_METADATA_FILENAME = "acquisition_metadata"
+OBJECT_RELATIONSHIPS_FILENAME = "Object relationships"
+IMAGE_FILENAME = "Image"
+CELL_FILENAME = "cell"
+
+PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
-def prepare_dataset(db: Session, dataset: Dataset):
-    # output folder where the output files will be saved
-    folder_base = dataset.location
-
-    # parameters for resizing the images for ilastik
-    folder_analysis = os.path.join(folder_base, 'tiffs')
-    folder_ilastik = os.path.join(folder_base, 'ilastik')
-    folder_ome = os.path.join(folder_base, 'ometiff')
-    folder_cp = os.path.join(folder_base, 'cpout')
-    folder_histocat = os.path.join(folder_base, 'histocat')
-    folder_uncertainty = os.path.join(folder_base, 'uncertainty')
-
-    for folder in [folder_base, folder_analysis, folder_ilastik, folder_ome, folder_cp, folder_histocat,
-                   folder_uncertainty]:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
-    input = dataset.input
-    acquisition_ids = input.get('acquisition_ids')
-    if not acquisition_ids or len(acquisition_ids) == 0:
-        raise DatasetInputError(f'Dataset [{dataset.id}]: Acquisitions are not selected')
-    metals = input.get('metals')
-    if not metals or len(metals) == 0:
-        raise DatasetInputError(f'Dataset [{dataset.id}]: Metals are not selected')
-    channel_settings = input.get('channel_settings')
-
-    slide_csv: Dict[int, dict] = dict()
-    panorama_csv: Dict[int, dict] = dict()
-    roi_csv: Dict[int, dict] = dict()
-    acquisition_csv: Dict[int, dict] = dict()
-    channel_csv: Dict[int, dict] = dict()
-    roi_point_csv: Dict[int, dict] = dict()
-
-    short_slide_name = None
-    file_links = []
-
-    for acquisition_id in acquisition_ids:
-        acquisition = acquisition_crud.get(db, id=acquisition_id)
-        roi: ROI = acquisition.roi
-        panorama: Panorama = roi.panorama
-        slide: Slide = panorama.slide
-
-        short_slide_name = re.sub('_s\d+$', '', slide.metaname)
-
-        slide_csv[slide.id] = slide.meta
-        panorama_csv[panorama.id] = panorama.meta
-        roi_csv[roi.id] = roi.meta
-        acquisition_csv[acquisition.id] = acquisition.meta
-
-        for roi_point in roi.roi_points:
-            roi_point_csv[roi_point.id] = roi_point.meta
-
-        channel_arrays = []
-        channel_names = []
-        channel_fluors = []
-        for channel in acquisition.channels:
-            if channel.metal in metals:
-                channel_csv[channel.id] = channel.meta
-                channel_arrays.append(np.load(os.path.join(channel.location, "origin.npy")))
-                channel_names.append(channel.label)
-                channel_fluors.append(channel.metal)
-
-        img_stack = np.stack(channel_arrays).swapaxes(2, 0)
-
-        tiff_writer = TiffWriter(
-            os.path.join(folder_ome, acquisition.metaname + '_ac.ome.tiff'),
-            img_stack=img_stack,
-            channel_name=channel_names,
-            original_description=slide.original_metadata,
-            fluor=channel_fluors,
-        )
-
-        tiff_writer.save_image(
-            mode='ome',
-            compression=0,
-            bigtiff=True,
-        )
-
-        file_links.extend([
-            FileLink(
-                src=os.path.join(slide.location, short_slide_name + '_schema.xml'),
-                dst=os.path.join(folder_ome, short_slide_name + '_schema.xml')
-            ),
-            FileLink(
-                src=os.path.join(slide.location, slide.metaname + '_slide.png'),
-                dst=os.path.join(folder_ome, slide.metaname + '_slide.png')
-            ),
-            FileLink(
-                src=os.path.join(panorama.location, panorama.metaname + '_pano.png'),
-                dst=os.path.join(folder_ome, panorama.metaname + '_pano.png')
-            ),
-        ])
-
-    for link in file_links:
-        if not os.path.exists(link.dst):
-            shutil.copy2(link.src, link.dst)
-
-    _save_meta_csv(slide_csv, os.path.join(folder_ome, short_slide_name + '_Slide_meta.csv'))
-    _save_meta_csv(panorama_csv, os.path.join(folder_ome, short_slide_name + '_Panorama_meta.csv'))
-    _save_meta_csv(roi_csv, os.path.join(folder_ome, short_slide_name + '_AcquisitionROI_meta.csv'))
-    _save_meta_csv(acquisition_csv, os.path.join(folder_ome, short_slide_name + '_Acquisition_meta.csv'))
-    _save_meta_csv(channel_csv, os.path.join(folder_ome, short_slide_name + '_AcquisitionChannel_meta.csv'))
-    _save_meta_csv(roi_point_csv, os.path.join(folder_ome, short_slide_name + '_ROIPoint_meta.csv'))
-
-
-def _save_meta_csv(items: Dict[int, dict], filename: str):
+def import_dataset(db: Session, cell_csv_filename: str, experiment_id: int, user_id: int):
     """
-    Writes the xml data as csv tables
+    Import artifacts from the folder compatible with 'cpout' IMC pipeline folders
     """
-    with open(filename, 'w') as f:
-        cols = next(iter(items.values())).keys()
-        writer = csv.DictWriter(f, cols)
-        writer.writeheader()
-        for row in items.values():
-            writer.writerow(row)
+
+    experiment = experiment_crud.get(db, id=experiment_id)
+    if not experiment:
+        logger.warn(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
+        return
+
+    create_params = DatasetCreateModel(
+        experiment_id=experiment_id,
+        user_id=user_id,
+        status="pending",
+    )
+    dataset = dataset_crud.create(db, params=create_params)
+    artifacts = {}
+
+    src_folder = Path(cell_csv_filename).parent
+    dst_folder = Path(dataset.location)
+    os.makedirs(dst_folder, exist_ok=True)
+
+    image_df, image_artifact = _import_image_csv(db, src_folder, dst_folder)
+    if image_artifact:
+        artifacts["image"] = image_artifact
+
+    object_relationships_df, object_relationships_artifact = _import_object_relationships(db, src_folder, dst_folder)
+    if object_relationships_artifact:
+        artifacts["object_relationships"] = object_relationships_artifact
+
+    cell_df, cell_artifact = _import_cell_csv(db, src_folder, dst_folder)
+    if cell_artifact:
+        artifacts["cell"] = cell_artifact
+
+    acquisition_metadata_df, acquisition_metadata_artifact = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
+    if acquisition_metadata_artifact:
+        artifacts["acquisition_metadata"] = acquisition_metadata_artifact
+
+    probability_masks = {}
+    for mask_filename in image_df['FileName_CellImage'].drop_duplicates():
+        mask_meta = _import_probabilities_mask(db, src_folder, mask_filename, dataset)
+        probability_masks[mask_meta.get("acquisition").get("id")] = mask_meta
+    artifacts["probability_masks"] = probability_masks
+
+    update_params = DatasetUpdateModel(
+        status="ready",
+        artifacts=artifacts,
+    )
+    dataset = dataset_crud.update(db, item=dataset, params=update_params)
 
 
-@timeit
-def import_zip(db: Session, uri: str, user_id: int, experiment_id: int):
-    path = Path(uri)
-    dir = path.parent
-    with zipfile.ZipFile(path, 'r') as zip:
-        zip.extractall(path.parent)
+def _import_image_csv(db: Session, src_folder: Path, dst_folder: Path):
+    src_uri = src_folder / f"{IMAGE_FILENAME}{CSV_FILE_EXTENSION}"
 
-    subdirs = next(os.walk(dir))[1]
-    if len(subdirs) > 0:
-        dir = dir / subdirs[0]
+    if not src_uri.exists():
+        return None, None
 
-    # params = DatasetCreateModel(
-    #     experiment_id=experiment_id,
-    #     name=
-    #     description: Optional[str]
-    #     input: Optional[dict]
-    #     meta: Optional[dict]
-    # )
-    #
-    # dataset = dataset_crud.create(db, user_id=user_id, params=params)
+    dst_uri = dst_folder / f"{IMAGE_FILENAME}{FEATHER_FILE_EXTENSION}"
+    df = pd.read_csv(src_uri)
+    df.to_feather(dst_uri)
+    artifact = {
+        "location": str(dst_uri),
+    }
+    return df, artifact
+
+
+def _import_acquisition_metadata_csv(db: Session, src_folder: Path, dst_folder: Path):
+    src_uri = src_folder / f"{ACQUISITION_METADATA_FILENAME}{CSV_FILE_EXTENSION}"
+
+    if not src_uri.exists():
+        return None, None
+
+    dst_uri = dst_folder / f"{ACQUISITION_METADATA_FILENAME}{FEATHER_FILE_EXTENSION}"
+    dtype = {
+        "MovementType": "category",
+        "SegmentDataFormat": "category",
+        "SignalType": "category",
+        "ValueBytes": "uint8",
+        "OrderNumber": "uint8",
+        "AcquisitionID": "uint8",
+    }
+    df = pd.read_csv(src_uri, dtype=dtype)
+    df.to_feather(dst_uri)
+    artifact = {
+        "location": str(dst_uri),
+    }
+    return df, artifact
+
+
+def _import_object_relationships(db: Session, src_folder: Path, dst_folder: Path):
+    src_uri = src_folder / f"{OBJECT_RELATIONSHIPS_FILENAME}{CSV_FILE_EXTENSION}"
+
+    if not src_uri.exists():
+        return None, None
+
+    dst_uri = dst_folder / f"{OBJECT_RELATIONSHIPS_FILENAME}{FEATHER_FILE_EXTENSION}"
+    dtype = {
+        "Module": "category",
+        "Relationship": "category",
+        "First Object Name": "category",
+        "Second Object Name": "category",
+        "First Image Number": "uint16",
+        "Second Image Number": "uint16",
+        "ModuleNumber": "uint8",
+    }
+    df = pd.read_csv(src_uri, dtype=dtype)
+    df.columns = df.columns.str.replace(" ", "_")
+    df.to_feather(dst_uri)
+    artifact = {
+        "location": str(dst_uri),
+    }
+    return df, artifact
+
+
+def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path):
+    src_uri = src_folder / f"{CELL_FILENAME}{CSV_FILE_EXTENSION}"
+
+    if not src_uri.exists():
+        return None, None
+
+    dst_uri = dst_folder / f"{CELL_FILENAME}{FEATHER_FILE_EXTENSION}"
+    df = pd.read_csv(src_uri)
+    df.to_feather(dst_uri)
+    artifact = {
+        "location": str(dst_uri),
+    }
+    return df, artifact
+
+
+def _import_probabilities_mask(db: Session, src_folder: Path, filename: str, dataset: Dataset):
+    uri = src_folder / filename
+
+    p = re.compile('(?P<Name>.*)_s(?P<SlideID>[0-9]+)_p(?P<PanoramaID>[0-9]+)_r(?P<AcquisitionROIID>[0-9]+)_a(?P<AcquisitionID>[0-9]+)_ac.*')
+    name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(filename)[0]
+
+    slide = slide_crud.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
+    panorama = panorama_crud.get_by_origin_id(db, slide_id=slide.id, origin_id=panorama_origin_id)
+    roi = roi_crud.get_by_origin_id(db, panorama_id=panorama.id, origin_id=roi_origin_id)
+    acquisition = acquisition_crud.get_by_origin_id(db, roi_id=roi.id, origin_id=acquisition_origin_id)
+
+    location = copy_file(uri, dataset.location)
+
+    meta = {
+        "location": location,
+        "slide": {
+            "id": slide.id,
+            "origin_id": slide.origin_id,
+        },
+        "panorama": {
+            "id": panorama.id,
+            "origin_id": panorama.origin_id,
+        },
+        "roi": {
+            "id": roi.id,
+            "origin_id": roi.origin_id,
+        },
+        "acquisition": {
+            "id": acquisition.id,
+            "origin_id": acquisition.origin_id,
+        },
+    }
+    return meta

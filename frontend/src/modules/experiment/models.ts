@@ -28,9 +28,9 @@ export interface IExperiment {
 export interface ISlide {
   id: number;
   experiment_id: number;
-  metaname: string;
-  original_id: number;
-  original_metadata: string;
+  name: string;
+  origin_id: number;
+  xml_meta: string;
   meta: {
     UID: string;
     Description: string;
@@ -50,8 +50,7 @@ export interface ISlide {
 export interface IPanorama {
   id: number;
   slide_id: number;
-  metaname: string;
-  original_id: number;
+  origin_id: number;
   meta: {
     Description: string;
     SlideX1PosUm: string;
@@ -69,7 +68,6 @@ export interface IPanorama {
     ImageFormat: string;
     PixelScaleCoef: string;
   };
-  location: string;
   created_at: string;
   rois: IRoi[];
 }
@@ -77,12 +75,10 @@ export interface IPanorama {
 export interface IRoi {
   id: number;
   panorama_id: number;
-  metaname: string;
-  original_id: number;
+  origin_id: number;
   meta: {
     ROIType: string;
   };
-  location: string;
   created_at: string;
   acquisitions: IAcquisition[];
   roi_points: IRoiPoint[];
@@ -91,8 +87,7 @@ export interface IRoi {
 export interface IRoiPoint {
   id: number;
   roi_id: number;
-  metaname: string;
-  original_id: number;
+  origin_id: number;
   meta: {
     OrderNumber: string;
     SlideXPosUm: string;
@@ -106,8 +101,7 @@ export interface IRoiPoint {
 export interface IAcquisition {
   id: number;
   roi_id: number;
-  metaname: string;
-  original_id: number;
+  origin_id: number;
   meta: {
     Description: string;
     OrderNumber: string;
@@ -141,31 +135,18 @@ export interface IAcquisition {
   location: string;
   created_at: string;
   channels: IChannel[];
-  atifacts: IAcquisitionArtifact[];
-}
-
-export interface IAcquisitionArtifact {
-  id: number;
-  acquisition_id: number;
-  type: string;
-  description: string;
-  meta: object;
-  location: string;
-  created_at: string;
 }
 
 export interface IChannel {
   id: number;
   acquisition_id: number;
-  metaname: string;
-  original_id: number;
+  origin_id: number;
   metal: string;
   label: string;
   mass: number;
   max_intensity: number;
   min_intensity: number;
   meta: object;
-  location: string;
   created_at: string;
 }
 

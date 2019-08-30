@@ -7,12 +7,10 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ChannelCreateModel(BaseModel):
     acquisition_id: int
-    metaname: str
-    original_id: int
+    origin_id: int
     metal: str
     label: str
     mass: int
-    location: str
     max_intensity: Optional[float]
     min_intensity: Optional[float]
     meta: Dict[str, Optional[str]]
@@ -22,12 +20,10 @@ class ChannelCreateModel(BaseModel):
 class ChannelModel(BaseModel):
     id: int
     acquisition_id: int
-    metaname: str
-    original_id: int
+    origin_id: int
     metal: str
     label: str
     mass: int
-    location: str
     max_intensity: Optional[float]
     min_intensity: Optional[float]
     meta: Dict[str, Optional[str]]

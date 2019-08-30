@@ -10,7 +10,6 @@ from app.modules.user import router as user_router
 from app.modules.dataset import router as dataset_router
 from app.modules.share import router as share_router
 from app.modules.analysis import router as analysis_router
-from app.modules.acquisition_artifact import router as acquisition_artifact_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router.router, prefix="/auth", tags=["auth"])
@@ -23,4 +22,3 @@ api_router.include_router(user_router.router, prefix="/users", tags=["users"])
 api_router.include_router(dataset_router.router, prefix="/datasets", tags=["datasets"])
 api_router.include_router(share_router.router, prefix="/share", tags=["share"])
 api_router.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
-api_router.include_router(acquisition_artifact_router.router, prefix="/acquisitions/artifacts", tags=["acquisitions"])

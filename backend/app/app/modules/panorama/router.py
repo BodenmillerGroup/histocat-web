@@ -51,4 +51,5 @@ async def read_panorama_image(
     Get panorama image by id
     """
     item = crud.get(db, id=id)
-    return FileResponse(os.path.join(item.slide.location, "origin", item.metaname + "_pano.png"), media_type="image/png")
+    slide = item.slide
+    return FileResponse(os.path.join(item.slide.location, "origin", f"{slide.name}_s{slide.origin_id}_p{item.origin_id}_pano.png"), media_type="image/png")

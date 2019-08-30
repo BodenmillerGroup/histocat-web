@@ -13,7 +13,6 @@ from app.modules.acquisition.db import Acquisition  # noqa
 from app.modules.channel.db import Channel  # noqa
 from app.modules.dataset.db import Dataset  # noqa
 from app.modules.share.db import Share  # noqa
-from app.modules.acquisition_artifact.db import AcquisitionArtifact  # noqa
 
 from app.core import config
 from app.modules.user import crud

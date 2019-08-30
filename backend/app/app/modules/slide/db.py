@@ -25,14 +25,14 @@ class Slide(Base):
 
     __tablename__ = "slide"
     __table_args__ = (
-        sa.UniqueConstraint('experiment_id', 'metaname', name='uq_experiment_slide_metaname'),
+        sa.UniqueConstraint('experiment_id', 'name', name='uq_experiment_slide_name'),
     )
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     experiment_id: int = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
-    metaname: str = sa.Column('metaname', sa.String(4096))
-    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
-    original_metadata: str = sa.Column('original_metadata', sa.String())
+    name: str = sa.Column('name', sa.String(4096))
+    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
+    xml_meta: str = sa.Column('xml_meta', sa.Text())
     meta: Dict[str, str] = sa.Column('meta', JSONB())
     location: str = sa.Column('location', sa.String(4096))
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
@@ -84,4 +84,4 @@ class Slide(Base):
         return os.path.join(self.location, "panoramas")
 
     def __repr__(self):
-        return f"<Slide(id={self.id}, metaname={self.metaname})>"
+        return f"<Slide(id={self.id}, name={self.name})>"

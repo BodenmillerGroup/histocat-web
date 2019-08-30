@@ -58,9 +58,9 @@ export class WebSocketManager {
       const message = new WebSocketMessage(json);
       if (message.experimentId === WebSocketManager.experimentContext.getters.activeExperimentId) {
         switch (message.type) {
-          case 'slide_imported': {
+          case 'data_imported': {
             WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
-            WebSocketManager.mainContext.mutations.addNotification({ content: 'Slide successfully imported', color: 'success' });
+            WebSocketManager.mainContext.mutations.addNotification({ content: 'Data successfully imported', color: 'success' });
             break;
           }
         }

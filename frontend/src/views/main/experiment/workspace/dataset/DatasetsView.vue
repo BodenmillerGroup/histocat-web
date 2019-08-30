@@ -1,8 +1,8 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <CreateDatasetDialog/>
-      <UploadDatasetDialog class="ml-2"/>
+      <!--      <CreateDatasetDialog/>-->
+      <!--      <UploadDatasetDialog class="ml-2"/>-->
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -13,17 +13,17 @@
         <span>Refresh datasets</span>
       </v-tooltip>
     </v-toolbar>
-    <v-toolbar dense flat>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        clearable
-        flat
-      />
-    </v-toolbar>
+<!--    <v-toolbar dense flat>-->
+<!--      <v-text-field-->
+<!--        v-model="search"-->
+<!--        append-icon="mdi-magnify"-->
+<!--        label="Search"-->
+<!--        single-line-->
+<!--        hide-details-->
+<!--        clearable-->
+<!--        flat-->
+<!--      />-->
+<!--    </v-toolbar>-->
     <v-card-text>
       <v-list class="overflow-y-auto scroll-view">
         <v-list-group
@@ -35,8 +35,10 @@
           <template v-slot:activator>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-                <v-list-item-subtitle>{{ item.status }}</v-list-item-subtitle>
+                <v-list-item-title>Dataset {{ item.id }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  <span class="x-small"><v-icon small>mdi-calendar-outline</v-icon> {{ item.createdAt }}</span>
+                </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -49,9 +51,7 @@
 
             <v-card-title primary-title>
               <div>
-                <h3>{{ item.name }}</h3>
-                <div>{{ item.description }}</div>
-                <span class="caption"><v-icon small>mdi-calendar-outline</v-icon> {{ item.createdAt }}</span>
+                <div>{{ item.location }}</div>
               </div>
             </v-card-title>
 
@@ -71,18 +71,17 @@
   import { apiUrl } from '@/env';
   import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
+  import CreateDatasetDialog from '@/views/main/experiment/workspace/dataset/CreateDatasetDialog.vue';
   import UploadDatasetDialog from '@/views/main/experiment/workspace/dataset/UploadDatasetDialog.vue';
   import { Component, Vue } from 'vue-property-decorator';
-  import CreateDatasetDialog from '@/views/main/experiment/workspace/dataset/CreateDatasetDialog.vue';
 
   @Component({
-    components: { UploadDatasetDialog, InfoCard, CreateDatasetDialog, },
+    components: { UploadDatasetDialog, InfoCard, CreateDatasetDialog },
   })
   export default class DatasetsView extends Vue {
     readonly experimentContext = experimentModule.context(this.$store);
     readonly datasetContext = datasetModule.context(this.$store);
 
-    search = '';
     readonly apiUrl = apiUrl;
 
     readonly icons = {
@@ -95,14 +94,12 @@
 
     get items() {
       if (this.datasets) {
-        return this.datasets
-          .filter((dataset) => dataset.name.includes(this.search))
-          .map((dataset) => {
-            return Object.assign({}, dataset, {
-              icon: this.icons[dataset.status],
-              createdAt: new Date(dataset.created_at).toUTCString(),
-            });
+        return this.datasets.map((dataset) => {
+          return Object.assign({}, dataset, {
+            icon: this.icons[dataset.status],
+            createdAt: new Date(dataset.created_at).toUTCString(),
           });
+        });
       }
     }
 

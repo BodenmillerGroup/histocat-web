@@ -33,7 +33,7 @@ def get_additive_image(db: Session, channels: List[ChannelSettingsModel]):
 
     item = channels[0]
     first = crud.get(db, id=item.id)
-    parser = OmetiffParser(first.location)
+    parser = OmetiffParser(first.acquisition.location)
     acq = parser.get_imc_acquisition()
 
     for channel in channels:

@@ -22,8 +22,7 @@ def upgrade():
         'roi_point',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True),
-        sa.Column('metaname', sa.String(4096), index=True),
-        sa.Column('original_id', sa.Integer(), index=True),
+        sa.Column('origin_id', sa.Integer(), index=True),
         sa.Column('meta', JSONB()),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )

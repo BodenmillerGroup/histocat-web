@@ -27,7 +27,7 @@ def upgrade():
         sa.Column('uid', UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
-        sa.Column('input', JSONB()),
+        sa.Column('artifacts', JSONB()),
         sa.Column('meta', JSONB()),
         sa.Column('status', sa.String(64), default="pending", nullable=False, index=True),
         sa.Column('errors', JSONB()),

@@ -6,22 +6,20 @@ from pydantic import BaseModel
 from app.modules.panorama.models import PanoramaDatasetModel
 
 
-# Properties to receive via API on creation
 class SlideCreateModel(BaseModel):
     experiment_id: int
-    metaname: str
-    original_id: int
-    original_metadata: str
+    name: str
+    origin_id: int
+    xml_meta: str
     meta: Dict[str, Optional[str]]
 
 
-# Shared properties
 class SlideModel(BaseModel):
     id: int
     experiment_id: int
-    metaname: str
-    original_id: int
-    original_metadata: str
+    name: str
+    origin_id: int
+    xml_meta: str
     meta: Dict[str, Optional[str]]
     location: Optional[str]
     created_at: datetime
@@ -30,8 +28,10 @@ class SlideModel(BaseModel):
         orm_mode = True
 
 
-# Full slide dataset
 class SlideDatasetModel(SlideModel):
+    """
+    Full slide dataset
+    """
     panoramas: List[PanoramaDatasetModel]
 
     class Config:

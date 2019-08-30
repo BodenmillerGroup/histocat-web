@@ -10,8 +10,7 @@ from app.modules.roi_point.models import ROIPointModel
 # Properties to receive via API on creation
 class ROICreateModel(BaseModel):
     panorama_id: int
-    metaname: str
-    original_id: int
+    origin_id: int
     meta: Dict[str, Optional[str]]
 
 
@@ -19,8 +18,7 @@ class ROICreateModel(BaseModel):
 class ROIModel(BaseModel):
     id: int
     panorama_id: int
-    metaname: str
-    original_id: int
+    origin_id: int
     meta: Dict[str, Optional[str]]
     created_at: datetime
 

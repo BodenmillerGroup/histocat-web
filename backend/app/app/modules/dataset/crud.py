@@ -2,10 +2,11 @@ import logging
 import os
 from typing import List, Optional
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from .db import Dataset, DATASET_LOCATION_FORMAT
-from .models import DatasetCreateModel
+from .models import DatasetCreateModel, DatasetUpdateModel
 
 logger = logging.getLogger(__name__)
 
@@ -22,15 +23,9 @@ def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Data
     return session.query(Dataset).offset(skip).limit(limit).all()
 
 
-def create(session: Session, *, user_id: int, params: DatasetCreateModel) -> Dataset:
-    entity = Dataset(
-        user_id=user_id,
-        experiment_id=params.experiment_id,
-        name=params.name,
-        description=params.description,
-        input=params.input,
-        meta=params.meta,
-    )
+def create(session: Session, *, params: DatasetCreateModel) -> Dataset:
+    data = jsonable_encoder(params)
+    entity = Dataset(**data)
     session.add(entity)
     session.commit()
     session.refresh(entity)
@@ -46,6 +41,18 @@ def create(session: Session, *, user_id: int, params: DatasetCreateModel) -> Dat
     session.commit()
     session.refresh(entity)
     return entity
+
+
+def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Dataset:
+    data = jsonable_encoder(item)
+    update_data = params.dict(skip_defaults=True)
+    for field in data:
+        if field in update_data:
+            setattr(item, field, update_data[field])
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
 
 
 def remove(session: Session, *, id: int):

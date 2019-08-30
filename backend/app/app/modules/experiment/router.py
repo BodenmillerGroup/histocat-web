@@ -126,6 +126,7 @@ def update(
 def upload_data(
     id: int,
     file: UploadFile = File(None),
+    user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
@@ -134,7 +135,7 @@ def upload_data(
     uri = os.path.join(path, file.filename)
     with open(uri, 'wb') as f:
         f.write(file.file.read())
-    worker.import_data.send(uri, id)
+    worker.import_data.send(uri, id, user.id)
     return {"uri": uri}
 
 

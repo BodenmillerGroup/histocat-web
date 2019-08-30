@@ -7,8 +7,7 @@ from pydantic import BaseModel
 # Properties to receive via API on creation
 class ROIPointCreateModel(BaseModel):
     roi_id: int
-    metaname: str
-    original_id: int
+    origin_id: int
     meta: Dict[str, Optional[str]]
 
 
@@ -16,8 +15,7 @@ class ROIPointCreateModel(BaseModel):
 class ROIPointModel(BaseModel):
     id: int
     roi_id: int
-    metaname: str
-    original_id: int
+    origin_id: int
     meta: Dict[str, Optional[str]]
     created_at: datetime
 

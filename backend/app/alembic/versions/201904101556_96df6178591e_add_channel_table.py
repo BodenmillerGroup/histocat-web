@@ -21,15 +21,13 @@ def upgrade():
         'channel',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('acquisition_id', sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"), index=True),
-        sa.Column('metaname', sa.String(4096), index=True),
-        sa.Column('original_id', sa.Integer(), index=True),
+        sa.Column('origin_id', sa.Integer(), index=True),
         sa.Column('metal', sa.String(), index=True),
         sa.Column('label', sa.String(), index=True),
         sa.Column('mass', sa.Integer()),
         sa.Column('max_intensity', sa.Float()),
         sa.Column('min_intensity', sa.Float()),
         sa.Column('meta', JSONB()),
-        sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 

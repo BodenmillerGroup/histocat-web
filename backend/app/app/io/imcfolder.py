@@ -40,7 +40,7 @@ ACQUISITION_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITION}{mcdxmlparser.META_CS
 CHANNEL_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONCHANNEL}{mcdxmlparser.META_CSV}"
 
 
-def import_imcfolder(db: Session, schema_filename: str, experiment_id: int):
+def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user_id: int):
     """
     Import slides from the folder compatible with IMC pipeline
     """
@@ -69,18 +69,16 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int):
 
     slide_map: Dict[str, Slide] = dict()
     for slide_item in slide_data.values():
-        original_id = slide_item.get(mcdxmlparser.ID)
-        metaname = f'{basename}_s{original_id}'
-        item = slide_crud.get_by_metaname(db, experiment_id=experiment_id, metaname=metaname)
+        item = slide_crud.get_by_name(db, experiment_id=experiment_id, name=basename)
         if item:
-            logger.warn(f"The slide with metaname [{metaname}] already exists in the experiment [{experiment_id}]")
+            logger.warn(f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]")
             return
 
         with open(schema_filename, 'rt') as f:
-            original_metadata = f.read()
+            xml_meta = f.read()
 
-        slide = _import_slide(db, slide_item, original_metadata, experiment_id, basename)
-        slide_map[str(slide.original_id)] = slide
+        slide = _import_slide(db, slide_item, xml_meta, experiment_id, basename)
+        slide_map[str(slide.origin_id)] = slide
 
         origin_location = os.path.join(slide.location, 'origin')
         copy_dir(src_folder, origin_location)
@@ -88,79 +86,72 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int):
     panorama_map: Dict[str, Panorama] = dict()
     for panorama_item in panorama_data.values():
         slide = slide_map.get(panorama_item.get(mcdxmlparser.SLIDEID))
-        panorama = _import_panorama(db, panorama_item, slide, basename)
-        panorama_map[str(panorama.original_id)] = panorama
+        panorama = _import_panorama(db, panorama_item, slide)
+        panorama_map[str(panorama.origin_id)] = panorama
 
     roi_map: Dict[str, ROI] = dict()
     for roi_item in roi_data.values():
         panorama = panorama_map.get(roi_item.get(mcdxmlparser.PANORAMAID))
-        roi = _import_roi(db, roi_item, panorama, basename)
-        roi_map[str(roi.original_id)] = roi
+        roi = _import_roi(db, roi_item, panorama)
+        roi_map[str(roi.origin_id)] = roi
 
     roi_point_map: Dict[str, ROIPoint] = dict()
     for roi_point_item in roi_point_data.values():
         roi = roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID))
-        roi_point = _import_roi_point(db, roi_point_item, roi, basename)
-        roi_point_map[str(roi_point.original_id)] = roi_point
+        roi_point = _import_roi_point(db, roi_point_item, roi)
+        roi_point_map[str(roi_point.origin_id)] = roi_point
 
     acquisition_map: Dict[str, Acquisition] = dict()
     for acquisition_item in acquisition_data.values():
         roi = roi_map.get(acquisition_item.get(mcdxmlparser.ACQUISITIONROIID))
         acquisition = _import_acquisition(db, acquisition_item, roi, basename)
-        acquisition_map[str(acquisition.original_id)] = acquisition
+        acquisition_map[str(acquisition.origin_id)] = acquisition
 
     for channel_item in channel_data.values():
         acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
-        _import_channel(db, channel_item, acquisition, basename)
+        _import_channel(db, channel_item, acquisition)
 
 
-def _import_slide(db: Session, meta: Dict[str, str], original_metadata: str, experiment_id: int, basename: str):
-    original_id = meta.get(mcdxmlparser.ID)
-    metaname = basename
+def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str):
+    origin_id = meta.get(mcdxmlparser.ID)
     params = SlideCreateModel(
         experiment_id=experiment_id,
-        metaname=metaname,
-        original_id=original_id,
-        original_metadata=original_metadata,
+        name=name,
+        origin_id=origin_id,
+        xml_meta=xml_meta,
         meta=meta,
     )
     slide = slide_crud.create(db, params=params)
     return slide
 
 
-def _import_panorama(db: Session, meta: Dict[str, str], slide: Slide, basename: str):
-    original_id = meta.get(mcdxmlparser.ID)
-    metaname = f'{basename}_s{slide.original_id}_p{original_id}'
+def _import_panorama(db: Session, meta: Dict[str, str], slide: Slide):
+    origin_id = meta.get(mcdxmlparser.ID)
     params = PanoramaCreateModel(
         slide_id=slide.id,
-        metaname=metaname,
-        original_id=original_id,
+        origin_id=origin_id,
         meta=meta,
     )
     panorama = panorama_crud.create(db, params=params)
     return panorama
 
 
-def _import_roi(db: Session, meta: Dict[str, str], panorama: Panorama, basename: str):
-    original_id = meta.get(mcdxmlparser.ID)
-    metaname = f'{basename}_s{panorama.slide.original_id}_p{panorama.original_id}_r{original_id}'
+def _import_roi(db: Session, meta: Dict[str, str], panorama: Panorama):
+    origin_id = meta.get(mcdxmlparser.ID)
     params = ROICreateModel(
         panorama_id=panorama.id,
-        metaname=metaname,
-        original_id=original_id,
+        origin_id=origin_id,
         meta=meta,
     )
     roi = roi_crud.create(db, params=params)
     return roi
 
 
-def _import_roi_point(db: Session, meta: Dict[str, str], roi: ROI, basename: str):
-    original_id = meta.get(mcdxmlparser.ID)
-    metaname = f'{basename}_s{roi.panorama.slide.original_id}_p{roi.panorama.original_id}_r{roi.original_id}_rp{original_id}'
+def _import_roi_point(db: Session, meta: Dict[str, str], roi: ROI):
+    origin_id = meta.get(mcdxmlparser.ID)
     params = ROIPointCreateModel(
         roi_id=roi.id,
-        metaname=metaname,
-        original_id=original_id,
+        origin_id=origin_id,
         meta=meta,
     )
     roi_point = roi_point_crud.create(db, params=params)
@@ -168,14 +159,12 @@ def _import_roi_point(db: Session, meta: Dict[str, str], roi: ROI, basename: str
 
 
 def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: str):
-    original_id = meta.get(mcdxmlparser.ID)
-    metaname = f'{basename}_s{roi.panorama.slide.original_id}_p{roi.panorama.original_id}_r{roi.original_id}_a{original_id}'
+    origin_id = meta.get(mcdxmlparser.ID)
     origin_location = os.path.join(roi.panorama.slide.location, 'origin')
-    location = os.path.join(origin_location, f'{metaname}_ac.ome.tiff')
+    location = os.path.join(origin_location, f'{basename}_s{roi.panorama.slide.origin_id}_p{roi.panorama.origin_id}_r{roi.origin_id}_a{origin_id}_ac.ome.tiff')
     params = AcquisitionCreateModel(
         roi_id=roi.id,
-        metaname=metaname,
-        original_id=original_id,
+        origin_id=origin_id,
         location=location,
         meta=meta,
     )
@@ -183,9 +172,8 @@ def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: s
     return acquisition
 
 
-def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition, basename: str):
-    original_id = meta.get(mcdxmlparser.ID)
-    metaname = f'{basename}_s{acquisition.roi.panorama.slide.original_id}_p{acquisition.roi.panorama.original_id}_r{acquisition.roi.original_id}_a{acquisition.original_id}_c{original_id}'
+def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition):
+    origin_id = meta.get(mcdxmlparser.ID)
 
     if meta.get(mcdxmlparser.CHANNELNAME) in ['X', 'Y', 'Z']:
         return
@@ -200,12 +188,10 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition,
 
     params = ChannelCreateModel(
         acquisition_id=acquisition.id,
-        metaname=metaname,
-        original_id=original_id,
+        origin_id=origin_id,
         metal=metal,
         label=label,
         mass=mass,
-        location=acquisition.location,
         max_intensity=img.max(),
         min_intensity=img.min(),
         meta=meta

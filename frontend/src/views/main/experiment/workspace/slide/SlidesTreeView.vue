@@ -150,7 +150,7 @@
               });
               return Object.assign({}, roi, {
                 type: 'roi',
-                name: `ROI ${roi.original_id}`,
+                name: `ROI ${roi.origin_id}`,
                 uid: `roi-${roi.id}`,
                 children: acquisitions,
               });
@@ -169,7 +169,7 @@
           });
           return Object.assign({}, slide, {
             type: 'slide',
-            name: slide.metaname,
+            name: slide.name,
             children: panoramas,
             uid: `slide-${slide.id}`,
           });

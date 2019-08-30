@@ -21,8 +21,7 @@ class ROI(Base):
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     panorama_id: int = sa.Column(sa.Integer(), sa.ForeignKey("panorama.id", ondelete="CASCADE"), index=True)
-    metaname: str = sa.Column('metaname', sa.String(4096))
-    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
+    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
     meta: dict = sa.Column('meta', JSONB())
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
@@ -35,4 +34,4 @@ class ROI(Base):
         return self.meta.get(mcdxmlparser.ROITYPE)
 
     def __repr__(self):
-        return f"<ROI(id={self.id}, metaname={self.metaname})>"
+        return f"<ROI(id={self.id})>"

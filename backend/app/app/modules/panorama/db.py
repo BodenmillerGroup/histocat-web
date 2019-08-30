@@ -21,8 +21,7 @@ class Panorama(Base):
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
     slide_id: int = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True)
-    metaname: str = sa.Column('metaname', sa.String(4096))
-    original_id: int = sa.Column('original_id', sa.Integer(), index=True)
+    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
     meta: dict = sa.Column('meta', JSONB())
     created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
@@ -90,4 +89,4 @@ class Panorama(Base):
         return self.meta.get(mcdxmlparser.PIXELSCALECOEF)
 
     def __repr__(self):
-        return f"<Panorama(id={self.id}, metaname={self.metaname})>"
+        return f"<Panorama(id={self.id})>"
