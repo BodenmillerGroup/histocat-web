@@ -13,6 +13,7 @@
   import { settingsModule } from '@/modules/settings';
   import * as echarts from 'echarts';
   import 'echarts/lib/chart/scatter';
+  import 'echarts/lib/component/toolbox';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component
@@ -23,17 +24,7 @@
     readonly analysisContext = analysisModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
 
-    data = [];
-
-    options: echarts.EChartOption = {
-      xAxis: {},
-      yAxis: {},
-      series: [{
-        symbolSize: 2,
-        data: this.data,
-        type: 'scatter',
-      }],
-    };
+    options: echarts.EChartOption = {};
 
     get activeDataset() {
       return this.datasetContext.getters.activeDataset;
@@ -42,17 +33,50 @@
     async mounted() {
       if (this.activeDataset) {
         const data = await this.analysisContext.actions.getScatterPlotData(this.activeDataset.id);
-        const points = data.x.map((x, i) => {
-          return [x, data.y[i]];
-        });
         this.options = {
+          animation: false,
           xAxis: {},
           yAxis: {},
-          series: [{
-            symbolSize: 2,
-            data: points,
-            type: 'scatter',
-          }],
+          dataset: {
+            source: [
+              data.x,
+              data.y,
+            ],
+            dimensions: [
+              { name: 'X', type: 'int' },
+              { name: 'Y', type: 'float' },
+            ],
+          },
+          series: [
+            {
+              type: 'scatter',
+              name: 'scatter',
+              seriesLayoutBy: 'row',
+              large: true,
+              symbolSize: 4,
+              encode: {
+                // Map dimension "amount" to the X axis.
+                x: 'X',
+                // Map dimension "product" to the Y axis.
+                y: 'Y',
+                tooltip: ['X', 'Y'],
+              },
+            },
+          ],
+          toolbox: {
+            show: true,
+            right: '9%',
+            feature: {
+              restore: {
+                show: true,
+                title: 'Reset',
+              },
+              saveAsImage: {
+                show: true,
+                title: 'Export',
+              },
+            },
+          },
         };
       }
     }
