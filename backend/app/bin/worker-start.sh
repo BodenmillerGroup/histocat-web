@@ -9,5 +9,5 @@ then
     dramatiq --processes 1 --threads 1 --watch . app.worker
 else
     echo "Starting workers in production mode"
-    dramatiq --processes 1 --threads 8 app.worker
+    dramatiq --processes 16 --threads 8 app.worker
 fi

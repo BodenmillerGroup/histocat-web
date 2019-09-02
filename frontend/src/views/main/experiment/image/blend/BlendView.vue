@@ -14,6 +14,7 @@
   import Map from 'ol/Map';
   import 'ol/ol.css';
   import Projection from 'ol/proj/Projection';
+  import RenderEvent from 'ol/render/Event';
   import Static from 'ol/source/ImageStatic';
   import View from 'ol/View';
   import { equals } from 'ramda';
@@ -127,6 +128,12 @@
       }
     }
 
+    beforeDestroy() {
+      if (this.map) {
+        this.map.un('precompose', this.precompose);
+      }
+    }
+
     private initMap() {
       if (!this.activeAcquisition) {
         return;
@@ -180,6 +187,12 @@
         view: view,
         target: this.$el as HTMLElement,
       });
+
+      this.map.on('precompose', this.precompose);
+    }
+
+    private precompose(evt: RenderEvent) {
+      evt.context.imageSmoothingEnabled = false;
     }
   }
 </script>

@@ -3,7 +3,9 @@ from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, Depends
+import pandas as pd
+import ujson
+from fastapi import APIRouter, Depends, HTTPException
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
 from sqlalchemy.orm import Session
@@ -14,10 +16,12 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
-from app.modules.channel import crud
+from app.modules.channel import crud as channel_crud
+from app.modules.dataset import crud as dataset_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.user.db import User
-from .models import AnalysisModel
+from .models import AnalysisModel, ScatterPlotModel
+from app.core.redis_manager import redis_manager
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +36,12 @@ def get_additive_image(db: Session, channels: List[ChannelSettingsModel]):
     legend_labels: List[Tuple[str, str, float]] = list()
 
     item = channels[0]
-    first = crud.get(db, id=item.id)
+    first = channel_crud.get(db, id=item.id)
     parser = OmetiffParser(first.acquisition.location)
     acq = parser.get_imc_acquisition()
 
     for channel in channels:
-        item = crud.get(db, id=channel.id)
+        item = channel_crud.get(db, id=channel.id)
 
         data = acq.get_img_by_metal(item.metal)
 
@@ -116,3 +120,38 @@ async def produce_segmentation_contours(
     contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
     contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
     return UJSONResponse(content=contours)
+
+
+@router.get("/{dataset_id}/scatter", response_model=ScatterPlotModel)
+async def read_scatter_plot_data(
+    dataset_id: int,
+    request: Request,
+    marker_x: str = None,
+    marker_y: str = None,
+    marker_z: str = None,
+    marker_color: str = None,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read scatter plot data from the dataset
+    """
+    content = await redis_manager.cache.get(request.url.path)
+    if content:
+        return UJSONResponse(content=ujson.loads(content))
+
+    dataset = dataset_crud.get(db, id=dataset_id)
+    cell_artifact = dataset.artifacts.get("cell")
+    if not cell_artifact:
+        raise HTTPException(
+            status_code=400,
+            detail="The dataset does not have proper artifact.",
+        )
+
+    df = pd.read_feather(cell_artifact.get("location"))
+    x = df['ObjectNumber']
+    y = df['Intensity_MaxIntensity_FullStack_c19']
+
+    content = {"x": x, "y": y}
+    await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    return UJSONResponse(content=content)

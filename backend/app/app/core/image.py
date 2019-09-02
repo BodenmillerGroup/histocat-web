@@ -2,8 +2,8 @@ import logging
 from typing import Tuple, List
 
 import cv2
-import tifffile
 import numpy as np
+import tifffile
 from matplotlib.colors import to_rgb, LinearSegmentedColormap
 from skimage.color import label2rgb
 
@@ -47,16 +47,29 @@ def scale_image(image: np.ndarray, levels: Tuple[float, float]):
     return np.clip(channel_image, 0, 1, out=channel_image)
 
 
-def draw_mask(image: np.ndarray, mask: MaskSettingsModel):
-    width, height, _ = image.shape
+def draw_mask(image: np.ndarray, mask_settings: MaskSettingsModel):
+    mask = tifffile.imread(mask_settings.location)
+    if mask_settings.colorize:
+        return label2rgb(mask, image=image, alpha=0.3, bg_label=0, image_alpha=1, kind='avg')
+    else:
+        return mask_color_img(image, mask)
 
-    mask_image = tifffile.imread(mask.location)
-    logger.info(image.shape)
-    logger.info(mask_image.shape)
 
-    rgb = label2rgb(mask_image, image, alpha=0.3, bg_label=0, image_alpha=1, kind='avg')
-    # rgb = cv2.applyColorMap(cv2.equalizeHist(segments), cv2.COLORMAP_JET)
-    return rgb
+def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), alpha=0.7):
+    """
+    img: cv2 image
+    mask: bool or np.where
+    color: BGR triplet [_, _, _]. Default: [0, 255, 255] is yellow.
+    alpha: float [0, 1].
+
+    Ref: http://www.pyimagesearch.com/2016/03/07/transparent-overlays-with-opencv/
+    """
+    bit_mask = mask == 0
+    mask_layer = image.copy()
+    mask_layer[bit_mask] = color
+    cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
+    # cv2.add(image, mask_layer, image)
+    return image
 
 
 def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):

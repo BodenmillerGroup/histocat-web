@@ -1,5 +1,5 @@
 import { apiUrl } from '@/env';
-import { IImageSegmentationSubmission } from '@/modules/analysis/models';
+import { IImageSegmentationSubmission, IScatterPlotData } from '@/modules/analysis/models';
 import ky from 'ky';
 
 export const api = {
@@ -18,5 +18,12 @@ export const api = {
       },
       json: params,
     }).json<number[][]>();
+  },
+  async getScatterPlotData(token: string, datasetId: number) {
+    return ky.get(`${apiUrl}/api/v1/analysis/${datasetId}/scatter`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IScatterPlotData>();
   },
 };

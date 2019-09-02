@@ -32,6 +32,19 @@
         hide-details
         class="ml-2"
       ></v-switch>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            small
+            v-on="on"
+            @click="getColorizedMaskImage"
+            class="ml-2"
+          >
+            Colorize mask
+          </v-btn>
+        </template>
+        <span>Request calculation of colorized cell mask</span>
+      </v-tooltip>
     </v-toolbar>
     <v-layout>
       <v-flex pa-0>
@@ -73,6 +86,10 @@
 
     exportImage(format: ExportFormat) {
       this.experimentContext.actions.exportChannelStackImage(format);
+    }
+
+    getColorizedMaskImage() {
+      this.experimentContext.actions.getColorizedMaskImage();
     }
   }
 </script>

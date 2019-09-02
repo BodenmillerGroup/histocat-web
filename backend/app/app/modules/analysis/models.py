@@ -20,3 +20,11 @@ class AnalysisModel(BaseModel):
     channels: List[ChannelSettingsModel]
     format: Optional[str] = 'png'
     settings: SegmentationSettingsModel
+
+
+class ScatterPlotModel(BaseModel):
+    """
+    Scatter plot model
+    """
+    hist: List[int]
+    edges: List[float]

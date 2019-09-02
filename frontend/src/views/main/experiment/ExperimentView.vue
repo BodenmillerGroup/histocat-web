@@ -34,7 +34,7 @@
   import LoadingView from '@/components/LoadingView.vue';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
-  import { WebSocketManager } from '@/WebSocketManager';
+  import { WebSocketManager } from '@/utils/WebSocketManager';
   import AnalysisView from '@/views/main/experiment/analysis/AnalysisView.vue';
   import ImageView from '@/views/main/experiment/image/ImageView.vue';
   // import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';

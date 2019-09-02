@@ -23,3 +23,8 @@ export interface IImageSegmentationSubmission {
   }>;
   settings: IImageSegmentationSettings;
 }
+
+export interface IScatterPlotData {
+  x: number[];
+  y: number[];
+}

@@ -56,10 +56,6 @@
       return this.mainContext.getters.showWorkspace;
     }
 
-    get showChannels() {
-      return this.mainContext.getters.showChannels;
-    }
-
     @Watch('showWorkspace')
     refreshImageView() {
       if (this.map) {

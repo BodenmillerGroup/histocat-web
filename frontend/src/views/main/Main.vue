@@ -108,7 +108,7 @@
 <script lang="ts">
   import { appName } from '@/env';
   import { mainModule } from '@/modules/main';
-  import { WebSocketManager } from '@/WebSocketManager';
+  import { WebSocketManager } from '@/utils/WebSocketManager';
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   const routeGuardMain = async (to, from, next) => {

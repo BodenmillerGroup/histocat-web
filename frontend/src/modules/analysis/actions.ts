@@ -68,6 +68,14 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
+  async getScatterPlotData(datasetId: number) {
+    try {
+      return await api.getScatterPlotData(this.main!.getters.token, datasetId);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
   private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);

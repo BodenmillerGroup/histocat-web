@@ -6,20 +6,10 @@ import { mainModule, MainState } from '@/modules/main';
 import { MainActions } from '@/modules/main/actions';
 import { MainGetters } from '@/modules/main/getters';
 import { MainMutations } from '@/modules/main/mutations';
+import { WebSocketMessage } from '@/utils/WebSocketMessage';
 import { Store } from 'vuex';
 import { Context, Module } from 'vuex-smart-module';
 
-export class WebSocketMessage {
-  readonly experimentId: number;
-  readonly type: string;
-  readonly payload: object;
-
-  constructor(json: object) {
-    this.experimentId = json['experiment_id'];
-    this.type = json['type'];
-    this.payload = json['payload'];
-  }
-}
 
 export class WebSocketManager {
   static socket: WebSocket;
@@ -60,7 +50,10 @@ export class WebSocketManager {
         switch (message.type) {
           case 'data_imported': {
             WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
-            WebSocketManager.mainContext.mutations.addNotification({ content: 'Data successfully imported', color: 'success' });
+            WebSocketManager.mainContext.mutations.addNotification({
+              content: 'Data successfully imported',
+              color: 'success',
+            });
             break;
           }
         }
