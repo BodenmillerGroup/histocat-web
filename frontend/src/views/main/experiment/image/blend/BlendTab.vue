@@ -6,7 +6,6 @@
           <v-btn
             v-on="on"
             small
-            color="primary lighten-2"
             elevation="1"
           >
             <v-icon left small>mdi-download</v-icon>
@@ -26,12 +25,6 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-switch
-        v-model="applyMask"
-        label="Mask overlay"
-        hide-details
-        class="ml-2"
-      ></v-switch>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -45,6 +38,12 @@
         </template>
         <span>Request calculation of colorized cell mask</span>
       </v-tooltip>
+      <v-switch
+        v-model="applyMask"
+        label="Mask overlay"
+        hide-details
+        class="ml-2"
+      ></v-switch>
     </v-toolbar>
     <v-layout>
       <v-flex pa-0>

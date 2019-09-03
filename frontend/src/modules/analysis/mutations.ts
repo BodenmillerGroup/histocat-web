@@ -1,5 +1,6 @@
 import { Mutations } from 'vuex-smart-module';
 import { AnalysisState } from '.';
+import { IScatterPlotData } from './models';
 
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
@@ -11,7 +12,12 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
     this.state.segmentationContours = contours;
   }
 
+  setScatterPlotData(data: IScatterPlotData | null) {
+    this.state.scatterPlotData = data;
+  }
+
   resetAnalysis() {
     this.setSegmentationImage(null);
+    this.setScatterPlotData(null);
   }
 }

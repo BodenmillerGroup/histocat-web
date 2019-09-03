@@ -122,10 +122,11 @@ async def produce_segmentation_contours(
     return UJSONResponse(content=contours)
 
 
-@router.get("/{dataset_id}/scatter", response_model=ScatterPlotModel)
+@router.get("/scatter", response_model=ScatterPlotModel)
 async def read_scatter_plot_data(
-    dataset_id: int,
     request: Request,
+    dataset_id: int,
+    acquisition_id: int,
     marker_x: str = None,
     marker_y: str = None,
     marker_z: str = None,
@@ -136,22 +137,25 @@ async def read_scatter_plot_data(
     """
     Read scatter plot data from the dataset
     """
-    content = await redis_manager.cache.get(request.url.path)
-    if content:
-        return UJSONResponse(content=ujson.loads(content))
+    # content = await redis_manager.cache.get(request.url.path)
+    # if content:
+    #     return UJSONResponse(content=ujson.loads(content))
 
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_artifact = dataset.artifacts.get("cell")
-    if not cell_artifact:
+    image_map = dataset.artifacts.get("image_map")
+    image_number = image_map.get(str(acquisition_id))
+    if not cell_artifact or not image_number:
         raise HTTPException(
             status_code=400,
-            detail="The dataset does not have proper artifact.",
+            detail="The dataset does not have proper artifacts.",
         )
 
     df = pd.read_feather(cell_artifact.get("location"))
-    x = df['ObjectNumber']
-    y = df['Intensity_MaxIntensity_FullStack_c19']
+    df = df[df["ImageNumber"] == image_number]
+    x = df[f'Intensity_MeanIntensityEdge_FullStack_c{marker_x}']
+    y = df[f'Intensity_MeanIntensityEdge_FullStack_c{marker_y}']
 
     content = {"x": x, "y": y}
-    await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
     return UJSONResponse(content=content)

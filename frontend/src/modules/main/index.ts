@@ -14,7 +14,7 @@ export class MainState {
   dashboardShowDrawer: boolean = true;
   notifications: AppNotification[] = [];
   showWorkspace: boolean = true;
-  showChannels: boolean = true;
+  showOptions: boolean = true;
 }
 
 export const mainModule = new Module({

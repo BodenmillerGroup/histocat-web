@@ -10,8 +10,6 @@ from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDIN
 
 from app.core import config
 from app.core.errors import SlideImportError
-from app.core.notifier import Message
-from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
 from app.db.session import db_session
 from app.io import mcd
 from app.io import zip
@@ -82,4 +80,3 @@ def import_data(uri: str, experiment_id: int, user_id: int):
         logger.warn(error)
     finally:
         shutil.rmtree(path)
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "data_imported"))

@@ -1,4 +1,3 @@
-import { IImageSegmentationSettings } from '@/modules/analysis/models';
 import { experimentModule } from '@/modules/experiment';
 import { ExportFormat } from '@/modules/experiment/models';
 import { mainModule } from '@/modules/main';
@@ -9,6 +8,7 @@ import { Actions, Context } from 'vuex-smart-module';
 import { AnalysisState } from '.';
 import { api } from './api';
 import { AnalysisGetters } from './getters';
+import { IImageSegmentationSettings } from './models';
 import { AnalysisMutations } from './mutations';
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
@@ -68,9 +68,17 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getScatterPlotData(datasetId: number) {
+  async getScatterPlotData(payload: { datasetId: number, acquisitionId: number, markerX: number, markerY: number, markerZ?: number }) {
     try {
-      return await api.getScatterPlotData(this.main!.getters.token, datasetId);
+      const response = await api.getScatterPlotData(
+        this.main!.getters.token,
+        payload.datasetId,
+        payload.acquisitionId,
+        payload.markerX,
+        payload.markerY,
+        payload.markerZ
+      );
+      this.mutations.setScatterPlotData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

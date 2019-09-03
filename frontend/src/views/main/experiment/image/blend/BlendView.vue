@@ -50,12 +50,12 @@
       return this.mainContext.getters.showWorkspace;
     }
 
-    get showChannels() {
-      return this.mainContext.getters.showChannels;
+    get showOptions() {
+      return this.mainContext.getters.showOptions;
     }
 
     @Watch('showWorkspace')
-    @Watch('showChannels')
+    @Watch('showOptions')
     refreshImageView() {
       if (this.map) {
         this.map.updateSize();

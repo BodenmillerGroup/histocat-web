@@ -9,4 +9,8 @@ export class AnalysisGetters extends Getters<AnalysisState> {
   get segmentationContours() {
     return this.state.segmentationContours;
   }
+
+  get scatterPlotData() {
+    return this.state.scatterPlotData;
+  }
 }

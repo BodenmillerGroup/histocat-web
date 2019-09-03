@@ -59,17 +59,29 @@
       color="primary"
       :clipped-left="$vuetify.breakpoint.lgAndUp"
     >
-      <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        @click.stop="switchShowDrawer"
+      ></v-app-bar-nav-icon>
       <v-toolbar-title>{{appName}}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn-toggle v-model="toggleWorkspace">
+      <v-btn-toggle v-model="views" multiple>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" tile v-on="on" value='show'>
+            <v-btn color="primary" v-on="on" value='workspace'>
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
-          <span>Show workspace</span>
+          <span v-if="!showWorkspace">Show workspace</span>
+          <span v-else>Hide workspace</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn color="primary" v-on="on" value='options'>
+              <v-icon>mdi-tune</v-icon>
+            </v-btn>
+          </template>
+          <span v-if="!showOptions">Show options</span>
+          <span v-else>Hide options</span>
         </v-tooltip>
       </v-btn-toggle>
       <v-menu
@@ -124,7 +136,7 @@
     readonly mainContext = mainModule.context(this.$store);
 
     appName = appName;
-    toggleWorkspace = 'show';
+    views: string[] = ['workspace', 'options'];
 
     beforeRouteEnter(to, from, next) {
       routeGuardMain(to, from, next);
@@ -134,9 +146,18 @@
       routeGuardMain(to, from, next);
     }
 
-    @Watch('toggleWorkspace')
-    onToggleWorkspace(value: string) {
-      this.mainContext.mutations.setShowWorkspace(value === 'show');
+    @Watch('views')
+    viewsChanged(views: string[]) {
+      this.mainContext.mutations.setShowWorkspace(views.includes('workspace'));
+      this.mainContext.mutations.setShowOptions(views.includes('options'));
+    }
+
+    get showWorkspace() {
+      return this.mainContext.getters.showWorkspace;
+    }
+
+    get showOptions() {
+      return this.mainContext.getters.showOptions;
     }
 
     get miniDrawer() {

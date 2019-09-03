@@ -41,7 +41,7 @@ export class MainMutations extends Mutations<MainState> {
     this.state.showWorkspace = payload;
   }
 
-  setShowChannels(payload: boolean) {
-    this.state.showChannels = payload;
+  setShowOptions(payload: boolean) {
+    this.state.showOptions = payload;
   }
 }

@@ -27,4 +27,5 @@ export interface IImageSegmentationSubmission {
 export interface IScatterPlotData {
   x: number[];
   y: number[];
+  z?: number[];
 }

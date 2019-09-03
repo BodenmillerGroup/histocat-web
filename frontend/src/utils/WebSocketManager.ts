@@ -1,3 +1,7 @@
+import { datasetModule, DatasetState } from '@/modules/datasets';
+import { DatasetActions } from '@/modules/datasets/actions';
+import { DatasetGetters } from '@/modules/datasets/getters';
+import { DatasetMutations } from '@/modules/datasets/mutations';
 import { experimentModule, ExperimentState } from '@/modules/experiment';
 import { ExperimentActions } from '@/modules/experiment/actions';
 import { ExperimentGetters } from '@/modules/experiment/getters';
@@ -12,15 +16,17 @@ import { Context, Module } from 'vuex-smart-module';
 
 
 export class WebSocketManager {
+  static mainContext: Context<Module<MainState, MainGetters, MainMutations, MainActions>>;
+  static experimentContext: Context<Module<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions>>;
+  static datasetContext: Context<Module<DatasetState, DatasetGetters, DatasetMutations, DatasetActions>>;
   static socket: WebSocket;
   static token: string;
   static protocol: string;
-  static mainContext: Context<Module<MainState, MainGetters, MainMutations, MainActions>>;
-  static experimentContext: Context<Module<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions>>;
 
   static init(store: Store<any>) {
     WebSocketManager.mainContext = mainModule.context(store);
     WebSocketManager.experimentContext = experimentModule.context(store);
+    WebSocketManager.datasetContext = datasetModule.context(store);
     WebSocketManager.token = WebSocketManager.mainContext.getters.token;
     WebSocketManager.protocol = self.location.protocol === 'https:' ? 'wss:' : 'ws:';
   }
@@ -48,10 +54,18 @@ export class WebSocketManager {
       const message = new WebSocketMessage(json);
       if (message.experimentId === WebSocketManager.experimentContext.getters.activeExperimentId) {
         switch (message.type) {
-          case 'data_imported': {
+          case 'slide_imported': {
             WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
             WebSocketManager.mainContext.mutations.addNotification({
-              content: 'Data successfully imported',
+              content: 'Slide successfully imported',
+              color: 'success',
+            });
+            break;
+          }
+          case 'dataset_imported': {
+            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
+            WebSocketManager.mainContext.mutations.addNotification({
+              content: 'Dataset successfully imported',
               color: 'success',
             });
             break;
