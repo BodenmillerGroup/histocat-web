@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import ujson
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
 from sqlalchemy.orm import Session
@@ -20,7 +20,7 @@ from app.modules.channel import crud as channel_crud
 from app.modules.dataset import crud as dataset_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.user.db import User
-from .models import AnalysisModel, ScatterPlotModel
+from .models import AnalysisModel, ScatterPlotModel, BoxPlotModel, PlotSeriesModel
 from app.core.redis_manager import redis_manager
 
 logger = logging.getLogger(__name__)
@@ -122,14 +122,14 @@ async def produce_segmentation_contours(
     return UJSONResponse(content=contours)
 
 
-@router.get("/scatter", response_model=ScatterPlotModel)
+@router.get("/scatterplot", response_model=ScatterPlotModel)
 async def read_scatter_plot_data(
     request: Request,
     dataset_id: int,
     acquisition_id: int,
-    marker_x: str = None,
-    marker_y: str = None,
-    marker_z: str = None,
+    marker_x: str,
+    marker_y: str,
+    marker_z: Optional[str] = None,
     marker_color: str = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -143,19 +143,73 @@ async def read_scatter_plot_data(
 
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_artifact = dataset.artifacts.get("cell")
+    channel_map = dataset.artifacts.get("channel_map")
     image_map = dataset.artifacts.get("image_map")
     image_number = image_map.get(str(acquisition_id))
-    if not cell_artifact or not image_number:
+    if not cell_artifact or not image_number or not channel_map:
         raise HTTPException(
             status_code=400,
             detail="The dataset does not have proper artifacts.",
         )
 
+    content = {}
     df = pd.read_feather(cell_artifact.get("location"))
     df = df[df["ImageNumber"] == image_number]
-    x = df[f'Intensity_MeanIntensityEdge_FullStack_c{marker_x}']
-    y = df[f'Intensity_MeanIntensityEdge_FullStack_c{marker_y}']
+    content["x"] = {
+        "marker": marker_x,
+        "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}'] * 2**16
+    }
+    content["y"] = {
+        "marker": marker_y,
+        "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}'] * 2**16
+    }
 
-    content = {"x": x, "y": y}
+    if marker_z:
+        content["z"] = {
+            "marker": marker_z,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}'] * 2**16
+        }
+
+    # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    return UJSONResponse(content=content)
+
+
+@router.get("/boxplot", response_model=List[PlotSeriesModel])
+async def read_box_plot_data(
+    request: Request,
+    dataset_id: int,
+    acquisition_id: int,
+    markers: List[str] = Query(None),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read box plot data from the dataset
+    """
+    # content = await redis_manager.cache.get(request.url.path)
+    # if content:
+    #     return UJSONResponse(content=ujson.loads(content))
+
+    dataset = dataset_crud.get(db, id=dataset_id)
+    cell_artifact = dataset.artifacts.get("cell")
+    channel_map = dataset.artifacts.get("channel_map")
+    image_map = dataset.artifacts.get("image_map")
+    image_number = image_map.get(str(acquisition_id))
+    if not cell_artifact or not image_number or not channel_map:
+        raise HTTPException(
+            status_code=400,
+            detail="The dataset does not have proper artifacts.",
+        )
+
+    content = []
+    df = pd.read_feather(cell_artifact.get("location"))
+    df = df[df["ImageNumber"] == image_number]
+
+    for marker in markers:
+        content.append({
+            "marker": marker,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}'] * 2 ** 16
+        })
+
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
     return UJSONResponse(content=content)

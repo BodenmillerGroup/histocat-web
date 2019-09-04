@@ -68,7 +68,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getScatterPlotData(payload: { datasetId: number, acquisitionId: number, markerX: number, markerY: number, markerZ?: number }) {
+  async getScatterPlotData(payload: { datasetId: number, acquisitionId: number, markerX: string, markerY: string, markerZ: string }) {
     try {
       const response = await api.getScatterPlotData(
         this.main!.getters.token,
@@ -79,6 +79,20 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.markerZ
       );
       this.mutations.setScatterPlotData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getBoxPlotData(payload: { datasetId: number, acquisitionId: number, markers: string[] }) {
+    try {
+      const response = await api.getBoxPlotData(
+        this.main!.getters.token,
+        payload.datasetId,
+        payload.acquisitionId,
+        payload.markers,
+      );
+      this.mutations.setBoxPlotData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

@@ -73,7 +73,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
 
     for channels_filename in locate(str(root_folder), f"*{CHANNELS_FULL_CSV_ENDING}"):
         channels_artifact = _import_channels_csv(db, channels_filename)
-        artifacts["channels"] = channels_artifact
+        artifacts["channel_map"] = channels_artifact
         break
 
     object_relationships_df, object_relationships_artifact = _import_object_relationships(db, src_folder, dst_folder)
@@ -112,7 +112,7 @@ def _import_image_csv(db: Session, src_folder: Path, dst_folder: Path):
 
 
 def _import_channels_csv(db: Session, src_uri: str):
-    df = pd.read_csv(src_uri)
+    df = pd.read_csv(src_uri, header=None)
     artifact = {}
     for index, row in df.iterrows():
         artifact[row[0]] = index + 1

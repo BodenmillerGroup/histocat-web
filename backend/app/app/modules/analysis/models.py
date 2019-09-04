@@ -22,9 +22,25 @@ class AnalysisModel(BaseModel):
     settings: SegmentationSettingsModel
 
 
+class PlotSeriesModel(BaseModel):
+    """
+    Scatter plot axis model
+    """
+    marker: str
+    data: List[float]
+
+
 class ScatterPlotModel(BaseModel):
     """
     Scatter plot model
     """
-    hist: List[int]
-    edges: List[float]
+    x: PlotSeriesModel
+    y: PlotSeriesModel
+    z: Optional[PlotSeriesModel]
+
+
+class BoxPlotModel(BaseModel):
+    """
+    Box plot model
+    """
+    series: List[PlotSeriesModel]

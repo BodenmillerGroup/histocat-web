@@ -1,10 +1,12 @@
 <template>
-  <v-layout row>
+  <v-layout
+    row
+    class="chart-container"
+  >
     <v-flex :class="mainClass">
       <v-chart
         :options="options"
         autoresize
-        class="scatter-plot-view"
       />
     </v-flex>
     <v-flex
@@ -21,9 +23,7 @@
             <v-select
               class="input-row"
               :items="items"
-              item-text="label"
               v-model="markerX"
-              return-object
               label="X"
               hint="X axis marker"
               persistent-hint
@@ -32,9 +32,7 @@
             <v-select
               class="input-row"
               :items="items"
-              item-text="label"
               v-model="markerY"
-              return-object
               label="Y"
               hint="Y axis marker"
               persistent-hint
@@ -43,18 +41,35 @@
             <v-select
               class="input-row"
               :items="items"
-              item-text="label"
               v-model="markerZ"
-              return-object
               label="Z"
               hint="Z axis marker"
               persistent-hint
+              clearable
             ></v-select>
             <v-switch
-              v-model="showRegressionLine"
-              label="Regression line"
-              hide-details
+              v-if="!markerZ"
+              v-model="showRegression"
+              label="Show regression"
             ></v-switch>
+            <v-select
+              v-if="!markerZ"
+              class="input-row"
+              :items="regressionTypes"
+              v-model="regressionType"
+              label="Regression type"
+              hide-details
+            ></v-select>
+            <v-text-field
+              v-if="!markerZ && regressionType === 'polynomial'"
+              type="number"
+              min="2"
+              step="1"
+              label="Polynomial order"
+              v-model.number="polynomialOrder"
+              :rules="[required]"
+              hide-details
+            ></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -77,17 +92,19 @@
   import { IScatterPlotData } from '@/modules/analysis/models';
   import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
-  import { IChannel } from '@/modules/experiment/models';
   import { mainModule } from '@/modules/main';
   import { settingsModule } from '@/modules/settings';
   import { required } from '@/utils';
   import * as echarts from 'echarts';
+  import 'echarts-gl';
   import ecStat from 'echarts-stat';
   import 'echarts/lib/chart/line';
   import 'echarts/lib/chart/scatter';
   import 'echarts/lib/component/toolbox';
   import 'echarts/lib/component/tooltip';
   import { Component, Vue, Watch } from 'vue-property-decorator';
+
+  type RegressionType = 'linear' | 'exponential' | 'logarithmic' | 'polynomial';
 
   @Component
   export default class ScatterPlotTab extends Vue {
@@ -98,15 +115,19 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     readonly required = required;
+    readonly regressionTypes: RegressionType[] = ['linear', 'polynomial'];
 
     valid = false;
 
     options: echarts.EChartOption = {};
 
-    showRegressionLine = false;
-    markerX: IChannel | null = null;
-    markerY: IChannel | null = null;
-    markerZ?: IChannel | null = null;
+    showRegression = false;
+    regressionType: RegressionType = 'linear';
+    polynomialOrder = 2;
+
+    markerX: string | null = null;
+    markerY: string | null = null;
+    markerZ: string | null = null;
 
     get showOptions() {
       return this.mainContext.getters.showOptions;
@@ -128,7 +149,7 @@
     }
 
     get items() {
-      return this.activeAcquisition && this.activeAcquisition.channels ? this.activeAcquisition.channels : [];
+      return this.activeDataset && this.activeDataset.artifacts['channel_map'] ? Object.keys(this.activeDataset.artifacts['channel_map']) : [];
     }
 
     async submit() {
@@ -146,9 +167,9 @@
         await this.analysisContext.actions.getScatterPlotData({
           datasetId: this.activeDataset.id,
           acquisitionId: this.activeAcquisition.id,
-          markerX: this.markerX!.meta['OrderNumber'],
-          markerY: this.markerY!.meta['OrderNumber'],
-          markerZ: undefined,
+          markerX: this.markerX!,
+          markerY: this.markerY!,
+          markerZ: this.markerZ ? this.markerZ : '',
         });
       }
     }
@@ -158,54 +179,60 @@
     }
 
     @Watch('scatterPlotData')
-    scatterPlotDataChanged(data: IScatterPlotData) {
-      if (!data) {
-        return;
+    scatterPlotDataChanged(plotData: IScatterPlotData) {
+      if (plotData) {
+        if (plotData.z) {
+          this.plot3D(plotData);
+        } else {
+          this.plot2D(plotData);
+        }
       }
+    }
 
-      const points = data.x.map((x, i) => {
-        return [x, data.y[i]];
+    private plot2D(plotData: IScatterPlotData) {
+      const points = plotData.x.data.map((x, i) => {
+        return [x, plotData.y.data[i]];
       });
 
       const series: any = [
         {
           type: 'scatter',
-          name: 'scatter',
+          name: 'Scatter2D',
           large: true,
           symbolSize: 4,
           encode: {
-            // Map dimension "amount" to the X axis.
-            x: 'X',
-            // Map dimension "product" to the Y axis.
-            y: 'Y',
-            tooltip: ['X', 'Y'],
+            x: plotData.x.marker,
+            y: plotData.y.marker,
+            tooltip: [plotData.x.marker, plotData.y.marker],
           },
         },
       ];
 
-      if (this.showRegressionLine) {
-        const myRegression = ecStat.regression('linear', points, 1);
-        myRegression.points.sort((a, b) => {
-          return a[0] - b[0];
-        });
-        series.push({
-          name: 'line',
-          type: 'line',
-          large: true,
-          showSymbol: false,
-          data: myRegression.points,
-        });
+      if (this.showRegression) {
+        series.push(this.getRegressionSeries(points));
       }
 
       this.options = {
         animation: false,
-        xAxis: {},
-        yAxis: {},
+        xAxis: {
+          type: 'value',
+          name: plotData.x.marker,
+          nameTextStyle: {
+            fontWeight: 'bold',
+          },
+        },
+        yAxis: {
+          type: 'value',
+          name: plotData.y.marker,
+          nameTextStyle: {
+            fontWeight: 'bold',
+          },
+        },
         dataset: {
           source: points,
           dimensions: [
-            { name: 'X', type: 'float' },
-            { name: 'Y', type: 'float' },
+            { name: plotData.x.marker, type: 'float' },
+            { name: plotData.y.marker, type: 'float' },
           ],
         },
         series: series,
@@ -228,11 +255,117 @@
         },
       };
     }
+
+    private getRegressionSeries(points: ecStat.InputData) {
+      const regression = ecStat.regression(this.regressionType, points, this.polynomialOrder);
+      regression.points.sort((a, b) => {
+        return a[0] - b[0];
+      });
+      return {
+        name: 'Regression',
+        type: 'line',
+        showSymbol: false,
+        smooth: true,
+        data: regression.points,
+        markPoint: {
+          itemStyle: {
+            normal: {
+              color: 'transparent',
+            },
+          },
+          label: {
+            normal: {
+              show: true,
+              position: 'left',
+              formatter: regression.expression,
+              textStyle: {
+                color: '#333',
+                fontSize: 14,
+              },
+            },
+          },
+          data: [{
+            coord: regression.points[regression.points.length - 1],
+          }],
+        },
+      };
+    }
+
+    private plot3D(plotData: IScatterPlotData) {
+      this.options = {
+        animation: false,
+        grid3D: {},
+        xAxis3D: {
+          type: 'value',
+          name: plotData.x.marker,
+          nameTextStyle: {
+            fontWeight: 'bold',
+          },
+        },
+        yAxis3D: {
+          type: 'value',
+          name: plotData.y.marker,
+          nameTextStyle: {
+            fontWeight: 'bold',
+          },
+        },
+        zAxis3D: {
+          type: 'value',
+          name: plotData.z!.marker,
+          nameTextStyle: {
+            fontWeight: 'bold',
+          },
+        },
+        dataset: {
+          source: [
+            plotData.x.data,
+            plotData.y.data,
+            plotData.z!.data,
+          ],
+          dimensions: [
+            { name: plotData.x.marker, type: 'float' },
+            { name: plotData.y.marker, type: 'float' },
+            { name: plotData.z!.marker, type: 'float' },
+          ],
+        },
+        series: [
+          {
+            type: 'scatter3D',
+            name: 'Scatter3D',
+            seriesLayoutBy: 'row',
+            symbolSize: 4,
+            encode: {
+              x: plotData.x.marker,
+              y: plotData.y.marker,
+              z: plotData.z!.marker,
+              tooltip: [plotData.x.marker, plotData.y.marker, plotData.z!.marker],
+            },
+          },
+        ],
+        tooltip: {
+          show: true,
+        },
+        toolbox: {
+          show: true,
+          right: '9%',
+          feature: {
+            restore: {
+              show: true,
+              title: 'Reset',
+            },
+            saveAsImage: {
+              show: true,
+              title: 'Export',
+            },
+          },
+        },
+      } as echarts.EChartOption;
+    }
   }
 </script>
 
 <style scoped>
-  .scatter-plot-view {
+  .chart-container {
     height: calc(100vh - 212px);
   }
 

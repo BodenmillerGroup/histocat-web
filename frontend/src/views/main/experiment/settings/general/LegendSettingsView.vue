@@ -11,7 +11,7 @@
       <v-text-field
         type="number"
         label="Font Scale"
-        v-model="legendFontScale"
+        v-model.number="legendFontScale"
         :rules="[required]"
         min="0"
         step="0.05"

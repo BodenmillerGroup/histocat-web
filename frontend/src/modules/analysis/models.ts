@@ -24,8 +24,13 @@ export interface IImageSegmentationSubmission {
   settings: IImageSegmentationSettings;
 }
 
+export interface IPlotSeries {
+  marker: string;
+  data: number[];
+}
+
 export interface IScatterPlotData {
-  x: number[];
-  y: number[];
-  z?: number[];
+  x: { marker: string, data: number[] };
+  y: { marker: string, data: number[] };
+  z?: { marker: string, data: number[] };
 }

@@ -16,7 +16,7 @@
       ></v-select>
       <v-select
         :items="kernelSizes"
-        v-model="kernelSize"
+        v-model.number="kernelSize"
         label="Kernel Size"
         hide-details
       ></v-select>
@@ -26,7 +26,7 @@
         min="0"
         step="0.1"
         label="Sigma"
-        v-model="sigma"
+        v-model.number="sigma"
         :rules="[required]"
         hide-details
       ></v-text-field>

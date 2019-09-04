@@ -14,7 +14,7 @@
         min="0"
         step="0.1"
         label="Scale"
-        v-model="scale"
+        v-model.number="scale"
         persistent-hint
         hint="1px to μm"
       ></v-text-field>
@@ -50,7 +50,7 @@
     }
 
     get scale() {
-      return this.settingsContext.getters.scalebar.settings.scale ? this.settingsContext.getters.scalebar.settings.scale : 1;
+      return this.settingsContext.getters.scalebar.settings.scale ? this.settingsContext.getters.scalebar.settings.scale : 1.0;
     }
 
     set scale(value: number) {

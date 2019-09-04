@@ -32,6 +32,7 @@
 
 <script lang="ts">
   import LoadingView from '@/components/LoadingView.vue';
+  import { analysisModule } from '@/modules/analysis';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
   import { WebSocketManager } from '@/utils/WebSocketManager';
@@ -53,6 +54,7 @@
   export default class ExperimentView extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly analysisContext = analysisModule.context(this.$store);
 
     tabExperiment = 0;
 
@@ -82,6 +84,7 @@
     beforeDestroy() {
       WebSocketManager.close();
       this.experimentContext.mutations.reset();
+      this.analysisContext.mutations.reset();
     }
   }
 </script>

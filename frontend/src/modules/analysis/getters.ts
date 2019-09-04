@@ -13,4 +13,8 @@ export class AnalysisGetters extends Getters<AnalysisState> {
   get scatterPlotData() {
     return this.state.scatterPlotData;
   }
+
+  get boxPlotData() {
+    return this.state.boxPlotData;
+  }
 }
