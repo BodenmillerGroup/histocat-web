@@ -37,11 +37,8 @@ export class MainMutations extends Mutations<MainState> {
     this.state.notifications = this.state.notifications.filter((notification) => notification !== payload);
   }
 
-  setShowWorkspace(payload: boolean) {
-    this.state.showWorkspace = payload;
-  }
-
-  setShowOptions(payload: boolean) {
-    this.state.showOptions = payload;
+  setLayout(payload: { showWorkspace: boolean, showOptions: boolean }) {
+    this.state.showWorkspace = payload.showWorkspace;
+    this.state.showOptions = payload.showOptions;
   }
 }

@@ -37,6 +37,7 @@ class ScatterPlotModel(BaseModel):
     x: PlotSeriesModel
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
+    heatmap: Optional[PlotSeriesModel]
 
 
 class BoxPlotModel(BaseModel):

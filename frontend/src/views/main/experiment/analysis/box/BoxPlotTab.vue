@@ -1,17 +1,16 @@
 <template>
-  <v-layout
-    row
+  <v-row no-gutters
     class="chart-container"
   >
-    <v-flex :class="mainClass">
+    <v-col :cols="columns">
       <v-chart
         :options="options"
         autoresize
       />
-    </v-flex>
-    <v-flex
+    </v-col>
+    <v-col
       v-if="showOptions"
-      md3
+      cols="3"
     >
       <v-card tile>
         <v-card-title>Box Plot Settings</v-card-title>
@@ -60,8 +59,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-flex>
-  </v-layout>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -95,11 +94,8 @@
       return this.mainContext.getters.showOptions;
     }
 
-    get mainClass() {
-      if (this.showOptions) {
-        return 'md9';
-      }
-      return 'md12';
+    get columns() {
+      return this.showOptions ? 9 : 12;
     }
 
     get activeAcquisition() {
@@ -221,7 +217,7 @@
 
 <style scoped>
   .chart-container {
-    height: calc(100vh - 212px);
+    height: calc(100vh - 154px);
   }
 </style>
 

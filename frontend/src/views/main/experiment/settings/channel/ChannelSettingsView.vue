@@ -1,37 +1,76 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header v-slot="{ open }" hide-actions>
-      <v-layout column>
-        <v-layout justify-space-between>
+    <v-expansion-panel-header
+      hide-actions
+    >
+      <v-container fluid class="ma-0 pa-0">
+        <v-row no-gutters>
           <b>{{ label }}</b>
-          <input
-            type="color"
-            v-model.lazy="color"
-            @click.stop
-          />
-        </v-layout>
-        <v-layout justify-space-between>
-          <v-range-slider
-            :value="levels"
-            :max="channel.max_intensity"
-            :min="channel.min_intensity"
-            :step="1"
-            thumb-label
-            :thumb-size="24"
-            @click.stop
-            @end="submitLimit"
-            hide-details
-          ></v-range-slider>
+          <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn class="ma-2" outlined fab x-small color="blue" @click.stop="setSharedChannelLevels" v-on="on">
+              <v-btn
+                icon
+                x-small
+                color="primary"
+                @click.stop="setSharedChannelLevels"
+                v-on="on">
                 <v-icon small>mdi-share</v-icon>
               </v-btn>
             </template>
             <span>Share levels</span>
           </v-tooltip>
-        </v-layout>
-      </v-layout>
+          <input
+            type="color"
+            v-model.lazy="color"
+            @click.stop
+            class="ml-1 pa-0"
+          />
+        </v-row>
+        <v-row no-gutters>
+          <v-col>
+            <v-range-slider
+              v-model="levels"
+              :max="channel.max_intensity"
+              :min="channel.min_intensity"
+              :step="1"
+              @click.stop
+              @end="submitLimit"
+              hide-details
+              class="align-center"
+            >
+              <template v-slot:prepend>
+                <v-text-field
+                  v-model.number="levels[0]"
+                  @change="submitLimit"
+                  @click.stop
+                  class="mt-0 pt-0 text-input"
+                  hide-details
+                  single-line
+                  type="number"
+                  :max="channel.max_intensity"
+                  :min="channel.min_intensity"
+                  :step="1"
+                ></v-text-field>
+              </template>
+              <template v-slot:append>
+                <v-text-field
+                  v-model.number="levels[1]"
+                  @change="submitLimit"
+                  @click.stop
+                  class="mt-0 pt-0 text-input"
+                  hide-details
+                  single-line
+                  type="number"
+                  :max="channel.max_intensity"
+                  :min="channel.min_intensity"
+                  :step="1"
+                ></v-text-field>
+              </template>
+            </v-range-slider>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <ChannelHistogramView :channel="channel"></ChannelHistogramView>
@@ -56,6 +95,9 @@
     @Prop(Object) channel!: IChannel;
 
     color = this.channel ? this.metalColor : '#ffffff';
+    levels: number[] = this.settings && this.settings.levels ?
+      [this.settings.levels.min, this.settings.levels.max] :
+      [this.channel.min_intensity, this.channel.max_intensity];
 
     get settings() {
       return this.settingsContext.getters.getChannelSettings(this.channel.id);
@@ -67,26 +109,18 @@
         this.channel.label;
     }
 
-    get levels() {
-      if (this.settings && this.settings.levels) {
-        return [this.settings.levels.min, this.settings.levels.max];
-      } else {
-        return [this.channel.min_intensity, this.channel.max_intensity];
-      }
-    }
-
-    submitLimit(range: number[]) {
+    submitLimit() {
       let settings = this.settings;
       if (!settings) {
         settings = {
           id: this.channel.id,
           customLabel: this.channel.label,
-          levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+          levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) },
         };
       } else {
         settings = {
           ...settings,
-          levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+          levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) },
         };
       }
       this.settingsContext.mutations.setChannelSettings(settings);
@@ -117,3 +151,9 @@
     }
   }
 </script>
+
+<style scoped>
+  .text-input {
+    width: 55px
+  }
+</style>

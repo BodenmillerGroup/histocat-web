@@ -4,15 +4,17 @@
     class="ma-6 pa-1"
   >
     <v-card-title>
-      <v-layout column>
-        <h5 class="headline">{{experiment.name}}</h5>
-        <span class="caption"><v-icon small>mdi-calendar-outline</v-icon> {{createdAt}}</span>
-      </v-layout>
+      <v-row no-gutters>
+        <v-col>
+          <h5 class="headline">{{experiment.name}}</h5>
+          <span class="caption"><v-icon small>mdi-calendar-outline</v-icon> {{createdAt}}</span>
+        </v-col>
+      </v-row>
     </v-card-title>
-    <v-card-text>
+    <v-card-text v-if="experiment.description">
       {{experiment.description}}
     </v-card-text>
-    <v-card-text>
+    <v-card-text v-if="experiment.tags">
       <v-chip
         :key="item"
         v-for="item in experiment.tags"
@@ -27,7 +29,6 @@
     <v-card-actions>
       <v-btn
         color="primary"
-        dark
         :to="{name: 'main-experiment', params: {id: experiment.id}}"
       >
         Open
@@ -49,9 +50,9 @@
 </template>
 
 <script lang="ts">
+  import { IExperiment } from '@/modules/experiment/models';
   import { IUserProfile } from '@/modules/user/models';
   import { Component, Prop, Vue } from 'vue-property-decorator';
-  import { IExperiment } from '@/modules/experiment/models';
 
   @Component
   export default class ExperimentCard extends Vue {

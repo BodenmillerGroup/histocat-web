@@ -2,12 +2,13 @@
   <v-card
     tile
     width="60"
-    class="ma-auto"
+    elevation="1"
   >
     <v-card-title class="caption">{{caption}}</v-card-title>
     <v-card-text>
       <svg
         ref="svg"
+        class="svg"
         shape-rendering="optimizeSpeed"
       ></svg>
     </v-card-text>
@@ -80,8 +81,14 @@
       // Draw the rectangle and fill with gradient
       svg.append('rect')
         .attr('width', 20)
-        .attr('height', 150)
+        .attr('height', 100)
         .style('fill', `url(#linear-gradient-${this.channel.id})`);
     }
   }
 </script>
+
+<style scoped>
+  .svg {
+    height: 100px;
+  }
+</style>

@@ -3,30 +3,25 @@
   <v-container
     v-else
     fluid
-    grid-list-md
-    pa-1
+    class="px-1 py-0"
   >
-    <v-layout row>
-      <v-flex v-show="showWorkspace" md3>
+    <v-row no-gutters>
+      <v-col v-show="showWorkspace" cols="3" class="pr-1">
         <WorkspaceView :experiment="experimentData"/>
-      </v-flex>
-      <v-flex :class="viewerClass">
+      </v-col>
+      <v-col :cols="viewerColumns">
         <v-tabs v-model="tabExperiment">
           <v-tab>Image</v-tab>
           <v-tab>Analysis</v-tab>
-          <!--          <v-tab>Workflow</v-tab>-->
           <v-tab-item>
             <ImageView/>
           </v-tab-item>
           <v-tab-item>
             <AnalysisView/>
           </v-tab-item>
-          <!--          <v-tab-item>-->
-          <!--            <WorkflowTab/>-->
-          <!--          </v-tab-item>-->
         </v-tabs>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -38,7 +33,6 @@
   import { WebSocketManager } from '@/utils/WebSocketManager';
   import AnalysisView from '@/views/main/experiment/analysis/AnalysisView.vue';
   import ImageView from '@/views/main/experiment/image/ImageView.vue';
-  // import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';
   import WorkspaceView from '@/views/main/experiment/workspace/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
@@ -46,7 +40,6 @@
     components: {
       AnalysisView,
       WorkspaceView,
-      // WorkflowTab,
       ImageView,
       LoadingView,
     },
@@ -70,8 +63,8 @@
       return this.mainContext.getters.showWorkspace;
     }
 
-    get viewerClass() {
-      return this.showWorkspace ? 'md9' : 'md12';
+    get viewerColumns() {
+      return this.showWorkspace ? 9 : 12;
     }
 
     async mounted() {
@@ -83,8 +76,8 @@
 
     beforeDestroy() {
       WebSocketManager.close();
-      this.experimentContext.mutations.reset();
-      this.analysisContext.mutations.reset();
+      // this.experimentContext.mutations.reset();
+      // this.analysisContext.mutations.reset();
     }
   }
 </script>

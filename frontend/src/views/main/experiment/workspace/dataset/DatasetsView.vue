@@ -11,11 +11,10 @@
         <span>Refresh datasets</span>
       </v-tooltip>
     </v-toolbar>
-    <v-card-text>
-      <v-list
+    <v-list
         dense
         two-line
-        class="overflow-y-auto scroll-view"
+        class="overflow-y-auto scroll-view pa-0"
       >
         <v-list-item-group
           v-model="selected"
@@ -74,7 +73,6 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
-    </v-card-text>
   </v-card>
 </template>
 
@@ -145,6 +143,6 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(100vh - 184px);
+    height: calc(100vh - 148px);
   }
 </style>

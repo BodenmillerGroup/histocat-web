@@ -8,49 +8,51 @@
       app
       width="250"
     >
-      <v-layout column fill-height>
-        <v-list>
-          <v-subheader>Main</v-subheader>
-          <v-list-item to="/main/dashboard">
-            <v-list-item-action>
-              <v-icon>mdi-view-dashboard-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item>
-        </v-list>
-        <v-divider></v-divider>
-        <v-list subheader v-show="hasAdminAccess">
-          <v-subheader>Admin</v-subheader>
-          <v-list-item to="/main/admin/users/all">
-            <v-list-item-action>
-              <v-icon>mdi-account-multiple-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-title>Manage Users</v-list-item-title>
-          </v-list-item>
-          <v-list-item to="/main/admin/experiments/all">
-            <v-list-item-action>
-              <v-icon>mdi-folder-multiple-outline</v-icon>
-            </v-list-item-action>
-            <v-list-item-title>Manage Experiments</v-list-item-title>
-          </v-list-item>
-          <v-list-item to="/main/admin/workflows/all">
-            <v-list-item-action>
-              <v-icon>mdi-sitemap</v-icon>
-            </v-list-item-action>
-            <v-list-item-title>Manage Workflows</v-list-item-title>
-          </v-list-item>
-        </v-list>
-        <v-spacer></v-spacer>
-        <v-list>
+      <v-row no-gutters>
+        <v-col>
+          <v-list>
+            <v-subheader>Main</v-subheader>
+            <v-list-item to="/main/dashboard">
+              <v-list-item-action>
+                <v-icon>mdi-view-dashboard-outline</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Dashboard</v-list-item-title>
+            </v-list-item>
+          </v-list>
           <v-divider></v-divider>
-          <v-list-item @click="switchMiniDrawer">
-            <v-list-item-action>
-              <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"></v-icon>
-            </v-list-item-action>
-            <v-list-item-title>Collapse</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-layout>
+          <v-list subheader v-show="hasAdminAccess">
+            <v-subheader>Admin</v-subheader>
+            <v-list-item to="/main/admin/users/all">
+              <v-list-item-action>
+                <v-icon>mdi-account-multiple-outline</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Manage Users</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/main/admin/experiments/all">
+              <v-list-item-action>
+                <v-icon>mdi-folder-multiple-outline</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Manage Experiments</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/main/admin/workflows/all">
+              <v-list-item-action>
+                <v-icon>mdi-sitemap</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Manage Workflows</v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <v-spacer></v-spacer>
+          <v-list>
+            <v-divider></v-divider>
+            <v-list-item @click="switchMiniDrawer">
+              <v-list-item-action>
+                <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"></v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Collapse</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-col>
+      </v-row>
     </v-navigation-drawer>
     <v-app-bar
       app
@@ -148,8 +150,10 @@
 
     @Watch('views')
     viewsChanged(views: string[]) {
-      this.mainContext.mutations.setShowWorkspace(views.includes('workspace'));
-      this.mainContext.mutations.setShowOptions(views.includes('options'));
+      this.mainContext.mutations.setLayout({
+        showWorkspace: views.includes('workspace'),
+        showOptions: views.includes('options'),
+      });
     }
 
     get showWorkspace() {

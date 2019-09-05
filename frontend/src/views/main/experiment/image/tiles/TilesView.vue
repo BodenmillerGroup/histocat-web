@@ -15,14 +15,13 @@
             class="grey lighten-2"
           >
             <template v-slot:placeholder>
-              <v-layout
-                fill-height
-                align-center
-                justify-center
-                ma-0
+              <v-row
+                class="fill-height ma-0"
+                align="center"
+                justify="center"
               >
                 <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-              </v-layout>
+              </v-row>
             </template>
           </v-img>
         </v-card>

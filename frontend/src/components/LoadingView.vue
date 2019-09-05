@@ -1,12 +1,14 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout column align-center justify-center>
-      <v-progress-circular
-        indeterminate
-        color="primary"
-      />
-      <h5>{{text}}</h5>
-    </v-layout>
+  <v-container fluid>
+    <v-row>
+      <v-col align="center" justify="center">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        />
+        <h5>{{text}}</h5>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

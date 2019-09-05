@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-# Properties to receive via API on creation
 class DatasetCreateModel(BaseModel):
     experiment_id: int
     user_id: int
@@ -25,7 +24,6 @@ class DatasetUpdateModel(BaseModel):
     errors: Optional[dict]
 
 
-# Shared properties
 class DatasetModel(BaseModel):
     id: int
     experiment_id: int

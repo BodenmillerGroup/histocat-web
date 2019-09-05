@@ -1,16 +1,15 @@
 <template>
-  <v-flex
-    column
-    shrink
+  <v-col
     id="intensity-view-container"
+    class="shrink"
   >
     <IntensityBar
       v-for="channel in selectedChannels"
       :key="channel.id"
       :channel="channel"
-      class="mb-1"
+      class="mb-1 mx-1"
     ></IntensityBar>
-  </v-flex>
+  </v-col>
 </template>
 
 <script lang="ts">

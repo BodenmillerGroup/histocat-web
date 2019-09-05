@@ -1,17 +1,16 @@
 <template>
-  <v-layout
-    row
-    class="chart-container"
-  >
-    <v-flex :class="mainClass">
+  <v-row no-gutters class="chart-container">
+    <v-col
+      :cols="columns"
+    >
       <v-chart
         :options="options"
         autoresize
       />
-    </v-flex>
-    <v-flex
+    </v-col>
+    <v-col
       v-if="showOptions"
-      md3
+      cols="3"
     >
       <v-card tile>
         <v-card-title>Scatter Plot Settings</v-card-title>
@@ -44,6 +43,17 @@
               v-model="markerZ"
               label="Z"
               hint="Z axis marker"
+              persistent-hint
+              clearable
+            ></v-select>
+            <v-select
+              class="input-row"
+              :items="heatmaps"
+              v-model="heatmap"
+              label="Heatmap"
+              hint="Heatmap marker"
+              item-text="label"
+              item-value="value"
               persistent-hint
               clearable
             ></v-select>
@@ -83,8 +93,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-flex>
-  </v-layout>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -128,16 +138,18 @@
     markerX: string | null = null;
     markerY: string | null = null;
     markerZ: string | null = null;
+    heatmap: string | null = null;
+
+    get heatmaps() {
+      return this.activeDataset && this.activeDataset.artifacts['neighbors_columns'] ? this.activeDataset.artifacts['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
+    }
 
     get showOptions() {
       return this.mainContext.getters.showOptions;
     }
 
-    get mainClass() {
-      if (this.showOptions) {
-        return 'md9';
-      }
-      return 'md12';
+    get columns() {
+      return this.showOptions ? 9 : 12;
     }
 
     get activeAcquisition() {
@@ -366,7 +378,7 @@
 
 <style scoped>
   .chart-container {
-    height: calc(100vh - 212px);
+    height: calc(100vh - 154px);
   }
 
   .input-row {

@@ -202,7 +202,7 @@
 
 <style scoped>
   .scroll-view {
-    height: calc(100vh - 200px);
+    height: calc(100vh - 196px);
   }
 </style>
 

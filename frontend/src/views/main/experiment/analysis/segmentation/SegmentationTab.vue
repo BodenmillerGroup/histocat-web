@@ -1,5 +1,5 @@
 <template>
-  <v-flex column>
+  <v-col>
     <v-toolbar dense flat>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
@@ -26,23 +26,23 @@
         </v-list>
       </v-menu>
     </v-toolbar>
-    <v-layout row>
-      <v-flex :class="mainClass">
+    <v-row no-gutters>
+      <v-col :cols="columns">
         <keep-alive>
           <SegmentationView
             class="segmentation-view"
             ref="segmentationView"
           ></SegmentationView>
         </keep-alive>
-      </v-flex>
-      <v-flex
+      </v-col>
+      <v-col
         v-if="showOptions"
-        md4
+        cols="4"
       >
         <SegmentationSettingsView/>
-      </v-flex>
-    </v-layout>
-  </v-flex>
+      </v-col>
+    </v-row>
+  </v-col>
 </template>
 
 <script lang="ts">
@@ -66,11 +66,8 @@
       return this.mainContext.getters.showOptions;
     }
 
-    get mainClass() {
-      if (this.showOptions) {
-        return 'md8';
-      }
-      return 'md12';
+    get columns() {
+      return this.showOptions ? 8 : 12;
     }
 
     exportImage(format: ExportFormat) {

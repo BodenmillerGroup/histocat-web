@@ -69,4 +69,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   get channelStackImage() {
     return this.state.channelStackImage;
   }
+
+  get colorizeMaskInProgress() {
+    return this.state.colorizeMaskInProgress;
+  }
 }

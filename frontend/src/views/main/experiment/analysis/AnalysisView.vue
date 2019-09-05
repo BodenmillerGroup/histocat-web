@@ -1,6 +1,6 @@
 <template>
-  <v-layout row>
-    <v-flex>
+  <v-row no-gutters>
+    <v-col>
       <v-tabs v-model="tab">
         <v-tab>Scatter Plot</v-tab>
         <v-tab>Box Plot</v-tab>
@@ -15,8 +15,8 @@
           <SegmentationTab/>
         </v-tab-item>
       </v-tabs>
-    </v-flex>
-  </v-layout>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">

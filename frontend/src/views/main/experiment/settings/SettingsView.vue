@@ -8,7 +8,7 @@
           <ChannelSettingsView v-for="channel in selectedChannels" :key="channel.id" :channel="channel"/>
         </v-expansion-panels>
       </v-tab-item>
-      <v-tab-item class="overflow-y-auto scroll-view">
+      <v-tab-item class="overflow-y-auto channel-settings-view">
         <GeneralSettingsView/>
       </v-tab-item>
     </v-tabs>
@@ -37,6 +37,6 @@
 
 <style scoped>
   .channel-settings-view {
-    height: calc(50vh - 140px);
+    height: calc(50vh - 124px);
   }
 </style>

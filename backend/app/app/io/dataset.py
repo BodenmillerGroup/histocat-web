@@ -84,6 +84,10 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
     if cell_artifact:
         artifacts["cell"] = cell_artifact
 
+    # Register heatmap columns
+    neighbors_cols = [col for col in cell_df.columns if 'Neighbors_' in col]
+    artifacts["neighbors_columns"] = neighbors_cols
+
     acquisition_metadata_df, acquisition_metadata_artifact = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
     if acquisition_metadata_artifact:
         artifacts["acquisition_metadata"] = acquisition_metadata_artifact

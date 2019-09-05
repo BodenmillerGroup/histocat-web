@@ -1,6 +1,6 @@
 <template>
-  <v-layout row>
-    <v-flex :class="mainClass">
+  <v-row no-gutters>
+    <v-col :cols="columns">
       <v-tabs v-model="tab">
         <v-tab>Blend</v-tab>
         <v-tab>Tiles</v-tab>
@@ -11,16 +11,20 @@
           <TilesView/>
         </v-tab-item>
       </v-tabs>
-    </v-flex>
-    <v-flex v-show="showOptions" md3>
-      <v-flex>
-        <ChannelsView/>
-      </v-flex>
-      <v-flex>
-        <SettingsView/>
-      </v-flex>
-    </v-flex>
-  </v-layout>
+    </v-col>
+    <v-col v-show="showOptions" cols="3">
+      <v-row no-gutters>
+        <v-col>
+          <ChannelsView/>
+        </v-col>
+      </v-row>
+      <v-row dense>
+        <v-col>
+          <SettingsView/>
+        </v-col>
+      </v-row>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -50,11 +54,11 @@
       return this.mainContext.getters.showOptions;
     }
 
-    get mainClass() {
+    get columns() {
       if (this.showOptions) {
-        return 'md9';
+        return 9;
       }
-      return 'md12';
+      return 12;
     }
   }
 </script>

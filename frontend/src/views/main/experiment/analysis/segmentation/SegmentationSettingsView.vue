@@ -86,10 +86,6 @@
 
     readonly required = required;
 
-    get selectedChannels() {
-      return this.experimentContext.getters.selectedChannels;
-    }
-
     process() {
       const settings = {
         result_type: this.resultType,

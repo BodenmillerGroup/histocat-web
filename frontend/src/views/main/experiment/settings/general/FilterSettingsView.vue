@@ -1,10 +1,11 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>
+    <v-expansion-panel-header class="pt-0">
       <v-switch
         v-model="apply"
         label="Apply Filter"
         hide-details
+        @click.stop
       ></v-switch>
     </v-expansion-panel-header>
     <v-expansion-panel-content>

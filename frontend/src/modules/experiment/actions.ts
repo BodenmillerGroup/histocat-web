@@ -155,6 +155,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     params['mask']['apply'] = true;
     params['mask']['colorize'] = true;
     try {
+      this.mutations.setColorizeMaskInProgress(true);
       const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
       const blob = await response.blob();
       const reader = new FileReader();
@@ -164,6 +165,8 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
+    } finally {
+      this.mutations.setColorizeMaskInProgress(false);
     }
   }
 
