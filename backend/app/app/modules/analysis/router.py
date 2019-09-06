@@ -4,10 +4,10 @@ from typing import List, Optional, Tuple
 import cv2
 import numpy as np
 import pandas as pd
-import ujson
 from fastapi import APIRouter, Depends, HTTPException, Query
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
+from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
@@ -17,11 +17,10 @@ from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
 from app.modules.channel import crud as channel_crud
-from app.modules.dataset import crud as dataset_crud
 from app.modules.channel.models import ChannelSettingsModel
+from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
-from .models import AnalysisModel, ScatterPlotModel, BoxPlotModel, PlotSeriesModel
-from app.core.redis_manager import redis_manager
+from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel
 
 logger = logging.getLogger(__name__)
 
@@ -124,13 +123,12 @@ async def produce_segmentation_contours(
 
 @router.get("/scatterplot", response_model=ScatterPlotModel)
 async def read_scatter_plot_data(
-    request: Request,
     dataset_id: int,
     acquisition_id: int,
     marker_x: str,
     marker_y: str,
     marker_z: Optional[str] = None,
-    marker_color: str = None,
+    heatmap: Optional[str] = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -152,22 +150,30 @@ async def read_scatter_plot_data(
             detail="The dataset does not have proper artifacts.",
         )
 
-    content = {}
     df = pd.read_feather(cell_artifact.get("location"))
     df = df[df["ImageNumber"] == image_number]
-    content["x"] = {
-        "marker": marker_x,
-        "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}'] * 2**16
-    }
-    content["y"] = {
-        "marker": marker_y,
-        "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}'] * 2**16
+
+    content = {
+        "x": {
+            "label": marker_x,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}'] * 2 ** 16
+        },
+        "y": {
+            "label": marker_y,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}'] * 2 ** 16
+        },
     }
 
     if marker_z:
         content["z"] = {
-            "marker": marker_z,
-            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}'] * 2**16
+            "label": marker_z,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}'] * 2 ** 16
+        }
+
+    if heatmap:
+        content["heatmap"] = {
+            "label": heatmap,
+            "data": df[heatmap]
         }
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
@@ -176,7 +182,6 @@ async def read_scatter_plot_data(
 
 @router.get("/boxplot", response_model=List[PlotSeriesModel])
 async def read_box_plot_data(
-    request: Request,
     dataset_id: int,
     acquisition_id: int,
     markers: List[str] = Query(None),
@@ -207,9 +212,70 @@ async def read_box_plot_data(
 
     for marker in markers:
         content.append({
-            "marker": marker,
+            "label": marker,
             "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}'] * 2 ** 16
         })
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    return UJSONResponse(content=content)
+
+
+@router.get("/pca", response_model=PCAModel)
+async def read_pca_data(
+    dataset_id: int,
+    acquisition_id: int,
+    n_components: int,
+    heatmap: Optional[str] = None,
+    markers: List[str] = Query(None),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Calculate Principal Component Analysis data for the dataset
+    """
+
+    dataset = dataset_crud.get(db, id=dataset_id)
+    cell_artifact = dataset.artifacts.get("cell")
+    channel_map = dataset.artifacts.get("channel_map")
+    image_map = dataset.artifacts.get("image_map")
+    image_number = image_map.get(str(acquisition_id))
+    if not cell_artifact or not image_number or not channel_map:
+        raise HTTPException(
+            status_code=400,
+            detail="The dataset does not have proper artifacts.",
+        )
+
+    df = pd.read_feather(cell_artifact.get("location"))
+    df = df[df["ImageNumber"] == image_number]
+
+    features = []
+    for marker in markers:
+        features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
+
+    pca = PCA(n_components=n_components)
+    principal_components = pca.fit_transform(df[features].values * 2**16)
+
+    content = {
+        "x": {
+            "label": "PC1",
+            "data": principal_components[:, 0]
+        },
+        "y": {
+            "label": "PC2",
+            "data": principal_components[:, 1],
+        },
+    }
+
+    if n_components == 3:
+        content["z"] = {
+            "label": "PC3",
+            "data": principal_components[:, 2],
+        }
+
+    if heatmap:
+        content["heatmap"] = {
+            "label": heatmap,
+            "data": df[heatmap]
+        }
+
     return UJSONResponse(content=content)

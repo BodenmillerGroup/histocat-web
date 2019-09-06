@@ -1,6 +1,6 @@
 import { apiUrl } from '@/env';
 import ky from 'ky';
-import { IImageSegmentationSubmission, IPlotSeries, IScatterPlotData } from './models';
+import { IImageSegmentationSubmission, IPCAData, IPlotSeries, IScatterPlotData } from './models';
 
 export const api = {
   async produceSegmentationImage(token: string, params: IImageSegmentationSubmission) {
@@ -25,9 +25,10 @@ export const api = {
     acquisitionId: number,
     markerX: string,
     markerY: string,
-    markerZ: string
+    markerZ: string,
+    heatmap: string,
   ) {
-    return ky.get(`${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}`, {
+    return ky.get(`${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap=${heatmap}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -45,5 +46,20 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
     }).json<IPlotSeries[]>();
+  },
+  async getPCAData(
+    token: string,
+    datasetId: number,
+    acquisitionId: number,
+    nComponents: number,
+    heatmap: string,
+    markers: string[],
+  ) {
+    const markersArray = markers.map(marker => `&markers=${marker}`);
+    return ky.get(`${apiUrl}/api/v1/analysis/pca?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&n_components=${nComponents}&heatmap=${heatmap}&markers=${markersArray.join('')}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IPCAData>();
   },
 };

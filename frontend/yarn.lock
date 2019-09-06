@@ -711,10 +711,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@mdi/font@4.2.95":
-  version "4.2.95"
-  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-4.2.95.tgz#7fd524746979a37dc7c3fd7a9f9cea1bf58205ba"
-  integrity sha512-pCJ9hR8yQH1tMk6KTZYfJsZkI/XQ1rR9Fe/q50ATDDVUoDk7Wl7n9WqT6dYWn0mnCLgrTQl/WNjyrnTo5rKu+A==
+"@mdi/font@4.3.95":
+  version "4.3.95"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-4.3.95.tgz#0d546839c4be387eb11754c63a0ed0c966110fbf"
+  integrity sha512-J5l+3bQLBGwYA8EVeazA+YgNTIBpfRgviti8Jyjk2yMAiRDVNlafFbv1j1xlttFLMigXoxZ9J7plyfOYAuyjGA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -3164,10 +3164,10 @@ cwl-svg@2.1.5:
   dependencies:
     core-js "^2.5.1"
 
-cwlts@1.15.35:
-  version "1.15.35"
-  resolved "https://registry.yarnpkg.com/cwlts/-/cwlts-1.15.35.tgz#4ae10f900acf37f05407daf055848cc5381f0ee5"
-  integrity sha512-jIc2DnGbH7I9+as0R7yqmbmsKyo0GWSMwJa3mhZ5hAP3kB7l+ZkudgREGv8rQFMqZ06bvduh917YbzVK/DWSMQ==
+cwlts@1.15.36:
+  version "1.15.36"
+  resolved "https://registry.yarnpkg.com/cwlts/-/cwlts-1.15.36.tgz#ee4e0889d087bfd6627a72c082ae3a1cfc0f966e"
+  integrity sha512-O1c2B00OB+J2U9Ar6sG9EZyjI4+PBmGPt1kqZNacXDk4e0t1vS8FOzL7EmEV8645FbhbjfOWv6SuTdnTdJqNqw==
   dependencies:
     ajv "^6.1.1"
     js-yaml "^3.10.0"
@@ -9974,10 +9974,10 @@ vue@2.6.10:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
 
-vuetify@2.0.14:
-  version "2.0.14"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.14.tgz#aa0da805075a96662b14d9274c6bb38b7b7212ee"
-  integrity sha512-s7gNKelJT+J4eEpDTJE+Bl7jT9KHy1UQXJsJVL06lHF7JAscsc+hY/OY3xGUvkBOUqslK/r9wS23VG3/9pTZPA==
+vuetify@2.0.15:
+  version "2.0.15"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.15.tgz#aa04f5e9123a895d6f1f3162d76d8755555bec29"
+  integrity sha512-3x/YwEaf7nCHDBfAeB1HZZ9ltgX3Bu9zhfCmq3ZGbuylLrKJMR4bp5xY3chVq1DAalXs0eqV69TbEkkSt1Iwkg==
 
 vuex-persist@2.1.0:
   version "2.1.0"

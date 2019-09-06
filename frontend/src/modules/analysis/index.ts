@@ -1,7 +1,7 @@
 import { Module } from 'vuex-smart-module';
 import { AnalysisActions } from './actions';
 import { AnalysisGetters } from './getters';
-import { IPlotSeries, IScatterPlotData } from './models';
+import { IPCAData, IPlotSeries, IScatterPlotData } from './models';
 import { AnalysisMutations } from './mutations';
 
 export class AnalysisState {
@@ -9,6 +9,7 @@ export class AnalysisState {
   segmentationContours: number[][] = [];
   scatterPlotData: IScatterPlotData | null = null;
   boxPlotData: IPlotSeries[] = [];
+  pcaData: IPCAData | null = null;
 }
 
 export const analysisModule = new Module({

@@ -68,7 +68,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getScatterPlotData(payload: { datasetId: number, acquisitionId: number, markerX: string, markerY: string, markerZ: string }) {
+  async getScatterPlotData(payload: { datasetId: number, acquisitionId: number, markerX: string, markerY: string, markerZ: string, heatmap: string }) {
     try {
       const response = await api.getScatterPlotData(
         this.main!.getters.token,
@@ -76,7 +76,8 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.acquisitionId,
         payload.markerX,
         payload.markerY,
-        payload.markerZ
+        payload.markerZ,
+        payload.heatmap,
       );
       this.mutations.setScatterPlotData(response);
     } catch (error) {
@@ -93,6 +94,22 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.markers,
       );
       this.mutations.setBoxPlotData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getPCAData(payload: { datasetId: number, acquisitionId: number, nComponents: number, heatmap: string, markers: string[] }) {
+    try {
+      const response = await api.getPCAData(
+        this.main!.getters.token,
+        payload.datasetId,
+        payload.acquisitionId,
+        payload.nComponents,
+        payload.heatmap,
+        payload.markers,
+      );
+      this.mutations.setPCAData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

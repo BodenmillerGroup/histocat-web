@@ -25,12 +25,21 @@ export interface IImageSegmentationSubmission {
 }
 
 export interface IPlotSeries {
-  marker: string;
+  label: string;
   data: number[];
 }
 
 export interface IScatterPlotData {
-  x: { marker: string, data: number[] };
-  y: { marker: string, data: number[] };
-  z?: { marker: string, data: number[] };
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
+export interface IPCAData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+  explained_variance_ratio?: number[];
 }

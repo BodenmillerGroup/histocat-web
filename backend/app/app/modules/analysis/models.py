@@ -26,7 +26,7 @@ class PlotSeriesModel(BaseModel):
     """
     Scatter plot axis model
     """
-    marker: str
+    label: str
     data: List[float]
 
 
@@ -45,3 +45,14 @@ class BoxPlotModel(BaseModel):
     Box plot model
     """
     series: List[PlotSeriesModel]
+
+
+class PCAModel(BaseModel):
+    """
+    PCA plot model
+    """
+    x: PlotSeriesModel
+    y: PlotSeriesModel
+    z: Optional[PlotSeriesModel]
+    heatmap: Optional[PlotSeriesModel]
+    explained_variance_ratio: Optional[List[float]]

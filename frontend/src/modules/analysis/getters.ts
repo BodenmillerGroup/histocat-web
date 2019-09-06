@@ -17,4 +17,8 @@ export class AnalysisGetters extends Getters<AnalysisState> {
   get boxPlotData() {
     return this.state.boxPlotData;
   }
+
+  get pcaData() {
+    return this.state.pcaData;
+  }
 }

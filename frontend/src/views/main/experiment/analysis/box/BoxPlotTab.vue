@@ -25,7 +25,7 @@
               v-for="item in items"
               :key="item"
               :value="item"
-              pill
+              small
             >
               {{ item }}
             </v-chip>
@@ -143,9 +143,9 @@
     }
 
     @Watch('boxPlotData')
-    boxPlotDataChanged(plotData: IPlotSeries[]) {
-      const data = (echarts as any).dataTool.prepareBoxplotData(plotData.map(item => item.data));
-      data.axisData = plotData.map(item => item.marker);
+    boxPlotDataChanged(data: IPlotSeries[]) {
+      const boxplotData = (echarts as any).dataTool.prepareBoxplotData(data.map(item => item.data));
+      boxplotData.axisData = data.map(item => item.label);
 
       this.options = {
         animation: true,
@@ -163,7 +163,7 @@
         ],
         xAxis: {
           type: 'category',
-          data: data.axisData,
+          data: boxplotData.axisData,
           splitLine: {
             show: false,
           },
@@ -184,13 +184,13 @@
           {
             type: 'boxplot',
             name: 'BoxPlot',
-            data: data.boxData,
+            data: boxplotData.boxData,
           },
           {
             name: 'outlier',
             type: 'scatter',
             large: true,
-            data: data.outliers,
+            data: boxplotData.outliers,
           },
         ],
         tooltip: {

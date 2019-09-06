@@ -76,8 +76,10 @@
 
     beforeDestroy() {
       WebSocketManager.close();
-      // this.experimentContext.mutations.reset();
-      // this.analysisContext.mutations.reset();
+      if (process.env.VUE_APP_ENV !== 'development') {
+        this.experimentContext.mutations.reset();
+        this.analysisContext.mutations.reset();
+      }
     }
   }
 </script>
