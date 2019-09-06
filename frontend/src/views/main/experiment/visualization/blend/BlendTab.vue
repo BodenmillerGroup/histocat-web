@@ -63,8 +63,8 @@
   import { experimentModule } from '@/modules/experiment';
   import { ExportFormat } from '@/modules/experiment/models';
   import { settingsModule } from '@/modules/settings';
-  import BlendView from '@/views/main/experiment/image/blend/BlendView.vue';
-  import IntensityView from '@/views/main/experiment/image/blend/IntensityView.vue';
+  import BlendView from '@/views/main/experiment/visualization/blend/BlendView.vue';
+  import IntensityView from '@/views/main/experiment/visualization/blend/IntensityView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({

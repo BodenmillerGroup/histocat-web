@@ -1,6 +1,6 @@
 import { apiUrl } from '@/env';
 import ky from 'ky';
-import { IImageSegmentationSubmission, IPCAData, IPlotSeries, IScatterPlotData } from './models';
+import { IImageSegmentationSubmission, IPCAData, IPlotSeries, IScatterPlotData, ITSNEData } from './models';
 
 export const api = {
   async produceSegmentationImage(token: string, params: IImageSegmentationSubmission) {
@@ -61,5 +61,20 @@ export const api = {
         Authorization: `Bearer ${token}`,
       },
     }).json<IPCAData>();
+  },
+  async getTSNEData(
+    token: string,
+    datasetId: number,
+    acquisitionId: number,
+    nComponents: number,
+    heatmap: string,
+    markers: string[],
+  ) {
+    const markersArray = markers.map(marker => `&markers=${marker}`);
+    return ky.get(`${apiUrl}/api/v1/analysis/tsne?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&n_components=${nComponents}&heatmap=${heatmap}&markers=${markersArray.join('')}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<ITSNEData>();
   },
 };

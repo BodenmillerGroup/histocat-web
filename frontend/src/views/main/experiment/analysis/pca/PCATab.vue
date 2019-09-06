@@ -72,7 +72,7 @@
             block
             :disabled="selectedItems.length === 0"
           >
-            Visualize
+            Analyze
           </v-btn>
         </v-card-actions>
       </v-card>

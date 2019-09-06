@@ -39,7 +39,6 @@
           >
             Select all
           </v-btn>
-          <v-spacer></v-spacer>
           <v-btn
             @click="clearAll"
             small
@@ -55,7 +54,7 @@
             block
             :disabled="selectedItems.length === 0"
           >
-            Visualize
+            Analyze
           </v-btn>
         </v-card-actions>
       </v-card>

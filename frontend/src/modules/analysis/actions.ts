@@ -115,6 +115,22 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
+  async getTSNEData(payload: { datasetId: number, acquisitionId: number, nComponents: number, heatmap: string, markers: string[] }) {
+    try {
+      const response = await api.getTSNEData(
+        this.main!.getters.token,
+        payload.datasetId,
+        payload.acquisitionId,
+        payload.nComponents,
+        payload.heatmap,
+        payload.markers,
+      );
+      this.mutations.setTSNEData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
   private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);

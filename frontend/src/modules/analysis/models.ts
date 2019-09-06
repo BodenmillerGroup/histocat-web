@@ -43,3 +43,10 @@ export interface IPCAData {
   heatmap?: IPlotSeries;
   explained_variance_ratio?: number[];
 }
+
+export interface ITSNEData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}

@@ -11,10 +11,10 @@
       </v-col>
       <v-col :cols="viewerColumns">
         <v-tabs v-model="tabExperiment">
-          <v-tab>Image</v-tab>
+          <v-tab>Visualization</v-tab>
           <v-tab>Analysis</v-tab>
           <v-tab-item>
-            <ImageView/>
+            <VisualizationView/>
           </v-tab-item>
           <v-tab-item>
             <AnalysisView/>
@@ -32,7 +32,7 @@
   import { mainModule } from '@/modules/main';
   import { WebSocketManager } from '@/utils/WebSocketManager';
   import AnalysisView from '@/views/main/experiment/analysis/AnalysisView.vue';
-  import ImageView from '@/views/main/experiment/image/ImageView.vue';
+  import VisualizationView from '@/views/main/experiment/visualization/VisualizationView.vue';
   import WorkspaceView from '@/views/main/experiment/workspace/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
@@ -40,7 +40,7 @@
     components: {
       AnalysisView,
       WorkspaceView,
-      ImageView,
+      VisualizationView,
       LoadingView,
     },
   })

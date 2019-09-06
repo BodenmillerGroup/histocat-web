@@ -21,4 +21,8 @@ export class AnalysisGetters extends Getters<AnalysisState> {
   get pcaData() {
     return this.state.pcaData;
   }
+
+  get tsneData() {
+    return this.state.tsneData;
+  }
 }

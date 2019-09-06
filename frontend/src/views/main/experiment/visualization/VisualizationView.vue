@@ -30,8 +30,8 @@
 <script lang="ts">
   import { mainModule } from '@/modules/main';
   import ChannelsView from '@/views/main/experiment/ChannelsView.vue';
-  import BlendTab from '@/views/main/experiment/image/blend/BlendTab.vue';
-  import TilesView from '@/views/main/experiment/image/tiles/TilesView.vue';
+  import BlendTab from '@/views/main/experiment/visualization/blend/BlendTab.vue';
+  import TilesView from '@/views/main/experiment/visualization/tiles/TilesView.vue';
   import SettingsView from '@/views/main/experiment/settings/SettingsView.vue';
   import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';
   import { Component, Vue } from 'vue-property-decorator';

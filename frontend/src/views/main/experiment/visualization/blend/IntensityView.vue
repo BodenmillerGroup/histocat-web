@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-  import IntensityBar from '@/views/main/experiment/image/blend/IntensityBar.vue';
+  import IntensityBar from '@/views/main/experiment/visualization/blend/IntensityBar.vue';
   import { experimentModule } from '@/modules/experiment';
   import { Component, Vue } from 'vue-property-decorator';
 

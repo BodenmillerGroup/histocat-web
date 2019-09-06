@@ -21,7 +21,7 @@
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
-  export default class BlendView extends Vue {
+  export default class VisualizationView extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);

@@ -50,7 +50,7 @@
         @click="process"
         color="primary"
       >
-        Process
+        Analyze
       </v-btn>
       <v-btn
         @click="produceContours"

@@ -13,81 +13,64 @@
       cols="3"
     >
       <v-card tile>
-        <v-card-title>Scatter Plot Settings</v-card-title>
+        <v-card-title>t-SNE Settings</v-card-title>
         <v-card-text>
-          <v-form
-            v-model="valid"
-            ref="form"
+          <v-chip-group
+            v-model="selectedItems"
+            multiple
+            column
+            active-class="primary--text"
           >
-            <v-select
-              class="input-row"
-              :items="items"
-              v-model="markerX"
-              label="X"
-              hint="X axis marker"
-              persistent-hint
-              :rules="[required]"
-            ></v-select>
-            <v-select
-              class="input-row"
-              :items="items"
-              v-model="markerY"
-              label="Y"
-              hint="Y axis marker"
-              persistent-hint
-              :rules="[required]"
-            ></v-select>
-            <v-select
-              class="input-row"
-              :items="items"
-              v-model="markerZ"
-              label="Z"
-              hint="Z axis marker"
-              persistent-hint
-              clearable
-            ></v-select>
-            <v-select
-              class="input-row"
-              :items="heatmaps"
-              v-model="heatmap"
-              label="Heatmap"
-              hint="Heatmap marker"
-              item-text="label"
-              item-value="value"
-              persistent-hint
-              clearable
-            ></v-select>
-            <v-switch
-              v-if="!markerZ"
-              v-model="showRegression"
-              label="Show regression"
-            ></v-switch>
-            <v-select
-              v-if="!markerZ"
-              class="input-row"
-              :items="regressionTypes"
-              v-model="regressionType"
-              label="Regression type"
-              hide-details
-            ></v-select>
-            <v-text-field
-              v-if="!markerZ && regressionType === 'polynomial'"
-              type="number"
-              min="2"
-              step="1"
-              label="Polynomial order"
-              v-model.number="polynomialOrder"
-              :rules="[required]"
-              hide-details
-            ></v-text-field>
-          </v-form>
+            <v-chip
+              v-for="item in items"
+              :key="item"
+              :value="item"
+              small
+            >
+              {{ item }}
+            </v-chip>
+          </v-chip-group>
+          <v-card-actions class="input-row">
+            <v-btn
+              @click="selectAll"
+              small
+              :disabled="selectedItems.length === items.length"
+            >
+              Select all
+            </v-btn>
+            <v-btn
+              @click="clearAll"
+              small
+              :disabled="selectedItems.length === 0"
+            >
+              Clear all
+            </v-btn>
+          </v-card-actions>
+          <v-select
+            class="input-row"
+            :items="componentsNumbers"
+            v-model.number="componentNumber"
+            label="Components Number"
+            hide-details
+          ></v-select>
+          <v-select
+            class="input-row"
+            :items="heatmaps"
+            v-model="heatmap"
+            label="Heatmap"
+            hint="Heatmap marker"
+            item-text="label"
+            item-value="value"
+            persistent-hint
+            clearable
+          ></v-select>
         </v-card-text>
         <v-card-actions>
           <v-btn
             @click="submit"
             color="primary"
             block
-            :disabled="!valid"
+            :disabled="selectedItems.length === 0"
           >
             Analyze
           </v-btn>
@@ -99,7 +82,7 @@
 
 <script lang="ts">
   import { analysisModule } from '@/modules/analysis';
-  import { IScatterPlotData } from '@/modules/analysis/models';
+  import { ITSNEData } from '@/modules/analysis/models';
   import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
@@ -107,7 +90,6 @@
   import { required } from '@/utils';
   import * as echarts from 'echarts';
   import 'echarts-gl';
-  import ecStat from 'echarts-stat';
   import 'echarts/lib/chart/line';
   import 'echarts/lib/chart/scatter';
   import 'echarts/lib/component/toolbox';
@@ -115,11 +97,9 @@
   import 'echarts/lib/component/visualMap';
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
-  type RegressionType = 'linear' | 'exponential' | 'logarithmic' | 'polynomial';
-
   const commonOptions: echarts.EChartOption = {
     title: {
-      text: 'Mean intensity',
+      text: 't-Distributed Stochastic Neighbor Embedding',
       left: 'center',
       top: 0,
     },
@@ -144,7 +124,7 @@
   };
 
   @Component
-  export default class ScatterPlotTab extends Vue {
+  export default class TSNETab extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
     readonly datasetContext = datasetModule.context(this.$store);
@@ -152,19 +132,12 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     readonly required = required;
-    readonly regressionTypes: RegressionType[] = ['linear', 'polynomial'];
-
-    valid = false;
+    readonly componentsNumbers: number[] = [2, 3];
 
     options: echarts.EChartOption = {};
 
-    showRegression = false;
-    regressionType: RegressionType = 'linear';
-    polynomialOrder = 2;
-
-    markerX: string | null = null;
-    markerY: string | null = null;
-    markerZ: string | null = null;
+    selectedItems: any[] = [];
+    componentNumber = 2;
     heatmap: string | null = null;
 
     get heatmaps() {
@@ -191,6 +164,14 @@
       return this.activeDataset && this.activeDataset.artifacts['channel_map'] ? Object.keys(this.activeDataset.artifacts['channel_map']) : [];
     }
 
+    selectAll() {
+      this.selectedItems = this.items;
+    }
+
+    clearAll() {
+      this.selectedItems = [];
+    }
+
     async submit() {
       if (await this.$validator.validateAll()) {
         if (!this.activeDataset) {
@@ -203,23 +184,22 @@
           return;
         }
 
-        await this.analysisContext.actions.getScatterPlotData({
+        await this.analysisContext.actions.getTSNEData({
           datasetId: this.activeDataset.id,
           acquisitionId: this.activeAcquisition.id,
-          markerX: this.markerX!,
-          markerY: this.markerY!,
-          markerZ: this.markerZ ? this.markerZ : '',
+          nComponents: this.componentNumber,
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
+          markers: this.selectedItems,
         });
       }
     }
 
-    get scatterPlotData() {
-      return this.analysisContext.getters.scatterPlotData;
+    get tsneData() {
+      return this.analysisContext.getters.tsneData;
     }
 
-    @Watch('scatterPlotData')
-    scatterPlotDataChanged(data: IScatterPlotData) {
+    @Watch('tsneData')
+    tsneDataChanged(data: ITSNEData) {
       if (data) {
         if (data.z) {
           this.plot3D(data);
@@ -229,7 +209,7 @@
       }
     }
 
-    private plot2D(data: IScatterPlotData) {
+    private plot2D(data: ITSNEData) {
       const points = data.heatmap ?
         data.x.data.map((x, i) => {
           return [x, data.y.data[i], data.heatmap!.data[i]];
@@ -284,14 +264,10 @@
         options.visualMap = this.getVisualMap(data);
       }
 
-      if (this.showRegression) {
-        options.series!.push(this.getRegressionSeries(points));
-      }
-
       this.options = options;
     }
 
-    private plot3D(data: IScatterPlotData) {
+    private plot3D(data: ITSNEData) {
       const options = {
         ...commonOptions,
         grid3D: {},
@@ -359,7 +335,7 @@
       this.options = options;
     }
 
-    private getVisualMap(data: IScatterPlotData): echarts.EChartOption.VisualMap[] {
+    private getVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
       const min = Math.min(...data.heatmap!.data);
       const max = Math.max(...data.heatmap!.data);
       return [
@@ -377,44 +353,6 @@
           },
         },
       ];
-    }
-
-    private getRegressionSeries(points: ecStat.InputData) {
-      const regression = ecStat.regression(this.regressionType, points, this.polynomialOrder);
-      regression.points.sort((a, b) => {
-        return a[0] - b[0];
-      });
-      return {
-        name: 'Regression',
-        type: 'line',
-        lineStyle: {
-          color: '#000000',
-        },
-        showSymbol: false,
-        smooth: true,
-        data: regression.points,
-        markPoint: {
-          itemStyle: {
-            normal: {
-              color: 'transparent',
-            },
-          },
-          label: {
-            normal: {
-              show: true,
-              position: 'left',
-              formatter: regression.expression,
-              textStyle: {
-                color: '#000000',
-                fontSize: 14,
-              },
-            },
-          },
-          data: [{
-            coord: regression.points[regression.points.length - 1],
-          }],
-        },
-      };
     }
   }
 </script>
