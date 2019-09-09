@@ -93,7 +93,6 @@ def process_tsne(
     heatmap: Optional[str],
 ):
     logger.info(f'Processing t-SNE for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
-
     try:
         tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, markers, heatmap)
     except Exception as error:

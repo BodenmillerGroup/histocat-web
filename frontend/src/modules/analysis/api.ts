@@ -77,16 +77,12 @@ export const api = {
       },
     }).json();
   },
-  async getTSNEResult(
+  async getTSNEData(
     token: string,
     datasetId: number,
-    acquisitionId: number,
-    nComponents: number,
-    heatmap: string,
-    markers: string[],
+    name: string,
   ) {
-    const markersArray = markers.map(marker => `&markers=${marker}`);
-    return ky.get(`${apiUrl}/api/v1/analysis/tsne?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&n_components=${nComponents}&heatmap=${heatmap}&markers=${markersArray.join('')}`, {
+    return ky.get(`${apiUrl}/api/v1/analysis/tsne?dataset_id=${datasetId}&name=${name}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

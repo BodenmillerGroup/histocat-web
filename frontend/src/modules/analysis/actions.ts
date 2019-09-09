@@ -125,15 +125,12 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getTSNEResult(payload: { datasetId: number, acquisitionId: number, nComponents: number, heatmap: string, markers: string[] }) {
+  async getTSNEResult(payload: { datasetId: number, name: string }) {
     try {
-      const response = await api.getTSNEResult(
+      const response = await api.getTSNEData(
         this.main!.getters.token,
         payload.datasetId,
-        payload.acquisitionId,
-        payload.nComponents,
-        payload.heatmap,
-        payload.markers,
+        payload.name,
       );
       this.mutations.setTSNEData(response);
     } catch (error) {

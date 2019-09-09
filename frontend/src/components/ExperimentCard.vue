@@ -39,6 +39,17 @@
         v-if="isOwner"
       >
         <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" :to="{name: 'main-experiment-edit', params: {id: experiment.id}}">
+            <v-icon>mdi-pencil-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Edit experiment</span>
+      </v-tooltip>
+      <v-tooltip
+        bottom
+        v-if="isOwner"
+      >
+        <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" :to="{name: 'main-experiment-share', params: {id: experiment.id}}">
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>

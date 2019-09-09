@@ -69,12 +69,11 @@ class TSNESubmissionModel(BaseModel):
     heatmap: Optional[str]
 
 
-class TSNEResultModel(BaseModel):
+class TSNEModel(BaseModel):
     """
-    t-SNE submission model
+    t-SNE result model
     """
-    dataset_id: int
-    acquisition_id: int
-    n_components: int
-    markers: List[str]
-    heatmap: Optional[str]
+    x: PlotSeriesModel
+    y: PlotSeriesModel
+    z: Optional[PlotSeriesModel]
+    heatmap: Optional[PlotSeriesModel]

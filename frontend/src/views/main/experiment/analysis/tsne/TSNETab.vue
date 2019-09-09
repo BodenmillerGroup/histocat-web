@@ -60,7 +60,7 @@
             class="input-row"
             :items="componentsNumbers"
             v-model.number="componentNumber"
-            label="Components Number"
+            label="Number of components"
             hide-details
           ></v-select>
           <v-select
@@ -83,6 +83,27 @@
             :disabled="selectedItems.length === 0"
           >
             Analyze
+          </v-btn>
+        </v-card-actions>
+        <v-card-text>
+          <v-select
+            class="input-row"
+            :items="results"
+            v-model="result"
+            label="Results"
+            hint="t-SNE processed data"
+            persistent-hint
+            clearable
+          ></v-select>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            @click="display"
+            color="primary"
+            block
+            :disabled="!result"
+          >
+            Display
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -150,6 +171,8 @@
     componentNumber = 2;
     heatmap: string | null = null;
 
+    result: string | null = null;
+
     get heatmaps() {
       return this.activeDataset && this.activeDataset.input['neighbors_columns'] ? this.activeDataset.input['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
     }
@@ -172,6 +195,10 @@
 
     get items() {
       return this.activeDataset && this.activeDataset.input['channel_map'] ? Object.keys(this.activeDataset.input['channel_map']) : [];
+    }
+
+    get results() {
+      return this.activeDataset && this.activeDataset.output && this.activeDataset.output['tsne'] ? Object.keys(this.activeDataset.output['tsne']).map(item => item) : [];
     }
 
     selectAll() {
@@ -202,6 +229,23 @@
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
         });
       }
+    }
+
+    async display() {
+      if (!this.activeDataset) {
+        self.alert('Please select a dataset');
+        return;
+      }
+
+      if (!this.result) {
+        self.alert('Please select result data');
+        return;
+      }
+
+      await this.analysisContext.actions.getTSNEResult({
+        datasetId: this.activeDataset.id,
+        name: this.result ? this.result : '',
+      });
     }
 
     get tsneData() {
@@ -374,17 +418,5 @@
 
   .input-row {
     margin-bottom: 32px;
-  }
-</style>
-
-<style>
-  /**
-   * The default size is 600px×400px, for responsive charts
-   * you may need to set percentage values as follows (also
-   * don't forget to provide a size for the container).
-   */
-  .echarts {
-    width: 100%;
-    height: 100%;
   }
 </style>

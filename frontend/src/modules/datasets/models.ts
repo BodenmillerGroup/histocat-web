@@ -57,7 +57,7 @@ export interface IDataset {
       }
     }
   }
-  output?: object;
+  output?: any;
   meta?: object;
   location: string;
   created_at: string;

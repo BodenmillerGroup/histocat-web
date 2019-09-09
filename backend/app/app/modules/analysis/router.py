@@ -16,12 +16,12 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
-from app.modules.analysis.processors.pca import process_pca
+from app.modules.analysis.processors import pca, tsne
 from app.modules.channel import crud as channel_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
-from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel
+from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel
 
 logger = logging.getLogger(__name__)
 
@@ -235,7 +235,7 @@ async def read_pca_data(
     Calculate Principal Component Analysis data for the dataset
     """
 
-    content = process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap)
+    content = pca.process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap)
     return UJSONResponse(content=content)
 
 
@@ -256,3 +256,18 @@ def submit_tsne(
         params.heatmap,
     )
     return {"status": "submitted"}
+
+
+@router.get("/tsne", response_model=TSNEModel)
+async def read_tsne_data(
+    dataset_id: int,
+    name: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read t-SNE result data
+    """
+
+    content = tsne.get_tsne_result(db, dataset_id, name)
+    return UJSONResponse(content=content)

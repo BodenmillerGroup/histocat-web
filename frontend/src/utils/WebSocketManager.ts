@@ -70,6 +70,14 @@ export class WebSocketManager {
             });
             break;
           }
+          case 'tsne_result_ready': {
+            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
+            WebSocketManager.mainContext.mutations.addNotification({
+              content: 't-SNE result is ready',
+              color: 'success',
+            });
+            break;
+          }
         }
       }
     };
