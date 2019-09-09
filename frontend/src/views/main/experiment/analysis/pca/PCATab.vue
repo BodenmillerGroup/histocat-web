@@ -1,5 +1,15 @@
 <template>
-  <v-row no-gutters class="chart-container">
+  <v-banner
+    v-if="!activeDataset || !activeAcquisition"
+    icon="mdi-alert-circle-outline"
+  >
+    Please select acquisition and dataset
+  </v-banner>
+  <v-row
+    v-else
+    no-gutters
+    class="chart-container"
+  >
     <v-col
       :cols="columns"
     >
@@ -48,9 +58,9 @@
           </v-card-actions>
           <v-select
             class="input-row"
-            :items="componentsNumbers"
-            v-model.number="componentNumber"
-            label="Components Number"
+            :items="numberOfComponentsItems"
+            v-model.number="numberOfComponents"
+            label="Number of components"
             hide-details
           ></v-select>
           <v-select
@@ -132,16 +142,16 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     readonly required = required;
-    readonly componentsNumbers: number[] = [2, 3];
+    readonly numberOfComponentsItems: number[] = [2, 3];
 
     options: echarts.EChartOption = {};
 
     selectedItems: any[] = [];
-    componentNumber = 2;
+    numberOfComponents = 2;
     heatmap: string | null = null;
 
     get heatmaps() {
-      return this.activeDataset && this.activeDataset.artifacts['neighbors_columns'] ? this.activeDataset.artifacts['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
+      return this.activeDataset && this.activeDataset.input['neighbors_columns'] ? this.activeDataset.input['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
     }
 
     get showOptions() {
@@ -161,7 +171,7 @@
     }
 
     get items() {
-      return this.activeDataset && this.activeDataset.artifacts['channel_map'] ? Object.keys(this.activeDataset.artifacts['channel_map']) : [];
+      return this.activeDataset && this.activeDataset.input['channel_map'] ? Object.keys(this.activeDataset.input['channel_map']) : [];
     }
 
     selectAll() {
@@ -187,7 +197,7 @@
         await this.analysisContext.actions.getPCAData({
           datasetId: this.activeDataset.id,
           acquisitionId: this.activeAcquisition.id,
-          nComponents: this.componentNumber,
+          nComponents: this.numberOfComponents,
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
           markers: this.selectedItems,
         });

@@ -115,9 +115,19 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getTSNEData(payload: { datasetId: number, acquisitionId: number, nComponents: number, heatmap: string, markers: string[] }) {
+  async submitTSNE(payload: { dataset_id: number, acquisition_id: number, n_components: number, markers: string[], heatmap: string }) {
     try {
-      const response = await api.getTSNEData(
+      const response = await api.submitTSNE(
+        this.main!.getters.token, payload
+      );
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getTSNEResult(payload: { datasetId: number, acquisitionId: number, nComponents: number, heatmap: string, markers: string[] }) {
+    try {
+      const response = await api.getTSNEResult(
         this.main!.getters.token,
         payload.datasetId,
         payload.acquisitionId,

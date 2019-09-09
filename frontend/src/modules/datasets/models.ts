@@ -22,7 +22,7 @@ export interface IDataset {
   name: string;
   description: string;
   status: Status;
-  artifacts: {
+  input: {
     acquisition_metadata?: {
       location: string;
     }
@@ -57,7 +57,7 @@ export interface IDataset {
       }
     }
   }
-  errors?: object;
+  output?: object;
   meta?: object;
   location: string;
   created_at: string;

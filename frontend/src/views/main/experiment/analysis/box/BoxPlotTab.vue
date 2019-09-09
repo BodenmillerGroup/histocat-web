@@ -1,5 +1,13 @@
 <template>
-  <v-row no-gutters
+  <v-banner
+    v-if="!activeDataset || !activeAcquisition"
+    icon="mdi-alert-circle-outline"
+  >
+    Please select acquisition and dataset
+  </v-banner>
+  <v-row
+    v-else
+    no-gutters
     class="chart-container"
   >
     <v-col :cols="columns">
@@ -106,7 +114,7 @@
     }
 
     get items() {
-      return this.activeDataset && this.activeDataset.artifacts['channel_map'] ? Object.keys(this.activeDataset.artifacts['channel_map']) : [];
+      return this.activeDataset && this.activeDataset.input['channel_map'] ? Object.keys(this.activeDataset.input['channel_map']) : [];
     }
 
     selectAll() {

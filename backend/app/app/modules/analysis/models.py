@@ -56,3 +56,25 @@ class PCAModel(BaseModel):
     z: Optional[PlotSeriesModel]
     heatmap: Optional[PlotSeriesModel]
     explained_variance_ratio: Optional[List[float]]
+
+
+class TSNESubmissionModel(BaseModel):
+    """
+    t-SNE submission model
+    """
+    dataset_id: int
+    acquisition_id: int
+    n_components: int
+    markers: List[str]
+    heatmap: Optional[str]
+
+
+class TSNEResultModel(BaseModel):
+    """
+    t-SNE submission model
+    """
+    dataset_id: int
+    acquisition_id: int
+    n_components: int
+    markers: List[str]
+    heatmap: Optional[str]

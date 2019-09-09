@@ -964,10 +964,10 @@
     "@types/d3-voronoi" "*"
     "@types/d3-zoom" "*"
 
-"@types/echarts@4.1.11":
-  version "4.1.11"
-  resolved "https://registry.yarnpkg.com/@types/echarts/-/echarts-4.1.11.tgz#32e9ad4e390f28e44cb29121de07aa0e357e04c0"
-  integrity sha512-V5HBs2OeKSK/uWFdArDntYPvsvJjP4qQQ8nfCpCIfbzci2wzqW00v0FbLzBiLen0wnTWO5x/NDzFgUALEma0fA==
+"@types/echarts@4.1.12":
+  version "4.1.12"
+  resolved "https://registry.yarnpkg.com/@types/echarts/-/echarts-4.1.12.tgz#5d013096301cd696b098f7ff3a1cd96d7ea1a680"
+  integrity sha512-J+hC+Zjo+NAq0Xu9yk4A7WI55W8VOpIyWdMhhzv+w+ZooFuhAt1p2y9T4l2ajWNZBRRmsebRjgX51oddrY/qew==
   dependencies:
     "@types/zrender" "*"
 
@@ -3388,10 +3388,10 @@ d3-zoom@1:
     d3-selection "1"
     d3-transition "1"
 
-d3@5.11.0:
-  version "5.11.0"
-  resolved "https://registry.yarnpkg.com/d3/-/d3-5.11.0.tgz#d5ffc84f930eeb895d88699195d2d852778ab158"
-  integrity sha512-LXgMVUAEAzQh6WfEEOa8tJX4RA64ZJ6twC3CJ+Xzid+fXWLTZkkglagXav/eOoQgzQi5rzV0xC4Sfspd6hFDHA==
+d3@5.12.0:
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/d3/-/d3-5.12.0.tgz#0ddeac879c28c882317cd439b495290acd59ab61"
+  integrity sha512-flYVMoVuhPFHd9zVCe2BxIszUWqBcd5fvQGMNRmSiBrgdnh6Vlruh60RJQTouAK9xPbOB0plxMvBm4MoyODXNg==
   dependencies:
     d3-array "1"
     d3-axis "1"

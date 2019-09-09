@@ -159,8 +159,8 @@
             const rois = panorama.rois.map((roi) => {
               const acquisitions = roi.acquisitions.map((acquisition) => {
                 let hasMask = false;
-                if (this.dataset && this.dataset.artifacts && this.dataset.artifacts.probability_masks) {
-                  hasMask = !!this.dataset.artifacts.probability_masks[acquisition.id];
+                if (this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
+                  hasMask = !!this.dataset.input.probability_masks[acquisition.id];
                 }
                 return Object.assign({}, acquisition, {
                   type: 'acquisition',

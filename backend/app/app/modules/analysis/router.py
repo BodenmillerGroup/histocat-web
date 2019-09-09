@@ -7,20 +7,21 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
-from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
 
+from app import worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
+from app.modules.analysis.processors.pca import process_pca
 from app.modules.channel import crud as channel_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
-from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel
+from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel
 
 logger = logging.getLogger(__name__)
 
@@ -140,17 +141,17 @@ async def read_scatter_plot_data(
     #     return UJSONResponse(content=ujson.loads(content))
 
     dataset = dataset_crud.get(db, id=dataset_id)
-    cell_artifact = dataset.artifacts.get("cell")
-    channel_map = dataset.artifacts.get("channel_map")
-    image_map = dataset.artifacts.get("image_map")
+    cell_input = dataset.input.get("cell")
+    channel_map = dataset.input.get("channel_map")
+    image_map = dataset.input.get("image_map")
     image_number = image_map.get(str(acquisition_id))
-    if not cell_artifact or not image_number or not channel_map:
+    if not cell_input or not image_number or not channel_map:
         raise HTTPException(
             status_code=400,
-            detail="The dataset does not have proper artifacts.",
+            detail="The dataset does not have a proper input.",
         )
 
-    df = pd.read_feather(cell_artifact.get("location"))
+    df = pd.read_feather(cell_input.get("location"))
     df = df[df["ImageNumber"] == image_number]
 
     content = {
@@ -196,18 +197,18 @@ async def read_box_plot_data(
     #     return UJSONResponse(content=ujson.loads(content))
 
     dataset = dataset_crud.get(db, id=dataset_id)
-    cell_artifact = dataset.artifacts.get("cell")
-    channel_map = dataset.artifacts.get("channel_map")
-    image_map = dataset.artifacts.get("image_map")
+    cell_input = dataset.input.get("cell")
+    channel_map = dataset.input.get("channel_map")
+    image_map = dataset.input.get("image_map")
     image_number = image_map.get(str(acquisition_id))
-    if not cell_artifact or not image_number or not channel_map:
+    if not cell_input or not image_number or not channel_map:
         raise HTTPException(
             status_code=400,
-            detail="The dataset does not have proper artifacts.",
+            detail="The dataset does not have a proper input.",
         )
 
     content = []
-    df = pd.read_feather(cell_artifact.get("location"))
+    df = pd.read_feather(cell_input.get("location"))
     df = df[df["ImageNumber"] == image_number]
 
     for marker in markers:
@@ -234,48 +235,24 @@ async def read_pca_data(
     Calculate Principal Component Analysis data for the dataset
     """
 
-    dataset = dataset_crud.get(db, id=dataset_id)
-    cell_artifact = dataset.artifacts.get("cell")
-    channel_map = dataset.artifacts.get("channel_map")
-    image_map = dataset.artifacts.get("image_map")
-    image_number = image_map.get(str(acquisition_id))
-    if not cell_artifact or not image_number or not channel_map:
-        raise HTTPException(
-            status_code=400,
-            detail="The dataset does not have proper artifacts.",
-        )
-
-    df = pd.read_feather(cell_artifact.get("location"))
-    df = df[df["ImageNumber"] == image_number]
-
-    features = []
-    for marker in markers:
-        features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
-
-    pca = PCA(n_components=n_components)
-    principal_components = pca.fit_transform(df[features].values * 2**16)
-
-    content = {
-        "x": {
-            "label": "PC1",
-            "data": principal_components[:, 0]
-        },
-        "y": {
-            "label": "PC2",
-            "data": principal_components[:, 1],
-        },
-    }
-
-    if n_components == 3:
-        content["z"] = {
-            "label": "PC3",
-            "data": principal_components[:, 2],
-        }
-
-    if heatmap:
-        content["heatmap"] = {
-            "label": heatmap,
-            "data": df[heatmap]
-        }
-
+    content = process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap)
     return UJSONResponse(content=content)
+
+
+@router.post("/tsne")
+def submit_tsne(
+    params: TSNESubmissionModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Start t-SNE data processing
+    """
+    worker.process_tsne.send(
+        params.dataset_id,
+        params.acquisition_id,
+        params.n_components,
+        params.markers,
+        params.heatmap,
+    )
+    return {"status": "submitted"}

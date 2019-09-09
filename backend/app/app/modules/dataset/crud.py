@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 
 from .db import Dataset, DATASET_LOCATION_FORMAT
 from .models import DatasetCreateModel, DatasetUpdateModel
@@ -49,6 +50,15 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Da
     for field in data:
         if field in update_data:
             setattr(item, field, update_data[field])
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
+
+
+def update_output(session: Session, *, item: Dataset, output: dict) -> Dataset:
+    item.output = output
+    flag_modified(item, "output")
     session.add(item)
     session.commit()
     session.refresh(item)

@@ -7,12 +7,14 @@ import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
 from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDING
+from typing import List, Optional
 
 from app.core import config
 from app.core.errors import SlideImportError
 from app.db.session import db_session
 from app.io import mcd
 from app.io import zip
+from app.modules.analysis.processors import tsne
 
 import app.db.init_db  # noqa
 
@@ -25,13 +27,13 @@ if os.environ.get("BACKEND_ENV") == "development":
     try:
         # VS Code Debugging
         # Allow other computers to attach to ptvsd at this IP address and port.
-        # import ptvsd
-        # ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
+        import ptvsd
+        ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
 
         # PyCharm Debugging
         # import pydevd_pycharm
         # TODO: Don't forget to modify IP address!!
-        # pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
+        # pydevd_pycharm.settrace('130.60.106.83', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:
@@ -80,3 +82,21 @@ def import_data(uri: str, experiment_id: int, user_id: int):
         logger.warn(error)
     finally:
         shutil.rmtree(path)
+
+
+@dramatiq.actor(queue_name='process', max_retries=0)
+def process_tsne(
+    dataset_id: int,
+    acquisition_id: int,
+    n_components: int,
+    markers: List[str],
+    heatmap: Optional[str],
+):
+    logger.info(f'Processing t-SNE for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
+
+    try:
+        tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, markers, heatmap)
+    except Exception as error:
+        logger.warn(error)
+    finally:
+        pass

@@ -12,67 +12,67 @@
       </v-tooltip>
     </v-toolbar>
     <v-list
-        dense
-        two-line
-        class="overflow-y-auto scroll-view pa-0"
+      dense
+      two-line
+      class="overflow-y-auto scroll-view pa-0"
+    >
+      <v-list-item-group
+        v-model="selected"
+        color="primary"
       >
-        <v-list-item-group
-          v-model="selected"
-          color="primary"
+        <v-list-item
+          v-for="item in items"
+          :key="item.uid"
         >
-          <v-list-item
-            v-for="item in items"
-            :key="item.uid"
-          >
-            <v-list-item-icon>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-icon v-on="on">{{item.icon}}</v-icon>
-                </template>
-                <span>Status: {{item.status}}</span>
-              </v-tooltip>
-            </v-list-item-icon>
+          <v-list-item-icon>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on">{{item.icon}}</v-icon>
+              </template>
+              <span>Status: {{item.status}}</span>
+            </v-tooltip>
+          </v-list-item-icon>
 
-            <v-list-item-content>
-              <v-list-item-title>Dataset {{item.id}}</v-list-item-title>
-              <v-list-item-subtitle>{{item.createdAt}}</v-list-item-subtitle>
-            </v-list-item-content>
+          <v-list-item-content>
+            <v-list-item-title>Dataset {{item.id}}</v-list-item-title>
+            <v-list-item-subtitle>{{item.createdAt}}</v-list-item-subtitle>
+          </v-list-item-content>
 
-            <v-list-item-action>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    v-on="on"
-                    download
-                    color="primary lighten-3"
-                    @click.stop=""
-                    :href="`${apiUrl}/api/v1/datasets/${item.id}/download`"
-                  >
-                    <v-icon>mdi-download</v-icon>
-                  </v-btn>
-                </template>
-                <span>Download dataset</span>
-              </v-tooltip>
-            </v-list-item-action>
-            <v-list-item-action>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    v-on="on"
-                    color="secondary lighten-3"
-                    @click.stop="deleteDataset($event, item.id)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </template>
-                <span>Delete dataset</span>
-              </v-tooltip>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
+          <v-list-item-action>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  icon
+                  v-on="on"
+                  download
+                  color="primary lighten-3"
+                  @click.stop=""
+                  :href="`${apiUrl}/api/v1/datasets/${item.id}/download`"
+                >
+                  <v-icon>mdi-download</v-icon>
+                </v-btn>
+              </template>
+              <span>Download dataset</span>
+            </v-tooltip>
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  icon
+                  v-on="on"
+                  color="secondary lighten-3"
+                  @click.stop="deleteDataset($event, item.id)"
+                >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span>Delete dataset</span>
+            </v-tooltip>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
   </v-card>
 </template>
 
@@ -136,7 +136,9 @@
     }
 
     beforeDestroy() {
-      this.datasetContext.mutations.reset();
+      if (process.env.VUE_APP_ENV !== 'development') {
+        this.datasetContext.mutations.reset();
+      }
     }
   }
 </script>

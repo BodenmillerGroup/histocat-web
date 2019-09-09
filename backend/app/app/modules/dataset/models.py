@@ -10,18 +10,17 @@ class DatasetCreateModel(BaseModel):
     status: str
     name: Optional[str]
     description: Optional[str]
-    artifacts: Optional[dict]
+    input: Optional[dict]
     meta: Optional[dict]
-    errors: Optional[dict]
 
 
 class DatasetUpdateModel(BaseModel):
     status: str
     name: Optional[str]
     description: Optional[str]
-    artifacts: Optional[dict]
+    input: Optional[dict]
+    output: Optional[dict]
     meta: Optional[dict]
-    errors: Optional[dict]
 
 
 class DatasetModel(BaseModel):
@@ -32,9 +31,9 @@ class DatasetModel(BaseModel):
     status: str
     name: Optional[str]
     description: Optional[str]
-    artifacts: Optional[dict]
+    input: Optional[dict]
+    output: Optional[dict]
     meta: Optional[dict]
-    errors: Optional[dict]
     location: Optional[str]
     created_at: datetime
     updated_at: datetime

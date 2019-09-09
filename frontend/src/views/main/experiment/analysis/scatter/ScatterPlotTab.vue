@@ -1,5 +1,15 @@
 <template>
-  <v-row no-gutters class="chart-container">
+  <v-banner
+    v-if="!activeDataset || !activeAcquisition"
+    icon="mdi-alert-circle-outline"
+  >
+    Please select acquisition and dataset
+  </v-banner>
+  <v-row
+    v-else
+    no-gutters
+    class="chart-container"
+  >
     <v-col
       :cols="columns"
     >
@@ -168,7 +178,7 @@
     heatmap: string | null = null;
 
     get heatmaps() {
-      return this.activeDataset && this.activeDataset.artifacts['neighbors_columns'] ? this.activeDataset.artifacts['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
+      return this.activeDataset && this.activeDataset.input['neighbors_columns'] ? this.activeDataset.input['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
     }
 
     get showOptions() {
@@ -188,7 +198,7 @@
     }
 
     get items() {
-      return this.activeDataset && this.activeDataset.artifacts['channel_map'] ? Object.keys(this.activeDataset.artifacts['channel_map']) : [];
+      return this.activeDataset && this.activeDataset.input['channel_map'] ? Object.keys(this.activeDataset.input['channel_map']) : [];
     }
 
     async submit() {

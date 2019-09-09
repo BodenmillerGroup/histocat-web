@@ -37,7 +37,7 @@ PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int, user_id: int):
     """
-    Import artifacts from the folder compatible with 'cpout' IMC pipeline folders
+    Import dataset from the folder compatible with 'cpout' IMC pipeline folders
     """
 
     experiment = experiment_crud.get(db, id=experiment_id)
@@ -51,15 +51,15 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         status="pending",
     )
     dataset = dataset_crud.create(db, params=create_params)
-    artifacts = {}
+    input = {}
 
     src_folder = Path(cell_csv_filename).parent
     dst_folder = Path(dataset.location)
     os.makedirs(dst_folder, exist_ok=True)
 
-    image_df, image_artifact = _import_image_csv(db, src_folder, dst_folder)
-    if image_artifact:
-        artifacts["image"] = image_artifact
+    image_df, image_input = _import_image_csv(db, src_folder, dst_folder)
+    if image_input:
+        input["image"] = image_input
 
     probability_masks = {}
     image_map = {}
@@ -68,33 +68,33 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         acquisition_id = mask_meta.get("acquisition").get("id")
         probability_masks[acquisition_id] = mask_meta
         image_map[acquisition_id] = mask_meta.get("image_number")
-    artifacts["probability_masks"] = probability_masks
-    artifacts["image_map"] = image_map
+    input["probability_masks"] = probability_masks
+    input["image_map"] = image_map
 
     for channels_filename in locate(str(root_folder), f"*{CHANNELS_FULL_CSV_ENDING}"):
-        channels_artifact = _import_channels_csv(db, channels_filename)
-        artifacts["channel_map"] = channels_artifact
+        channels_input = _import_channels_csv(db, channels_filename)
+        input["channel_map"] = channels_input
         break
 
-    object_relationships_df, object_relationships_artifact = _import_object_relationships(db, src_folder, dst_folder)
-    if object_relationships_artifact:
-        artifacts["object_relationships"] = object_relationships_artifact
+    object_relationships_df, object_relationships_input = _import_object_relationships(db, src_folder, dst_folder)
+    if object_relationships_input:
+        input["object_relationships"] = object_relationships_input
 
-    cell_df, cell_artifact = _import_cell_csv(db, src_folder, dst_folder)
-    if cell_artifact:
-        artifacts["cell"] = cell_artifact
+    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder)
+    if cell_input:
+        input["cell"] = cell_input
 
     # Register heatmap columns
     neighbors_cols = [col for col in cell_df.columns if 'Neighbors_' in col]
-    artifacts["neighbors_columns"] = neighbors_cols
+    input["neighbors_columns"] = neighbors_cols
 
-    acquisition_metadata_df, acquisition_metadata_artifact = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
-    if acquisition_metadata_artifact:
-        artifacts["acquisition_metadata"] = acquisition_metadata_artifact
+    acquisition_metadata_df, acquisition_metadata_input = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
+    if acquisition_metadata_input:
+        input["acquisition_metadata"] = acquisition_metadata_input
 
     update_params = DatasetUpdateModel(
         status="ready",
-        artifacts=artifacts,
+        input=input,
     )
     dataset = dataset_crud.update(db, item=dataset, params=update_params)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported"))

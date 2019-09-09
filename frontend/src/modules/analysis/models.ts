@@ -44,6 +44,14 @@ export interface IPCAData {
   explained_variance_ratio?: number[];
 }
 
+export interface ITSNESubmission {
+  dataset_id: number;
+  acquisition_id: number;
+  n_components: number;
+  markers: string[];
+  heatmap: string;
+}
+
 export interface ITSNEData {
   x: IPlotSeries;
   y: IPlotSeries;
