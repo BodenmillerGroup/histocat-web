@@ -11,6 +11,8 @@ from imctools.io.imcacquisition import ImcAcquisition
 from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
 
+from app.core.notifier import Message
+from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
 from app.io.utils import copy_dir
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.acquisition.db import Acquisition
@@ -110,6 +112,8 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
     for channel_item in channel_data.values():
         acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
         _import_channel(db, channel_item, acquisition)
+
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
 
 
 def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str):

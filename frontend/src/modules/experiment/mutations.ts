@@ -55,6 +55,10 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.channelStackImage = base64Image;
   }
 
+  setColorizeMaskInProgress(status: boolean) {
+    this.state.colorizeMaskInProgress = status;
+  }
+
   reset() {
     this.state.activeWorkspaceNode = undefined;
     this.state.activeExperimentId = undefined;
@@ -62,5 +66,6 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.selectedAcquisitionIds = [];
     this.state.selectedMetals = [];
     this.state.channelStackImage = null;
+    this.state.colorizeMaskInProgress = false;
   }
 }

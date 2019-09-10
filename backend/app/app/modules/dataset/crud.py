@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 
 from .db import Dataset, DATASET_LOCATION_FORMAT
 from .models import DatasetCreateModel, DatasetUpdateModel
@@ -49,6 +50,24 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Da
     for field in data:
         if field in update_data:
             setattr(item, field, update_data[field])
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
+
+
+def update_output(session: Session, *, dataset_id: int, result: dict) -> Dataset:
+
+    item = session.query(Dataset).with_for_update().filter(Dataset.id == dataset_id).first()
+
+    output = item.output if item.output else {}
+    tsne_output = output.get('tsne') if 'tsne' in output else {}
+    tsne_output[result.get("name")] = result
+    output['tsne'] = tsne_output
+    item.output = output
+
+    # TODO: https://stackoverflow.com/questions/42559434/updates-to-json-field-dont-persist-to-db
+    flag_modified(item, "output")
     session.add(item)
     session.commit()
     session.refresh(item)

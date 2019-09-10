@@ -42,7 +42,7 @@ def create(
 def delete(
     user_id: int,
     experiment_id: int,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """

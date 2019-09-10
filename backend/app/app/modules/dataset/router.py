@@ -1,22 +1,19 @@
 import logging
 import os
-import uuid
 from io import BytesIO
 from typing import List
 from zipfile import ZipFile, ZIP_DEFLATED
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
-import app.worker as worker
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.api.utils.security import get_current_active_user
 from app.core.utils import stream_bytes
-from app.core import config
 from app.modules.user.db import User
 from . import crud
-from .models import DatasetModel, DatasetCreateModel
+from .models import DatasetModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -27,7 +24,7 @@ def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Retrieve datasets
@@ -40,7 +37,7 @@ def read_all(
 def read_own_by_experiment(
     experiment_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Retrieve own datasets for specified experiment
@@ -62,25 +59,10 @@ def read_by_id(
     return item
 
 
-@router.post("/", response_model=DatasetModel)
-def create(
-    *,
-    db: Session = Depends(get_db),
-    params: DatasetCreateModel,
-    current_user: User = Depends(get_current_active_superuser),
-):
-    """
-    Create new dataset
-    """
-    item = crud.create(db, user_id=current_user.id, params=params)
-    worker.prepare_dataset.send(item.id)
-    return item
-
-
 @router.delete("/{id}", response_model=DatasetModel)
 def delete_by_id(
     id: int,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -117,20 +99,3 @@ async def download_by_id(
 
     headers = {'Content-Disposition': f'attachment; filename="{file_name}"'}
     return StreamingResponse(stream_bytes(buffer.getvalue()), media_type="application/zip", headers=headers)
-
-
-@router.post("/experiment/{experiment_id}/upload")
-def upload(
-    experiment_id: int,
-    file: UploadFile = File(None),
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
-):
-    path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
-    if not os.path.exists(path):
-        os.makedirs(path)
-    uri = os.path.join(path, file.filename)
-    with open(uri, 'wb') as f:
-        f.write(file.file.read())
-    worker.import_dataset.send(uri, current_user.id, experiment_id)
-    return {"uri": uri}

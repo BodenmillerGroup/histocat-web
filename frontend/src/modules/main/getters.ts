@@ -40,7 +40,7 @@ export class MainGetters extends Getters<MainState> {
     return this.state.showWorkspace;
   }
 
-  get showChannels() {
-    return this.state.showChannels;
+  get showOptions() {
+    return this.state.showOptions;
   }
 }

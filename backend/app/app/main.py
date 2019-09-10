@@ -27,7 +27,7 @@ if os.environ.get("BACKEND_ENV") == "development":
         # import pydevd_pycharm
 
         # TODO: Don't forget to modify IP address!!
-        # pydevd_pycharm.settrace('130.60.106.25', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
+        # pydevd_pycharm.settrace('130.60.106.83', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
         pass
     except Exception as e:

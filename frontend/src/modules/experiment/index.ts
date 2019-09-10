@@ -15,6 +15,8 @@ export class ExperimentState {
   selectedAcquisitionIds: number[] = [];
   selectedMetals: string[] = [];
   channelStackImage: string | ArrayBuffer | null = null;
+
+  colorizeMaskInProgress = false;
 }
 
 export const experimentModule = new Module({

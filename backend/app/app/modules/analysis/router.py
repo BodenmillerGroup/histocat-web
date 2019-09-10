@@ -3,21 +3,25 @@ from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, Depends
+import pandas as pd
+from fastapi import APIRouter, Depends, HTTPException, Query
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
 
+from app import worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
-from app.modules.channel import crud
+from app.modules.analysis.processors import pca, tsne
+from app.modules.channel import crud as channel_crud
 from app.modules.channel.models import ChannelSettingsModel
+from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
-from .models import AnalysisModel
+from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +36,12 @@ def get_additive_image(db: Session, channels: List[ChannelSettingsModel]):
     legend_labels: List[Tuple[str, str, float]] = list()
 
     item = channels[0]
-    first = crud.get(db, id=item.id)
+    first = channel_crud.get(db, id=item.id)
     parser = OmetiffParser(first.acquisition.location)
     acq = parser.get_imc_acquisition()
 
     for channel in channels:
-        item = crud.get(db, id=channel.id)
+        item = channel_crud.get(db, id=channel.id)
 
         data = acq.get_img_by_metal(item.metal)
 
@@ -116,3 +120,157 @@ async def produce_segmentation_contours(
     contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
     contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
     return UJSONResponse(content=contours)
+
+
+@router.get("/scatterplot", response_model=ScatterPlotModel)
+async def read_scatter_plot_data(
+    dataset_id: int,
+    acquisition_id: int,
+    marker_x: str,
+    marker_y: str,
+    marker_z: Optional[str] = None,
+    heatmap: Optional[str] = None,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read scatter plot data from the dataset
+    """
+    # content = await redis_manager.cache.get(request.url.path)
+    # if content:
+    #     return UJSONResponse(content=ujson.loads(content))
+
+    dataset = dataset_crud.get(db, id=dataset_id)
+    cell_input = dataset.input.get("cell")
+    channel_map = dataset.input.get("channel_map")
+    image_map = dataset.input.get("image_map")
+    image_number = image_map.get(str(acquisition_id))
+    if not cell_input or not image_number or not channel_map:
+        raise HTTPException(
+            status_code=400,
+            detail="The dataset does not have a proper input.",
+        )
+
+    df = pd.read_feather(cell_input.get("location"))
+    df = df[df["ImageNumber"] == image_number]
+
+    content = {
+        "x": {
+            "label": marker_x,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}'] * 2 ** 16
+        },
+        "y": {
+            "label": marker_y,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}'] * 2 ** 16
+        },
+    }
+
+    if marker_z:
+        content["z"] = {
+            "label": marker_z,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}'] * 2 ** 16
+        }
+
+    if heatmap:
+        content["heatmap"] = {
+            "label": heatmap,
+            "data": df[heatmap]
+        }
+
+    # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    return UJSONResponse(content=content)
+
+
+@router.get("/boxplot", response_model=List[PlotSeriesModel])
+async def read_box_plot_data(
+    dataset_id: int,
+    acquisition_id: int,
+    markers: List[str] = Query(None),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read box plot data from the dataset
+    """
+    # content = await redis_manager.cache.get(request.url.path)
+    # if content:
+    #     return UJSONResponse(content=ujson.loads(content))
+
+    dataset = dataset_crud.get(db, id=dataset_id)
+    cell_input = dataset.input.get("cell")
+    channel_map = dataset.input.get("channel_map")
+    image_map = dataset.input.get("image_map")
+    image_number = image_map.get(str(acquisition_id))
+    if not cell_input or not image_number or not channel_map:
+        raise HTTPException(
+            status_code=400,
+            detail="The dataset does not have a proper input.",
+        )
+
+    content = []
+    df = pd.read_feather(cell_input.get("location"))
+    df = df[df["ImageNumber"] == image_number]
+
+    for marker in markers:
+        content.append({
+            "label": marker,
+            "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}'] * 2 ** 16
+        })
+
+    # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    return UJSONResponse(content=content)
+
+
+@router.get("/pca", response_model=PCAModel)
+async def read_pca_data(
+    dataset_id: int,
+    acquisition_id: int,
+    n_components: int,
+    heatmap: Optional[str] = None,
+    markers: List[str] = Query(None),
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Calculate Principal Component Analysis data for the dataset
+    """
+
+    content = pca.process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap)
+    return UJSONResponse(content=content)
+
+
+@router.post("/tsne")
+def submit_tsne(
+    params: TSNESubmissionModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Start t-SNE data processing
+    """
+    worker.process_tsne.send(
+        params.dataset_id,
+        params.acquisition_id,
+        params.n_components,
+        params.perplexity,
+        params.learning_rate,
+        params.iterations,
+        params.markers,
+        params.heatmap,
+    )
+    return {"status": "submitted"}
+
+
+@router.get("/tsne", response_model=TSNEModel)
+async def read_tsne_data(
+    dataset_id: int,
+    name: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read t-SNE result data
+    """
+
+    content = tsne.get_tsne_result(db, dataset_id, name)
+    return UJSONResponse(content=content)

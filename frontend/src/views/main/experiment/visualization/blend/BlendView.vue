@@ -14,13 +14,14 @@
   import Map from 'ol/Map';
   import 'ol/ol.css';
   import Projection from 'ol/proj/Projection';
+  import RenderEvent from 'ol/render/Event';
   import Static from 'ol/source/ImageStatic';
   import View from 'ol/View';
   import { equals } from 'ramda';
   import { Component, Vue, Watch } from 'vue-property-decorator';
 
   @Component
-  export default class BlendView extends Vue {
+  export default class VisualizationView extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
@@ -49,12 +50,12 @@
       return this.mainContext.getters.showWorkspace;
     }
 
-    get showChannels() {
-      return this.mainContext.getters.showChannels;
+    get showOptions() {
+      return this.mainContext.getters.showOptions;
     }
 
     @Watch('showWorkspace')
-    @Watch('showChannels')
+    @Watch('showOptions')
     refreshImageView() {
       if (this.map) {
         this.map.updateSize();
@@ -127,6 +128,12 @@
       }
     }
 
+    beforeDestroy() {
+      if (this.map) {
+        this.map.un('precompose', this.precompose);
+      }
+    }
+
     private initMap() {
       if (!this.activeAcquisition) {
         return;
@@ -180,6 +187,12 @@
         view: view,
         target: this.$el as HTMLElement,
       });
+
+      this.map.on('precompose', this.precompose);
+    }
+
+    private precompose(evt: RenderEvent) {
+      evt.context.imageSmoothingEnabled = false;
     }
   }
 </script>

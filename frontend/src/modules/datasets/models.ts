@@ -14,6 +14,12 @@ export interface IDatasetCreate {
   meta?: object;
 }
 
+export interface IDatasetTSNEOutput {
+  name: string;
+  location: string;
+  params: any;
+}
+
 export interface IDataset {
   id: number;
   experiment_id: number;
@@ -22,7 +28,7 @@ export interface IDataset {
   name: string;
   description: string;
   status: Status;
-  artifacts: {
+  input: {
     acquisition_metadata?: {
       location: string;
     }
@@ -57,7 +63,9 @@ export interface IDataset {
       }
     }
   }
-  errors?: object;
+  output?: {
+    tsne: { [name: string]: IDatasetTSNEOutput };
+  };
   meta?: object;
   location: string;
   created_at: string;

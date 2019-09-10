@@ -23,3 +23,49 @@ export interface IImageSegmentationSubmission {
   }>;
   settings: IImageSegmentationSettings;
 }
+
+export interface IPlotSeries {
+  label: string;
+  data: number[];
+}
+
+export interface IScatterPlotData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
+export interface IPCASubmission {
+  dataset_id: number;
+  acquisition_id: number;
+  n_components: number;
+  markers: string[];
+  heatmap: string;
+}
+
+export interface IPCAData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+  explained_variance_ratio?: number[];
+}
+
+export interface ITSNESubmission {
+  dataset_id: number;
+  acquisition_id: number;
+  n_components: number;
+  markers: string[];
+  heatmap: string;
+  perplexity: number;
+  learning_rate: number;
+  iterations: number;
+}
+
+export interface ITSNEData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}

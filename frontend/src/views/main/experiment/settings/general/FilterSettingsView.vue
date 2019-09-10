@@ -1,10 +1,11 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>
+    <v-expansion-panel-header class="pt-0">
       <v-switch
         v-model="apply"
         label="Apply Filter"
         hide-details
+        @click.stop
       ></v-switch>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
@@ -16,7 +17,7 @@
       ></v-select>
       <v-select
         :items="kernelSizes"
-        v-model="kernelSize"
+        v-model.number="kernelSize"
         label="Kernel Size"
         hide-details
       ></v-select>
@@ -26,7 +27,7 @@
         min="0"
         step="0.1"
         label="Sigma"
-        v-model="sigma"
+        v-model.number="sigma"
         :rules="[required]"
         hide-details
       ></v-text-field>

@@ -3,41 +3,44 @@
   <v-container
     v-else
     fluid
-    grid-list-md
-    pa-1
+    class="px-1 py-0"
   >
-    <v-layout row>
-      <v-flex v-show="showWorkspace" md3>
+    <v-row no-gutters>
+      <v-col
+        v-show="showWorkspace"
+        class="pr-1"
+        xs="3"
+        sm="3"
+        md="3"
+        lg="3"
+        xl="2"
+      >
         <WorkspaceView :experiment="experimentData"/>
-      </v-flex>
-      <v-flex :class="viewerClass">
+      </v-col>
+      <v-col :cols="viewerColumns">
         <v-tabs v-model="tabExperiment">
-          <v-tab>Image</v-tab>
+          <v-tab>Visualization</v-tab>
           <v-tab>Analysis</v-tab>
-          <!--          <v-tab>Workflow</v-tab>-->
           <v-tab-item>
-            <ImageView/>
+            <VisualizationView/>
           </v-tab-item>
           <v-tab-item>
             <AnalysisView/>
           </v-tab-item>
-          <!--          <v-tab-item>-->
-          <!--            <WorkflowTab/>-->
-          <!--          </v-tab-item>-->
         </v-tabs>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
   import LoadingView from '@/components/LoadingView.vue';
+  import { analysisModule } from '@/modules/analysis';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
-  import { WebSocketManager } from '@/WebSocketManager';
+  import { WebSocketManager } from '@/utils/WebSocketManager';
   import AnalysisView from '@/views/main/experiment/analysis/AnalysisView.vue';
-  import ImageView from '@/views/main/experiment/image/ImageView.vue';
-  // import WorkflowTab from '@/views/main/experiment/workflow/WorkflowTab.vue';
+  import VisualizationView from '@/views/main/experiment/visualization/VisualizationView.vue';
   import WorkspaceView from '@/views/main/experiment/workspace/WorkspaceView.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
@@ -45,14 +48,14 @@
     components: {
       AnalysisView,
       WorkspaceView,
-      // WorkflowTab,
-      ImageView,
+      VisualizationView,
       LoadingView,
     },
   })
   export default class ExperimentView extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
+    readonly analysisContext = analysisModule.context(this.$store);
 
     tabExperiment = 0;
 
@@ -68,8 +71,9 @@
       return this.mainContext.getters.showWorkspace;
     }
 
-    get viewerClass() {
-      return this.showWorkspace ? 'md9' : 'md12';
+    get viewerColumns() {
+      const cols = this.$vuetify.breakpoint.name === 'xl' ? 10 : 9;
+      return this.showWorkspace ? cols : 12;
     }
 
     async mounted() {
@@ -81,7 +85,10 @@
 
     beforeDestroy() {
       WebSocketManager.close();
-      this.experimentContext.mutations.reset();
+      if (process.env.VUE_APP_ENV !== 'development') {
+        this.experimentContext.mutations.reset();
+        this.analysisContext.mutations.reset();
+      }
     }
   }
 </script>

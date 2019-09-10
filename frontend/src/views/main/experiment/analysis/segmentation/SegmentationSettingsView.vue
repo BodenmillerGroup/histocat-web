@@ -50,7 +50,7 @@
         @click="process"
         color="primary"
       >
-        Process
+        Analyze
       </v-btn>
       <v-btn
         @click="produceContours"
@@ -85,10 +85,6 @@
     color = '#00AAFF40';
 
     readonly required = required;
-
-    get selectedChannels() {
-      return this.experimentContext.getters.selectedChannels;
-    }
 
     process() {
       const settings = {

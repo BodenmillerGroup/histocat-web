@@ -1,17 +1,18 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>
+    <v-expansion-panel-header class="pt-0">
       <v-switch
         v-model="apply"
         label="Show Legend"
         hide-details
+        @click.stop
       ></v-switch>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-text-field
         type="number"
         label="Font Scale"
-        v-model="legendFontScale"
+        v-model.number="legendFontScale"
         :rules="[required]"
         min="0"
         step="0.05"

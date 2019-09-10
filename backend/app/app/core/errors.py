@@ -122,3 +122,7 @@ class SlideImportError(Exception):
 
 class DatasetInputError(Exception):
     """Error class that is raised when there is an error with dataset creation."""
+
+
+class DataProcessingError(Exception):
+    """Error class that is raised when there is an error with data processing."""

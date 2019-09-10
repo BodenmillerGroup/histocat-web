@@ -1,12 +1,11 @@
 <template>
-  <v-flex column>
+  <v-col>
     <v-toolbar dense flat>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
           <v-btn
             v-on="on"
             small
-            color="primary lighten-2"
             elevation="1"
           >
             <v-icon left small>mdi-download</v-icon>
@@ -26,35 +25,30 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-switch
-        v-model="showSettings"
-        label="Show settings"
-        hide-details
-        class="ml-2"
-      ></v-switch>
     </v-toolbar>
-    <v-layout row>
-      <v-flex :class="mainClass">
+    <v-row no-gutters>
+      <v-col :cols="columns">
         <keep-alive>
           <SegmentationView
             class="segmentation-view"
             ref="segmentationView"
           ></SegmentationView>
         </keep-alive>
-      </v-flex>
-      <v-flex
-        v-if="showSettings"
-        md4
+      </v-col>
+      <v-col
+        v-if="showOptions"
+        cols="3"
       >
         <SegmentationSettingsView/>
-      </v-flex>
-    </v-layout>
-  </v-flex>
+      </v-col>
+    </v-row>
+  </v-col>
 </template>
 
 <script lang="ts">
   import { analysisModule } from '@/modules/analysis';
   import { ExportFormat } from '@/modules/experiment/models';
+  import { mainModule } from '@/modules/main';
   import { settingsModule } from '@/modules/settings';
   import SegmentationSettingsView from '@/views/main/experiment/analysis/segmentation/SegmentationSettingsView.vue';
   import SegmentationView from '@/views/main/experiment/analysis/segmentation/SegmentationView.vue';
@@ -64,16 +58,16 @@
     components: { SegmentationSettingsView, SegmentationView },
   })
   export default class SegmentationTab extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
     readonly analysisContext = analysisModule.context(this.$store);
     readonly settingsContext = settingsModule.context(this.$store);
 
-    showSettings = true;
+    get showOptions() {
+      return this.mainContext.getters.showOptions;
+    }
 
-    get mainClass() {
-      if (this.showSettings) {
-        return 'md8';
-      }
-      return 'md12';
+    get columns() {
+      return this.showOptions ? 9 : 12;
     }
 
     exportImage(format: ExportFormat) {

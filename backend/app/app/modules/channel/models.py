@@ -33,8 +33,10 @@ class ChannelModel(BaseModel):
         orm_mode = True
 
 
-# Channel stats model
 class ChannelStatsModel(BaseModel):
+    """
+    Channel stats model
+    """
     hist: List[int]
     edges: List[float]
 
@@ -66,6 +68,7 @@ class ScalebarModel(BaseModel):
 
 class MaskSettingsModel(BaseModel):
     apply: bool
+    colorize: Optional[bool]
     location: str
     settings: Optional[dict]
 

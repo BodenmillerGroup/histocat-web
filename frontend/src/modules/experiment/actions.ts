@@ -147,6 +147,29 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
+  async getColorizedMaskImage() {
+    const params = this.prepareStackParams();
+    if (params.channels.length === 0 || !params.hasOwnProperty('mask')) {
+      return;
+    }
+    params['mask']['apply'] = true;
+    params['mask']['colorize'] = true;
+    try {
+      this.mutations.setColorizeMaskInProgress(true);
+      const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        this.mutations.setChannelStackImage(reader.result);
+      };
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    } finally {
+      this.mutations.setColorizeMaskInProgress(false);
+    }
+  }
+
   async exportChannelStackImage(format: ExportFormat = 'png') {
     const params = this.prepareStackParams(format);
     try {
@@ -253,8 +276,8 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       result['datasetId'] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
       const acquisition = this.getters.activeAcquisition;
-      if (acquisition && activeDataset.artifacts && activeDataset.artifacts.probability_masks) {
-        const mask = activeDataset.artifacts.probability_masks[acquisition.id];
+      if (acquisition && activeDataset.input && activeDataset.input.probability_masks) {
+        const mask = activeDataset.input.probability_masks[acquisition.id];
         if (mask) {
           result['mask'] = {
             apply: maskSettings.apply,

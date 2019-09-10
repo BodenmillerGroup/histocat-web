@@ -25,10 +25,10 @@
               :error-messages="errors.collect('email')"
               required
             ></v-text-field>
-            <div class="subtitle-1 secondary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
+            <div class="subtitle-1 primary--text text--lighten-2">User is superuser <span v-if="isSuperuser">(currently is a superuser)</span><span
               v-else>(currently is not a superuser)</span></div>
             <v-checkbox label="Is Superuser" v-model="isSuperuser"></v-checkbox>
-            <div class="subtitle-1 secondary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
+            <div class="subtitle-1 primary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
               v-else>(currently not active)</span></div>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
             <v-layout align-center>

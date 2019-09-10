@@ -1,6 +1,6 @@
 <template>
-  <v-flex>
-    <v-flex row class="mt-6 mx-6">
+  <v-container fluid>
+    <v-row class="mt-6 mx-6">
       <v-select
         v-model="tags"
         :items="items"
@@ -20,16 +20,16 @@
             v-on="on"
             dark
             fab
-            color="primary lighten-2"
+            color="primary lighten-1"
             to="/main/experiments/create"
-            class="ml-2"
+            class="ml-4"
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </template>
         <span>Create experiment</span>
       </v-tooltip>
-    </v-flex>
+    </v-row>
     <masonry
       :cols="{default: 4, 1000: 3, 700: 2, 400: 1}"
       :gutter="{default: '0px'}"
@@ -41,7 +41,7 @@
         :user="userProfile"
       />
     </masonry>
-  </v-flex>
+  </v-container>
 </template>
 
 <script lang="ts">

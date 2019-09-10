@@ -28,4 +28,4 @@ def import_zip(db: Session, uri: str, experiment_id: int, user_id: int):
         import_imcfolder(db, schema_filename, experiment_id, user_id)
 
     for cell_csv_filename in locate(output_dir, f"{CELL_FILENAME}{CSV_FILE_EXTENSION}"):
-        import_dataset(db, cell_csv_filename, experiment_id, user_id)
+        import_dataset(db, output_dir, cell_csv_filename, experiment_id, user_id)

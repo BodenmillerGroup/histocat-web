@@ -2,14 +2,15 @@
 import '@/component-hooks';
 import App from '@/App.vue';
 import '@/plugins/masonry-css';
+import '@/plugins/echarts';
 import '@/plugins/vee-validate';
 import vuetify from '@/plugins/vuetify';
 import '@/registerServiceWorker';
 import router from '@/router';
 import store from '@/store';
-import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-loader
 import Vue from 'vue';
 import 'vuetify/dist/vuetify.min.css';
+import '@mdi/font/css/materialdesignicons.css'; // Ensure you are using css-loader
 
 Vue.config.productionTip = false;
 
