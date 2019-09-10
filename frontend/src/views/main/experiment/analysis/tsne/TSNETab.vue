@@ -56,7 +56,7 @@
               Clear all
             </v-btn>
           </v-card-actions>
-          <v-radio-group v-model="numberOfComponents" row mandatory>
+          <v-radio-group v-model="nComponents" row mandatory>
             <v-radio label="2D" value="2"></v-radio>
             <v-radio label="3D" value="3"></v-radio>
           </v-radio-group>
@@ -114,10 +114,13 @@
           <v-select
             :items="results"
             v-model="result"
+            item-text="name"
+            return-object
             label="Results"
             hint="t-SNE processed data"
             persistent-hint
             clearable
+            @change="resultChanged"
           ></v-select>
         </v-card-text>
         <v-card-actions>
@@ -191,14 +194,14 @@
     options: echarts.EChartOption = {};
 
     selectedItems: any[] = [];
-    numberOfComponents = '2';
+    nComponents = '2';
     perplexity = 30;
     learningRate = 200;
     iterations = 1000;
 
     heatmap: string | null = null;
 
-    result: string | null = null;
+    result: any = null;
 
     get heatmaps() {
       return this.activeDataset && this.activeDataset.input['neighbors_columns'] ? this.activeDataset.input['neighbors_columns'].map(item => item.substring(10, item.length)) : [];
@@ -225,7 +228,7 @@
     }
 
     get results() {
-      return this.activeDataset && this.activeDataset.output && this.activeDataset.output['tsne'] ? Object.keys(this.activeDataset.output['tsne']).map(item => item) : [];
+      return this.activeDataset && this.activeDataset.output && this.activeDataset.output['tsne'] ? Object.values(this.activeDataset.output['tsne']) : [];
     }
 
     selectAll() {
@@ -251,13 +254,24 @@
         await this.analysisContext.actions.submitTSNE({
           dataset_id: this.activeDataset.id,
           acquisition_id: this.activeAcquisition.id,
-          n_components: parseInt(this.numberOfComponents, 10),
+          n_components: parseInt(this.nComponents, 10),
           markers: this.selectedItems,
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
           perplexity: this.perplexity,
           learning_rate: this.learningRate,
           iterations: this.iterations,
         });
+      }
+    }
+
+    resultChanged(result) {
+      if (result) {
+        this.nComponents = result.params.n_components.toString();
+        this.perplexity = result.params.perplexity;
+        this.iterations = result.params.iterations;
+        this.learningRate = result.params.learning_rate;
+        this.heatmap = result.params.heatmap.substring(10, result.params.heatmap.length);
+        this.selectedItems = result.params.markers;
       }
     }
 
@@ -274,7 +288,7 @@
 
       await this.analysisContext.actions.getTSNEResult({
         datasetId: this.activeDataset.id,
-        name: this.result ? this.result : '',
+        name: this.result ? this.result.name : '',
       });
     }
 

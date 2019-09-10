@@ -56,7 +56,7 @@
               Clear all
             </v-btn>
           </v-card-actions>
-          <v-radio-group v-model="numberOfComponents" row mandatory>
+          <v-radio-group v-model="nComponents" row mandatory>
             <v-radio label="2D" value="2"></v-radio>
             <v-radio label="3D" value="3"></v-radio>
           </v-radio-group>
@@ -142,7 +142,7 @@
     options: echarts.EChartOption = {};
 
     selectedItems: any[] = [];
-    numberOfComponents = '2';
+    nComponents = '2';
     heatmap: string | null = null;
 
     get heatmaps() {
@@ -192,7 +192,7 @@
         await this.analysisContext.actions.getPCAData({
           dataset_id: this.activeDataset.id,
           acquisition_id: this.activeAcquisition.id,
-          n_components: parseInt(this.numberOfComponents, 10),
+          n_components: parseInt(this.nComponents, 10),
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
           markers: this.selectedItems,
         });

@@ -6,6 +6,8 @@ import numpy as np
 import pandas as pd
 from fastapi import HTTPException
 from sklearn.manifold import TSNE
+# from openTSNE import TSNE
+# from openTSNE.callbacks import ErrorLogger
 from sqlalchemy.orm import Session
 
 from app.core.notifier import Message
@@ -48,8 +50,20 @@ def process_tsne(
     for marker in markers:
         features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
 
-    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations)
+    # scikit-learn implementation
+    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations, verbose=6, random_state=42)
     tsne_result = tsne.fit_transform(df[features].values * 2 ** 16)
+
+    # openTSNE implementation
+    # tsne = TSNE(
+    #     n_components=n_components,
+    #     perplexity=perplexity,
+    #     learning_rate=learning_rate,
+    #     n_iter=iterations,
+    #     callbacks=ErrorLogger(),
+    #     random_state=42,
+    # )
+    # tsne_result = tsne.fit(df[features].values * 2 ** 16)
 
     timestamp = str(datetime.utcnow())
 

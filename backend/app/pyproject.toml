@@ -36,6 +36,8 @@ ujson = "^1.35"
 uvicorn = { version = "^0.8.6", optional = true }
 redis = {version = "^3.3", extras = ["hiredis"]}
 scikit-learn = "^0.21.3"
+opentsne = "^0.3.11"
+umap-learn = "^0.3.10"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7.8"

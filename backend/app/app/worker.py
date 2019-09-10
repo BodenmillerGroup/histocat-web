@@ -84,7 +84,7 @@ def import_data(uri: str, experiment_id: int, user_id: int):
         shutil.rmtree(path)
 
 
-@dramatiq.actor(queue_name='process', max_retries=0)
+@dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
 def process_tsne(
     dataset_id: int,
     acquisition_id: int,
