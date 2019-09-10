@@ -36,6 +36,14 @@ export interface IScatterPlotData {
   heatmap?: IPlotSeries;
 }
 
+export interface IPCASubmission {
+  dataset_id: number;
+  acquisition_id: number;
+  n_components: number;
+  markers: string[];
+  heatmap: string;
+}
+
 export interface IPCAData {
   x: IPlotSeries;
   y: IPlotSeries;
@@ -50,6 +58,9 @@ export interface ITSNESubmission {
   n_components: number;
   markers: string[];
   heatmap: string;
+  perplexity: number;
+  learning_rate: number;
+  iterations: number;
 }
 
 export interface ITSNEData {

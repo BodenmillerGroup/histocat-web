@@ -2,7 +2,7 @@ import { apiUrl } from '@/env';
 import ky from 'ky';
 import {
   IImageSegmentationSubmission,
-  IPCAData,
+  IPCAData, IPCASubmission,
   IPlotSeries,
   IScatterPlotData,
   ITSNEData,
@@ -54,16 +54,9 @@ export const api = {
       },
     }).json<IPlotSeries[]>();
   },
-  async getPCAData(
-    token: string,
-    datasetId: number,
-    acquisitionId: number,
-    nComponents: number,
-    heatmap: string,
-    markers: string[],
-  ) {
-    const markersArray = markers.map(marker => `&markers=${marker}`);
-    return ky.get(`${apiUrl}/api/v1/analysis/pca?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&n_components=${nComponents}&heatmap=${heatmap}&markers=${markersArray.join('')}`, {
+  async getPCAData(token: string, params: IPCASubmission) {
+    const markersArray = params.markers.map(marker => `&markers=${marker}`);
+    return ky.get(`${apiUrl}/api/v1/analysis/pca?dataset_id=${params.dataset_id}&acquisition_id=${params.acquisition_id}&n_components=${params.n_components}&heatmap=${params.heatmap}&markers=${markersArray.join('')}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -19,8 +19,8 @@
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
           </v-list>
-          <v-divider></v-divider>
-          <v-list subheader v-show="hasAdminAccess">
+          <v-divider v-if="hasAdminAccess"></v-divider>
+          <v-list subheader v-if="hasAdminAccess">
             <v-subheader>Admin</v-subheader>
             <v-list-item to="/main/admin/users/all">
               <v-list-item-action>
@@ -34,12 +34,12 @@
               </v-list-item-action>
               <v-list-item-title>Manage Experiments</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/main/admin/workflows/all">
-              <v-list-item-action>
-                <v-icon>mdi-sitemap</v-icon>
-              </v-list-item-action>
-              <v-list-item-title>Manage Workflows</v-list-item-title>
-            </v-list-item>
+<!--            <v-list-item to="/main/admin/workflows/all">-->
+<!--              <v-list-item-action>-->
+<!--                <v-icon>mdi-sitemap</v-icon>-->
+<!--              </v-list-item-action>-->
+<!--              <v-list-item-title>Manage Workflows</v-list-item-title>-->
+<!--            </v-list-item>-->
           </v-list>
           <v-spacer></v-spacer>
           <v-list>

@@ -26,22 +26,22 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              small
-              elevation="1"
-              v-on="on"
-              @click="getColorizedMaskImage"
-              class="ml-2"
-              :loading="colorizeMaskInProgress"
-              :disabled="colorizeMaskInProgress"
-            >
-              Colorize mask
-            </v-btn>
-          </template>
-          <span>Request calculation of colorized cell mask</span>
-        </v-tooltip>
+<!--        <v-tooltip bottom>-->
+<!--          <template v-slot:activator="{ on }">-->
+<!--            <v-btn-->
+<!--              small-->
+<!--              elevation="1"-->
+<!--              v-on="on"-->
+<!--              @click="getColorizedMaskImage"-->
+<!--              class="ml-2"-->
+<!--              :loading="colorizeMaskInProgress"-->
+<!--              :disabled="colorizeMaskInProgress"-->
+<!--            >-->
+<!--              Colorize mask-->
+<!--            </v-btn>-->
+<!--          </template>-->
+<!--          <span>Request calculation of colorized cell mask</span>-->
+<!--        </v-tooltip>-->
         <v-switch
           v-model="applyMask"
           label="Mask overlay"

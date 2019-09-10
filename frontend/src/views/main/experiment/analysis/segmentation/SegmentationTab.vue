@@ -37,7 +37,7 @@
       </v-col>
       <v-col
         v-if="showOptions"
-        cols="4"
+        cols="3"
       >
         <SegmentationSettingsView/>
       </v-col>
@@ -67,7 +67,7 @@
     }
 
     get columns() {
-      return this.showOptions ? 8 : 12;
+      return this.showOptions ? 9 : 12;
     }
 
     exportImage(format: ExportFormat) {

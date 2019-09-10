@@ -40,7 +40,7 @@
               {{ item }}
             </v-chip>
           </v-chip-group>
-          <v-card-actions class="input-row">
+          <v-card-actions>
             <v-btn
               @click="selectAll"
               small
@@ -56,15 +56,11 @@
               Clear all
             </v-btn>
           </v-card-actions>
+          <v-radio-group v-model="numberOfComponents" row mandatory>
+            <v-radio label="2D" value="2"></v-radio>
+            <v-radio label="3D" value="3"></v-radio>
+          </v-radio-group>
           <v-select
-            class="input-row"
-            :items="numberOfComponentsItems"
-            v-model.number="numberOfComponents"
-            label="Number of components"
-            hide-details
-          ></v-select>
-          <v-select
-            class="input-row"
             :items="heatmaps"
             v-model="heatmap"
             label="Heatmap"
@@ -142,12 +138,11 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     readonly required = required;
-    readonly numberOfComponentsItems: number[] = [2, 3];
 
     options: echarts.EChartOption = {};
 
     selectedItems: any[] = [];
-    numberOfComponents = 2;
+    numberOfComponents = '2';
     heatmap: string | null = null;
 
     get heatmaps() {
@@ -195,9 +190,9 @@
         }
 
         await this.analysisContext.actions.getPCAData({
-          datasetId: this.activeDataset.id,
-          acquisitionId: this.activeAcquisition.id,
-          nComponents: this.numberOfComponents,
+          dataset_id: this.activeDataset.id,
+          acquisition_id: this.activeAcquisition.id,
+          n_components: parseInt(this.numberOfComponents, 10),
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
           markers: this.selectedItems,
         });
@@ -370,9 +365,5 @@
 <style scoped>
   .chart-container {
     height: calc(100vh - 154px);
-  }
-
-  .input-row {
-    margin-bottom: 32px;
   }
 </style>

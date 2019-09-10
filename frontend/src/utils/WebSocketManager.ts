@@ -49,9 +49,9 @@ export class WebSocketManager {
     };
 
     WebSocketManager.socket.onmessage = (event: MessageEvent) => {
-      console.log(event);
       const json = JSON.parse(event.data);
       const message = new WebSocketMessage(json);
+      console.log(message);
       if (message.experimentId === WebSocketManager.experimentContext.getters.activeExperimentId) {
         switch (message.type) {
           case 'slide_imported': {
@@ -72,6 +72,7 @@ export class WebSocketManager {
           }
           case 'tsne_result_ready': {
             WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
+            WebSocketManager.datasetContext.mutations.updateDatasetTSNEOutput(message);
             WebSocketManager.mainContext.mutations.addNotification({
               content: 't-SNE result is ready',
               color: 'success',

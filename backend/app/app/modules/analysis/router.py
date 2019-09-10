@@ -252,6 +252,9 @@ def submit_tsne(
         params.dataset_id,
         params.acquisition_id,
         params.n_components,
+        params.perplexity,
+        params.learning_rate,
+        params.iterations,
         params.markers,
         params.heatmap,
     )

@@ -711,10 +711,10 @@
     cssnano-preset-default "^4.0.0"
     postcss "^7.0.0"
 
-"@mdi/font@4.3.95":
-  version "4.3.95"
-  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-4.3.95.tgz#0d546839c4be387eb11754c63a0ed0c966110fbf"
-  integrity sha512-J5l+3bQLBGwYA8EVeazA+YgNTIBpfRgviti8Jyjk2yMAiRDVNlafFbv1j1xlttFLMigXoxZ9J7plyfOYAuyjGA==
+"@mdi/font@4.4.95":
+  version "4.4.95"
+  resolved "https://registry.yarnpkg.com/@mdi/font/-/font-4.4.95.tgz#4a00f46a500120714ded1524f376f7882346d3fd"
+  integrity sha512-9BSvtpDF83dQ06VmwCeXTebzZZisIf4u6d62uC53oD6bzBUEMqiQrbW+oxyFrBYn3VxttRt/MKuL/wKUV9HWmA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -6213,10 +6213,10 @@ kleur@^2.0.1:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-2.0.2.tgz#b704f4944d95e255d038f0cb05fb8a602c55a300"
   integrity sha512-77XF9iTllATmG9lSlIv0qdQ2BQ/h9t0bJllHlbvsQ0zUWfU7Yi0S8L5JXzPZgkefIiajLmBJJ4BsMJmqcf7oxQ==
 
-ky@0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/ky/-/ky-0.13.0.tgz#354c3d209f26d772415cbfe4f5d02ccbcb5ed536"
-  integrity sha512-qmyUE2IvwLveZEHiLmFzUIrW4EsSX18ItZgEfgx8JXFxSEPKrnXvWrjQDP6zi4mwcie3MWBEHyUg0aNF8OS9oA==
+ky@0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-0.14.0.tgz#b99bda5818d3a493f9857f39532ff567e2773c35"
+  integrity sha512-NSjg+WCElQPdlF3BFZnjh8s5QlMIP+vIGoyukrRU+n+23VBUX87bQYOoG5h3HX5tO7kKQYXvg+QZVt8n0uWmhg==
 
 launch-editor-middleware@^2.2.1:
   version "2.2.1"

@@ -34,7 +34,7 @@
     "echarts-gl": "1.1.1",
     "echarts-stat": "1.1.1",
     "file-saver": "2.0.2",
-    "ky": "0.13.0",
+    "ky": "0.14.0",
     "localforage": "1.7.3",
     "ol": "5.3.3",
     "ramda": "0.26.1",
@@ -52,7 +52,7 @@
     "vuex-smart-module": "0.3.1"
   },
   "devDependencies": {
-    "@mdi/font": "4.3.95",
+    "@mdi/font": "4.4.95",
     "@types/d3": "5.7.2",
     "@types/echarts": "4.1.12",
     "@types/file-saver": "2.0.1",

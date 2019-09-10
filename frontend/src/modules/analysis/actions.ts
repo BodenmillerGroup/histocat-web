@@ -8,7 +8,7 @@ import { Actions, Context } from 'vuex-smart-module';
 import { AnalysisState } from '.';
 import { api } from './api';
 import { AnalysisGetters } from './getters';
-import { IImageSegmentationSettings } from './models';
+import { IImageSegmentationSettings, IPCASubmission, ITSNESubmission } from './models';
 import { AnalysisMutations } from './mutations';
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
@@ -99,23 +99,16 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getPCAData(payload: { datasetId: number, acquisitionId: number, nComponents: number, heatmap: string, markers: string[] }) {
+  async getPCAData(payload: IPCASubmission) {
     try {
-      const response = await api.getPCAData(
-        this.main!.getters.token,
-        payload.datasetId,
-        payload.acquisitionId,
-        payload.nComponents,
-        payload.heatmap,
-        payload.markers,
-      );
+      const response = await api.getPCAData(this.main!.getters.token, payload);
       this.mutations.setPCAData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  async submitTSNE(payload: { dataset_id: number, acquisition_id: number, n_components: number, markers: string[], heatmap: string }) {
+  async submitTSNE(payload: ITSNESubmission) {
     try {
       const response = await api.submitTSNE(
         this.main!.getters.token, payload

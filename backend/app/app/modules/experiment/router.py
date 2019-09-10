@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 import app.worker as worker
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.api.utils.security import get_current_active_user
 from app.core import config
 from app.modules.user.db import User
 from . import crud
@@ -90,7 +90,7 @@ def read_by_id(
 @router.delete("/{id}", response_model=ExperimentModel)
 def delete_by_id(
     id: int,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -106,7 +106,7 @@ def update(
     db: Session = Depends(get_db),
     id: int,
     params: ExperimentUpdateModel,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Update an experiment

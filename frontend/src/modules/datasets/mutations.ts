@@ -1,3 +1,4 @@
+import { WebSocketMessage } from '@/utils/WebSocketMessage';
 import { Mutations } from 'vuex-smart-module';
 import { DatasetState } from '.';
 import { IDataset } from './models';
@@ -20,6 +21,19 @@ export class DatasetMutations extends Mutations<DatasetState> {
 
   setActiveDataset(dataset?: IDataset) {
     this.state.activeDataset = dataset;
+  }
+
+  updateDatasetTSNEOutput(message: WebSocketMessage) {
+    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    if (dataset) {
+      if (!dataset.output){
+        dataset.output = {
+          tsne: {}
+        }
+      }
+      dataset.output.tsne[message.payload.name] = message.payload;
+      this.state.activeDataset = Object.assign({}, dataset);
+    }
   }
 
   reset() {

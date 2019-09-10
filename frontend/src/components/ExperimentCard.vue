@@ -36,7 +36,7 @@
       <v-spacer></v-spacer>
       <v-tooltip
         bottom
-        v-if="isOwner"
+        v-if="isOwner || hasAdminAccess"
       >
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" :to="{name: 'main-experiment-edit', params: {id: experiment.id}}">
@@ -56,17 +56,33 @@
         </template>
         <span>Share experiment</span>
       </v-tooltip>
+      <v-tooltip
+        bottom
+        v-if="isOwner || hasAdminAccess"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn icon color="secondary" v-on="on" @click="deleteExperiment($event, experiment.id)">
+            <v-icon>mdi-delete-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Delete experiment</span>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>
 
 <script lang="ts">
+  import { experimentModule } from '@/modules/experiment';
   import { IExperiment } from '@/modules/experiment/models';
   import { IUserProfile } from '@/modules/user/models';
   import { Component, Prop, Vue } from 'vue-property-decorator';
+  import { mainModule } from '@/modules/main';
 
   @Component
   export default class ExperimentCard extends Vue {
+    readonly mainContext = mainModule.context(this.$store);
+    readonly experimentContext = experimentModule.context(this.$store);
+
     @Prop(Object) experiment!: IExperiment;
     @Prop(Object) user!: IUserProfile;
 
@@ -76,6 +92,16 @@
 
     get isOwner() {
       return this.experiment.user_id === this.user.id;
+    }
+
+    get hasAdminAccess() {
+      return this.mainContext.getters.hasAdminAccess;
+    }
+
+    async deleteExperiment(event, id: number) {
+      if (self.confirm('Are you sure you want to delete the experiment?')) {
+        await this.experimentContext.actions.deleteExperiment(id);
+      }
     }
   }
 </script>

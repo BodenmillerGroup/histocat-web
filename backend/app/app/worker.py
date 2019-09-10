@@ -89,12 +89,15 @@ def process_tsne(
     dataset_id: int,
     acquisition_id: int,
     n_components: int,
+    perplexity: int,
+    learning_rate: int,
+    iterations: int,
     markers: List[str],
     heatmap: Optional[str],
 ):
     logger.info(f'Processing t-SNE for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
     try:
-        tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, markers, heatmap)
+        tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, perplexity, learning_rate, iterations, markers, heatmap)
     except Exception as error:
         logger.warn(error)
     finally:

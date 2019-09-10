@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.api.utils.security import get_current_active_user
 from app.core.utils import stream_bytes
 from app.modules.user.db import User
 from . import crud
@@ -24,7 +24,7 @@ def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Retrieve datasets
@@ -37,7 +37,7 @@ def read_all(
 def read_own_by_experiment(
     experiment_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Retrieve own datasets for specified experiment
@@ -62,7 +62,7 @@ def read_by_id(
 @router.delete("/{id}", response_model=DatasetModel)
 def delete_by_id(
     id: int,
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """

@@ -65,6 +65,9 @@ class TSNESubmissionModel(BaseModel):
     dataset_id: int
     acquisition_id: int
     n_components: int
+    perplexity: int
+    learning_rate: int
+    iterations: int
     markers: List[str]
     heatmap: Optional[str]
 

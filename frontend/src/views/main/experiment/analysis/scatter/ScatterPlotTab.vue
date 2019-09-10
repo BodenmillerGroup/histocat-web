@@ -30,7 +30,6 @@
             ref="form"
           >
             <v-select
-              class="input-row"
               :items="items"
               v-model="markerX"
               label="X"
@@ -39,7 +38,6 @@
               :rules="[required]"
             ></v-select>
             <v-select
-              class="input-row"
               :items="items"
               v-model="markerY"
               label="Y"
@@ -48,7 +46,6 @@
               :rules="[required]"
             ></v-select>
             <v-select
-              class="input-row"
               :items="items"
               v-model="markerZ"
               label="Z"

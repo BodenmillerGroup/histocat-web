@@ -40,7 +40,7 @@
               {{ item }}
             </v-chip>
           </v-chip-group>
-          <v-card-actions class="input-row">
+          <v-card-actions>
             <v-btn
               @click="selectAll"
               small
@@ -56,15 +56,40 @@
               Clear all
             </v-btn>
           </v-card-actions>
-          <v-select
-            class="input-row"
-            :items="componentsNumbers"
-            v-model.number="componentNumber"
-            label="Number of components"
+          <v-radio-group v-model="numberOfComponents" row mandatory>
+            <v-radio label="2D" value="2"></v-radio>
+            <v-radio label="3D" value="3"></v-radio>
+          </v-radio-group>
+          <v-text-field
+            type="number"
+            min="5"
+            max="50"
+            step="1"
+            label="Perplexity"
+            v-model.number="perplexity"
+            :rules="[required]"
             hide-details
-          ></v-select>
+          ></v-text-field>
+          <v-text-field
+            type="number"
+            min="10"
+            max="1000"
+            step="1"
+            label="Learning rate"
+            v-model.number="learningRate"
+            :rules="[required]"
+            hide-details
+          ></v-text-field>
+          <v-text-field
+            type="number"
+            min="250"
+            step="1"
+            label="Iterations"
+            v-model.number="iterations"
+            :rules="[required]"
+            hide-details
+          ></v-text-field>
           <v-select
-            class="input-row"
             :items="heatmaps"
             v-model="heatmap"
             label="Heatmap"
@@ -87,7 +112,6 @@
         </v-card-actions>
         <v-card-text>
           <v-select
-            class="input-row"
             :items="results"
             v-model="result"
             label="Results"
@@ -163,12 +187,15 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     readonly required = required;
-    readonly componentsNumbers: number[] = [2, 3];
 
     options: echarts.EChartOption = {};
 
     selectedItems: any[] = [];
-    componentNumber = 2;
+    numberOfComponents = '2';
+    perplexity = 30;
+    learningRate = 200;
+    iterations = 1000;
+
     heatmap: string | null = null;
 
     result: string | null = null;
@@ -224,9 +251,12 @@
         await this.analysisContext.actions.submitTSNE({
           dataset_id: this.activeDataset.id,
           acquisition_id: this.activeAcquisition.id,
-          n_components: this.componentNumber,
+          n_components: parseInt(this.numberOfComponents, 10),
           markers: this.selectedItems,
           heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : '',
+          perplexity: this.perplexity,
+          learning_rate: this.learningRate,
+          iterations: this.iterations,
         });
       }
     }
@@ -414,9 +444,5 @@
 <style scoped>
   .chart-container {
     height: calc(100vh - 154px);
-  }
-
-  .input-row {
-    margin-bottom: 32px;
   }
 </style>

@@ -1,18 +1,17 @@
 import os
-import pickle
 from datetime import datetime
 from typing import List, Optional
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from fastapi import HTTPException
 from sklearn.manifold import TSNE
 from sqlalchemy.orm import Session
 
 from app.core.notifier import Message
+from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
 from app.core.utils import timeit
 from app.modules.dataset import crud as dataset_crud
-from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
 
 
 @timeit
@@ -21,6 +20,9 @@ def process_tsne(
     dataset_id: int,
     acquisition_id: int,
     n_components: int,
+    perplexity: int,
+    learning_rate: int,
+    iterations: int,
     markers: List[str],
     heatmap: Optional[str],
 ):
@@ -46,7 +48,7 @@ def process_tsne(
     for marker in markers:
         features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
 
-    tsne = TSNE(n_components=n_components)
+    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations)
     tsne_result = tsne.fit_transform(df[features].values * 2 ** 16)
 
     timestamp = str(datetime.utcnow())
@@ -61,6 +63,9 @@ def process_tsne(
             "dataset_id": dataset_id,
             "acquisition_id": acquisition_id,
             "n_components": n_components,
+            "perplexity": perplexity,
+            "learning_rate": learning_rate,
+            "iterations": iterations,
             "markers": markers,
             "heatmap": heatmap,
         },

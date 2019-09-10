@@ -6,7 +6,15 @@
     class="px-1 py-0"
   >
     <v-row no-gutters>
-      <v-col v-show="showWorkspace" cols="3" class="pr-1">
+      <v-col
+        v-show="showWorkspace"
+        class="pr-1"
+        xs="3"
+        sm="3"
+        md="3"
+        lg="3"
+        xl="2"
+      >
         <WorkspaceView :experiment="experimentData"/>
       </v-col>
       <v-col :cols="viewerColumns">
@@ -64,7 +72,8 @@
     }
 
     get viewerColumns() {
-      return this.showWorkspace ? 9 : 12;
+      const cols = this.$vuetify.breakpoint.name === 'xl' ? 10 : 9;
+      return this.showWorkspace ? cols : 12;
     }
 
     async mounted() {
