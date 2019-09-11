@@ -40,7 +40,7 @@
       >
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" :to="{name: 'main-experiment-edit', params: {id: experiment.id}}">
-            <v-icon>mdi-pencil-outline</v-icon>
+            <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </template>
         <span>Edit experiment</span>

@@ -293,7 +293,6 @@
     }
 
     resultChanged(result) {
-      console.log(result)
       if (result) {
         this.nComponents = result.params.n_components.toString();
         this.nNeighbors = result.params.n_neighbors;

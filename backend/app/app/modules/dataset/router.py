@@ -42,7 +42,7 @@ def read_own_by_experiment(
     """
     Retrieve own datasets for specified experiment
     """
-    items = crud.get_own_by_experiment_id(db, user_id=current_user.id, experiment_id=experiment_id)
+    items = crud.get_own_by_experiment_id(db, experiment_id=experiment_id)
     return items
 
 

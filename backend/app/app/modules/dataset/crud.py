@@ -16,8 +16,8 @@ def get(session: Session, *, id: int) -> Optional[Dataset]:
     return session.query(Dataset).filter(Dataset.id == id).first()
 
 
-def get_own_by_experiment_id(session: Session, *, user_id: int, experiment_id: int) -> List[Dataset]:
-    return session.query(Dataset).filter(Dataset.user_id == user_id, Dataset.experiment_id == experiment_id).all()
+def get_own_by_experiment_id(session: Session, *, experiment_id: int) -> List[Dataset]:
+    return session.query(Dataset).filter(Dataset.experiment_id == experiment_id).all()
 
 
 def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Dataset]:
