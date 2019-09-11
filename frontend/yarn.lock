@@ -10004,10 +10004,10 @@ vue@2.6.10:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
   integrity sha512-ImThpeNU9HbdZL3utgMCq0oiMzAkt1mcgy3/E6zWC/G6AaQoeuFdsl9nDhTDU3X1R6FK7nsIUuRACVcjI+A2GQ==
 
-vuetify@2.0.16:
-  version "2.0.16"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.16.tgz#dd8e2de5535bb40fa7e5a8067d20ce7b964151d3"
-  integrity sha512-BrV6FkJ6EAEA0GF//FDlvIl711CmbfCAWDMe815/1l7oKWVrt1l3TP2C1TNPjO2IYTeNJm2KKR/VHXigoYRhZw==
+vuetify@2.0.17:
+  version "2.0.17"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.0.17.tgz#824dc9e640fc249a4fe37a1757206dbc9fed3492"
+  integrity sha512-pBtwwF2SnZDfr2MPj5kA5VFUL9tjFVK4ca1+dUfw1LZS8AtJfOl70agpSMqcItehzESddIPsDu5sp/JOFCOygA==
 
 vuex-persist@2.1.0:
   version "2.1.0"
