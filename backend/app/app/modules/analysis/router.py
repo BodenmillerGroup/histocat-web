@@ -16,12 +16,13 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
-from app.modules.analysis.processors import pca, tsne
+from app.modules.analysis.processors import pca, tsne, umap
 from app.modules.channel import crud as channel_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
-from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel
+from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel, \
+    UMAPSubmissionModel, UMAPModel
 
 logger = logging.getLogger(__name__)
 
@@ -256,7 +257,6 @@ def submit_tsne(
         params.learning_rate,
         params.iterations,
         params.markers,
-        params.heatmap,
     )
     return {"status": "submitted"}
 
@@ -265,6 +265,8 @@ def submit_tsne(
 async def read_tsne_data(
     dataset_id: int,
     name: str,
+    heatmap_type: Optional[str],
+    heatmap: Optional[str],
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -272,5 +274,43 @@ async def read_tsne_data(
     Read t-SNE result data
     """
 
-    content = tsne.get_tsne_result(db, dataset_id, name)
+    content = tsne.get_tsne_result(db, dataset_id, name, heatmap_type, heatmap)
+    return UJSONResponse(content=content)
+
+
+@router.post("/umap")
+def submit_umap(
+    params: UMAPSubmissionModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Start UMAP data processing
+    """
+    worker.process_umap.send(
+        params.dataset_id,
+        params.acquisition_id,
+        params.n_components,
+        params.n_neighbors,
+        params.metric,
+        params.min_dist,
+        params.markers,
+    )
+    return {"status": "submitted"}
+
+
+@router.get("/umap", response_model=UMAPModel)
+async def read_umap_data(
+    dataset_id: int,
+    name: str,
+    heatmap_type: Optional[str],
+    heatmap: Optional[str],
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read UMAP result data
+    """
+
+    content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
     return UJSONResponse(content=content)

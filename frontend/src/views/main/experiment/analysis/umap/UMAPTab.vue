@@ -23,7 +23,7 @@
       cols="3"
     >
       <v-card tile>
-        <v-card-title>t-SNE Settings</v-card-title>
+        <v-card-title>UMAP Settings</v-card-title>
         <v-card-text>
           <v-chip-group
             v-model="selectedItems"
@@ -61,34 +61,34 @@
             <v-radio label="3D" value="3"></v-radio>
           </v-radio-group>
           <v-text-field
+            class="input-row"
             type="number"
-            min="5"
-            max="50"
+            min="2"
+            max="200"
             step="1"
-            label="Perplexity"
-            v-model.number="perplexity"
+            label="Neighbors"
+            v-model.number="nNeighbors"
             :rules="[required]"
             hide-details
           ></v-text-field>
           <v-text-field
+            class="input-row"
             type="number"
-            min="10"
-            max="1000"
-            step="1"
-            label="Learning rate"
-            v-model.number="learningRate"
+            min="0.0"
+            max="0.99"
+            step="0.01"
+            label="Minimum distance"
+            v-model.number="minDist"
             :rules="[required]"
             hide-details
           ></v-text-field>
-          <v-text-field
-            type="number"
-            min="250"
-            step="1"
-            label="Iterations"
-            v-model.number="iterations"
-            :rules="[required]"
+          <v-select
+            :items="metrics"
+            v-model="metric"
+            label="Metric"
             hide-details
-          ></v-text-field>
+            clearable
+          ></v-select>
         </v-card-text>
         <v-card-actions>
           <v-btn
@@ -107,7 +107,7 @@
             item-text="name"
             return-object
             label="Results"
-            hint="t-SNE processed data"
+            hint="UMAP processed data"
             persistent-hint
             clearable
             @change="resultChanged"
@@ -140,7 +140,7 @@
 
 <script lang="ts">
   import { analysisModule } from '@/modules/analysis';
-  import { ITSNEData } from '@/modules/analysis/models';
+  import { IUMAPData } from '@/modules/analysis/models';
   import { datasetModule } from '@/modules/datasets';
   import { experimentModule } from '@/modules/experiment';
   import { mainModule } from '@/modules/main';
@@ -157,7 +157,7 @@
 
   const commonOptions: echarts.EChartOption = {
     title: {
-      text: 't-Distributed Stochastic Neighbor Embedding',
+      text: 'Uniform Manifold Approximation and Projection',
       left: 'center',
       top: 0,
     },
@@ -182,7 +182,7 @@
   };
 
   @Component
-  export default class TSNETab extends Vue {
+  export default class UMAPTab extends Vue {
     readonly mainContext = mainModule.context(this.$store);
     readonly experimentContext = experimentModule.context(this.$store);
     readonly datasetContext = datasetModule.context(this.$store);
@@ -190,14 +190,28 @@
     readonly settingsContext = settingsModule.context(this.$store);
 
     readonly required = required;
+    readonly metrics = [
+      'euclidean',
+      'manhattan',
+      'chebyshev',
+      'minkowski',
+      'canberra',
+      'braycurtis',
+      'haversine',
+      'mahalanobis',
+      'wminkowski',
+      'seuclidean',
+      'cosine',
+      'correlation',
+    ];
 
     options: echarts.EChartOption = {};
 
     selectedItems: any[] = [];
     nComponents = '2';
-    perplexity = 30;
-    learningRate = 200;
-    iterations = 1000;
+    nNeighbors = 15;
+    minDist = 0.1;
+    metric = 'euclidean';
 
     heatmap: { type: string; label: string } | null = null;
 
@@ -243,7 +257,7 @@
     }
 
     get results() {
-      return this.activeDataset && this.activeDataset.output && this.activeDataset.output['tsne'] ? Object.values(this.activeDataset.output['tsne']) : [];
+      return this.activeDataset && this.activeDataset.output && this.activeDataset.output['umap'] ? Object.values(this.activeDataset.output['umap']) : [];
     }
 
     selectAll() {
@@ -266,24 +280,25 @@
           return;
         }
 
-        await this.analysisContext.actions.submitTSNE({
+        await this.analysisContext.actions.submitUMAP({
           dataset_id: this.activeDataset.id,
           acquisition_id: this.activeAcquisition.id,
           n_components: parseInt(this.nComponents, 10),
           markers: this.selectedItems,
-          perplexity: this.perplexity,
-          learning_rate: this.learningRate,
-          iterations: this.iterations,
+          n_neighbors: this.nNeighbors,
+          min_dist: this.minDist,
+          metric: this.metric,
         });
       }
     }
 
     resultChanged(result) {
+      console.log(result)
       if (result) {
         this.nComponents = result.params.n_components.toString();
-        this.perplexity = result.params.perplexity;
-        this.iterations = result.params.iterations;
-        this.learningRate = result.params.learning_rate;
+        this.nNeighbors = result.params.n_neighbors;
+        this.minDist = result.params.min_dist;
+        this.metric = result.params.metric;
         this.selectedItems = result.params.markers;
       }
     }
@@ -306,7 +321,7 @@
           `Neighbors_${this.heatmap.label}`;
       }
 
-      await this.analysisContext.actions.getTSNEResult({
+      await this.analysisContext.actions.getUMAPResult({
         datasetId: this.activeDataset.id,
         name: this.result ? this.result.name : '',
         heatmapType: this.heatmap ? this.heatmap.type : '',
@@ -314,12 +329,12 @@
       });
     }
 
-    get tsneData() {
-      return this.analysisContext.getters.tsneData;
+    get umapData() {
+      return this.analysisContext.getters.umapData;
     }
 
-    @Watch('tsneData')
-    tsneDataChanged(data: ITSNEData) {
+    @Watch('umapData')
+    umapDataChanged(data: IUMAPData) {
       if (data) {
         if (data.z) {
           this.plot3D(data);
@@ -329,7 +344,7 @@
       }
     }
 
-    private plot2D(data: ITSNEData) {
+    private plot2D(data: IUMAPData) {
       const points = data.heatmap ?
         data.x.data.map((x, i) => {
           return [x, data.y.data[i], data.heatmap!.data[i]];
@@ -386,7 +401,7 @@
       this.options = options;
     }
 
-    private plot3D(data: ITSNEData) {
+    private plot3D(data: IUMAPData) {
       const options = {
         ...commonOptions,
         grid3D: {},
@@ -454,7 +469,7 @@
       this.options = options;
     }
 
-    private getVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
+    private getVisualMap(data: IUMAPData): echarts.EChartOption.VisualMap[] {
       const min = Math.min(...data.heatmap!.data);
       const max = Math.max(...data.heatmap!.data);
       return [
@@ -479,5 +494,9 @@
 <style scoped>
   .chart-container {
     height: calc(100vh - 154px);
+  }
+
+  .input-row {
+    margin-bottom: 18px;
   }
 </style>

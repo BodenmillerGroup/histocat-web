@@ -7,14 +7,14 @@ import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
 from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDING
-from typing import List, Optional
+from typing import List
 
 from app.core import config
 from app.core.errors import SlideImportError
 from app.db.session import db_session
 from app.io import mcd
 from app.io import zip
-from app.modules.analysis.processors import tsne
+from app.modules.analysis.processors import tsne, umap
 
 import app.db.init_db  # noqa
 
@@ -93,11 +93,29 @@ def process_tsne(
     learning_rate: int,
     iterations: int,
     markers: List[str],
-    heatmap: Optional[str],
 ):
     logger.info(f'Processing t-SNE for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
     try:
-        tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, perplexity, learning_rate, iterations, markers, heatmap)
+        tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, perplexity, learning_rate, iterations, markers)
+    except Exception as error:
+        logger.warn(error)
+    finally:
+        pass
+
+
+@dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
+def process_umap(
+    dataset_id: int,
+    acquisition_id: int,
+    n_components: int,
+    n_neighbors: int,
+    metric: str,
+    min_dist: float,
+    markers: List[str],
+):
+    logger.info(f'Processing UMAP for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
+    try:
+        umap.process_umap(db_session, dataset_id, acquisition_id, n_components, n_neighbors, metric, min_dist, markers)
     except Exception as error:
         logger.warn(error)
     finally:

@@ -1,9 +1,9 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12">
+      <v-row align="center" justify="center">
+        <v-col xs="12" sm="8" md="4">
+          <v-card elevation="12">
             <v-toolbar dark color="primary">
               <v-toolbar-title>{{appName}}</v-toolbar-title>
               <v-spacer></v-spacer>
@@ -35,20 +35,24 @@
                   Incorrect email or password
                 </v-alert>
               </div>
-              <v-flex class="caption text-right">
-                <router-link to="/recover-password">Recover password</router-link>
-              </v-flex>
-              <v-flex class="caption text-right">
-                <router-link to="/signup">Register an account</router-link>
-              </v-flex>
+              <v-row>
+                <v-col class="caption text-right py-0">
+                  <router-link to="/recover-password">Recover password</router-link>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col class="caption text-right py-0">
+                  <router-link to="/signup">Register an account</router-link>
+                </v-col>
+              </v-row>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click.prevent="submit">Login</v-btn>
             </v-card-actions>
           </v-card>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-container>
   </v-content>
 </template>
@@ -75,6 +79,3 @@
     }
   }
 </script>
-
-<style>
-</style>

@@ -55,15 +55,31 @@ export interface IPCAData {
 export interface ITSNESubmission {
   dataset_id: number;
   acquisition_id: number;
-  n_components: number;
   markers: string[];
-  heatmap: string;
+  n_components: number;
   perplexity: number;
   learning_rate: number;
   iterations: number;
 }
 
 export interface ITSNEData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
+export interface IUMAPSubmission {
+  dataset_id: number;
+  acquisition_id: number;
+  markers: string[];
+  n_components: number;
+  n_neighbors: number;
+  min_dist: number;
+  metric: string;
+}
+
+export interface IUMAPData {
   x: IPlotSeries;
   y: IPlotSeries;
   z?: IPlotSeries;

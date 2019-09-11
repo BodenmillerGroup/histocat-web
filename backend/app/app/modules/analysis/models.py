@@ -69,12 +69,34 @@ class TSNESubmissionModel(BaseModel):
     learning_rate: int
     iterations: int
     markers: List[str]
-    heatmap: Optional[str]
 
 
 class TSNEModel(BaseModel):
     """
     t-SNE result model
+    """
+    x: PlotSeriesModel
+    y: PlotSeriesModel
+    z: Optional[PlotSeriesModel]
+    heatmap: Optional[PlotSeriesModel]
+
+
+class UMAPSubmissionModel(BaseModel):
+    """
+    UMAP submission model
+    """
+    dataset_id: int
+    acquisition_id: int
+    n_components: int
+    n_neighbors: int
+    metric: str
+    min_dist: float
+    markers: List[str]
+
+
+class UMAPModel(BaseModel):
+    """
+    UMAP result model
     """
     x: PlotSeriesModel
     y: PlotSeriesModel

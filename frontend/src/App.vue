@@ -13,7 +13,7 @@
       </v-container>
     </v-content>
     <router-view v-else/>
-    <NotificationsManager></NotificationsManager>
+    <NotificationsManager v-else/>
   </v-app>
 </template>
 

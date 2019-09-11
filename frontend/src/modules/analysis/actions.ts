@@ -8,7 +8,7 @@ import { Actions, Context } from 'vuex-smart-module';
 import { AnalysisState } from '.';
 import { api } from './api';
 import { AnalysisGetters } from './getters';
-import { IImageSegmentationSettings, IPCASubmission, ITSNESubmission } from './models';
+import { IImageSegmentationSettings, IPCASubmission, ITSNESubmission, IUMAPSubmission } from './models';
 import { AnalysisMutations } from './mutations';
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
@@ -118,14 +118,41 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getTSNEResult(payload: { datasetId: number, name: string }) {
+  async getTSNEResult(payload: { datasetId: number, name: string, heatmapType: string, heatmap: string }) {
     try {
       const response = await api.getTSNEData(
         this.main!.getters.token,
         payload.datasetId,
         payload.name,
+        payload.heatmapType,
+        payload.heatmap,
       );
       this.mutations.setTSNEData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async submitUMAP(payload: IUMAPSubmission) {
+    try {
+      const response = await api.submitUMAP(
+        this.main!.getters.token, payload
+      );
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getUMAPResult(payload: { datasetId: number, name: string, heatmapType: string, heatmap: string }) {
+    try {
+      const response = await api.getUMAPData(
+        this.main!.getters.token,
+        payload.datasetId,
+        payload.name,
+        payload.heatmapType,
+        payload.heatmap,
+      );
+      this.mutations.setUMAPData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

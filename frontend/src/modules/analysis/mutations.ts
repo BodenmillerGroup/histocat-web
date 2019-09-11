@@ -1,6 +1,6 @@
 import { Mutations } from 'vuex-smart-module';
 import { AnalysisState } from '.';
-import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData } from './models';
+import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData, IUMAPData } from './models';
 
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
@@ -28,6 +28,10 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
     this.state.tsneData = data;
   }
 
+  setUMAPData(data: IUMAPData | null) {
+    this.state.umapData = data;
+  }
+
   reset() {
     this.setSegmentationImage(null);
     this.setSegmentationContours([]);
@@ -35,5 +39,6 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
     this.setBoxPlotData([]);
     this.setPCAData(null);
     this.setTSNEData(null);
+    this.setUMAPData(null);
   }
 }

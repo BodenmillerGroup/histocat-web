@@ -26,12 +26,33 @@ export class DatasetMutations extends Mutations<DatasetState> {
   updateDatasetTSNEOutput(message: WebSocketMessage) {
     const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
     if (dataset) {
-      if (!dataset.output){
+      if (!dataset.output) {
         dataset.output = {
-          tsne: {}
-        }
+          tsne: {},
+          umap: {},
+        };
+      }
+      if (!dataset.output.tsne) {
+        dataset.output.tsne = {};
       }
       dataset.output.tsne[message.payload.name] = message.payload;
+      this.state.activeDataset = Object.assign({}, dataset);
+    }
+  }
+
+  updateDatasetUMAPOutput(message: WebSocketMessage) {
+    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    if (dataset) {
+      if (!dataset.output) {
+        dataset.output = {
+          tsne: {},
+          umap: {},
+        };
+      }
+      if (!dataset.output.umap) {
+        dataset.output.umap = {};
+      }
+      dataset.output.umap[message.payload.name] = message.payload;
       this.state.activeDataset = Object.assign({}, dataset);
     }
   }

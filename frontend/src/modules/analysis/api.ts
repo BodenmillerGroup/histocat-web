@@ -6,7 +6,7 @@ import {
   IPlotSeries,
   IScatterPlotData,
   ITSNEData,
-  ITSNESubmission,
+  ITSNESubmission, IUMAPData, IUMAPSubmission,
 } from './models';
 
 export const api = {
@@ -74,11 +74,34 @@ export const api = {
     token: string,
     datasetId: number,
     name: string,
+    heatmapType: string,
+    heatmap: string,
   ) {
-    return ky.get(`${apiUrl}/api/v1/analysis/tsne?dataset_id=${datasetId}&name=${name}`, {
+    return ky.get(`${apiUrl}/api/v1/analysis/tsne?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }).json<ITSNEData>();
+  },
+  async submitUMAP(token: string, data: IUMAPSubmission) {
+    return ky.post(`${apiUrl}/api/v1/analysis/umap`, {
+      json: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json();
+  },
+  async getUMAPData(
+    token: string,
+    datasetId: number,
+    name: string,
+    heatmapType: string,
+    heatmap: string,
+  ) {
+    return ky.get(`${apiUrl}/api/v1/analysis/umap?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).json<IUMAPData>();
   },
 };

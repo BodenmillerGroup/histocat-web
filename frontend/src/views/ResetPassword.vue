@@ -1,8 +1,8 @@
 <template>
   <v-content>
     <v-container fluid fill-height>
-      <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
+      <v-row align="center" justify="center">
+        <v-col xs="12" sm="8" md="4">
           <v-card elevation="12">
             <v-toolbar dark color="primary">
               <v-toolbar-title>{{appName}} - Reset Password</v-toolbar-title>
@@ -47,8 +47,8 @@
               <v-btn @click="submit" :disabled="!valid">Save</v-btn>
             </v-card-actions>
           </v-card>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-container>
   </v-content>
 </template>

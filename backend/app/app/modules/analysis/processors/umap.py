@@ -5,10 +5,8 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 from fastapi import HTTPException
-from sklearn.manifold import TSNE
-# from openTSNE import TSNE
-# from openTSNE.callbacks import ErrorLogger
 from sqlalchemy.orm import Session
+from umap import UMAP
 
 from app.core.notifier import Message
 from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
@@ -17,18 +15,18 @@ from app.modules.dataset import crud as dataset_crud
 
 
 @timeit
-def process_tsne(
+def process_umap(
     db: Session,
     dataset_id: int,
     acquisition_id: int,
     n_components: int,
-    perplexity: int,
-    learning_rate: int,
-    iterations: int,
+    n_neighbors: int,
+    metric: str,
+    min_dist: float,
     markers: List[str],
 ):
     """
-    Calculate t-Distributed Stochastic Neighbor Embedding data
+    Calculate Uniform Manifold Approximation and Projection data
     """
 
     dataset = dataset_crud.get(db, id=dataset_id)
@@ -49,26 +47,15 @@ def process_tsne(
     for marker in markers:
         features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
 
-    # scikit-learn implementation
-    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations, verbose=6, random_state=42)
-    tsne_result = tsne.fit_transform(df[features].values * 2 ** 16)
-
-    # openTSNE implementation
-    # tsne = TSNE(
-    #     n_components=n_components,
-    #     perplexity=perplexity,
-    #     learning_rate=learning_rate,
-    #     n_iter=iterations,
-    #     callbacks=ErrorLogger(),
-    #     random_state=42,
-    # )
-    # tsne_result = tsne.fit(df[features].values * 2 ** 16)
+    # umap-learn implementation
+    umap = UMAP(n_components=n_components, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric, verbose=6, random_state=42)
+    umap_result = umap.fit_transform(df[features].values * 2 ** 16)
 
     timestamp = str(datetime.utcnow())
 
-    os.makedirs(os.path.join(dataset.location, 'tsne'), exist_ok=True)
-    location = os.path.join(dataset.location, 'tsne', f'{timestamp}.npy')
-    np.save(location, tsne_result)
+    os.makedirs(os.path.join(dataset.location, 'umap'), exist_ok=True)
+    location = os.path.join(dataset.location, 'umap', f'{timestamp}.npy')
+    np.save(location, umap_result)
 
     result = {
         "name": timestamp,
@@ -76,18 +63,18 @@ def process_tsne(
             "dataset_id": dataset_id,
             "acquisition_id": acquisition_id,
             "n_components": n_components,
-            "perplexity": perplexity,
-            "learning_rate": learning_rate,
-            "iterations": iterations,
+            "n_neighbors": n_neighbors,
+            "metric": metric,
+            "min_dist": min_dist,
             "markers": markers,
         },
         "location": location,
     }
-    dataset_crud.update_output(db, dataset_id=dataset_id, result_type='tsne', result=result)
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "tsne_result_ready", result))
+    dataset_crud.update_output(db, dataset_id=dataset_id, result_type='umap', result=result)
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "umap_result_ready", result))
 
 
-def get_tsne_result(
+def get_umap_result(
     db: Session,
     dataset_id: int,
     name: str,
@@ -99,16 +86,16 @@ def get_tsne_result(
     """
 
     dataset = dataset_crud.get(db, id=dataset_id)
-    tsne_output = dataset.output.get("tsne")
+    umap_output = dataset.output.get("umap")
 
-    if not tsne_output or name not in tsne_output:
+    if not umap_output or name not in umap_output:
         raise HTTPException(
             status_code=400,
-            detail="The dataset does not have a proper t-SNE output.",
+            detail="The dataset does not have a proper UMAP output.",
         )
 
-    tsne_result = tsne_output.get(name)
-    result = np.load(tsne_result.get("location"), allow_pickle=True)
+    umap_result = umap_output.get(name)
+    result = np.load(umap_result.get("location"), allow_pickle=True)
 
     output = {
         "x": {
@@ -121,7 +108,7 @@ def get_tsne_result(
         },
     }
 
-    n_component = tsne_result.get("params").get("n_components")
+    n_component = umap_result.get("params").get("n_components")
     if n_component == 3:
         output["z"] = {
             "label": "C3",
@@ -129,7 +116,7 @@ def get_tsne_result(
         }
 
     if heatmap_type and heatmap:
-        params = tsne_result.get("params")
+        params = umap_result.get("params")
         cell_input = dataset.input.get("cell")
         image_map = dataset.input.get("image_map")
         acquisition_id = params.get("acquisition_id")

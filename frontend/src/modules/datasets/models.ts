@@ -20,6 +20,12 @@ export interface IDatasetTSNEOutput {
   params: any;
 }
 
+export interface IDatasetUMAPOutput {
+  name: string;
+  location: string;
+  params: any;
+}
+
 export interface IDataset {
   id: number;
   experiment_id: number;
@@ -65,6 +71,7 @@ export interface IDataset {
   }
   output?: {
     tsne: { [name: string]: IDatasetTSNEOutput };
+    umap: { [name: string]: IDatasetUMAPOutput };
   };
   meta?: object;
   location: string;

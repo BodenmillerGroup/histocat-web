@@ -50,14 +50,14 @@
               label="Is Active"
               v-model="isActive"
             ></v-checkbox>
-            <v-layout align-center>
-              <v-flex shrink>
+            <v-row align="center">
+              <v-col class="shrink">
                 <v-checkbox
                   v-model="setPassword"
                   class="mr-2"
                 ></v-checkbox>
-              </v-flex>
-              <v-flex>
+              </v-col>
+              <v-col>
                 <v-text-field
                   :disabled="!setPassword"
                   type="password"
@@ -82,8 +82,8 @@
                   :error-messages="errors.first('password_confirmation')"
                 >
                 </v-text-field>
-              </v-flex>
-            </v-layout>
+              </v-col>
+            </v-row>
           </v-form>
         </template>
       </v-card-text>

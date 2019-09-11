@@ -79,6 +79,15 @@ export class WebSocketManager {
             });
             break;
           }
+          case 'umap_result_ready': {
+            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
+            WebSocketManager.datasetContext.mutations.updateDatasetUMAPOutput(message);
+            WebSocketManager.mainContext.mutations.addNotification({
+              content: 'UMAP result is ready',
+              color: 'success',
+            });
+            break;
+          }
         }
       }
     };

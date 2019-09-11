@@ -31,8 +31,8 @@
             <div class="subtitle-1 primary--text text--lighten-2">User is active <span v-if="isActive">(currently active)</span><span
               v-else>(currently not active)</span></div>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
-            <v-layout align-center>
-              <v-flex>
+            <v-row align="center">
+              <v-col>
                 <v-text-field
                   type="password"
                   ref="password"
@@ -53,8 +53,8 @@
                   v-model="password2"
                   :error-messages="errors.first('password_confirmation')"
                 ></v-text-field>
-              </v-flex>
-            </v-layout>
+              </v-col>
+            </v-row>
           </v-form>
         </template>
       </v-card-text>

@@ -56,14 +56,14 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Da
     return item
 
 
-def update_output(session: Session, *, dataset_id: int, result: dict) -> Dataset:
+def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> Dataset:
 
     item = session.query(Dataset).with_for_update().filter(Dataset.id == dataset_id).first()
 
     output = item.output if item.output else {}
-    tsne_output = output.get('tsne') if 'tsne' in output else {}
-    tsne_output[result.get("name")] = result
-    output['tsne'] = tsne_output
+    result_output = output.get(result_type) if result_type in output else {}
+    result_output[result.get("name")] = result
+    output[result_type] = result_output
     item.output = output
 
     # TODO: https://stackoverflow.com/questions/42559434/updates-to-json-field-dont-persist-to-db

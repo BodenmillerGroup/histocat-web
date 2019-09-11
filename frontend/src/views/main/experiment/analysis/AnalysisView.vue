@@ -6,6 +6,7 @@
         <v-tab>Box Plot</v-tab>
         <v-tab>PCA</v-tab>
         <v-tab>t-SNE</v-tab>
+        <v-tab>UMAP</v-tab>
         <v-tab>Segmentation</v-tab>
         <v-tab-item>
           <ScatterPlotTab/>
@@ -18,6 +19,9 @@
         </v-tab-item>
         <v-tab-item>
           <TSNETab/>
+        </v-tab-item>
+        <v-tab-item>
+          <UMAPTab/>
         </v-tab-item>
         <v-tab-item>
           <SegmentationTab/>
@@ -33,10 +37,12 @@
   import TSNETab from '@/views/main/experiment/analysis/tsne/TSNETab.vue';
   import ScatterPlotTab from '@/views/main/experiment/analysis/scatter/ScatterPlotTab.vue';
   import SegmentationTab from '@/views/main/experiment/analysis/segmentation/SegmentationTab.vue';
+  import UMAPTab from '@/views/main/experiment/analysis/umap/UMAPTab.vue';
   import { Component, Vue } from 'vue-property-decorator';
 
   @Component({
     components: {
+      UMAPTab,
       PCATab,
       BoxPlotTab,
       ScatterPlotTab,

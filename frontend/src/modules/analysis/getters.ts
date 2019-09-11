@@ -25,4 +25,8 @@ export class AnalysisGetters extends Getters<AnalysisState> {
   get tsneData() {
     return this.state.tsneData;
   }
+
+  get umapData() {
+    return this.state.umapData;
+  }
 }
