@@ -20,4 +20,4 @@ else
 fi
 
 # Start Gunicorn
-exec gunicorn --worker-class uvicorn.workers.UvicornWorker -config "$GUNICORN_CONF" "$APP_MODULE"
+exec gunicorn --worker-class uvicorn.workers.UvicornWorker --config "$GUNICORN_CONF" "$APP_MODULE"
