@@ -173,6 +173,8 @@ export default class SlidesTreeView extends Vue {
           uid: `slide-${slide.id}`
         });
       });
+    } else {
+      return [];
     }
   }
 }

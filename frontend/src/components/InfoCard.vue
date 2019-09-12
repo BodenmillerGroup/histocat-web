@@ -57,6 +57,8 @@ export default class InfoCard extends Vue {
           value: item[1]
         };
       });
+    } else {
+      return [];
     }
   }
 }
