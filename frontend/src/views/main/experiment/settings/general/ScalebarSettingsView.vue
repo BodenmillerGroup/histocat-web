@@ -1,12 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header class="pt-0">
-      <v-switch
-        v-model="apply"
-        label="Show Scalebar"
-        hide-details
-        @click.stop
-      ></v-switch>
+      <v-switch v-model="apply" label="Show Scalebar" hide-details @click.stop></v-switch>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-text-field
@@ -24,46 +19,48 @@
 </template>
 
 <script lang="ts">
-  import { experimentModule } from '@/modules/experiment';
-  import { settingsModule } from '@/modules/settings';
-  import { Component, Vue } from 'vue-property-decorator';
-  import { required } from '@/utils';
+import { experimentModule } from "@/modules/experiment";
+import { settingsModule } from "@/modules/settings";
+import { Component, Vue } from "vue-property-decorator";
+import { required } from "@/utils";
 
-  @Component({
-    components: {},
-  })
-  export default class ScalebarSettingsView extends Vue {
-    readonly settingsContext = settingsModule.context(this.$store);
-    readonly experimentContext = experimentModule.context(this.$store);
+@Component({
+  components: {}
+})
+export default class ScalebarSettingsView extends Vue {
+  readonly settingsContext = settingsModule.context(this.$store);
+  readonly experimentContext = experimentModule.context(this.$store);
 
-    readonly required = required;
+  readonly required = required;
 
-    get apply() {
-      return this.settingsContext.getters.scalebar.apply;
-    }
+  get apply() {
+    return this.settingsContext.getters.scalebar.apply;
+  }
 
-    set apply(value: boolean) {
-      this.settingsContext.mutations.setScalebar({
-        ...this.settingsContext.getters.scalebar,
-        apply: value,
-      });
+  set apply(value: boolean) {
+    this.settingsContext.mutations.setScalebar({
+      ...this.settingsContext.getters.scalebar,
+      apply: value
+    });
+    this.experimentContext.actions.getChannelStackImage();
+  }
+
+  get scale() {
+    return this.settingsContext.getters.scalebar.settings.scale
+      ? this.settingsContext.getters.scalebar.settings.scale
+      : 1.0;
+  }
+
+  set scale(value: number) {
+    this.settingsContext.mutations.setScalebar({
+      ...this.settingsContext.getters.scalebar,
+      settings: {
+        scale: value
+      }
+    });
+    if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();
     }
-
-    get scale() {
-      return this.settingsContext.getters.scalebar.settings.scale ? this.settingsContext.getters.scalebar.settings.scale : 1.0;
-    }
-
-    set scale(value: number) {
-      this.settingsContext.mutations.setScalebar({
-        ...this.settingsContext.getters.scalebar,
-        settings: {
-          scale: value,
-        },
-      });
-      if (this.apply) {
-        this.experimentContext.actions.getChannelStackImage();
-      }
-    }
   }
+}
 </script>

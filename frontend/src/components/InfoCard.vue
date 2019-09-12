@@ -5,17 +5,9 @@
     </v-card-title>
     <v-divider></v-divider>
     <v-card-title v-if="imageUrl">
-      <v-img
-        :src="imageUrl"
-        class="grey lighten-2"
-        width="380px"
-      >
+      <v-img :src="imageUrl" class="grey lighten-2" width="380px">
         <template v-slot:placeholder>
-          <v-row
-            class="fill-height ma-0"
-            align="center"
-            justify="center"
-          >
+          <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
           </v-row>
         </template>
@@ -38,40 +30,40 @@
 </template>
 
 <script lang="ts">
-  import { apiUrl } from '@/env';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { apiUrl } from "@/env";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class InfoCard extends Vue {
-    @Prop(Object) node;
+@Component
+export default class InfoCard extends Vue {
+  @Prop(Object) node;
 
-    get imageUrl() {
-      switch (this.node.item.type) {
-        case 'slide':
-          return `${apiUrl}/api/v1/slides/${this.node.item.id}/image`;
-        case 'panorama':
-          return `${apiUrl}/api/v1/panoramas/${this.node.item.id}/image`;
-        default:
-          return undefined;
-      }
-    }
-
-    get items() {
-      if (this.node.item.meta) {
-        const items = Object.entries(this.node.item.meta);
-        return items.map((item) => {
-          return {
-            name: item[0],
-            value: item[1],
-          };
-        });
-      }
+  get imageUrl() {
+    switch (this.node.item.type) {
+      case "slide":
+        return `${apiUrl}/api/v1/slides/${this.node.item.id}/image`;
+      case "panorama":
+        return `${apiUrl}/api/v1/panoramas/${this.node.item.id}/image`;
+      default:
+        return undefined;
     }
   }
+
+  get items() {
+    if (this.node.item.meta) {
+      const items = Object.entries(this.node.item.meta);
+      return items.map(item => {
+        return {
+          name: item[0],
+          value: item[1]
+        };
+      });
+    }
+  }
+}
 </script>
 
 <style scoped>
-  .card {
-    height: 40vh;
-  }
+.card {
+  height: 40vh;
+}
 </style>

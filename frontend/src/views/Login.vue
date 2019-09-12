@@ -5,13 +5,11 @@
         <v-col xs="12" sm="8" md="4">
           <v-card elevation="12">
             <v-toolbar dark color="primary">
-              <v-toolbar-title>{{appName}}</v-toolbar-title>
+              <v-toolbar-title>{{ appName }}</v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar>
             <v-card-text>
-              <v-form
-                @keyup.enter="submit"
-              >
+              <v-form @keyup.enter="submit">
                 <v-text-field
                   @keyup.enter="submit"
                   v-model="email"
@@ -58,24 +56,24 @@
 </template>
 
 <script lang="ts">
-  import { appName } from '@/env';
-  import { mainModule } from '@/modules/main';
-  import { Component, Vue } from 'vue-property-decorator';
+import { appName } from "@/env";
+import { mainModule } from "@/modules/main";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class Login extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
+@Component
+export default class Login extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
 
-    email: string = '';
-    password: string = '';
-    appName = appName;
+  email: string = "";
+  password: string = "";
+  appName = appName;
 
-    get loginError() {
-      return this.mainContext.getters.loginError;
-    }
-
-    submit() {
-      this.mainContext.actions.logIn({ username: this.email, password: this.password });
-    }
+  get loginError() {
+    return this.mainContext.getters.loginError;
   }
+
+  submit() {
+    this.mainContext.actions.logIn({ username: this.email, password: this.password });
+  }
+}
 </script>

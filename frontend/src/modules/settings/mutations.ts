@@ -1,8 +1,7 @@
-import { IImageSegmentationSettings } from '@/modules/analysis/models';
-import { Mutations } from 'vuex-smart-module';
-import { SettingsState } from '.';
-import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from './models';
-
+import { IImageSegmentationSettings } from "@/modules/analysis/models";
+import { Mutations } from "vuex-smart-module";
+import { SettingsState } from ".";
+import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
   resetSettings() {
@@ -10,34 +9,34 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.metalColorMap = new Map<string, string>();
     this.state.filter = {
       apply: false,
-      type: 'gaussian',
+      type: "gaussian",
       settings: {
         sigma: 1.0,
-        kernel_size: 1,
-      },
+        kernel_size: 1
+      }
     };
     this.state.legend = {
       apply: false,
       fontScale: 1.0,
-      showIntensity: true,
+      showIntensity: true
     };
     this.state.scalebar = {
       apply: false,
       settings: {
-        scale: 1.0,
-      },
+        scale: 1.0
+      }
     };
     this.state.segmentationSettings = {
-      algorithm: 'Otsu Hue',
+      algorithm: "Otsu Hue",
       iterations: 1,
       kernel_size: 3,
-      mask_color: '#00AAFF40',
-      result_type: 'origin',
+      mask_color: "#00AAFF40",
+      result_type: "origin"
     };
     this.state.mask = {
       apply: false,
-      location: undefined,
-    }
+      location: undefined
+    };
   }
 
   setChannelSettings(channelSettings: IChannelSettings) {
@@ -45,7 +44,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.channelsSettings = new Map(this.state.channelsSettings);
   }
 
-  setMetalColor(payload: { metal: string, color: string }) {
+  setMetalColor(payload: { metal: string; color: string }) {
     this.state.metalColorMap.set(payload.metal, payload.color);
     this.state.metalColorMap = new Map(this.state.metalColorMap);
   }

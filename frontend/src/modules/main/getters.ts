@@ -1,11 +1,9 @@
-import { Getters } from 'vuex-smart-module';
-import { MainState } from '.';
+import { Getters } from "vuex-smart-module";
+import { MainState } from ".";
 
 export class MainGetters extends Getters<MainState> {
   get hasAdminAccess() {
-    return (
-      this.userProfile &&
-      this.userProfile.is_superuser && this.userProfile.is_active);
+    return this.userProfile && this.userProfile.is_superuser && this.userProfile.is_active;
   }
 
   get loginError() {

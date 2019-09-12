@@ -8,8 +8,10 @@
         <template>
           <div class="my-4">
             <div class="subtitle-1 primary--text text--lighten-2">User</div>
-            <div class="title primary--text text--darken-2" v-if="userProfile.full_name">{{userProfile.full_name}}</div>
-            <div class="title primary--text text--darken-2" v-else>{{userProfile.email}}</div>
+            <div class="title primary--text text--darken-2" v-if="userProfile.full_name">
+              {{ userProfile.full_name }}
+            </div>
+            <div class="title primary--text text--darken-2" v-else>{{ userProfile.email }}</div>
           </div>
           <v-form ref="form">
             <v-text-field
@@ -21,7 +23,8 @@
               data-vv-rules="required"
               v-validate="'required'"
               v-model="password1"
-              :error-messages="errors.first('password')">
+              :error-messages="errors.first('password')"
+            >
             </v-text-field>
             <v-text-field
               type="password"
@@ -32,7 +35,8 @@
               data-vv-as="password"
               v-validate="'required|confirmed:password'"
               v-model="password2"
-              :error-messages="errors.first('password_confirmation')">
+              :error-messages="errors.first('password_confirmation')"
+            >
             </v-text-field>
           </v-form>
         </template>
@@ -48,39 +52,39 @@
 </template>
 
 <script lang="ts">
-  import { mainModule } from '@/modules/main';
-  import { IUserProfileUpdate } from '@/modules/user/models';
-  import { Component, Vue } from 'vue-property-decorator';
+import { mainModule } from "@/modules/main";
+import { IUserProfileUpdate } from "@/modules/user/models";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class UserProfileEdit extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
+@Component
+export default class UserProfileEdit extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
 
-    valid = true;
-    password1 = '';
-    password2 = '';
+  valid = true;
+  password1 = "";
+  password2 = "";
 
-    get userProfile() {
-      return this.mainContext.getters.userProfile;
-    }
+  get userProfile() {
+    return this.mainContext.getters.userProfile;
+  }
 
-    reset() {
-      this.password1 = '';
-      this.password2 = '';
-      this.$validator.reset();
-    }
+  reset() {
+    this.password1 = "";
+    this.password2 = "";
+    this.$validator.reset();
+  }
 
-    cancel() {
-      this.$router.back();
-    }
+  cancel() {
+    this.$router.back();
+  }
 
-    async submit() {
-      if (await this.$validator.validateAll()) {
-        const updatedProfile: IUserProfileUpdate = {};
-        updatedProfile.password = this.password1;
-        await this.mainContext.actions.updateUserProfile(updatedProfile);
-        this.$router.push('/main/profile');
-      }
+  async submit() {
+    if (await this.$validator.validateAll()) {
+      const updatedProfile: IUserProfileUpdate = {};
+      updatedProfile.password = this.password1;
+      await this.mainContext.actions.updateUserProfile(updatedProfile);
+      this.$router.push("/main/profile");
     }
   }
+}
 </script>

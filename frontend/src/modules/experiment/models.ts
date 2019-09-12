@@ -1,4 +1,4 @@
-import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from '@/modules/settings/models';
+import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "@/modules/settings/models";
 
 export interface IExperimentUpdate {
   name?: string;
@@ -184,4 +184,4 @@ export interface IShare {
   permissions?: string[];
 }
 
-export type ExportFormat = 'tiff' | 'png';
+export type ExportFormat = "tiff" | "png";

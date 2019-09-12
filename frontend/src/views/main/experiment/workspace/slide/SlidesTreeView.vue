@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <UploadButton :id="experiment.id"/>
+      <UploadButton :id="experiment.id" />
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -23,15 +23,7 @@
       </v-tooltip>
     </v-toolbar>
     <v-toolbar dense flat>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        clearable
-        flat
-      />
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable flat />
     </v-toolbar>
     <v-treeview
       v-model="selected"
@@ -55,30 +47,15 @@
       <template v-slot:append="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-icon
-              v-if="item.type === 'acquisition' && item.hasMask"
-              small
-              color="grey"
-              v-on="on"
-            >
+            <v-icon v-if="item.type === 'acquisition' && item.hasMask" small color="grey" v-on="on">
               mdi-transition-masked
             </v-icon>
           </template>
           <span>Mask available</span>
         </v-tooltip>
-        <v-menu
-          :close-on-content-click="false"
-          :nudge-width="200"
-          offset-x
-        >
+        <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
           <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              small
-              icon
-              color="grey"
-              @click.stop=""
-            >
+            <v-btn v-on="on" small icon color="grey" @click.stop="">
               <v-icon small>mdi-information-outline</v-icon>
             </v-btn>
           </template>
@@ -90,137 +67,138 @@
 </template>
 
 <script lang="ts">
-  import InfoCard from '@/components/InfoCard.vue';
-  import UploadButton from '@/components/UploadButton.vue';
-  import { datasetModule } from '@/modules/datasets';
-  import { experimentModule } from '@/modules/experiment';
-  import { IExperiment } from '@/modules/experiment/models';
-  import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import InfoCard from "@/components/InfoCard.vue";
+import UploadButton from "@/components/UploadButton.vue";
+import { datasetModule } from "@/modules/datasets";
+import { experimentModule } from "@/modules/experiment";
+import { IExperiment } from "@/modules/experiment/models";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
-  @Component({
-    components: { UploadButton, InfoCard },
-  })
-  export default class SlidesTreeView extends Vue {
-    readonly experimentContext = experimentModule.context(this.$store);
-    readonly datasetContext = datasetModule.context(this.$store);
+@Component({
+  components: { UploadButton, InfoCard }
+})
+export default class SlidesTreeView extends Vue {
+  readonly experimentContext = experimentModule.context(this.$store);
+  readonly datasetContext = datasetModule.context(this.$store);
 
-    @Prop(Object) readonly experiment!: IExperiment;
+  @Prop(Object) readonly experiment!: IExperiment;
 
-    selected = [];
-    search = null;
-    showROI = false;
+  selected = [];
+  search = null;
+  showROI = false;
 
-    readonly icons = {
-      slide: 'mdi-folder-outline',
-      panorama: 'mdi-apps',
-      roi: 'mdi-blur',
-      acquisition: 'mdi-buffer',
-    };
+  readonly icons = {
+    slide: "mdi-folder-outline",
+    panorama: "mdi-apps",
+    roi: "mdi-blur",
+    acquisition: "mdi-buffer"
+  };
 
-    toggleShowROI() {
-      this.showROI = !this.showROI;
+  toggleShowROI() {
+    this.showROI = !this.showROI;
+  }
+
+  get active() {
+    return [this.experimentContext.getters.activeWorkspaceNode];
+  }
+
+  set active(items: any[]) {
+    if (!items || items.length === 0) {
+      return;
     }
+    this.experimentContext.mutations.setActiveWorkspaceNode(items[0]);
+  }
 
-    get active() {
-      return [this.experimentContext.getters.activeWorkspaceNode];
-    }
+  @Watch("selected")
+  onSelectedChanged(items) {
+    const ids = items.filter(item => item.type === "acquisition").map(acquisition => acquisition.id);
+    this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
+  }
 
-    set active(items: any[]) {
-      if (!items || items.length === 0) {
-        return;
-      }
-      this.experimentContext.mutations.setActiveWorkspaceNode(items[0]);
-    }
+  get filter() {
+    return (item, search, textKey) => item[textKey].indexOf(search) > -1;
+  }
 
-    @Watch('selected')
-    onSelectedChanged(items) {
-      const ids = items
-        .filter((item) => item.type === 'acquisition')
-        .map((acquisition) => acquisition.id);
-      this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
-    }
+  async refreshSlides() {
+    await this.experimentContext.actions.getExperimentData(this.experiment.id);
+  }
 
-    get filter() {
-      return (item, search, textKey) => item[textKey].indexOf(search) > -1;
-    }
+  get dataset() {
+    return this.datasetContext.getters.activeDataset;
+  }
 
-    async refreshSlides() {
-      await this.experimentContext.actions.getExperimentData(this.experiment.id);
-    }
-
-    get dataset() {
-      return this.datasetContext.getters.activeDataset;
-    }
-
-    get items() {
-      if (this.experiment.slides) {
-        return this.experiment.slides.map((slide) => {
-          const panoramas = slide.panoramas.map((panorama) => {
-            const rois = panorama.rois.map((roi) => {
-              const acquisitions = roi.acquisitions.map((acquisition) => {
-                let hasMask = false;
-                if (this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
-                  hasMask = !!this.dataset.input.probability_masks[acquisition.id];
-                }
-                return Object.assign({}, acquisition, {
-                  type: 'acquisition',
-                  name: acquisition.meta.Description,
-                  uid: `acquisition-${acquisition.id}`,
-                  hasMask: hasMask,
-                });
-              });
-              return Object.assign({}, roi, {
-                type: 'roi',
-                name: `ROI ${roi.origin_id}`,
-                uid: `roi-${roi.id}`,
-                children: acquisitions,
+  get items() {
+    if (this.experiment.slides) {
+      return this.experiment.slides.map(slide => {
+        const panoramas = slide.panoramas.map(panorama => {
+          const rois = panorama.rois.map(roi => {
+            const acquisitions = roi.acquisitions.map(acquisition => {
+              let hasMask = false;
+              if (this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
+                hasMask = !!this.dataset.input.probability_masks[acquisition.id];
+              }
+              return Object.assign({}, acquisition, {
+                type: "acquisition",
+                name: acquisition.meta.Description,
+                uid: `acquisition-${acquisition.id}`,
+                hasMask: hasMask
               });
             });
-            const panoramaChildren = this.showROI ?
-              rois :
-              rois.reduce((total, roi) => {
-                return total.concat(roi.children);
-              }, [] as any);
-            return Object.assign({}, panorama, {
-              type: 'panorama',
-              name: panorama.meta.Description,
-              uid: `panorama-${panorama.id}`,
-              children: panoramaChildren,
+            return Object.assign({}, roi, {
+              type: "roi",
+              name: `ROI ${roi.origin_id}`,
+              uid: `roi-${roi.id}`,
+              children: acquisitions
             });
           });
-          return Object.assign({}, slide, {
-            type: 'slide',
-            name: slide.name,
-            children: panoramas,
-            uid: `slide-${slide.id}`,
+          const panoramaChildren = this.showROI
+            ? rois
+            : rois.reduce(
+                (total, roi) => {
+                  return total.concat(roi.children);
+                },
+                [] as any
+              );
+          return Object.assign({}, panorama, {
+            type: "panorama",
+            name: panorama.meta.Description,
+            uid: `panorama-${panorama.id}`,
+            children: panoramaChildren
           });
         });
-      }
+        return Object.assign({}, slide, {
+          type: "slide",
+          name: slide.name,
+          children: panoramas,
+          uid: `slide-${slide.id}`
+        });
+      });
     }
   }
+}
 </script>
 
 <style scoped>
-  .scroll-view {
-    height: calc(100vh - 196px);
-  }
+.scroll-view {
+  height: calc(100vh - 196px);
+}
 </style>
 
 <style>
-  .v-treeview-node__content {
-    max-height: 24px;
-  }
+.v-treeview-node__content {
+  max-height: 24px;
+}
 
-  .v-treeview-node__label {
-    font-size: 10pt;
-  }
+.v-treeview-node__label {
+  font-size: 10pt;
+}
 
-  .v-treeview-node__root {
-    min-height: 24px;
-    font-size: 10pt;
-  }
+.v-treeview-node__root {
+  min-height: 24px;
+  font-size: 10pt;
+}
 
-  .v-text-field.v-text-field--solo .v-input__control {
-    min-height: 28px;
-  }
+.v-text-field.v-text-field--solo .v-input__control {
+  min-height: 28px;
+}
 </style>

@@ -8,14 +8,11 @@
       <v-btn small color="primary" to="/main/experiments/create">Create Experiment</v-btn>
     </v-toolbar>
 
-    <v-data-table
-      :headers="headers"
-      :items="experiments"
-    >
+    <v-data-table :headers="headers" :items="experiments">
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" icon :to="{name: 'main-admin-experiments-edit', params: {id: item.id}}">
+            <v-btn v-on="on" icon :to="{ name: 'main-admin-experiments-edit', params: { id: item.id } }">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>
@@ -35,51 +32,51 @@
 </template>
 
 <script lang="ts">
-  import { experimentModule } from '@/modules/experiment';
-  import { Component, Vue } from 'vue-property-decorator';
+import { experimentModule } from "@/modules/experiment";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class AdminExperiments extends Vue {
-    readonly experimentContext = experimentModule.context(this.$store);
+@Component
+export default class AdminExperiments extends Vue {
+  readonly experimentContext = experimentModule.context(this.$store);
 
-    headers = [
-      {
-        text: 'Name',
-        sortable: true,
-        value: 'name',
-        align: 'left',
-      },
-      {
-        text: 'Description',
-        sortable: true,
-        value: 'description',
-        align: 'left',
-      },
-      {
-        text: 'Location',
-        sortable: true,
-        value: 'location',
-        align: 'left',
-      },
-      {
-        text: 'Actions',
-        value: 'action',
-        sortable: false,
-      },
-    ];
-
-    get experiments() {
-      return this.experimentContext.getters.experiments;
+  headers = [
+    {
+      text: "Name",
+      sortable: true,
+      value: "name",
+      align: "left"
+    },
+    {
+      text: "Description",
+      sortable: true,
+      value: "description",
+      align: "left"
+    },
+    {
+      text: "Location",
+      sortable: true,
+      value: "location",
+      align: "left"
+    },
+    {
+      text: "Actions",
+      value: "action",
+      sortable: false
     }
+  ];
 
-    async mounted() {
-      await this.experimentContext.actions.getExperiments();
-    }
+  get experiments() {
+    return this.experimentContext.getters.experiments;
+  }
 
-    async deleteExperiment(event, id: number) {
-      if (self.confirm('Are you sure you want to delete the experiment?')) {
-        await this.experimentContext.actions.deleteExperiment(id);
-      }
+  async mounted() {
+    await this.experimentContext.actions.getExperiments();
+  }
+
+  async deleteExperiment(event, id: number) {
+    if (self.confirm("Are you sure you want to delete the experiment?")) {
+      await this.experimentContext.actions.deleteExperiment(id);
     }
   }
+}
 </script>

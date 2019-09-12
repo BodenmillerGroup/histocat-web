@@ -1,13 +1,13 @@
-import { IImageFilter, IImageScalebar } from '@/modules/settings/models';
+import { IImageFilter, IImageScalebar } from "@/modules/settings/models";
 
-export type ImageResultType = 'origin' | 'mask';
+export type ImageResultType = "origin" | "mask";
 
 export interface IImageSegmentationSettings {
   algorithm: string;
   iterations: number;
   kernel_size: number;
   mask_color: string;
-  result_type: ImageResultType
+  result_type: ImageResultType;
 }
 
 export interface IImageSegmentationSubmission {

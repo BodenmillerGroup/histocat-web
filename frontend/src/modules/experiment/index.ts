@@ -1,8 +1,8 @@
-import { Module } from 'vuex-smart-module';
-import { ExperimentActions } from './actions';
-import { ExperimentGetters } from './getters';
-import { IExperiment, IShare } from './models';
-import { ExperimentMutations } from './mutations';
+import { Module } from "vuex-smart-module";
+import { ExperimentActions } from "./actions";
+import { ExperimentGetters } from "./getters";
+import { IExperiment, IShare } from "./models";
+import { ExperimentMutations } from "./mutations";
 
 export class ExperimentState {
   experiments: IExperiment[] = [];
@@ -25,5 +25,5 @@ export const experimentModule = new Module({
   state: ExperimentState,
   getters: ExperimentGetters,
   mutations: ExperimentMutations,
-  actions: ExperimentActions,
+  actions: ExperimentActions
 });
