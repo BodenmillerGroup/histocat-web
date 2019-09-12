@@ -138,7 +138,7 @@ export default new Router({
                     import(
                       /* webpackChunkName: "main-admin-experiments-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
                     )
-                },
+                }
               ]
             }
           ]

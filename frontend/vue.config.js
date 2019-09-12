@@ -3,20 +3,20 @@ module.exports = {
   runtimeCompiler: false,
 
   pwa: {
-    name: 'HistoCAT',
+    name: "HistoCAT"
   },
 
   configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') {
-      ('nosources-source-map');
+    if (process.env.NODE_ENV === "production") {
+      ("nosources-source-map");
     } else {
-      ('eval-source-map');
+      ("eval-source-map");
     }
   },
 
   pluginOptions: {
     webpackBundleAnalyzer: {
-      openAnalyzer: false,
-    },
-  },
+      openAnalyzer: false
+    }
+  }
 };

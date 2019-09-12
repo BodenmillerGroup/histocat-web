@@ -1,6 +1,9 @@
 import { shallowMount } from "@vue/test-utils";
-import "@/plugins/vuetify";
 import UploadButton from "@/components/UploadButton.vue";
+
+import Vue from "vue";
+import Vuetify from "vuetify";
+Vue.use(Vuetify);
 
 describe("UploadButton.vue", () => {
   it("renders props.title when passed", () => {
