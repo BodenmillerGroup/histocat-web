@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "histocat"
-version = "0.1.0"
+version = "0.2.0"
 description = "HistoCAT for Web"
 authors = ["Anton Rau <anton.rau@gmail.com>"]
 

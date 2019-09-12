@@ -1,0 +1,12 @@
+{
+  "include": [
+    "backend/app"
+  ],
+  "executionEnvironments": [
+    {
+      "root": "backend/app",
+      "pythonVersion": "3.7",
+      "pythonPlatform": "Linux"
+    }
+  ]
+}

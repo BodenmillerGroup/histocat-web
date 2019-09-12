@@ -1,12 +1,22 @@
 module.exports = {
   assetsDir: 'assets',
-  runtimeCompiler: true,
+  runtimeCompiler: false,
 
   pwa: {
     name: 'HistoCAT',
   },
 
-  configureWebpack: {
-    devtool: 'eval-source-map'
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      devtool: 'nosources-source-map';
+    } else {
+      devtool: 'eval-source-map';
+    }
+  },
+
+  pluginOptions: {
+    webpackBundleAnalyzer: {
+      openAnalyzer: false,
+    },
   },
 };
