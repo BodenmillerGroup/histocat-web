@@ -3,29 +3,29 @@
     <v-tab>Slides</v-tab>
     <v-tab>Datasets</v-tab>
     <v-tab-item>
-      <SlidesTreeView :experiment="experiment"/>
+      <SlidesTreeView :experiment="experiment" />
     </v-tab-item>
     <v-tab-item>
-      <DatasetsView/>
+      <DatasetsView />
     </v-tab-item>
   </v-tabs>
 </template>
 
 <script lang="ts">
-  import { IExperiment } from '@/modules/experiment/models';
-  import DatasetsView from '@/views/main/experiment/workspace/dataset/DatasetsView.vue';
-  import SlidesTreeView from '@/views/main/experiment/workspace/slide/SlidesTreeView.vue';
-  import { Component, Prop, Vue } from 'vue-property-decorator';
+import { IExperiment } from "@/modules/experiment/models";
+import DatasetsView from "@/views/main/experiment/workspace/dataset/DatasetsView.vue";
+import SlidesTreeView from "@/views/main/experiment/workspace/slide/SlidesTreeView.vue";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
-  @Component({
-    components: {
-      DatasetsView,
-      SlidesTreeView,
-    },
-  })
-  export default class WorkspaceView extends Vue {
-    @Prop(Object) readonly experiment!: IExperiment;
-
-    tab = 0;
+@Component({
+  components: {
+    DatasetsView,
+    SlidesTreeView
   }
+})
+export default class WorkspaceView extends Vue {
+  @Prop(Object) readonly experiment!: IExperiment;
+
+  tab = 0;
+}
 </script>

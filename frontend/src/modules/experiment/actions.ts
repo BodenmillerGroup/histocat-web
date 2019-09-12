@@ -1,17 +1,21 @@
-import { datasetModule } from '@/modules/datasets';
-import { mainModule } from '@/modules/main';
-import { settingsModule } from '@/modules/settings';
-import { saveAs } from 'file-saver';
-import { Store } from 'vuex';
-import { Actions, Context } from 'vuex-smart-module';
-import { ExperimentState } from '.';
-import { api } from './api';
-import { ExperimentGetters } from './getters';
-import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from './models';
-import { ExperimentMutations } from './mutations';
+import { datasetModule } from "@/modules/datasets";
+import { mainModule } from "@/modules/main";
+import { settingsModule } from "@/modules/settings";
+import { saveAs } from "file-saver";
+import { Store } from "vuex";
+import { Actions, Context } from "vuex-smart-module";
+import { ExperimentState } from ".";
+import { api } from "./api";
+import { ExperimentGetters } from "./getters";
+import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from "./models";
+import { ExperimentMutations } from "./mutations";
 
-export class ExperimentActions extends Actions<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions> {
-
+export class ExperimentActions extends Actions<
+  ExperimentState,
+  ExperimentGetters,
+  ExperimentMutations,
+  ExperimentActions
+> {
   // Declare context type
   main?: Context<typeof mainModule>;
   settings?: Context<typeof settingsModule>;
@@ -47,17 +51,17 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
-  async updateExperiment(payload: { id: number, data: IExperimentUpdate }) {
+  async updateExperiment(payload: { id: number; data: IExperimentUpdate }) {
     try {
-      const notification = { content: 'saving', showProgress: true };
+      const notification = { content: "saving", showProgress: true };
       this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
         api.updateExperiment(this.main!.getters.token, payload.id, payload.data),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.mutations.setExperiment(data);
       this.main!.mutations.removeNotification(notification);
-      this.main!.mutations.addNotification({ content: 'Experiment successfully updated', color: 'success' });
+      this.main!.mutations.addNotification({ content: "Experiment successfully updated", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -65,15 +69,15 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
   async deleteExperiment(id: number) {
     try {
-      const notification = { content: 'deleting', showProgress: true };
+      const notification = { content: "deleting", showProgress: true };
       this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
         api.deleteExperiment(this.main!.getters.token, id),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.mutations.deleteExperiment(id);
       this.main!.mutations.removeNotification(notification);
-      this.main!.mutations.addNotification({ content: 'Experiment successfully deleted', color: 'success' });
+      this.main!.mutations.addNotification({ content: "Experiment successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -81,30 +85,30 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
   async createExperiment(payload: IExperimentCreate) {
     try {
-      const notification = { content: 'saving', showProgress: true };
+      const notification = { content: "saving", showProgress: true };
       this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
         api.createExperiment(this.main!.getters.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.mutations.setExperiment(data);
       this.main!.mutations.removeNotification(notification);
-      this.main!.mutations.addNotification({ content: 'Experiment successfully created', color: 'success' });
+      this.main!.mutations.addNotification({ content: "Experiment successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  async upload(payload: { id: number, data: any }) {
+  async upload(payload: { id: number; data: any }) {
     if (!payload.id) {
       return;
     }
     try {
-      const notification = { content: 'uploading', showProgress: true };
+      const notification = { content: "uploading", showProgress: true };
       this.main!.mutations.addNotification(notification);
       await api.upload(this.main!.getters.token, payload.id, payload.data);
       this.main!.mutations.removeNotification(notification);
-      this.main!.mutations.addNotification({ content: 'File successfully uploaded', color: 'success' });
+      this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -149,11 +153,11 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
   async getColorizedMaskImage() {
     const params = this.prepareStackParams();
-    if (params.channels.length === 0 || !params.hasOwnProperty('mask')) {
+    if (params.channels.length === 0 || !params.hasOwnProperty("mask")) {
       return;
     }
-    params['mask']['apply'] = true;
-    params['mask']['colorize'] = true;
+    params["mask"]["apply"] = true;
+    params["mask"]["colorize"] = true;
     try {
       this.mutations.setColorizeMaskInProgress(true);
       const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
@@ -170,7 +174,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
-  async exportChannelStackImage(format: ExportFormat = 'png') {
+  async exportChannelStackImage(format: ExportFormat = "png") {
     const params = this.prepareStackParams(format);
     try {
       const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
@@ -181,7 +185,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
-  async setSharedChannelLevels(payload: { metal: string, levels: number[] }) {
+  async setSharedChannelLevels(payload: { metal: string; levels: number[] }) {
     const experiment = this.getters.activeExperiment;
     if (experiment && experiment.slides) {
       for (const slide of experiment.slides) {
@@ -197,16 +201,16 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
                       customLabel: channel.label,
                       levels: {
                         min: payload.levels[0],
-                        max: payload.levels[1],
-                      },
+                        max: payload.levels[1]
+                      }
                     };
                   } else {
                     settings = {
                       ...settings,
                       levels: {
                         min: payload.levels[0],
-                        max: payload.levels[1],
-                      },
+                        max: payload.levels[1]
+                      }
                     };
                   }
                   this.settings!.mutations.setChannelSettings(settings);
@@ -221,14 +225,14 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
 
   async createShare(payload: IShareCreate) {
     try {
-      const notification = { content: 'saving', showProgress: true };
+      const notification = { content: "saving", showProgress: true };
       this.main!.mutations.addNotification(notification);
       const data = (await Promise.all([
         api.createShare(this.main!.getters.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.main!.mutations.removeNotification(notification);
-      this.main!.mutations.addNotification({ content: 'Experiment successfully shared', color: 'success' });
+      this.main!.mutations.addNotification({ content: "Experiment successfully shared", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -243,8 +247,8 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
     }
   }
 
-  private prepareStackParams(format: 'png' | 'tiff' = 'png') {
-    const channels = this.getters.selectedChannels.map((channel) => {
+  private prepareStackParams(format: "png" | "tiff" = "png") {
+    const channels = this.getters.selectedChannels.map(channel => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
       const settings = this.settings!.getters.getChannelSettings(channel.id);
       const min = settings && settings.levels ? settings.levels.min : undefined;
@@ -255,7 +259,7 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
         color: color,
         customLabel: customLabel,
         min: min,
-        max: max,
+        max: max
       };
     });
 
@@ -268,20 +272,20 @@ export class ExperimentActions extends Actions<ExperimentState, ExperimentGetter
       filter: filter,
       legend: legend,
       scalebar: scalebar,
-      channels: channels,
+      channels: channels
     };
 
     const activeDataset = this.datasets!.getters.activeDataset;
     if (activeDataset) {
-      result['datasetId'] = activeDataset.id;
+      result["datasetId"] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
       const acquisition = this.getters.activeAcquisition;
       if (acquisition && activeDataset.input && activeDataset.input.probability_masks) {
         const mask = activeDataset.input.probability_masks[acquisition.id];
         if (mask) {
-          result['mask'] = {
+          result["mask"] = {
             apply: maskSettings.apply,
-            location: mask.location,
+            location: mask.location
           };
         }
       }

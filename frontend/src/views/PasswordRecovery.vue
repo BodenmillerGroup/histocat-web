@@ -5,17 +5,11 @@
         <v-col xs="12" sm="8" md="4">
           <v-card elevation="12">
             <v-toolbar dark color="primary">
-              <v-toolbar-title>{{appName}} - Password Recovery</v-toolbar-title>
+              <v-toolbar-title>{{ appName }} - Password Recovery</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <p class="subtitle-3">A password recovery email will be sent to the registered account</p>
-              <v-form
-                @keyup.enter="submit"
-                v-model="valid"
-                ref="form"
-                @submit.prevent=""
-                lazy-validation
-              >
+              <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
                 <v-text-field
                   @keyup.enter="submit"
                   label="Username"
@@ -44,24 +38,24 @@
 </template>
 
 <script lang="ts">
-  import { appName } from '@/env';
-  import { mainModule } from '@/modules/main';
-  import { Component, Vue } from 'vue-property-decorator';
+import { appName } from "@/env";
+import { mainModule } from "@/modules/main";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class Login extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
+@Component
+export default class Login extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
 
-    valid = true;
-    username: string = '';
-    appName = appName;
+  valid = true;
+  username: string = "";
+  appName = appName;
 
-    cancel() {
-      this.$router.back();
-    }
-
-    submit() {
-      this.mainContext.actions.passwordRecovery({ username: this.username });
-    }
+  cancel() {
+    this.$router.back();
   }
+
+  submit() {
+    this.mainContext.actions.passwordRecovery({ username: this.username });
+  }
+}
 </script>

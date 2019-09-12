@@ -1,8 +1,7 @@
-import { IUserProfile } from '@/modules/user/models';
-import { Mutations } from 'vuex-smart-module';
-import { MainState } from '.';
-import { AppNotification } from './models';
-
+import { IUserProfile } from "@/modules/user/models";
+import { Mutations } from "vuex-smart-module";
+import { MainState } from ".";
+import { AppNotification } from "./models";
 
 export class MainMutations extends Mutations<MainState> {
   setToken(payload: string) {
@@ -34,10 +33,10 @@ export class MainMutations extends Mutations<MainState> {
   }
 
   removeNotification(payload: AppNotification) {
-    this.state.notifications = this.state.notifications.filter((notification) => notification !== payload);
+    this.state.notifications = this.state.notifications.filter(notification => notification !== payload);
   }
 
-  setLayout(payload: { showWorkspace: boolean, showOptions: boolean }) {
+  setLayout(payload: { showWorkspace: boolean; showOptions: boolean }) {
     this.state.showWorkspace = payload.showWorkspace;
     this.state.showOptions = payload.showOptions;
   }

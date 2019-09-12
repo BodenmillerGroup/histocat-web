@@ -1,18 +1,17 @@
-import { experimentModule } from '@/modules/experiment';
-import { ExportFormat } from '@/modules/experiment/models';
-import { mainModule } from '@/modules/main';
-import { settingsModule } from '@/modules/settings';
-import { saveAs } from 'file-saver';
-import { Store } from 'vuex';
-import { Actions, Context } from 'vuex-smart-module';
-import { AnalysisState } from '.';
-import { api } from './api';
-import { AnalysisGetters } from './getters';
-import { IImageSegmentationSettings, IPCASubmission, ITSNESubmission, IUMAPSubmission } from './models';
-import { AnalysisMutations } from './mutations';
+import { experimentModule } from "@/modules/experiment";
+import { ExportFormat } from "@/modules/experiment/models";
+import { mainModule } from "@/modules/main";
+import { settingsModule } from "@/modules/settings";
+import { saveAs } from "file-saver";
+import { Store } from "vuex";
+import { Actions, Context } from "vuex-smart-module";
+import { AnalysisState } from ".";
+import { api } from "./api";
+import { AnalysisGetters } from "./getters";
+import { IImageSegmentationSettings, IPCASubmission, ITSNESubmission, IUMAPSubmission } from "./models";
+import { AnalysisMutations } from "./mutations";
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
-
   // Declare context type
   main?: Context<typeof mainModule>;
   settings?: Context<typeof settingsModule>;
@@ -44,7 +43,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async exportSegmentationImage(payload: { settings: IImageSegmentationSettings, format: ExportFormat }) {
+  async exportSegmentationImage(payload: { settings: IImageSegmentationSettings; format: ExportFormat }) {
     const params = this.prepareSegmentationParams(payload.settings, payload.format);
     try {
       const response = await api.produceSegmentationImage(this.main!.getters.token, params);
@@ -68,7 +67,14 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getScatterPlotData(payload: { datasetId: number, acquisitionId: number, markerX: string, markerY: string, markerZ: string, heatmap: string }) {
+  async getScatterPlotData(payload: {
+    datasetId: number;
+    acquisitionId: number;
+    markerX: string;
+    markerY: string;
+    markerZ: string;
+    heatmap: string;
+  }) {
     try {
       const response = await api.getScatterPlotData(
         this.main!.getters.token,
@@ -77,7 +83,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.markerX,
         payload.markerY,
         payload.markerZ,
-        payload.heatmap,
+        payload.heatmap
       );
       this.mutations.setScatterPlotData(response);
     } catch (error) {
@@ -85,13 +91,13 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getBoxPlotData(payload: { datasetId: number, acquisitionId: number, markers: string[] }) {
+  async getBoxPlotData(payload: { datasetId: number; acquisitionId: number; markers: string[] }) {
     try {
       const response = await api.getBoxPlotData(
         this.main!.getters.token,
         payload.datasetId,
         payload.acquisitionId,
-        payload.markers,
+        payload.markers
       );
       this.mutations.setBoxPlotData(response);
     } catch (error) {
@@ -110,22 +116,20 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async submitTSNE(payload: ITSNESubmission) {
     try {
-      const response = await api.submitTSNE(
-        this.main!.getters.token, payload
-      );
+      const response = await api.submitTSNE(this.main!.getters.token, payload);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  async getTSNEResult(payload: { datasetId: number, name: string, heatmapType: string, heatmap: string }) {
+  async getTSNEResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
     try {
       const response = await api.getTSNEData(
         this.main!.getters.token,
         payload.datasetId,
         payload.name,
         payload.heatmapType,
-        payload.heatmap,
+        payload.heatmap
       );
       this.mutations.setTSNEData(response);
     } catch (error) {
@@ -135,22 +139,20 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async submitUMAP(payload: IUMAPSubmission) {
     try {
-      const response = await api.submitUMAP(
-        this.main!.getters.token, payload
-      );
+      const response = await api.submitUMAP(this.main!.getters.token, payload);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  async getUMAPResult(payload: { datasetId: number, name: string, heatmapType: string, heatmap: string }) {
+  async getUMAPResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
     try {
       const response = await api.getUMAPData(
         this.main!.getters.token,
         payload.datasetId,
         payload.name,
         payload.heatmapType,
-        payload.heatmap,
+        payload.heatmap
       );
       this.mutations.setUMAPData(response);
     } catch (error) {
@@ -158,8 +160,8 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: 'png' | 'tiff' = 'png') {
-    const channels = this.experiment!.getters.selectedChannels.map((channel) => {
+  private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: "png" | "tiff" = "png") {
+    const channels = this.experiment!.getters.selectedChannels.map(channel => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
       const settings = this.settings!.getters.getChannelSettings(channel.id);
       const min = settings && settings.levels ? settings.levels.min : undefined;
@@ -170,7 +172,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         color: color,
         customLabel: customLabel,
         min: min,
-        max: max,
+        max: max
       };
     });
 
@@ -182,7 +184,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       filter: filter,
       scalebar: scalebar,
       channels: channels,
-      settings: segmentationSettings,
+      settings: segmentationSettings
     };
   }
 }

@@ -1,5 +1,5 @@
-import { Getters } from 'vuex-smart-module';
-import { ExperimentState } from '.';
+import { Getters } from "vuex-smart-module";
+import { ExperimentState } from ".";
 
 export class ExperimentGetters extends Getters<ExperimentState> {
   get experiments() {
@@ -11,7 +11,7 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   }
 
   getExperiment(id?: number) {
-    return this.experiments.find((item) => item.id === id);
+    return this.experiments.find(item => item.id === id);
   }
 
   get activeExperiment() {
@@ -23,7 +23,7 @@ export class ExperimentGetters extends Getters<ExperimentState> {
       for (const slide of this.activeExperiment.slides) {
         for (const panorama of slide.panoramas) {
           for (const roi of panorama.rois) {
-            const acquisition = roi.acquisitions.find((item) => item.id === this.state.activeAcquisitionId);
+            const acquisition = roi.acquisitions.find(item => item.id === this.state.activeAcquisitionId);
             if (acquisition) {
               return acquisition;
             }
@@ -40,7 +40,7 @@ export class ExperimentGetters extends Getters<ExperimentState> {
 
   get selectedChannels() {
     if (this.activeAcquisition) {
-      return this.activeAcquisition.channels.filter((channel) => {
+      return this.activeAcquisition.channels.filter(channel => {
         if (this.selectedMetals.includes(channel.metal)) {
           return channel;
         }

@@ -2,9 +2,9 @@ export interface IChannelSettings {
   id: number;
   customLabel: string;
   levels?: {
-    min: number,
-    max: number
-  }
+    min: number;
+    max: number;
+  };
 }
 
 export interface IImageFilter {

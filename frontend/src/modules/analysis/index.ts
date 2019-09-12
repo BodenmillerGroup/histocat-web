@@ -1,8 +1,8 @@
-import { Module } from 'vuex-smart-module';
-import { AnalysisActions } from './actions';
-import { AnalysisGetters } from './getters';
-import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData, IUMAPData } from './models';
-import { AnalysisMutations } from './mutations';
+import { Module } from "vuex-smart-module";
+import { AnalysisActions } from "./actions";
+import { AnalysisGetters } from "./getters";
+import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData, IUMAPData } from "./models";
+import { AnalysisMutations } from "./mutations";
 
 export class AnalysisState {
   segmentationImage: string | ArrayBuffer | null = null;
@@ -20,5 +20,5 @@ export const analysisModule = new Module({
   state: AnalysisState,
   getters: AnalysisGetters,
   mutations: AnalysisMutations,
-  actions: AnalysisActions,
+  actions: AnalysisActions
 });

@@ -8,14 +8,14 @@
         <div class="my-6">
           <div class="subtitle-1 primary--text text--lighten-3">Full Name</div>
           <div class="title primary--text text--darken-2" v-if="userProfile && userProfile.full_name">
-            {{userProfile.full_name}}
+            {{ userProfile.full_name }}
           </div>
           <div class="title primary--text text--darken-2" v-else>-----</div>
         </div>
         <div class="my-4">
           <div class="subtitle-1 primary--text text--lighten-3">Email</div>
           <div class="title primary--text text--darken-2" v-if="userProfile && userProfile.email">
-            {{userProfile.email}}
+            {{ userProfile.email }}
           </div>
           <div class="title primary--text text--darken-2" v-else>-----</div>
         </div>
@@ -31,23 +31,23 @@
 </template>
 
 <script lang="ts">
-  import { mainModule } from '@/modules/main';
-  import { settingsModule } from '@/modules/settings';
-  import { Component, Vue } from 'vue-property-decorator';
+import { mainModule } from "@/modules/main";
+import { settingsModule } from "@/modules/settings";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class UserProfile extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
-    readonly settingsModule = settingsModule.context(this.$store);
+@Component
+export default class UserProfile extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
+  readonly settingsModule = settingsModule.context(this.$store);
 
-    get userProfile() {
-      return this.mainContext.getters.userProfile;
-    }
+  get userProfile() {
+    return this.mainContext.getters.userProfile;
+  }
 
-    resetSettings() {
-      if (self.confirm('Reset all settings?')) {
-        this.settingsModule.actions.resetSettings();
-      }
+  resetSettings() {
+    if (self.confirm("Reset all settings?")) {
+      this.settingsModule.actions.resetSettings();
     }
   }
+}
 </script>

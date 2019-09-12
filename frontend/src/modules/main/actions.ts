@@ -1,13 +1,13 @@
-import { settingsModule } from '@/modules/settings';
-import { api } from '@/modules/user/api';
-import router from '@/router';
-import { getLocalToken, removeLocalToken, saveLocalToken } from '@/utils';
-import { Store } from 'vuex';
-import { Actions, Context } from 'vuex-smart-module';
-import { MainState } from '.';
-import { MainGetters } from './getters';
-import { AppNotification } from './models';
-import { MainMutations } from './mutations';
+import { settingsModule } from "@/modules/settings";
+import { api } from "@/modules/user/api";
+import router from "@/router";
+import { getLocalToken, removeLocalToken, saveLocalToken } from "@/utils";
+import { Store } from "vuex";
+import { Actions, Context } from "vuex-smart-module";
+import { MainState } from ".";
+import { MainGetters } from "./getters";
+import { AppNotification } from "./models";
+import { MainMutations } from "./mutations";
 
 export class MainActions extends Actions<MainState, MainGetters, MainMutations, MainActions> {
   // Declare context type
@@ -29,7 +29,7 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
         this.mutations.setLogInError(false);
         await this.getUserProfile();
         await this.routeLoggedIn();
-        this.mutations.addNotification({ content: 'Logged in', color: 'success' });
+        this.mutations.addNotification({ content: "Logged in", color: "success" });
       } else {
         await this.logOut();
       }
@@ -52,15 +52,15 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
 
   async updateUserProfile(payload) {
     try {
-      const loadingNotification = { content: 'saving', showProgress: true };
+      const loadingNotification = { content: "saving", showProgress: true };
       this.mutations.addNotification(loadingNotification);
       const data = (await Promise.all([
         api.updateMe(this.state.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.mutations.setUserProfile(data);
       this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ content: 'Profile successfully updated', color: 'success' });
+      this.mutations.addNotification({ content: "Profile successfully updated", color: "success" });
     } catch (error) {
       await this.checkApiError(error);
     }
@@ -92,7 +92,7 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
 
   async removeLogIn() {
     removeLocalToken();
-    this.mutations.setToken('');
+    this.mutations.setToken("");
     this.mutations.setLoggedIn(false);
   }
 
@@ -103,29 +103,29 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
 
   async userLogOut() {
     await this.logOut();
-    this.mutations.addNotification({ content: 'Logged out', color: 'success' });
+    this.mutations.addNotification({ content: "Logged out", color: "success" });
   }
 
   routeLogOut() {
-    if (router.currentRoute.path !== '/login') {
-      router.push('/login');
+    if (router.currentRoute.path !== "/login") {
+      router.push("/login");
     }
   }
 
   async checkApiError(payload) {
-    console.log('API error: ', payload);
+    console.log("API error: ", payload);
     if (payload.response && payload.response.status === 401) {
       await this.logOut();
     }
   }
 
   routeLoggedIn() {
-    if (router.currentRoute.path === '/login' || router.currentRoute.path === '/') {
-      router.push('/main');
+    if (router.currentRoute.path === "/login" || router.currentRoute.path === "/") {
+      router.push("/main");
     }
   }
 
-  async removeNotification(payload: { notification: AppNotification, timeout: number }) {
+  async removeNotification(payload: { notification: AppNotification; timeout: number }) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         this.mutations.removeNotification(payload.notification);
@@ -135,36 +135,36 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
   }
 
   async passwordRecovery(payload: { username: string }) {
-    const loadingNotification = { content: 'Sending password recovery email', showProgress: true };
+    const loadingNotification = { content: "Sending password recovery email", showProgress: true };
     try {
       this.mutations.addNotification(loadingNotification);
       const response = (await Promise.all([
         api.passwordRecovery(payload.username),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ content: 'Password recovery email sent', color: 'success' });
+      this.mutations.addNotification({ content: "Password recovery email sent", color: "success" });
       await this.logOut();
     } catch (error) {
       this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ color: 'error', content: 'Incorrect username' });
+      this.mutations.addNotification({ color: "error", content: "Incorrect username" });
     }
   }
 
-  async resetPassword(payload: { password: string, token: string }) {
-    const loadingNotification = { content: 'Resetting password', showProgress: true };
+  async resetPassword(payload: { password: string; token: string }) {
+    const loadingNotification = { content: "Resetting password", showProgress: true };
     try {
       this.mutations.addNotification(loadingNotification);
       const response = (await Promise.all([
         api.resetPassword(payload.password, payload.token),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500)),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
       ]))[0];
       this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ content: 'Password successfully reset', color: 'success' });
+      this.mutations.addNotification({ content: "Password successfully reset", color: "success" });
       await this.logOut();
     } catch (error) {
       this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ color: 'error', content: 'Error resetting password' });
+      this.mutations.addNotification({ color: "error", content: "Error resetting password" });
     }
   }
 }

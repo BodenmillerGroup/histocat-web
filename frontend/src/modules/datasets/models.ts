@@ -1,6 +1,6 @@
-import { IChannelSettings } from '@/modules/settings/models';
+import { IChannelSettings } from "@/modules/settings/models";
 
-export type Status = 'pending' | 'processing' | 'terminated';
+export type Status = "pending" | "processing" | "terminated";
 
 export interface IDatasetCreate {
   experiment_id: number;
@@ -10,7 +10,7 @@ export interface IDatasetCreate {
     acquisition_ids: number[];
     metals: string[];
     channel_settings: IChannelSettings[];
-  }
+  };
   meta?: object;
 }
 
@@ -37,38 +37,38 @@ export interface IDataset {
   input: {
     acquisition_metadata?: {
       location: string;
-    }
+    };
     cell?: {
       location: string;
-    }
+    };
     image?: {
       location: string;
-    }
+    };
     object_relationships?: {
       location: string;
-    }
+    };
     probability_masks?: {
       [id: number]: {
         location: string;
         slide: {
           id: number;
           origin_id: number;
-        }
+        };
         panorama: {
           id: number;
           origin_id: number;
-        }
+        };
         roi: {
           id: number;
           origin_id: number;
-        }
+        };
         acquisition: {
           id: number;
           origin_id: number;
-        }
-      }
-    }
-  }
+        };
+      };
+    };
+  };
   output?: {
     tsne: { [name: string]: IDatasetTSNEOutput };
     umap: { [name: string]: IDatasetUMAPOutput };

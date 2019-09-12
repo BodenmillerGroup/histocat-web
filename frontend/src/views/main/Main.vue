@@ -34,12 +34,12 @@
               </v-list-item-action>
               <v-list-item-title>Manage Experiments</v-list-item-title>
             </v-list-item>
-<!--            <v-list-item to="/main/admin/workflows/all">-->
-<!--              <v-list-item-action>-->
-<!--                <v-icon>mdi-sitemap</v-icon>-->
-<!--              </v-list-item-action>-->
-<!--              <v-list-item-title>Manage Workflows</v-list-item-title>-->
-<!--            </v-list-item>-->
+            <!--            <v-list-item to="/main/admin/workflows/all">-->
+            <!--              <v-list-item-action>-->
+            <!--                <v-icon>mdi-sitemap</v-icon>-->
+            <!--              </v-list-item-action>-->
+            <!--              <v-list-item-title>Manage Workflows</v-list-item-title>-->
+            <!--            </v-list-item>-->
           </v-list>
           <v-spacer></v-spacer>
           <v-list>
@@ -54,22 +54,14 @@
         </v-col>
       </v-row>
     </v-navigation-drawer>
-    <v-app-bar
-      app
-      dense
-      dark
-      color="primary"
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
-    >
-      <v-app-bar-nav-icon
-        @click.stop="switchShowDrawer"
-      ></v-app-bar-nav-icon>
-      <v-toolbar-title>{{appName}}</v-toolbar-title>
+    <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp">
+      <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>{{ appName }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn-toggle v-model="views" multiple>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" value='workspace'>
+            <v-btn color="primary" v-on="on" value="workspace">
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
@@ -78,7 +70,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" value='options'>
+            <v-btn color="primary" v-on="on" value="options">
               <v-icon>mdi-tune</v-icon>
             </v-btn>
           </template>
@@ -86,11 +78,7 @@
           <span v-else>Hide options</span>
         </v-tooltip>
       </v-btn-toggle>
-      <v-menu
-        bottom
-        left
-        offset-y
-      >
+      <v-menu bottom left offset-y>
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
@@ -120,84 +108,80 @@
 </template>
 
 <script lang="ts">
-  import { appName } from '@/env';
-  import { mainModule } from '@/modules/main';
-  import { WebSocketManager } from '@/utils/WebSocketManager';
-  import { Component, Vue, Watch } from 'vue-property-decorator';
+import { appName } from "@/env";
+import { mainModule } from "@/modules/main";
+import { WebSocketManager } from "@/utils/WebSocketManager";
+import { Component, Vue, Watch } from "vue-property-decorator";
 
-  const routeGuardMain = async (to, from, next) => {
-    if (to.path === '/main') {
-      next('/main/dashboard');
-    } else {
-      next();
-    }
-  };
-
-  @Component
-  export default class Main extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
-
-    appName = appName;
-    views: string[] = ['workspace', 'options'];
-
-    beforeRouteEnter(to, from, next) {
-      routeGuardMain(to, from, next);
-    }
-
-    beforeRouteUpdate(to, from, next) {
-      routeGuardMain(to, from, next);
-    }
-
-    @Watch('views')
-    viewsChanged(views: string[]) {
-      this.mainContext.mutations.setLayout({
-        showWorkspace: views.includes('workspace'),
-        showOptions: views.includes('options'),
-      });
-    }
-
-    get showWorkspace() {
-      return this.mainContext.getters.showWorkspace;
-    }
-
-    get showOptions() {
-      return this.mainContext.getters.showOptions;
-    }
-
-    get miniDrawer() {
-      return this.mainContext.getters.dashboardMiniDrawer;
-    }
-
-    get showDrawer() {
-      return this.mainContext.getters.dashboardShowDrawer;
-    }
-
-    set showDrawer(value: boolean) {
-      this.mainContext.mutations.setDashboardShowDrawer(value);
-    }
-
-    switchShowDrawer() {
-      this.mainContext.mutations.setDashboardShowDrawer(
-        !this.mainContext.getters.dashboardShowDrawer,
-      );
-    }
-
-    switchMiniDrawer() {
-      this.mainContext.mutations.setDashboardMiniDrawer(
-        !this.mainContext.getters.dashboardMiniDrawer,
-      );
-    }
-
-    get hasAdminAccess() {
-      return this.mainContext.getters.hasAdminAccess;
-    }
-
-    async logout() {
-      await this.mainContext.actions.userLogOut();
-    }
-
-    mounted() {
-      WebSocketManager.init(this.$store);
-    }
+const routeGuardMain = async (to, from, next) => {
+  if (to.path === "/main") {
+    next("/main/dashboard");
+  } else {
+    next();
   }
+};
+
+@Component
+export default class Main extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
+
+  appName = appName;
+  views: string[] = ["workspace", "options"];
+
+  beforeRouteEnter(to, from, next) {
+    routeGuardMain(to, from, next);
+  }
+
+  beforeRouteUpdate(to, from, next) {
+    routeGuardMain(to, from, next);
+  }
+
+  @Watch("views")
+  viewsChanged(views: string[]) {
+    this.mainContext.mutations.setLayout({
+      showWorkspace: views.includes("workspace"),
+      showOptions: views.includes("options")
+    });
+  }
+
+  get showWorkspace() {
+    return this.mainContext.getters.showWorkspace;
+  }
+
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
+
+  get miniDrawer() {
+    return this.mainContext.getters.dashboardMiniDrawer;
+  }
+
+  get showDrawer() {
+    return this.mainContext.getters.dashboardShowDrawer;
+  }
+
+  set showDrawer(value: boolean) {
+    this.mainContext.mutations.setDashboardShowDrawer(value);
+  }
+
+  switchShowDrawer() {
+    this.mainContext.mutations.setDashboardShowDrawer(!this.mainContext.getters.dashboardShowDrawer);
+  }
+
+  switchMiniDrawer() {
+    this.mainContext.mutations.setDashboardMiniDrawer(!this.mainContext.getters.dashboardMiniDrawer);
+  }
+
+  get hasAdminAccess() {
+    return this.mainContext.getters.hasAdminAccess;
+  }
+
+  async logout() {
+    await this.mainContext.actions.userLogOut();
+  }
+
+  mounted() {
+    WebSocketManager.init(this.$store);
+  }
+}
 </script>

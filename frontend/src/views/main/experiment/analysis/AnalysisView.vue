@@ -9,22 +9,22 @@
         <v-tab>UMAP</v-tab>
         <v-tab>Segmentation</v-tab>
         <v-tab-item>
-          <ScatterPlotTab/>
+          <ScatterPlotTab />
         </v-tab-item>
         <v-tab-item>
-          <BoxPlotTab/>
+          <BoxPlotTab />
         </v-tab-item>
         <v-tab-item>
-          <PCATab/>
+          <PCATab />
         </v-tab-item>
         <v-tab-item>
-          <TSNETab/>
+          <TSNETab />
         </v-tab-item>
         <v-tab-item>
-          <UMAPTab/>
+          <UMAPTab />
         </v-tab-item>
         <v-tab-item>
-          <SegmentationTab/>
+          <SegmentationTab />
         </v-tab-item>
       </v-tabs>
     </v-col>
@@ -32,41 +32,41 @@
 </template>
 
 <script lang="ts">
-  import BoxPlotTab from '@/views/main/experiment/analysis/box/BoxPlotTab.vue';
-  import PCATab from '@/views/main/experiment/analysis/pca/PCATab.vue';
-  import TSNETab from '@/views/main/experiment/analysis/tsne/TSNETab.vue';
-  import ScatterPlotTab from '@/views/main/experiment/analysis/scatter/ScatterPlotTab.vue';
-  import SegmentationTab from '@/views/main/experiment/analysis/segmentation/SegmentationTab.vue';
-  import UMAPTab from '@/views/main/experiment/analysis/umap/UMAPTab.vue';
-  import { Component, Vue } from 'vue-property-decorator';
+import BoxPlotTab from "@/views/main/experiment/analysis/box/BoxPlotTab.vue";
+import PCATab from "@/views/main/experiment/analysis/pca/PCATab.vue";
+import TSNETab from "@/views/main/experiment/analysis/tsne/TSNETab.vue";
+import ScatterPlotTab from "@/views/main/experiment/analysis/scatter/ScatterPlotTab.vue";
+import SegmentationTab from "@/views/main/experiment/analysis/segmentation/SegmentationTab.vue";
+import UMAPTab from "@/views/main/experiment/analysis/umap/UMAPTab.vue";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component({
-    components: {
-      UMAPTab,
-      PCATab,
-      BoxPlotTab,
-      ScatterPlotTab,
-      SegmentationTab,
-      TSNETab,
-    },
-  })
-  export default class AnalysisView extends Vue {
-    tab = 0;
+@Component({
+  components: {
+    UMAPTab,
+    PCATab,
+    BoxPlotTab,
+    ScatterPlotTab,
+    SegmentationTab,
+    TSNETab
   }
+})
+export default class AnalysisView extends Vue {
+  tab = 0;
+}
 </script>
 
 <style>
-  /**
+/**
    * The default size is 600px×400px, for responsive charts
    * you may need to set percentage values as follows (also
    * don't forget to provide a size for the container).
    */
-  .echarts {
-    width: 100%;
-    height: 100%;
-  }
+.echarts {
+  width: 100%;
+  height: 100%;
+}
 
-  .v-slide-group__prev {
-    min-width: 0;
-  }
+.v-slide-group__prev {
+  min-width: 0;
+}
 </style>

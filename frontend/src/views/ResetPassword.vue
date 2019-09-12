@@ -5,17 +5,11 @@
         <v-col xs="12" sm="8" md="4">
           <v-card elevation="12">
             <v-toolbar dark color="primary">
-              <v-toolbar-title>{{appName}} - Reset Password</v-toolbar-title>
+              <v-toolbar-title>{{ appName }} - Reset Password</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <p class="subtitle-3">Enter your new password below</p>
-              <v-form
-                @keyup.enter="submit"
-                v-model="valid"
-                ref="form"
-                @submit.prevent=""
-                lazy-validation
-              >
+              <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
                 <v-text-field
                   type="password"
                   ref="password"
@@ -54,54 +48,54 @@
 </template>
 
 <script lang="ts">
-  import { appName } from '@/env';
-  import { mainModule } from '@/modules/main';
-  import { Component, Vue } from 'vue-property-decorator';
+import { appName } from "@/env";
+import { mainModule } from "@/modules/main";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class UserProfileEdit extends Vue {
-    readonly mainContext = mainModule.context(this.$store);
+@Component
+export default class UserProfileEdit extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
 
-    appName = appName;
-    valid = true;
-    password1 = '';
-    password2 = '';
+  appName = appName;
+  valid = true;
+  password1 = "";
+  password2 = "";
 
-    mounted() {
-      this.checkToken();
+  mounted() {
+    this.checkToken();
+  }
+
+  reset() {
+    this.password1 = "";
+    this.password2 = "";
+    this.$validator.reset();
+  }
+
+  cancel() {
+    this.$router.push("/");
+  }
+
+  checkToken() {
+    const token = this.$router.currentRoute.query.token as string;
+    if (!token) {
+      this.mainContext.mutations.addNotification({
+        content: "No token provided in the URL, start a new password recovery",
+        color: "error"
+      });
+      this.$router.push("/recover-password");
+    } else {
+      return token;
     }
+  }
 
-    reset() {
-      this.password1 = '';
-      this.password2 = '';
-      this.$validator.reset();
-    }
-
-    cancel() {
-      this.$router.push('/');
-    }
-
-    checkToken() {
-      const token = (this.$router.currentRoute.query.token as string);
-      if (!token) {
-        this.mainContext.mutations.addNotification({
-          content: 'No token provided in the URL, start a new password recovery',
-          color: 'error',
-        });
-        this.$router.push('/recover-password');
-      } else {
-        return token;
-      }
-    }
-
-    async submit() {
-      if (await this.$validator.validateAll()) {
-        const token = this.checkToken();
-        if (token) {
-          await this.mainContext.actions.resetPassword({ token, password: this.password1 });
-          this.$router.push('/');
-        }
+  async submit() {
+    if (await this.$validator.validateAll()) {
+      const token = this.checkToken();
+      if (token) {
+        await this.mainContext.actions.resetPassword({ token, password: this.password1 });
+        this.$router.push("/");
       }
     }
   }
+}
 </script>

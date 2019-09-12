@@ -1,16 +1,7 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    persistent
-    max-width="600px"
-  >
+  <v-dialog v-model="dialog" persistent max-width="600px">
     <template v-slot:activator="{ on }">
-      <v-btn
-        v-on="on"
-        small
-        icon
-        color="grey"
-      >
+      <v-btn v-on="on" small icon color="grey">
         <v-icon small>mdi-cloud-upload</v-icon>
       </v-btn>
     </template>
@@ -42,45 +33,45 @@
 </template>
 
 <script lang="ts">
-  import { datasetModule } from '@/modules/datasets';
-  import { experimentModule } from '@/modules/experiment';
-  import { Component, Vue } from 'vue-property-decorator';
+import { datasetModule } from "@/modules/datasets";
+import { experimentModule } from "@/modules/experiment";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class UploadArtifactsDialog extends Vue {
-    readonly experimentContext = experimentModule.context(this.$store);
-    readonly datasetContext = datasetModule.context(this.$store);
+@Component
+export default class UploadArtifactsDialog extends Vue {
+  readonly experimentContext = experimentModule.context(this.$store);
+  readonly datasetContext = datasetModule.context(this.$store);
 
-    dialog = false;
-    file: File | null = null;
+  dialog = false;
+  file: File | null = null;
 
-    get valid() {
-      return this.file !== null;
-    }
+  get valid() {
+    return this.file !== null;
+  }
 
-    async mounted() {
-      this.reset();
-    }
+  async mounted() {
+    this.reset();
+  }
 
-    reset() {
-      this.file = null;
-    }
+  reset() {
+    this.file = null;
+  }
 
-    cancel() {
+  cancel() {
+    this.dialog = false;
+  }
+
+  async submit() {
+    if (this.valid) {
+      const formData = new FormData();
+      const file = this.file as File;
+      formData.append("file", file, file.name);
+      await this.datasetContext.actions.uploadDataset({
+        experimentId: this.experimentContext.getters.activeExperimentId,
+        data: formData
+      });
       this.dialog = false;
     }
-
-    async submit() {
-      if (this.valid) {
-        const formData = new FormData();
-        const file = this.file as File;
-        formData.append('file', file, file.name);
-        await this.datasetContext.actions.uploadDataset({
-          experimentId: this.experimentContext.getters.activeExperimentId,
-          data: formData,
-        });
-        this.dialog = false;
-      }
-    }
   }
+}
 </script>

@@ -1,12 +1,12 @@
-import { IUserProfile } from '@/modules/user/models';
-import { Module } from 'vuex-smart-module';
-import { MainActions } from './actions';
-import { MainGetters } from './getters';
-import { AppNotification } from './models';
-import { MainMutations } from './mutations';
+import { IUserProfile } from "@/modules/user/models";
+import { Module } from "vuex-smart-module";
+import { MainActions } from "./actions";
+import { MainGetters } from "./getters";
+import { AppNotification } from "./models";
+import { MainMutations } from "./mutations";
 
 export class MainState {
-  token: string = '';
+  token: string = "";
   isLoggedIn: boolean | null = null;
   logInError: boolean = false;
   userProfile: IUserProfile | null = null;
@@ -23,5 +23,5 @@ export const mainModule = new Module({
   state: MainState,
   getters: MainGetters,
   mutations: MainMutations,
-  actions: MainActions,
+  actions: MainActions
 });

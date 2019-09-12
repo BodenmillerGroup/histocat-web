@@ -1,7 +1,6 @@
-import { Mutations } from 'vuex-smart-module';
-import { ExperimentState } from '.';
-import { IExperiment, IShare } from './models';
-
+import { Mutations } from "vuex-smart-module";
+import { ExperimentState } from ".";
+import { IExperiment, IShare } from "./models";
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
   setExperiments(experiments: IExperiment[]) {
@@ -17,13 +16,13 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   }
 
   setExperiment(experiment: IExperiment) {
-    const items = this.state.experiments.filter((item) => item.id !== experiment.id);
+    const items = this.state.experiments.filter(item => item.id !== experiment.id);
     items.push(experiment);
     this.state.experiments = items;
   }
 
   deleteExperiment(id: number) {
-    this.state.experiments = this.state.experiments.filter((item) => item.id !== id);
+    this.state.experiments = this.state.experiments.filter(item => item.id !== id);
   }
 
   setSelectedMetals(metals: string[]) {
@@ -42,10 +41,10 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.activeAcquisitionId = id;
   }
 
-  setActiveWorkspaceNode(node?: { id: number, type: string }) {
+  setActiveWorkspaceNode(node?: { id: number; type: string }) {
     this.state.activeWorkspaceNode = node;
     if (node) {
-      if (node.type === 'acquisition') {
+      if (node.type === "acquisition") {
         this.setActiveAcquisitionId(node.id);
       }
     }

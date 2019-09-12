@@ -1,12 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <template v-slot:activator="{ on }">
-      <v-btn
-        color="primary"
-        elevation="1"
-        small
-        v-on="on"
-      >
+      <v-btn color="primary" elevation="1" small v-on="on">
         Create
       </v-btn>
     </template>
@@ -26,10 +21,7 @@
               ></v-text-field>
             </v-flex>
             <v-flex>
-              <v-text-field
-                label="Description"
-                v-model="description"
-              ></v-text-field>
+              <v-text-field label="Description" v-model="description"></v-text-field>
             </v-flex>
           </v-layout>
         </v-form>
@@ -47,38 +39,38 @@
 </template>
 
 <script lang="ts">
-  import { datasetModule } from '@/modules/datasets';
-  import { Component, Vue } from 'vue-property-decorator';
+import { datasetModule } from "@/modules/datasets";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component
-  export default class CreateDatasetDialog extends Vue {
-    readonly datasetContext = datasetModule.context(this.$store);
+@Component
+export default class CreateDatasetDialog extends Vue {
+  readonly datasetContext = datasetModule.context(this.$store);
 
-    dialog = false;
+  dialog = false;
 
-    valid = false;
-    name: string = '';
-    description: string = '';
+  valid = false;
+  name: string = "";
+  description: string = "";
 
-    async mounted() {
-      this.reset();
-    }
+  async mounted() {
+    this.reset();
+  }
 
-    reset() {
-      this.name = '';
-      this.description = '';
-      this.$validator.reset();
-    }
+  reset() {
+    this.name = "";
+    this.description = "";
+    this.$validator.reset();
+  }
 
-    cancel() {
+  cancel() {
+    this.dialog = false;
+  }
+
+  async submit() {
+    if (await this.$validator.validateAll()) {
+      await this.datasetContext.actions.createDataset({ name: this.name, description: this.description });
       this.dialog = false;
     }
-
-    async submit() {
-      if (await this.$validator.validateAll()) {
-        await this.datasetContext.actions.createDataset({ name: this.name, description: this.description });
-        this.dialog = false;
-      }
-    }
   }
+}
 </script>

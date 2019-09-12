@@ -1,8 +1,7 @@
-import { WebSocketMessage } from '@/utils/WebSocketMessage';
-import { Mutations } from 'vuex-smart-module';
-import { DatasetState } from '.';
-import { IDataset } from './models';
-
+import { WebSocketMessage } from "@/utils/WebSocketMessage";
+import { Mutations } from "vuex-smart-module";
+import { DatasetState } from ".";
+import { IDataset } from "./models";
 
 export class DatasetMutations extends Mutations<DatasetState> {
   setDatasets(datasets: IDataset[]) {
@@ -10,13 +9,13 @@ export class DatasetMutations extends Mutations<DatasetState> {
   }
 
   setDataset(dataset: IDataset) {
-    const items = this.state.datasets.filter((item) => item.id !== dataset.id);
+    const items = this.state.datasets.filter(item => item.id !== dataset.id);
     items.push(dataset);
     this.state.datasets = items;
   }
 
   deleteDataset(id: number) {
-    this.state.datasets = this.state.datasets.filter((item) => item.id !== id);
+    this.state.datasets = this.state.datasets.filter(item => item.id !== id);
   }
 
   setActiveDataset(dataset?: IDataset) {
@@ -24,12 +23,12 @@ export class DatasetMutations extends Mutations<DatasetState> {
   }
 
   updateDatasetTSNEOutput(message: WebSocketMessage) {
-    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    const dataset = this.state.datasets.find(item => item.id === message.payload.params.dataset_id);
     if (dataset) {
       if (!dataset.output) {
         dataset.output = {
           tsne: {},
-          umap: {},
+          umap: {}
         };
       }
       if (!dataset.output.tsne) {
@@ -41,12 +40,12 @@ export class DatasetMutations extends Mutations<DatasetState> {
   }
 
   updateDatasetUMAPOutput(message: WebSocketMessage) {
-    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    const dataset = this.state.datasets.find(item => item.id === message.payload.params.dataset_id);
     if (dataset) {
       if (!dataset.output) {
         dataset.output = {
           tsne: {},
-          umap: {},
+          umap: {}
         };
       }
       if (!dataset.output.umap) {

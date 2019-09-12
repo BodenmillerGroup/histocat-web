@@ -1,8 +1,8 @@
-import { Module } from 'vuex-smart-module';
-import { DatasetActions } from './actions';
-import { DatasetGetters } from './getters';
-import { IDataset } from './models';
-import { DatasetMutations } from './mutations';
+import { Module } from "vuex-smart-module";
+import { DatasetActions } from "./actions";
+import { DatasetGetters } from "./getters";
+import { IDataset } from "./models";
+import { DatasetMutations } from "./mutations";
 
 export class DatasetState {
   datasets: IDataset[] = [];
@@ -15,5 +15,5 @@ export const datasetModule = new Module({
   state: DatasetState,
   getters: DatasetGetters,
   mutations: DatasetMutations,
-  actions: DatasetActions,
+  actions: DatasetActions
 });

@@ -1,7 +1,6 @@
-import { Mutations } from 'vuex-smart-module';
-import { AnalysisState } from '.';
-import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData, IUMAPData } from './models';
-
+import { Mutations } from "vuex-smart-module";
+import { AnalysisState } from ".";
+import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData, IUMAPData } from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
   setSegmentationImage(base64Image: string | ArrayBuffer | null) {

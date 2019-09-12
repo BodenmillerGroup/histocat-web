@@ -1,7 +1,6 @@
-import { Mutations } from 'vuex-smart-module';
-import { UserState } from '.';
-import { IUserProfile } from './models';
-
+import { Mutations } from "vuex-smart-module";
+import { UserState } from ".";
+import { IUserProfile } from "./models";
 
 export class UserMutations extends Mutations<UserState> {
   setUsers(payload: IUserProfile[]) {

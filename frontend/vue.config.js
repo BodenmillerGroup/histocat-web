@@ -1,5 +1,5 @@
 module.exports = {
-  assetsDir: 'assets',
+  lintOnSave: false,
   runtimeCompiler: false,
 
   pwa: {
@@ -8,9 +8,9 @@ module.exports = {
 
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
-      devtool: 'nosources-source-map';
+      ('nosources-source-map');
     } else {
-      devtool: 'eval-source-map';
+      ('eval-source-map');
     }
   },
 

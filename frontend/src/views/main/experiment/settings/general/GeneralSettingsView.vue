@@ -1,9 +1,5 @@
 <template>
-  <v-expansion-panels
-    v-model="panel"
-    multiple
-    accordion
-  >
+  <v-expansion-panels v-model="panel" multiple accordion>
     <LegendSettingsView></LegendSettingsView>
     <ScalebarSettingsView></ScalebarSettingsView>
     <FilterSettingsView></FilterSettingsView>
@@ -11,15 +7,15 @@
 </template>
 
 <script lang="ts">
-  import FilterSettingsView from '@/views/main/experiment/settings/general/FilterSettingsView.vue';
-  import LegendSettingsView from '@/views/main/experiment/settings/general/LegendSettingsView.vue';
-  import ScalebarSettingsView from '@/views/main/experiment/settings/general/ScalebarSettingsView.vue';
-  import { Component, Vue } from 'vue-property-decorator';
+import FilterSettingsView from "@/views/main/experiment/settings/general/FilterSettingsView.vue";
+import LegendSettingsView from "@/views/main/experiment/settings/general/LegendSettingsView.vue";
+import ScalebarSettingsView from "@/views/main/experiment/settings/general/ScalebarSettingsView.vue";
+import { Component, Vue } from "vue-property-decorator";
 
-  @Component({
-    components: { FilterSettingsView, ScalebarSettingsView, LegendSettingsView },
-  })
-  export default class GeneralSettingsView extends Vue {
-    panel = [0];
-  }
+@Component({
+  components: { FilterSettingsView, ScalebarSettingsView, LegendSettingsView }
+})
+export default class GeneralSettingsView extends Vue {
+  panel = [0];
+}
 </script>
