@@ -14,23 +14,14 @@
                   type="password"
                   ref="password"
                   label="Password"
-                  data-vv-name="password"
-                  data-vv-delay="100"
-                  data-vv-rules="required"
-                  v-validate="'required'"
+                  :rules="password1Rules"
                   v-model="password1"
-                  :error-messages="errors.first('password')"
                 ></v-text-field>
                 <v-text-field
                   type="password"
                   label="Confirm Password"
-                  data-vv-name="password_confirmation"
-                  data-vv-delay="100"
-                  data-vv-rules="required|confirmed:$password"
-                  data-vv-as="password"
-                  v-validate="'required|confirmed:password'"
+                  :rules="password2Rules"
                   v-model="password2"
-                  :error-messages="errors.first('password_confirmation')"
                 ></v-text-field>
               </v-form>
             </v-card-text>
@@ -50,11 +41,19 @@
 <script lang="ts">
 import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
+import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class UserProfileEdit extends Vue {
   readonly mainContext = mainModule.context(this.$store);
+
+  readonly password1Rules = [required];
+  readonly password2Rules = [required, this.passwordIsEqual];
+
+  passwordIsEqual(v) {
+    return v === this.password1 || "Password should be the same";
+  }
 
   appName = appName;
   valid = true;
@@ -68,7 +67,7 @@ export default class UserProfileEdit extends Vue {
   reset() {
     this.password1 = "";
     this.password2 = "";
-    this.$validator.reset();
+    (this.$refs.form as any).resetValidation();
   }
 
   cancel() {
@@ -89,7 +88,7 @@ export default class UserProfileEdit extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const token = this.checkToken();
       if (token) {
         await this.mainContext.actions.resetPassword({ token, password: this.password1 });

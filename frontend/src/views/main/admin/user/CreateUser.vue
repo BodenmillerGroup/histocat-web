@@ -7,16 +7,8 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Full Name" v-model="fullName" required></v-text-field>
-            <v-text-field
-              label="E-mail"
-              type="email"
-              v-model="email"
-              v-validate="'required|email'"
-              data-vv-name="email"
-              :error-messages="errors.collect('email')"
-              required
-            ></v-text-field>
+            <v-text-field label="Full Name" v-model="fullName"></v-text-field>
+            <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
             <div class="subtitle-1 primary--text text--lighten-2">
               User is superuser <span v-if="isSuperuser">(currently is a superuser)</span
               ><span v-else>(currently is not a superuser)</span>
@@ -32,21 +24,14 @@
                   type="password"
                   ref="password"
                   label="Set Password"
-                  data-vv-name="password"
-                  data-vv-delay="100"
-                  v-validate="{ required: true }"
+                  :rules="password1Rules"
                   v-model="password1"
-                  :error-messages="errors.first('password')"
                 ></v-text-field>
                 <v-text-field
                   type="password"
                   label="Confirm Password"
-                  data-vv-name="password_confirmation"
-                  data-vv-delay="100"
-                  data-vv-as="password"
-                  v-validate="{ required: true, confirmed: 'password' }"
+                  :rules="password2Rules"
                   v-model="password2"
-                  :error-messages="errors.first('password_confirmation')"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -68,11 +53,20 @@
 <script lang="ts">
 import { userModule } from "@/modules/user";
 import { IUserProfileCreate } from "@/modules/user/models";
+import { required, email } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class CreateUser extends Vue {
   readonly userContext = userModule.context(this.$store);
+
+  readonly emailRules = [required, email];
+  readonly password1Rules = [required];
+  readonly password2Rules = [required, this.passwordIsEqual];
+
+  passwordIsEqual(v) {
+    return v === this.password1 || "Password should be the same";
+  }
 
   valid = false;
   fullName: string = "";
@@ -85,7 +79,6 @@ export default class CreateUser extends Vue {
 
   async mounted() {
     await this.userContext.actions.getUsers();
-    this.reset();
   }
 
   reset() {
@@ -95,7 +88,7 @@ export default class CreateUser extends Vue {
     this.email = "";
     this.isActive = true;
     this.isSuperuser = false;
-    this.$validator.reset();
+    (this.$refs.form as any).resetValidation();
   }
 
   cancel() {
@@ -103,7 +96,7 @@ export default class CreateUser extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const updatedProfile: IUserProfileCreate = {
         email: this.email
       };

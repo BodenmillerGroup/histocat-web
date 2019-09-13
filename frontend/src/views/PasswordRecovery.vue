@@ -16,10 +16,7 @@
                   type="text"
                   prepend-icon="mdi-account"
                   v-model="username"
-                  v-validate="'required'"
-                  data-vv-name="username"
-                  :error-messages="errors.collect('username')"
-                  required
+                  :rules="usernameRules"
                 ></v-text-field>
               </v-form>
             </v-card-text>
@@ -40,11 +37,14 @@
 <script lang="ts">
 import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
+import { required, email } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Login extends Vue {
   readonly mainContext = mainModule.context(this.$store);
+
+  readonly usernameRules = [required, email];
 
   valid = true;
   username: string = "";

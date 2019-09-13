@@ -33,10 +33,10 @@ services:
         FRONTEND_ENV: development
 
   proxy:
-    command: --docker \
-      --docker.watch \
-      --docker.exposedbydefault=true \
-      --constraints=tag==${TRAEFIK_TAG} \
-      --logLevel=DEBUG \
-      --accessLog \
-      --api
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--api.debug=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=true"
+      - "--entrypoints.web.address=:80"

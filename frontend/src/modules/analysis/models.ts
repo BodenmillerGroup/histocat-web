@@ -14,13 +14,13 @@ export interface IImageSegmentationSubmission {
   format?: string;
   filter: IImageFilter;
   scalebar: IImageScalebar;
-  channels: Array<{
+  channels: {
     id: number;
     color?: string;
     customLabel?: string;
     min?: number;
     max?: number;
-  }>;
+  }[];
   settings: IImageSegmentationSettings;
 }
 
@@ -41,6 +41,7 @@ export interface IPCASubmission {
   acquisition_id: number;
   n_components: number;
   markers: string[];
+  heatmapType: string;
   heatmap: string;
 }
 

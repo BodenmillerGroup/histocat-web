@@ -36,15 +36,15 @@
               clearable
             ></v-select>
             <v-select
-              class="input-row"
               :items="heatmaps"
               v-model="heatmap"
               label="Heatmap"
               hint="Heatmap marker"
               item-text="label"
-              item-value="value"
+              return-object
               persistent-hint
               clearable
+              class="input-row"
             ></v-select>
             <v-switch v-if="!markerZ" v-model="showRegression" label="Show regression"></v-switch>
             <v-select
@@ -84,7 +84,7 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import { required } from "@/utils";
+import { required } from "@/utils/validators";
 import * as echarts from "echarts";
 import "echarts-gl";
 import ecStat from "echarts-stat";
@@ -145,12 +145,10 @@ export default class ScatterPlotTab extends Vue {
   markerX: string | null = null;
   markerY: string | null = null;
   markerZ: string | null = null;
-  heatmap: string | null = null;
+  heatmap: { type: string; label: string } | null = null;
 
   get heatmaps() {
-    return this.activeDataset && this.activeDataset.input["neighbors_columns"]
-      ? this.activeDataset.input["neighbors_columns"].map(item => item.substring(10, item.length))
-      : [];
+    return this.datasetContext.getters.heatmaps;
   }
 
   get showOptions() {
@@ -176,7 +174,7 @@ export default class ScatterPlotTab extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       if (!this.activeDataset) {
         self.alert("Please select a dataset");
         return;
@@ -187,13 +185,19 @@ export default class ScatterPlotTab extends Vue {
         return;
       }
 
+      let heatmap = "";
+      if (this.heatmap) {
+        heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
+      }
+
       await this.analysisContext.actions.getScatterPlotData({
         datasetId: this.activeDataset.id,
         acquisitionId: this.activeAcquisition.id,
         markerX: this.markerX!,
         markerY: this.markerY!,
         markerZ: this.markerZ ? this.markerZ : "",
-        heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : ""
+        heatmapType: this.heatmap ? this.heatmap.type : "",
+        heatmap: heatmap
       });
     }
   }

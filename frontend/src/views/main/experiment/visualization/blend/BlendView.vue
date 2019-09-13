@@ -17,7 +17,7 @@ import Projection from "ol/proj/Projection";
 import RenderEvent from "ol/render/Event";
 import Static from "ol/source/ImageStatic";
 import View from "ol/View";
-import { equals } from "ramda";
+import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component

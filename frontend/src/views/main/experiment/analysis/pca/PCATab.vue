@@ -10,16 +10,16 @@
       <v-card tile>
         <v-card-title>PCA Settings</v-card-title>
         <v-card-text>
-          <v-chip-group v-model="selectedItems" multiple column active-class="primary--text">
-            <v-chip v-for="item in items" :key="item" :value="item" small>
+          <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
+            <v-chip v-for="item in channels" :key="item" :value="item" small>
               {{ item }}
             </v-chip>
           </v-chip-group>
           <v-card-actions>
-            <v-btn @click="selectAll" small :disabled="selectedItems.length === items.length">
+            <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
               Select all
             </v-btn>
-            <v-btn @click="clearAll" small :disabled="selectedItems.length === 0">
+            <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
               Clear all
             </v-btn>
           </v-card-actions>
@@ -33,13 +33,13 @@
             label="Heatmap"
             hint="Heatmap marker"
             item-text="label"
-            item-value="value"
+            return-object
             persistent-hint
             clearable
           ></v-select>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="submit" color="primary" block :disabled="selectedItems.length === 0">
+          <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
             Analyze
           </v-btn>
         </v-card-actions>
@@ -55,7 +55,6 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import { required } from "@/utils";
 import * as echarts from "echarts";
 import "echarts-gl";
 import "echarts/lib/chart/line";
@@ -99,19 +98,11 @@ export default class PCATab extends Vue {
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
-  readonly required = required;
-
   options: echarts.EChartOption = {};
 
-  selectedItems: any[] = [];
+  selectedChannels: any[] = [];
   nComponents = "2";
-  heatmap: string | null = null;
-
-  get heatmaps() {
-    return this.activeDataset && this.activeDataset.input["neighbors_columns"]
-      ? this.activeDataset.input["neighbors_columns"].map(item => item.substring(10, item.length))
-      : [];
-  }
+  heatmap: { type: string; label: string } | null = null;
 
   get showOptions() {
     return this.mainContext.getters.showOptions;
@@ -129,22 +120,24 @@ export default class PCATab extends Vue {
     return this.datasetContext.getters.activeDataset;
   }
 
-  get items() {
-    return this.activeDataset && this.activeDataset.input["channel_map"]
-      ? Object.keys(this.activeDataset.input["channel_map"])
-      : [];
+  get channels() {
+    return this.datasetContext.getters.channels;
+  }
+
+  get heatmaps() {
+    return this.datasetContext.getters.heatmaps;
   }
 
   selectAll() {
-    this.selectedItems = this.items;
+    this.selectedChannels = this.channels;
   }
 
   clearAll() {
-    this.selectedItems = [];
+    this.selectedChannels = [];
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       if (!this.activeDataset) {
         self.alert("Please select a dataset");
         return;
@@ -155,12 +148,18 @@ export default class PCATab extends Vue {
         return;
       }
 
+      let heatmap = "";
+      if (this.heatmap) {
+        heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
+      }
+
       await this.analysisContext.actions.getPCAData({
         dataset_id: this.activeDataset.id,
         acquisition_id: this.activeAcquisition.id,
         n_components: parseInt(this.nComponents, 10),
-        heatmap: this.heatmap ? `Neighbors_${this.heatmap}` : "",
-        markers: this.selectedItems
+        heatmapType: this.heatmap ? this.heatmap.type : "",
+        heatmap: heatmap,
+        markers: this.selectedChannels
       });
     }
   }

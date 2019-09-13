@@ -73,6 +73,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     markerX: string;
     markerY: string;
     markerZ: string;
+    heatmapType: string;
     heatmap: string;
   }) {
     try {
@@ -83,6 +84,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.markerX,
         payload.markerY,
         payload.markerZ,
+        payload.heatmapType,
         payload.heatmap
       );
       this.mutations.setScatterPlotData(response);

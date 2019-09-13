@@ -37,7 +37,7 @@
 import { experimentModule } from "@/modules/experiment";
 import { IChannel } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
-import * as R from "ramda";
+import { equals } from "rambda";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
@@ -104,7 +104,7 @@ export default class ChannelsView extends Vue {
 
   set selected(items: IChannel[]) {
     const selectedMetals = items.map(item => item.metal);
-    if (!R.equals(this.selectedMetals, selectedMetals)) {
+    if (!equals(this.selectedMetals, selectedMetals)) {
       this.experimentContext.mutations.setSelectedMetals(selectedMetals);
     }
   }

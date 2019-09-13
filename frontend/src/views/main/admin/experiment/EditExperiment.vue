@@ -7,14 +7,7 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field
-              label="Name"
-              v-model="name"
-              v-validate="'required'"
-              data-vv-name="name"
-              :error-messages="errors.collect('name')"
-              required
-            ></v-text-field>
+            <v-text-field label="Name" v-model="name" :rules="nameRules"></v-text-field>
             <v-text-field label="Description" v-model="description"></v-text-field>
             <v-combobox
               v-model="tags"
@@ -41,7 +34,7 @@
                   <span class="pr-2">
                     {{ item.text }}
                   </span>
-                  <v-icon small @click="parent.selectItem(item)">mdi-close </v-icon>
+                  <v-icon small @click="parent.selectItem(item)">mdi-close</v-icon>
                 </v-chip>
               </template>
               <template v-slot:item="{ index, item }">
@@ -84,20 +77,23 @@
 <script lang="ts">
 import { experimentModule } from "@/modules/experiment";
 import { IExperimentUpdate } from "@/modules/experiment/models";
+import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
 export default class EditExperiment extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
 
+  readonly nameRules = [required];
+
   valid = true;
   name: string = "";
   description: string = "";
+  tags: any[] = [];
 
   editing = null;
   index = -1;
   nonce = 1;
-  tags: any[] = [];
   search = null;
 
   get items(): any[] {
@@ -123,11 +119,17 @@ export default class EditExperiment extends Vue {
     this.name = "";
     this.description = "";
     this.tags = [];
-    this.$validator.reset();
+    if (this.$refs.form) {
+      (this.$refs.form as any).resetValidation();
+    }
     if (this.experiment) {
       this.name = this.experiment.name;
       this.description = this.experiment.description;
-      this.tags = this.experiment.tags;
+      this.tags = this.experiment.tags.map(item => {
+        return {
+          text: item
+        };
+      });
     }
   }
 
@@ -136,8 +138,8 @@ export default class EditExperiment extends Vue {
   }
 
   @Watch("tags")
-  onModelChange(val: any[], prev: any[]) {
-    if (!val || val.length === prev.length) {
+  onTagsChange(val: any[], prev: any[]) {
+    if (!val || !prev || val.length === prev.length) {
       return;
     }
 
@@ -178,7 +180,7 @@ export default class EditExperiment extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const data: IExperimentUpdate = {};
       if (this.name) {
         data.name = this.name;

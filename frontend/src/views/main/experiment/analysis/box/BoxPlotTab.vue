@@ -92,7 +92,7 @@ export default class BoxPlotTab extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       if (!this.activeDataset) {
         self.alert("Please select a dataset");
         return;

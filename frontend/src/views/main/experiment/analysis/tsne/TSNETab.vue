@@ -10,16 +10,16 @@
       <v-card tile>
         <v-card-title>t-SNE Settings</v-card-title>
         <v-card-text>
-          <v-chip-group v-model="selectedItems" multiple column active-class="primary--text">
-            <v-chip v-for="item in items" :key="item" :value="item" small>
-              {{ item }}
+          <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
+            <v-chip v-for="channel in channels" :key="channel" :value="channel" small>
+              {{ channel }}
             </v-chip>
           </v-chip-group>
           <v-card-actions>
-            <v-btn @click="selectAll" small :disabled="selectedItems.length === items.length">
+            <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
               Select all
             </v-btn>
-            <v-btn @click="clearAll" small :disabled="selectedItems.length === 0">
+            <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
               Clear all
             </v-btn>
           </v-card-actions>
@@ -58,7 +58,7 @@
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="submit" color="primary" block :disabled="selectedItems.length === 0">
+          <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
             Analyze
           </v-btn>
         </v-card-actions>
@@ -102,7 +102,7 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import { required } from "@/utils";
+import { required } from "@/utils/validators";
 import * as echarts from "echarts";
 import "echarts-gl";
 import "echarts/lib/chart/line";
@@ -150,7 +150,7 @@ export default class TSNETab extends Vue {
 
   options: echarts.EChartOption = {};
 
-  selectedItems: any[] = [];
+  selectedChannels: any[] = [];
   nComponents = "2";
   perplexity = 30;
   learningRate = 200;
@@ -159,25 +159,6 @@ export default class TSNETab extends Vue {
   heatmap: { type: string; label: string } | null = null;
 
   result: any = null;
-
-  get heatmaps() {
-    if (!this.activeDataset || !this.activeDataset.input["neighbors_columns"]) {
-      return [];
-    }
-    const channelItems = this.items.map(item => {
-      return {
-        type: "channel",
-        label: item
-      };
-    });
-    const neighborItems = this.activeDataset.input["neighbors_columns"].map(item => {
-      return {
-        type: "neighbor",
-        label: item.substring(10, item.length)
-      };
-    });
-    return channelItems.concat(neighborItems);
-  }
 
   get showOptions() {
     return this.mainContext.getters.showOptions;
@@ -195,28 +176,28 @@ export default class TSNETab extends Vue {
     return this.datasetContext.getters.activeDataset;
   }
 
-  get items() {
-    return this.activeDataset && this.activeDataset.input["channel_map"]
-      ? Object.keys(this.activeDataset.input["channel_map"])
-      : [];
+  get channels() {
+    return this.datasetContext.getters.channels;
+  }
+
+  get heatmaps() {
+    return this.datasetContext.getters.heatmaps;
   }
 
   get results() {
-    return this.activeDataset && this.activeDataset.output && this.activeDataset.output["tsne"]
-      ? Object.values(this.activeDataset.output["tsne"])
-      : [];
+    return this.datasetContext.getters.tsneResults;
   }
 
   selectAll() {
-    this.selectedItems = this.items;
+    this.selectedChannels = this.channels;
   }
 
   clearAll() {
-    this.selectedItems = [];
+    this.selectedChannels = [];
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       if (!this.activeDataset) {
         self.alert("Please select a dataset");
         return;
@@ -231,7 +212,7 @@ export default class TSNETab extends Vue {
         dataset_id: this.activeDataset.id,
         acquisition_id: this.activeAcquisition.id,
         n_components: parseInt(this.nComponents, 10),
-        markers: this.selectedItems,
+        markers: this.selectedChannels,
         perplexity: this.perplexity,
         learning_rate: this.learningRate,
         iterations: this.iterations
@@ -245,7 +226,7 @@ export default class TSNETab extends Vue {
       this.perplexity = result.params.perplexity;
       this.iterations = result.params.iterations;
       this.learningRate = result.params.learning_rate;
-      this.selectedItems = result.params.markers;
+      this.selectedChannels = result.params.markers;
     }
   }
 

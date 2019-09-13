@@ -49,10 +49,6 @@ export default class UploadArtifactsDialog extends Vue {
     return this.file !== null;
   }
 
-  async mounted() {
-    this.reset();
-  }
-
   reset() {
     this.file = null;
   }

@@ -14,6 +14,7 @@ def process_pca(
     acquisition_id: int,
     n_components: int,
     markers: List[str],
+    heatmap_type: Optional[str],
     heatmap: Optional[str],
 ):
     """
@@ -58,10 +59,16 @@ def process_pca(
             "data": result[:, 2],
         }
 
-    if heatmap:
+    if heatmap_type and heatmap:
+        if heatmap_type == "channel":
+            channel_map = dataset.input.get("channel_map")
+            heatmap_data = df[f'Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}'] * 2 ** 16
+        else:
+            heatmap_data = df[heatmap]
+
         output["heatmap"] = {
             "label": heatmap,
-            "data": df[heatmap]
+            "data": heatmap_data
         }
 
     return output

@@ -7,16 +7,8 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Full Name" v-model="fullName" required></v-text-field>
-            <v-text-field
-              label="E-mail"
-              type="email"
-              v-model="email"
-              v-validate="'required|email'"
-              data-vv-name="email"
-              :error-messages="errors.collect('email')"
-              required
-            ></v-text-field>
+            <v-text-field label="Full Name" v-model="fullName"></v-text-field>
+            <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
           </v-form>
         </template>
       </v-card-text>
@@ -34,12 +26,15 @@
 
 <script lang="ts">
 import { mainModule } from "@/modules/main";
+import { required, email } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import { IUserProfileUpdate } from "@/modules/user/models";
 
 @Component
 export default class UserProfileEdit extends Vue {
   readonly mainContext = mainModule.context(this.$store);
+
+  readonly emailRules = [required, email];
 
   valid = true;
   fullName: string = "";

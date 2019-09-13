@@ -162,13 +162,13 @@ export interface IChannelStack {
   legend: IImageLegend;
   scalebar: IImageScalebar;
   mask?: IMaskSettings;
-  channels: Array<{
+  channels: {
     id: number;
     color?: string;
     customLabel?: string;
     min?: number;
     max?: number;
-  }>;
+  }[];
 }
 
 export interface IShareCreate {

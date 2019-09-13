@@ -13,15 +13,7 @@
           </div>
           <v-form v-model="valid" ref="form" lazy-validation>
             <v-text-field label="Full Name" v-model="fullName" required></v-text-field>
-            <v-text-field
-              label="E-mail"
-              type="email"
-              v-model="email"
-              v-validate="'required|email'"
-              data-vv-name="email"
-              :error-messages="errors.collect('email')"
-              required
-            ></v-text-field>
+            <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
             <div class="subtitle-1 primary--text text--lighten-2">
               User is superuser <span v-if="isSuperuser">(currently is a superuser)</span
               ><span v-else>(currently is not a superuser)</span>
@@ -41,23 +33,16 @@
                   type="password"
                   ref="password"
                   label="Set Password"
-                  data-vv-name="password"
-                  data-vv-delay="100"
-                  v-validate="{ required: setPassword }"
+                  :rules="password1Rules"
                   v-model="password1"
-                  :error-messages="errors.first('password')"
                 >
                 </v-text-field>
                 <v-text-field
                   v-show="setPassword"
                   type="password"
                   label="Confirm Password"
-                  data-vv-name="password_confirmation"
-                  data-vv-delay="100"
-                  data-vv-as="password"
-                  v-validate="{ required: setPassword, confirmed: 'password' }"
+                  :rules="password2Rules"
                   v-model="password2"
-                  :error-messages="errors.first('password_confirmation')"
                 >
                 </v-text-field>
               </v-col>
@@ -80,11 +65,20 @@
 <script lang="ts">
 import { userModule } from "@/modules/user";
 import { IUserProfileUpdate } from "@/modules/user/models";
+import { email, required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class EditUser extends Vue {
   readonly userContext = userModule.context(this.$store);
+
+  readonly emailRules = [required, email];
+  readonly password1Rules = [required];
+  readonly password2Rules = [required, this.passwordIsEqual];
+
+  passwordIsEqual(v) {
+    return v === this.password1 || "Password should be the same";
+  }
 
   valid = true;
   fullName: string = "";
@@ -104,7 +98,9 @@ export default class EditUser extends Vue {
     this.setPassword = false;
     this.password1 = "";
     this.password2 = "";
-    this.$validator.reset();
+    if (this.$refs.form) {
+      (this.$refs.form as any).resetValidation();
+    }
     if (this.user) {
       this.fullName = this.user.full_name;
       this.email = this.user.email;
@@ -118,7 +114,7 @@ export default class EditUser extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const data: IUserProfileUpdate = {};
       if (this.fullName) {
         data.full_name = this.fullName;

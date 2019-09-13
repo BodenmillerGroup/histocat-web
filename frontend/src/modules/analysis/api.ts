@@ -38,11 +38,12 @@ export const api = {
     markerX: string,
     markerY: string,
     markerZ: string,
+    heatmapType: string,
     heatmap: string
   ) {
     return ky
       .get(
-        `${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap=${heatmap}`,
+        `${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap_type=${heatmapType}&heatmap=${heatmap}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -55,7 +56,7 @@ export const api = {
     const markersArray = markers.map(marker => `&markers=${marker}`);
     return ky
       .get(
-        `${apiUrl}/api/v1/analysis/boxplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&markers=${markersArray.join(
+        `${apiUrl}/api/v1/analysis/boxplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}${markersArray.join(
           ""
         )}`,
         {
@@ -68,11 +69,10 @@ export const api = {
   },
   async getPCAData(token: string, params: IPCASubmission) {
     const markersArray = params.markers.map(marker => `&markers=${marker}`);
+    const markers = markersArray.join("");
     return ky
       .get(
-        `${apiUrl}/api/v1/analysis/pca?dataset_id=${params.dataset_id}&acquisition_id=${
-          params.acquisition_id
-        }&n_components=${params.n_components}&heatmap=${params.heatmap}&markers=${markersArray.join("")}`,
+        `${apiUrl}/api/v1/analysis/pca?dataset_id=${params.dataset_id}&acquisition_id=${params.acquisition_id}&n_components=${params.n_components}&heatmap_type=${params.heatmapType}&heatmap=${params.heatmap}${markers}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

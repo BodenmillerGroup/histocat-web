@@ -14,29 +14,9 @@
             <div class="title primary--text text--darken-2" v-else>{{ userProfile.email }}</div>
           </div>
           <v-form ref="form">
-            <v-text-field
-              type="password"
-              ref="password"
-              label="Password"
-              data-vv-name="password"
-              data-vv-delay="100"
-              data-vv-rules="required"
-              v-validate="'required'"
-              v-model="password1"
-              :error-messages="errors.first('password')"
-            >
+            <v-text-field type="password" ref="password" label="Password" :rules="password1Rules" v-model="password1">
             </v-text-field>
-            <v-text-field
-              type="password"
-              label="Confirm Password"
-              data-vv-name="password_confirmation"
-              data-vv-delay="100"
-              data-vv-rules="required|confirmed:$password"
-              data-vv-as="password"
-              v-validate="'required|confirmed:password'"
-              v-model="password2"
-              :error-messages="errors.first('password_confirmation')"
-            >
+            <v-text-field type="password" label="Confirm Password" :rules="password2Rules" v-model="password2">
             </v-text-field>
           </v-form>
         </template>
@@ -54,11 +34,19 @@
 <script lang="ts">
 import { mainModule } from "@/modules/main";
 import { IUserProfileUpdate } from "@/modules/user/models";
+import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class UserProfileEdit extends Vue {
   readonly mainContext = mainModule.context(this.$store);
+
+  readonly password1Rules = [required];
+  readonly password2Rules = [required, this.passwordIsEqual];
+
+  passwordIsEqual(v) {
+    return v === this.password1 || "Password should be the same";
+  }
 
   valid = true;
   password1 = "";
@@ -71,7 +59,7 @@ export default class UserProfileEdit extends Vue {
   reset() {
     this.password1 = "";
     this.password2 = "";
-    this.$validator.reset();
+    (this.$refs.form as any).resetValidation();
   }
 
   cancel() {
@@ -79,7 +67,7 @@ export default class UserProfileEdit extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const updatedProfile: IUserProfileUpdate = {};
       updatedProfile.password = this.password1;
       await this.mainContext.actions.updateUserProfile(updatedProfile);

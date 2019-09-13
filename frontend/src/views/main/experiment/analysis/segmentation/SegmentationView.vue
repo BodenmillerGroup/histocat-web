@@ -22,7 +22,7 @@ import Static from "ol/source/ImageStatic";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style.js";
 import View from "ol/View";
-import { equals } from "ramda";
+import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component

@@ -57,7 +57,7 @@ import { analysisModule } from "@/modules/analysis";
 import { ImageResultType } from "@/modules/analysis/models";
 import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
-import { required } from "@/utils";
+import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component

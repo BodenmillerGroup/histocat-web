@@ -7,14 +7,7 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field
-              label="Name"
-              v-model="name"
-              v-validate="'required'"
-              data-vv-name="name"
-              :error-messages="errors.collect('name')"
-              required
-            ></v-text-field>
+            <v-text-field label="Name" v-model="name" :rules="nameRules"></v-text-field>
             <v-text-field label="Description" v-model="description"></v-text-field>
             <v-combobox
               v-model="tags"
@@ -84,11 +77,14 @@
 <script lang="ts">
 import { experimentModule } from "@/modules/experiment";
 import { IExperimentCreate } from "@/modules/experiment/models";
+import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
 export default class CreateExperiment extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
+
+  readonly nameRules = [required];
 
   valid = false;
   name: string = "";
@@ -111,14 +107,13 @@ export default class CreateExperiment extends Vue {
 
   async mounted() {
     await this.experimentContext.actions.getTags();
-    this.reset();
   }
 
   reset() {
     this.name = "";
     this.description = "";
     this.tags = [];
-    this.$validator.reset();
+    (this.$refs.form as any).resetValidation();
   }
 
   cancel() {
@@ -168,7 +163,7 @@ export default class CreateExperiment extends Vue {
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const params: IExperimentCreate = {
         name: this.name
       };

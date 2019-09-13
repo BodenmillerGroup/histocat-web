@@ -18,5 +18,9 @@ module.exports = {
     webpackBundleAnalyzer: {
       openAnalyzer: false
     }
+  },
+
+  devServer: {
+    port: 9999
   }
 };

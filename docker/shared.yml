@@ -14,10 +14,9 @@ services:
     volumes:
       - app-data:/data
     labels:
-      - traefik.frontend.rule=PathPrefix:/api,/ws,/docs,/redoc
-      - traefik.enable=true
-      - traefik.port=80
-      - traefik.tags=${TRAEFIK_TAG}
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`, `/ws`, `/docs`, `/redoc`)"
+      - "traefik.http.routers.backend.entrypoints=web"
     networks:
       default:
         aliases:
@@ -38,10 +37,9 @@ services:
 
   frontend:
     labels:
-      - traefik.frontend.rule=PathPrefix:/
-      - traefik.enable=true
-      - traefik.port=80
-      - traefik.tags=${TRAEFIK_TAG}
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
 
   db:
     restart: always
@@ -93,60 +91,17 @@ services:
 
   proxy:
     restart: always
-    image: traefik:1.7.14-alpine
+    image: traefik:2.0.0-rc3-alpine
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - 80:80
       - 443:443
-      - 8090:8080
-
-#  # MongoDB: https://hub.docker.com/_/mongo/
-#  mongo:
-#    image: mongo:3.6.13
-#    volumes:
-#      - mongo-data:/data/db
-#
-#  # Elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/6.6/docker.html
-#  elasticsearch:
-#    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.1
-#    env_file:
-#      - env-elasticsearch.env
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    volumes:
-#      - elasticsearch-data:/usr/share/elasticsearch/data
-#
-#  # Graylog: https://hub.docker.com/r/graylog/graylog/
-#  graylog:
-#    image: graylog/graylog:3.0.2
-#    env_file:
-#      - env-graylog.env
-#    depends_on:
-#      - mongo
-#      - elasticsearch
-#    ports:
-#      # Graylog web interface and REST API
-#      - 9001:9000
-#      # Syslog TCP
-#      - 1514:1514
-#      # Syslog UDP
-#      - 1514:1514/udp
-#      # GELF TCP
-#      - 12201:12201
-#      # GELF UDP
-#      - 12201:12201/udp
-#    volumes:
-#      - graylog-data:/usr/share/graylog/data/journal
+      - 8080:8080
 
 volumes:
   app-data:
   app-db-data:
-#  elasticsearch-data:
-#  graylog-data:
-#  mongo-data:
   portainer-data:
   redis-data:
   rabbitmq-data:

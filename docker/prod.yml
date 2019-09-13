@@ -5,32 +5,22 @@ services:
     image: ${DOCKER_IMAGE_BACKEND}:${TAG-latest}
     environment:
       - SMTP_PASSWORD
-#    logging:
-#      driver: gelf
-#      options:
-#        gelf-address: udp://localhost:12201
-#        tag: backend
 
   worker:
     restart: always
     image: ${DOCKER_IMAGE_WORKER}:${TAG-latest}
     environment:
       - SMTP_PASSWORD
-#    logging:
-#      driver: gelf
-#      options:
-#        gelf-address: udp://localhost:12201
-#        tag: worker
 
   frontend:
     restart: always
     image: ${DOCKER_IMAGE_FRONTEND}:${TAG-latest}
 
   proxy:
-    command: --docker \
-      --docker.watch \
-      --docker.exposedbydefault=false \
-      --constraints=tag==${TRAEFIK_TAG} \
-      --logLevel=INFO \
-      --accessLog \
-      --api
+    command:
+      - "--log.level=INFO"
+      - "--api.insecure=false"
+      - "--api.debug=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"

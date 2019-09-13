@@ -130,6 +130,7 @@ async def read_scatter_plot_data(
     marker_x: str,
     marker_y: str,
     marker_z: Optional[str] = None,
+    heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -172,10 +173,16 @@ async def read_scatter_plot_data(
             "data": df[f'Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}'] * 2 ** 16
         }
 
-    if heatmap:
+    if heatmap_type and heatmap:
+        if heatmap_type == "channel":
+            channel_map = dataset.input.get("channel_map")
+            heatmap_data = df[f'Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}'] * 2 ** 16
+        else:
+            heatmap_data = df[heatmap]
+
         content["heatmap"] = {
             "label": heatmap,
-            "data": df[heatmap]
+            "data": heatmap_data
         }
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
@@ -227,6 +234,7 @@ async def read_pca_data(
     dataset_id: int,
     acquisition_id: int,
     n_components: int,
+    heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     markers: List[str] = Query(None),
     current_user: User = Depends(get_current_active_user),
@@ -236,7 +244,7 @@ async def read_pca_data(
     Calculate Principal Component Analysis data for the dataset
     """
 
-    content = pca.process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap)
+    content = pca.process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap_type, heatmap)
     return UJSONResponse(content=content)
 
 

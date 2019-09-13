@@ -22,7 +22,7 @@
 import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
-import { required } from "@/utils";
+import { required } from "@/utils/validators";
 
 @Component({
   components: {}

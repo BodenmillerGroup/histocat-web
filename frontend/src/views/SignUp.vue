@@ -17,9 +17,7 @@
                   prepend-icon="mdi-account"
                   name="email"
                   label="Email"
-                  data-vv-as="email"
-                  v-validate="'required|email'"
-                  :error-messages="errors.first('email')"
+                  :rules="emailRules"
                 ></v-text-field>
                 <v-text-field
                   @keyup.enter="submit"
@@ -33,28 +31,17 @@
                   type="password"
                   ref="password"
                   label="Password"
-                  data-vv-name="password"
-                  data-vv-delay="100"
-                  data-vv-rules="required"
-                  v-validate="'required'"
+                  :rules="password1Rules"
                   v-model="password1"
                   prepend-icon="mdi-lock"
-                  :error-messages="errors.first('password')"
-                  required
                 ></v-text-field>
                 <v-text-field
                   @keyup.enter="submit"
                   type="password"
                   label="Confirm Password"
-                  data-vv-name="password_confirmation"
-                  data-vv-delay="100"
-                  data-vv-rules="required|confirmed:$password"
-                  data-vv-as="password"
-                  v-validate="'required|confirmed:password'"
+                  :rules="password2Rules"
                   v-model="password2"
                   prepend-icon="mdi-lock"
-                  :error-messages="errors.first('password_confirmation')"
-                  required
                 ></v-text-field>
               </v-form>
               <v-row>
@@ -78,12 +65,21 @@
 import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
 import { userModule } from "@/modules/user";
+import { email, required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class SignUp extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly userContext = userModule.context(this.$store);
+
+  readonly emailRules = [required, email];
+  readonly password1Rules = [required];
+  readonly password2Rules = [required, this.passwordIsEqual];
+
+  passwordIsEqual(v) {
+    return v === this.password1 || "Password should be the same";
+  }
 
   valid = true;
   email = "";
@@ -97,11 +93,11 @@ export default class SignUp extends Vue {
     this.fullName = "";
     this.password1 = "";
     this.password2 = "";
-    this.$validator.reset();
+    (this.$refs.form as any).resetValidation();
   }
 
   async submit() {
-    if (await this.$validator.validateAll()) {
+    if ((this.$refs.form as any).validate()) {
       const userExist = await this.checkUserExists();
       if (!userExist) {
         await this.userContext.actions.signUp({ email: this.email, password: this.password1 });
