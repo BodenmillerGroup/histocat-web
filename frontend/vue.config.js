@@ -22,5 +22,9 @@ module.exports = {
 
   devServer: {
     port: 9999
+  },
+
+  css: {
+    sourceMap: true
   }
 };
