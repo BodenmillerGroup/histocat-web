@@ -187,19 +187,6 @@ export default class SlidesTreeView extends Vue {
 </style>
 
 <style>
-.v-treeview-node__content {
-  max-height: 24px;
-}
-
-.v-treeview-node__label {
-  font-size: 10pt;
-}
-
-.v-treeview-node__root {
-  min-height: 24px;
-  font-size: 10pt;
-}
-
 .v-text-field.v-text-field--solo .v-input__control {
   min-height: 28px;
 }
