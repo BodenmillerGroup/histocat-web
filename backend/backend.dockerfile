@@ -3,7 +3,7 @@ FROM python:3.7.4
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
 ARG BACKEND_ENV=production
-ARG WEB_CONCURRENCY=4
+ARG WORKERS_PER_CORE=0.5
 
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
@@ -13,7 +13,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_DEFAULT_TIMEOUT=100 \
   POETRY_VERSION=0.12.17 \
   BACKEND_ENV=${BACKEND_ENV} \
-  WEB_CONCURRENCY=${WEB_CONCURRENCY}
+  WORKERS_PER_CORE=${WORKERS_PER_CORE}
 
 # Install Poetry
 RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config settings.virtualenvs.create false
