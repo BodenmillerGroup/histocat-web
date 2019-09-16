@@ -1,9 +1,14 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header class="pt-0">
-      <v-switch v-model="apply" label="Show Legend" hide-details @click.stop></v-switch>
+    <v-expansion-panel-header>
+      Legend
     </v-expansion-panel-header>
     <v-expansion-panel-content>
+      <v-switch
+        v-model="apply"
+        label="Show Legend"
+        hide-details
+      ></v-switch>
       <v-text-field
         type="number"
         label="Font Scale"
@@ -19,14 +24,12 @@
 </template>
 
 <script lang="ts">
-import { experimentModule } from "@/modules/experiment";
-import { settingsModule } from "@/modules/settings";
-import { Component, Vue } from "vue-property-decorator";
-import { required } from "@/utils/validators";
+import { experimentModule } from '@/modules/experiment';
+import { settingsModule } from '@/modules/settings';
+import { Component, Vue } from 'vue-property-decorator';
+import { required } from '@/utils/validators';
 
-@Component({
-  components: {}
-})
+@Component
 export default class LegendSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
@@ -40,7 +43,7 @@ export default class LegendSettingsView extends Vue {
   set apply(value: boolean) {
     this.settingsContext.mutations.setLegend({
       ...this.settingsContext.getters.legend,
-      apply: value
+      apply: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }
@@ -52,7 +55,7 @@ export default class LegendSettingsView extends Vue {
   set legendFontScale(value: number) {
     this.settingsContext.mutations.setLegend({
       ...this.settingsContext.getters.legend,
-      fontScale: value
+      fontScale: value,
     });
     if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();
@@ -66,7 +69,7 @@ export default class LegendSettingsView extends Vue {
   set showIntensity(value: boolean) {
     this.settingsContext.mutations.setLegend({
       ...this.settingsContext.getters.legend,
-      showIntensity: value
+      showIntensity: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }

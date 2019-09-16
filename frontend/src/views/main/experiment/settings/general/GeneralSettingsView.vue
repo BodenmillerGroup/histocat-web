@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels v-model="panel" multiple accordion>
+  <v-expansion-panels v-model="panel" multiple>
     <LegendSettingsView></LegendSettingsView>
     <ScalebarSettingsView></ScalebarSettingsView>
     <FilterSettingsView></FilterSettingsView>
@@ -16,6 +16,6 @@ import { Component, Vue } from "vue-property-decorator";
   components: { FilterSettingsView, ScalebarSettingsView, LegendSettingsView }
 })
 export default class GeneralSettingsView extends Vue {
-  panel = [0];
+  panel = [];
 }
 </script>

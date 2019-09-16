@@ -1,9 +1,10 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header class="pt-0">
-      <v-switch v-model="apply" label="Show Scalebar" hide-details @click.stop></v-switch>
+    <v-expansion-panel-header>
+      Scalebar
     </v-expansion-panel-header>
     <v-expansion-panel-content>
+      <v-switch v-model="apply" label="Show Scalebar" hide-details></v-switch>
       <v-text-field
         type="number"
         :rules="[required]"
@@ -24,9 +25,7 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
 
-@Component({
-  components: {}
-})
+@Component
 export default class ScalebarSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);

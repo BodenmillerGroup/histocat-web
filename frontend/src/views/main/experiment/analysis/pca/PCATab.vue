@@ -1,95 +1,93 @@
 <template>
-  <v-banner v-if="!activeDataset || !activeAcquisition" icon="mdi-alert-circle-outline">
-    Please select acquisition and dataset
-  </v-banner>
-  <v-row v-else no-gutters class="chart-container">
-    <v-col :cols="columns">
-      <v-chart :options="options" autoresize />
-    </v-col>
-    <v-col v-if="showOptions" cols="3">
-      <v-card tile>
-        <v-card-title>PCA Settings</v-card-title>
-        <v-card-text>
-          <v-form v-model="valid" ref="form">
-            <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
-              <v-chip v-for="item in channels" :key="item" :value="item" small>
-                {{ item }}
-              </v-chip>
-            </v-chip-group>
-            <v-card-actions>
-              <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
-                Select all
-              </v-btn>
-              <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
-                Clear all
-              </v-btn>
-            </v-card-actions>
-            <v-radio-group v-model="nComponents" row mandatory>
-              <v-radio label="2D" value="2"></v-radio>
-              <v-radio label="3D" value="3"></v-radio>
-            </v-radio-group>
-            <v-select
-              :items="heatmaps"
-              v-model="heatmap"
-              label="Heatmap"
-              hint="Heatmap marker"
-              item-text="label"
-              return-object
-              persistent-hint
-              clearable
-            ></v-select>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
-            Analyze
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+    <v-banner v-if="!activeDataset || !activeAcquisition" icon="mdi-alert-circle-outline">
+        Please select acquisition and dataset
+    </v-banner>
+    <v-row v-else no-gutters class="chart-container">
+        <v-col :cols="columns">
+            <v-chart :options="options" autoresize/>
+        </v-col>
+        <v-col v-if="showOptions" cols="3">
+            <v-card tile>
+                <v-card-title>PCA Settings</v-card-title>
+                <v-card-text>
+                    <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
+                        <v-chip v-for="item in channels" :key="item" :value="item" small>
+                            {{ item }}
+                        </v-chip>
+                    </v-chip-group>
+                    <v-card-actions>
+                        <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
+                            Select all
+                        </v-btn>
+                        <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
+                            Clear all
+                        </v-btn>
+                    </v-card-actions>
+                    <v-radio-group v-model="nComponents" row mandatory>
+                        <v-radio label="2D" value="2"></v-radio>
+                        <v-radio label="3D" value="3"></v-radio>
+                    </v-radio-group>
+                    <v-select
+                            :items="heatmaps"
+                            v-model="heatmap"
+                            label="Heatmap"
+                            hint="Heatmap marker"
+                            item-text="label"
+                            return-object
+                            persistent-hint
+                            clearable
+                    ></v-select>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
+                        Analyze
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-col>
+    </v-row>
 </template>
 
 <script lang="ts">
-import { analysisModule } from "@/modules/analysis";
-import { IPCAData } from "@/modules/analysis/models";
-import { datasetModule } from "@/modules/datasets";
-import { experimentModule } from "@/modules/experiment";
-import { mainModule } from "@/modules/main";
-import { settingsModule } from "@/modules/settings";
-import * as echarts from "echarts";
-import "echarts-gl";
-import "echarts/lib/chart/line";
-import "echarts/lib/chart/scatter";
-import "echarts/lib/component/toolbox";
-import "echarts/lib/component/tooltip";
-import "echarts/lib/component/visualMap";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { analysisModule } from '@/modules/analysis';
+import { IPCAData } from '@/modules/analysis/models';
+import { datasetModule } from '@/modules/datasets';
+import { experimentModule } from '@/modules/experiment';
+import { mainModule } from '@/modules/main';
+import { settingsModule } from '@/modules/settings';
+import * as echarts from 'echarts';
+import 'echarts-gl';
+import 'echarts/lib/chart/line';
+import 'echarts/lib/chart/scatter';
+import 'echarts/lib/component/toolbox';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/visualMap';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 
 const commonOptions: echarts.EChartOption = {
   title: {
-    text: "Principal Component Analysis",
-    left: "center",
-    top: 0
+    text: 'Principal Component Analysis',
+    left: 'center',
+    top: 0,
   },
   animation: false,
   tooltip: {
-    show: true
+    show: true,
   },
   toolbox: {
     show: true,
-    right: "9%",
+    right: '9%',
     feature: {
       restore: {
         show: true,
-        title: "Reset"
+        title: 'Reset',
       },
       saveAsImage: {
         show: true,
-        title: "Export"
-      }
-    }
-  }
+        title: 'Export',
+      },
+    },
+  },
 };
 
 @Component
@@ -103,7 +101,7 @@ export default class PCATab extends Vue {
   options: echarts.EChartOption = {};
 
   selectedChannels: any[] = [];
-  nComponents = "2";
+  nComponents = '2';
   heatmap: { type: string; label: string } | null = null;
 
   get showOptions() {
@@ -139,38 +137,36 @@ export default class PCATab extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate()) {
-      if (!this.activeDataset) {
-        self.alert("Please select a dataset");
-        return;
-      }
-
-      if (!this.activeAcquisition) {
-        self.alert("Please select an acquisition");
-        return;
-      }
-
-      let heatmap = "";
-      if (this.heatmap) {
-        heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
-      }
-
-      await this.analysisContext.actions.getPCAData({
-        dataset_id: this.activeDataset.id,
-        acquisition_id: this.activeAcquisition.id,
-        n_components: parseInt(this.nComponents, 10),
-        heatmapType: this.heatmap ? this.heatmap.type : "",
-        heatmap: heatmap,
-        markers: this.selectedChannels
-      });
+    if (!this.activeDataset) {
+      self.alert('Please select a dataset');
+      return;
     }
+
+    if (!this.activeAcquisition) {
+      self.alert('Please select an acquisition');
+      return;
+    }
+
+    let heatmap = '';
+    if (this.heatmap) {
+      heatmap = this.heatmap.type === 'channel' ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
+    }
+
+    await this.analysisContext.actions.getPCAData({
+      dataset_id: this.activeDataset.id,
+      acquisition_id: this.activeAcquisition.id,
+      n_components: parseInt(this.nComponents, 10),
+      heatmapType: this.heatmap ? this.heatmap.type : '',
+      heatmap: heatmap,
+      markers: this.selectedChannels,
+    });
   }
 
   get pcaData() {
     return this.analysisContext.getters.pcaData;
   }
 
-  @Watch("pcaData")
+  @Watch('pcaData')
   pcaDataChanged(data: IPCAData) {
     if (data) {
       if (data.z) {
@@ -184,49 +180,49 @@ export default class PCATab extends Vue {
   private plot2D(data: IPCAData) {
     const points = data.heatmap
       ? data.x.data.map((x, i) => {
-          return [x, data.y.data[i], data.heatmap!.data[i]];
-        })
+        return [x, data.y.data[i], data.heatmap!.data[i]];
+      })
       : data.x.data.map((x, i) => {
-          return [x, data.y.data[i]];
-        });
+        return [x, data.y.data[i]];
+      });
 
     const options: echarts.EChartOption = {
       ...commonOptions,
       xAxis: {
-        type: "value",
+        type: 'value',
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: 'bold',
+        },
       },
       yAxis: {
-        type: "value",
+        type: 'value',
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: 'bold',
+        },
       },
       dataset: {
         source: points,
-        dimensions: [{ name: data.x.label, type: "float" }, { name: data.y.label, type: "float" }]
+        dimensions: [{ name: data.x.label, type: 'float' }, { name: data.y.label, type: 'float' }],
       },
       series: [
         {
-          type: "scatter",
-          name: "Scatter2D",
+          type: 'scatter',
+          name: 'Scatter2D',
           symbolSize: 4,
           large: !data.heatmap,
           encode: {
             x: data.x.label,
             y: data.y.label,
-            tooltip: [data.x.label, data.y.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label],
+          },
+        },
+      ],
     };
 
     if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: 'float' });
 
       options.visualMap = this.getVisualMap(data);
     }
@@ -239,52 +235,52 @@ export default class PCATab extends Vue {
       ...commonOptions,
       grid3D: {},
       xAxis3D: {
-        type: "value",
+        type: 'value',
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: 'bold',
+        },
       },
       yAxis3D: {
-        type: "value",
+        type: 'value',
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: 'bold',
+        },
       },
       zAxis3D: {
-        type: "value",
+        type: 'value',
         name: data.z!.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: 'bold',
+        },
       },
       dataset: {
         source: [data.x.data, data.y.data, data.z!.data],
         dimensions: [
-          { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" },
-          { name: data.z!.label, type: "float" }
-        ]
+          { name: data.x.label, type: 'float' },
+          { name: data.y.label, type: 'float' },
+          { name: data.z!.label, type: 'float' },
+        ],
       },
       series: [
         {
-          type: "scatter3D",
-          name: "Scatter3D",
-          seriesLayoutBy: "row",
+          type: 'scatter3D',
+          name: 'Scatter3D',
+          seriesLayoutBy: 'row',
           symbolSize: 4,
           encode: {
             x: data.x.label,
             y: data.y.label,
             z: data.z!.label,
-            tooltip: [data.x.label, data.y.label, data.z!.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label, data.z!.label],
+          },
+        },
+      ],
     } as echarts.EChartOption;
 
     if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: 'float' });
 
       (options.dataset as any).source.push(data.heatmap.data);
 
@@ -299,18 +295,18 @@ export default class PCATab extends Vue {
     const max = Math.max(...data.heatmap!.data);
     return [
       {
-        type: "continuous",
-        orient: "horizontal",
-        left: "center",
-        text: ["Max", "Min"],
+        type: 'continuous',
+        orient: 'horizontal',
+        left: 'center',
+        text: ['Max', 'Min'],
         calculable: true,
         realtime: false,
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#f45c00"]
-        }
-      }
+          color: ['#4457cc', '#f45c00'],
+        },
+      },
     ];
   }
 }
@@ -318,6 +314,6 @@ export default class PCATab extends Vue {
 
 <style scoped>
 .chart-container {
-  height: calc(100vh - 154px);
+    height: calc(100vh - 154px);
 }
 </style>

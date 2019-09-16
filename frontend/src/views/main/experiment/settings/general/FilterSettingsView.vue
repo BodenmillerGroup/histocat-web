@@ -1,9 +1,10 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header class="pt-0">
-      <v-switch v-model="apply" label="Apply Filter" hide-details @click.stop></v-switch>
+    <v-expansion-panel-header>
+      Filter
     </v-expansion-panel-header>
     <v-expansion-panel-content>
+      <v-switch v-model="apply" label="Apply Filter" hide-details></v-switch>
       <v-select :items="filterTypes" v-model="filterType" label="Filter Type" hide-details></v-select>
       <v-select :items="kernelSizes" v-model.number="kernelSize" label="Kernel Size" hide-details></v-select>
       <v-text-field
@@ -26,9 +27,7 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
 
-@Component({
-  components: {}
-})
+@Component
 export default class FilterSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
