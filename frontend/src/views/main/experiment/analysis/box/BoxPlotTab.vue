@@ -92,23 +92,21 @@ export default class BoxPlotTab extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate()) {
-      if (!this.activeDataset) {
-        self.alert("Please select a dataset");
-        return;
-      }
-
-      if (!this.activeAcquisition) {
-        self.alert("Please select an acquisition");
-        return;
-      }
-
-      await this.analysisContext.actions.getBoxPlotData({
-        datasetId: this.activeDataset.id,
-        acquisitionId: this.activeAcquisition.id,
-        markers: this.selectedItems
-      });
+    if (!this.activeDataset) {
+      self.alert("Please select a dataset");
+      return;
     }
+
+    if (!this.activeAcquisition) {
+      self.alert("Please select an acquisition");
+      return;
+    }
+
+    await this.analysisContext.actions.getBoxPlotData({
+      datasetId: this.activeDataset.id,
+      acquisitionId: this.activeAcquisition.id,
+      markers: this.selectedItems
+    });
   }
 
   get boxPlotData() {

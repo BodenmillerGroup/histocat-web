@@ -174,17 +174,17 @@ export default class ScatterPlotTab extends Vue {
   }
 
   async submit() {
+    if (!this.activeDataset) {
+      self.alert("Please select a dataset");
+      return;
+    }
+
+    if (!this.activeAcquisition) {
+      self.alert("Please select an acquisition");
+      return;
+    }
+
     if ((this.$refs.form as any).validate()) {
-      if (!this.activeDataset) {
-        self.alert("Please select a dataset");
-        return;
-      }
-
-      if (!this.activeAcquisition) {
-        self.alert("Please select an acquisition");
-        return;
-      }
-
       let heatmap = "";
       if (this.heatmap) {
         heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;

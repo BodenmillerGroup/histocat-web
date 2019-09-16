@@ -11,21 +11,14 @@
             <div class="title primary--text text--darken-2" v-if="user">{{ user.email }}</div>
             <div class="title primary--text text--darken-2" v-else>-----</div>
           </div>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Full Name" v-model="fullName" required></v-text-field>
+          <v-form v-model="valid" ref="form">
+            <v-text-field label="Full Name" v-model="fullName"></v-text-field>
             <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
-            <div class="subtitle-1 primary--text text--lighten-2">
-              User is superuser <span v-if="isSuperuser">(currently is a superuser)</span
-              ><span v-else>(currently is not a superuser)</span>
-            </div>
             <v-checkbox label="Is Superuser" v-model="isSuperuser"></v-checkbox>
-            <div class="subtitle-1 primary--text text--lighten-2">
-              User is active <span v-if="isActive">(currently active)</span><span v-else>(currently not active)</span>
-            </div>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
             <v-row align="center">
               <v-col class="shrink">
-                <v-checkbox v-model="setPassword" class="mr-2"></v-checkbox>
+                <v-checkbox v-model="setPassword"></v-checkbox>
               </v-col>
               <v-col>
                 <v-text-field
@@ -73,11 +66,15 @@ export default class EditUser extends Vue {
   readonly userContext = userModule.context(this.$store);
 
   readonly emailRules = [required, email];
-  readonly password1Rules = [required];
-  readonly password2Rules = [required, this.passwordIsEqual];
+  readonly password1Rules = [this.passwordRequired];
+  readonly password2Rules = [this.passwordRequired, this.passwordIsEqual];
+
+  passwordRequired(v) {
+    return this.setPassword && !v ? "Required" : true;
+  }
 
   passwordIsEqual(v) {
-    return v === this.password1 || "Password should be the same";
+    return this.setPassword && v !== this.password1 ? "Password should be the same" : true;
   }
 
   valid = true;
@@ -98,14 +95,14 @@ export default class EditUser extends Vue {
     this.setPassword = false;
     this.password1 = "";
     this.password2 = "";
-    if (this.$refs.form) {
-      (this.$refs.form as any).resetValidation();
-    }
     if (this.user) {
       this.fullName = this.user.full_name;
       this.email = this.user.email;
       this.isActive = this.user.is_active;
       this.isSuperuser = this.user.is_superuser;
+    }
+    if (this.$refs.form) {
+      (this.$refs.form as any).resetValidation();
     }
   }
 

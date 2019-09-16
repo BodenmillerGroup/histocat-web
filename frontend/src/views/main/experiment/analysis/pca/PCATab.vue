@@ -10,33 +10,35 @@
       <v-card tile>
         <v-card-title>PCA Settings</v-card-title>
         <v-card-text>
-          <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
-            <v-chip v-for="item in channels" :key="item" :value="item" small>
-              {{ item }}
-            </v-chip>
-          </v-chip-group>
-          <v-card-actions>
-            <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
-              Select all
-            </v-btn>
-            <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
-              Clear all
-            </v-btn>
-          </v-card-actions>
-          <v-radio-group v-model="nComponents" row mandatory>
-            <v-radio label="2D" value="2"></v-radio>
-            <v-radio label="3D" value="3"></v-radio>
-          </v-radio-group>
-          <v-select
-            :items="heatmaps"
-            v-model="heatmap"
-            label="Heatmap"
-            hint="Heatmap marker"
-            item-text="label"
-            return-object
-            persistent-hint
-            clearable
-          ></v-select>
+          <v-form v-model="valid" ref="form">
+            <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
+              <v-chip v-for="item in channels" :key="item" :value="item" small>
+                {{ item }}
+              </v-chip>
+            </v-chip-group>
+            <v-card-actions>
+              <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
+                Select all
+              </v-btn>
+              <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
+                Clear all
+              </v-btn>
+            </v-card-actions>
+            <v-radio-group v-model="nComponents" row mandatory>
+              <v-radio label="2D" value="2"></v-radio>
+              <v-radio label="3D" value="3"></v-radio>
+            </v-radio-group>
+            <v-select
+              :items="heatmaps"
+              v-model="heatmap"
+              label="Heatmap"
+              hint="Heatmap marker"
+              item-text="label"
+              return-object
+              persistent-hint
+              clearable
+            ></v-select>
+          </v-form>
         </v-card-text>
         <v-card-actions>
           <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">

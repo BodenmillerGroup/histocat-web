@@ -10,52 +10,54 @@
       <v-card tile>
         <v-card-title>t-SNE Settings</v-card-title>
         <v-card-text>
-          <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
-            <v-chip v-for="channel in channels" :key="channel" :value="channel" small>
-              {{ channel }}
-            </v-chip>
-          </v-chip-group>
-          <v-card-actions>
-            <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
-              Select all
-            </v-btn>
-            <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
-              Clear all
-            </v-btn>
-          </v-card-actions>
-          <v-radio-group v-model="nComponents" row mandatory>
-            <v-radio label="2D" value="2"></v-radio>
-            <v-radio label="3D" value="3"></v-radio>
-          </v-radio-group>
-          <v-text-field
-            type="number"
-            min="5"
-            max="50"
-            step="1"
-            label="Perplexity"
-            v-model.number="perplexity"
-            :rules="[required]"
-            hide-details
-          ></v-text-field>
-          <v-text-field
-            type="number"
-            min="10"
-            max="1000"
-            step="1"
-            label="Learning rate"
-            v-model.number="learningRate"
-            :rules="[required]"
-            hide-details
-          ></v-text-field>
-          <v-text-field
-            type="number"
-            min="250"
-            step="1"
-            label="Iterations"
-            v-model.number="iterations"
-            :rules="[required]"
-            hide-details
-          ></v-text-field>
+          <v-form v-model="valid" ref="form">
+            <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
+              <v-chip v-for="channel in channels" :key="channel" :value="channel" small>
+                {{ channel }}
+              </v-chip>
+            </v-chip-group>
+            <v-card-actions>
+              <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
+                Select all
+              </v-btn>
+              <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
+                Clear all
+              </v-btn>
+            </v-card-actions>
+            <v-radio-group v-model="nComponents" row mandatory>
+              <v-radio label="2D" value="2"></v-radio>
+              <v-radio label="3D" value="3"></v-radio>
+            </v-radio-group>
+            <v-text-field
+              type="number"
+              min="5"
+              max="50"
+              step="1"
+              label="Perplexity"
+              v-model.number="perplexity"
+              :rules="[required]"
+              hide-details
+            ></v-text-field>
+            <v-text-field
+              type="number"
+              min="10"
+              max="1000"
+              step="1"
+              label="Learning rate"
+              v-model.number="learningRate"
+              :rules="[required]"
+              hide-details
+            ></v-text-field>
+            <v-text-field
+              type="number"
+              min="250"
+              step="1"
+              label="Iterations"
+              v-model.number="iterations"
+              :rules="[required]"
+              hide-details
+            ></v-text-field>
+          </v-form>
         </v-card-text>
         <v-card-actions>
           <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
@@ -148,6 +150,8 @@ export default class TSNETab extends Vue {
 
   readonly required = required;
 
+  valid = false;
+
   options: echarts.EChartOption = {};
 
   selectedChannels: any[] = [];
@@ -197,17 +201,17 @@ export default class TSNETab extends Vue {
   }
 
   async submit() {
+    if (!this.activeDataset) {
+      self.alert("Please select a dataset");
+      return;
+    }
+
+    if (!this.activeAcquisition) {
+      self.alert("Please select an acquisition");
+      return;
+    }
+
     if ((this.$refs.form as any).validate()) {
-      if (!this.activeDataset) {
-        self.alert("Please select a dataset");
-        return;
-      }
-
-      if (!this.activeAcquisition) {
-        self.alert("Please select an acquisition");
-        return;
-      }
-
       await this.analysisContext.actions.submitTSNE({
         dataset_id: this.activeDataset.id,
         acquisition_id: this.activeAcquisition.id,

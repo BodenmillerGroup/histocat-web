@@ -9,14 +9,7 @@
           <v-form v-model="valid" ref="form" lazy-validation>
             <v-text-field label="Full Name" v-model="fullName"></v-text-field>
             <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
-            <div class="subtitle-1 primary--text text--lighten-2">
-              User is superuser <span v-if="isSuperuser">(currently is a superuser)</span
-              ><span v-else>(currently is not a superuser)</span>
-            </div>
             <v-checkbox label="Is Superuser" v-model="isSuperuser"></v-checkbox>
-            <div class="subtitle-1 primary--text text--lighten-2">
-              User is active <span v-if="isActive">(currently active)</span><span v-else>(currently not active)</span>
-            </div>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
             <v-row align="center">
               <v-col>
@@ -73,7 +66,6 @@ export default class CreateUser extends Vue {
   email: string = "";
   isActive: boolean = true;
   isSuperuser: boolean = false;
-  setPassword = false;
   password1: string = "";
   password2: string = "";
 

@@ -125,11 +125,13 @@ export default class EditExperiment extends Vue {
     if (this.experiment) {
       this.name = this.experiment.name;
       this.description = this.experiment.description;
-      this.tags = this.experiment.tags.map(item => {
-        return {
-          text: item
-        };
-      });
+      this.tags = this.experiment.tags
+        ? this.experiment.tags.map(item => {
+            return {
+              text: item
+            };
+          })
+        : [];
     }
   }
 

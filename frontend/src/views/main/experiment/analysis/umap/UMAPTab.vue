@@ -10,46 +10,48 @@
       <v-card tile>
         <v-card-title>UMAP Settings</v-card-title>
         <v-card-text>
-          <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
-            <v-chip v-for="item in channels" :key="item" :value="item" small>
-              {{ item }}
-            </v-chip>
-          </v-chip-group>
-          <v-card-actions>
-            <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
-              Select all
-            </v-btn>
-            <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
-              Clear all
-            </v-btn>
-          </v-card-actions>
-          <v-radio-group v-model="nComponents" row mandatory>
-            <v-radio label="2D" value="2"></v-radio>
-            <v-radio label="3D" value="3"></v-radio>
-          </v-radio-group>
-          <v-text-field
-            class="input-row"
-            type="number"
-            min="2"
-            max="200"
-            step="1"
-            label="Neighbors"
-            v-model.number="nNeighbors"
-            :rules="[required]"
-            hide-details
-          ></v-text-field>
-          <v-text-field
-            class="input-row"
-            type="number"
-            min="0.0"
-            max="0.99"
-            step="0.01"
-            label="Minimum distance"
-            v-model.number="minDist"
-            :rules="[required]"
-            hide-details
-          ></v-text-field>
-          <v-select :items="metrics" v-model="metric" label="Metric" hide-details clearable></v-select>
+          <v-form v-model="valid" ref="form">
+            <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
+              <v-chip v-for="item in channels" :key="item" :value="item" small>
+                {{ item }}
+              </v-chip>
+            </v-chip-group>
+            <v-card-actions>
+              <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
+                Select all
+              </v-btn>
+              <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
+                Clear all
+              </v-btn>
+            </v-card-actions>
+            <v-radio-group v-model="nComponents" row mandatory>
+              <v-radio label="2D" value="2"></v-radio>
+              <v-radio label="3D" value="3"></v-radio>
+            </v-radio-group>
+            <v-text-field
+              class="input-row"
+              type="number"
+              min="2"
+              max="200"
+              step="1"
+              label="Neighbors"
+              v-model.number="nNeighbors"
+              :rules="[required]"
+              hide-details
+            ></v-text-field>
+            <v-text-field
+              class="input-row"
+              type="number"
+              min="0.0"
+              max="0.99"
+              step="0.01"
+              label="Minimum distance"
+              v-model.number="minDist"
+              :rules="[required]"
+              hide-details
+            ></v-text-field>
+            <v-select :items="metrics" v-model="metric" label="Metric" hide-details clearable></v-select>
+          </v-form>
         </v-card-text>
         <v-card-actions>
           <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
@@ -155,6 +157,8 @@ export default class UMAPTab extends Vue {
     "cosine",
     "correlation"
   ];
+
+  valid = false;
 
   options: echarts.EChartOption = {};
 
