@@ -55,7 +55,7 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.7.17-alpine
+    image: rabbitmq:3.7.18-alpine
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
@@ -91,7 +91,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:2.0.0-rc4
+    image: traefik:2.0.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
