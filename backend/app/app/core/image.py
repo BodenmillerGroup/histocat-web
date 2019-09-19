@@ -73,7 +73,7 @@ def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), a
 
 
 def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
-    width, height, _ = image.shape
+    height, width, _ = image.shape
     length = 64
     cv2.line(
         image,
