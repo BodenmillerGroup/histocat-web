@@ -9,16 +9,18 @@ import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from "ol/control";
 import { getCenter } from "ol/extent";
-import { DragPan, MouseWheelZoom } from "ol/interaction";
-import ImageLayer from "ol/layer/Image";
+import { DragPan, Draw, MouseWheelZoom } from "ol/interaction";
 import Map from "ol/Map";
 import "ol/ol.css";
 import Projection from "ol/proj/Projection";
 import RenderEvent from "ol/render/Event";
-import Static from "ol/source/ImageStatic";
 import View from "ol/View";
 import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
+import { ImageStatic, Vector as VectorSource } from "ol/source";
+import { Image as ImageLayer, Vector as VectorLayer } from "ol/layer";
+import GeometryType from "ol/geom/GeometryType";
+import { VectorSourceEvent } from 'ol/source/Vector';
 
 @Component
 export default class VisualizationView extends Vue {
@@ -29,6 +31,8 @@ export default class VisualizationView extends Vue {
   // TODO: check for a better solution
   map!: Map;
   overviewMap!: OverviewMap;
+  vectorSource!: VectorSource;
+  vectorLayer!: VectorLayer;
 
   get selectedChannels() {
     return this.experimentContext.getters.selectedChannels;
@@ -68,10 +72,15 @@ export default class VisualizationView extends Vue {
       this.initMap();
     }
 
+    const features = this.vectorSource.getFeatures();
+    features.forEach((item) => {
+      console.log((item.getGeometry() as any).getCoordinates());
+    })
+
     if (image !== null) {
       const projection = this.map.getView().getProjection();
       const layer = new ImageLayer({
-        source: new Static({
+        source: new ImageStatic({
           url: ``,
           imageExtent: projection.getExtent(),
           imageLoadFunction: (view, src: string) => {
@@ -79,8 +88,9 @@ export default class VisualizationView extends Vue {
           }
         })
       });
+
       this.map.getLayers().clear();
-      this.map.getLayers().extend([layer]);
+      this.map.getLayers().extend([layer, this.vectorLayer]);
     }
   }
 
@@ -137,6 +147,9 @@ export default class VisualizationView extends Vue {
   beforeDestroy() {
     if (this.map) {
       this.map.un("precompose", this.precompose);
+
+      this.vectorSource.un('addfeature', this.featureAddedHandler);
+      this.vectorSource.un('removefeature', this.featureRemovedHandler);
     }
   }
 
@@ -182,18 +195,43 @@ export default class VisualizationView extends Vue {
         projection: projection
       })
     });
+
+    this.vectorSource = new VectorSource({ wrapX: false, useSpatialIndex: false });
+    this.vectorSource.on('addfeature', this.featureAddedHandler);
+    this.vectorSource.on('removefeature', this.featureRemovedHandler);
+
+    this.vectorLayer = new VectorLayer({
+      source: this.vectorSource
+    });
+
+    const draw = new Draw({
+      source: this.vectorSource,
+      type: GeometryType.POLYGON,
+      freehand: true
+    });
+
     this.map = new Map({
       controls: defaultControls({
         zoom: false,
         attribution: false,
         rotate: false
       }).extend([new ScaleLine(), new FullScreen(), this.overviewMap]),
-      interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 })],
+      interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 }), draw],
       view: view,
       target: this.$el as HTMLElement
     });
 
     this.map.on("precompose", this.precompose);
+  }
+
+  private featureAddedHandler(event: VectorSourceEvent) {
+    console.log(event.feature)
+    this.experimentContext.mutations.addFeature(event.feature);
+  }
+
+  private featureRemovedHandler(event: VectorSourceEvent) {
+    console.log(event.feature)
+    this.experimentContext.mutations.removeFeature(event.feature);
   }
 
   private precompose(evt: RenderEvent) {

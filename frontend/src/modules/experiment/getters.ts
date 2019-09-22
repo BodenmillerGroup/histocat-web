@@ -73,4 +73,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   get colorizeMaskInProgress() {
     return this.state.colorizeMaskInProgress;
   }
+
+  get features() {
+    return this.state.features;
+  }
 }

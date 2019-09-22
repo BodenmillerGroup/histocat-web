@@ -3,6 +3,7 @@ import { ExperimentActions } from "./actions";
 import { ExperimentGetters } from "./getters";
 import { IExperiment, IShare } from "./models";
 import { ExperimentMutations } from "./mutations";
+import Feature from 'ol/Feature';
 
 export class ExperimentState {
   experiments: IExperiment[] = [];
@@ -17,6 +18,8 @@ export class ExperimentState {
   channelStackImage: string | ArrayBuffer | null = null;
 
   colorizeMaskInProgress = false;
+
+  features: Map<string, Feature> = new Map<string, Feature>();
 }
 
 export const experimentModule = new Module({

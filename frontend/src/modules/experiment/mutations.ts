@@ -1,6 +1,7 @@
 import { Mutations } from "vuex-smart-module";
 import { ExperimentState } from ".";
 import { IExperiment, IShare } from "./models";
+import Feature from 'ol/Feature';
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
   setExperiments(experiments: IExperiment[]) {
@@ -58,6 +59,14 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.colorizeMaskInProgress = status;
   }
 
+  addFeature(feature: Feature) {
+    this.state.features.set(feature.getId() as string, feature);
+  }
+
+  removeFeature(feature: Feature) {
+    this.state.features.delete(feature.getId() as string);
+  }
+
   reset() {
     this.state.activeWorkspaceNode = undefined;
     this.state.activeExperimentId = undefined;
@@ -66,5 +75,6 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.selectedMetals = [];
     this.state.channelStackImage = null;
     this.state.colorizeMaskInProgress = false;
+    this.state.features.clear();
   }
 }
