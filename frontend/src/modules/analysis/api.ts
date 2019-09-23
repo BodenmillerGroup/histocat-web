@@ -5,6 +5,8 @@ import {
   IPCAData,
   IPCASubmission,
   IPlotSeries,
+  IRegionChannelStats,
+  IRegionStatsParams,
   IScatterPlotData,
   ITSNEData,
   ITSNESubmission,
@@ -124,5 +126,15 @@ export const api = {
         }
       )
       .json<IUMAPData>();
+  },
+  async calculateRegionStats(token: string, params: IRegionStatsParams) {
+    return ky
+      .post(`${apiUrl}/api/v1/analysis/region/stats`, {
+        json: params,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .json<IRegionChannelStats[]>();
   }
 };

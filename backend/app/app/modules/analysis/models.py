@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 
 from pydantic import BaseModel
 
@@ -102,3 +102,22 @@ class UMAPModel(BaseModel):
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
     heatmap: Optional[PlotSeriesModel]
+
+
+class RegionStatsSubmissionModel(BaseModel):
+    """
+    Region's stats submission model
+    """
+    experiment_id: int
+    acquisition_id: int
+    region_polygon: List[Any]
+
+
+class RegionChannelStatsModel(BaseModel):
+    """
+    Region's channel stats model
+    """
+    metal: str
+    min: float
+    max: float
+    mean: float

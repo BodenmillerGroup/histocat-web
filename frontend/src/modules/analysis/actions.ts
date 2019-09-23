@@ -8,7 +8,13 @@ import { Actions, Context } from "vuex-smart-module";
 import { AnalysisState } from ".";
 import { api } from "./api";
 import { AnalysisGetters } from "./getters";
-import { IImageSegmentationSettings, IPCASubmission, ITSNESubmission, IUMAPSubmission } from "./models";
+import {
+  IImageSegmentationSettings,
+  IPCASubmission,
+  IRegionStatsParams,
+  ITSNESubmission,
+  IUMAPSubmission
+} from "./models";
 import { AnalysisMutations } from "./mutations";
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
@@ -157,6 +163,15 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.heatmap
       );
       this.mutations.setUMAPData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async calculateRegionStats(payload: IRegionStatsParams) {
+    try {
+      const response = await api.calculateRegionStats(this.main!.getters.token, payload);
+      this.mutations.setSelectedRegionStats(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

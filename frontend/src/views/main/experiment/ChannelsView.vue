@@ -52,21 +52,21 @@ export default class ChannelsView extends Vue {
       text: "Label",
       sortable: true,
       value: "label",
-      align: "left",
+      align: "start",
       width: "50%"
     },
     {
       text: "Metal",
       sortable: true,
       value: "metal",
-      align: "left",
+      align: "start",
       width: "30%"
     },
     {
       text: "Mass",
       sortable: true,
       value: "mass",
-      align: "left",
+      align: "end",
       width: "20%"
     }
   ];
@@ -140,7 +140,7 @@ table.v-table tbody th {
 }
 
 .scroll-view {
-  height: calc(50vh - 100px);
+  height: calc(50vh - 148px);
 }
 </style>
 

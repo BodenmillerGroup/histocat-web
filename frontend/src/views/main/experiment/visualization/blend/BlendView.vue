@@ -3,29 +3,31 @@
 </template>
 
 <script lang="ts">
+import { analysisModule } from "@/modules/analysis";
 import { experimentModule } from "@/modules/experiment";
 import { IAcquisition, IChannel } from "@/modules/experiment/models";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from "ol/control";
 import { getCenter } from "ol/extent";
-import { DragPan, Draw, MouseWheelZoom } from "ol/interaction";
+import GeometryType from "ol/geom/GeometryType";
+import { DragPan, Draw, MouseWheelZoom, Select, Translate } from "ol/interaction";
+import { SelectEvent } from "ol/interaction/Select";
+import { Image as ImageLayer, Vector as VectorLayer } from "ol/layer";
 import Map from "ol/Map";
 import "ol/ol.css";
 import Projection from "ol/proj/Projection";
 import RenderEvent from "ol/render/Event";
+import { ImageStatic, Vector as VectorSource } from "ol/source";
 import View from "ol/View";
 import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { ImageStatic, Vector as VectorSource } from "ol/source";
-import { Image as ImageLayer, Vector as VectorLayer } from "ol/layer";
-import GeometryType from "ol/geom/GeometryType";
-import { VectorSourceEvent } from 'ol/source/Vector';
 
 @Component
 export default class VisualizationView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
+  readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
   // TODO: check for a better solution
@@ -33,6 +35,9 @@ export default class VisualizationView extends Vue {
   overviewMap!: OverviewMap;
   vectorSource!: VectorSource;
   vectorLayer!: VectorLayer;
+  select!: Select;
+  draw!: Draw;
+  translate!: Translate;
 
   get selectedChannels() {
     return this.experimentContext.getters.selectedChannels;
@@ -50,12 +55,32 @@ export default class VisualizationView extends Vue {
     return this.experimentContext.getters.channelStackImage;
   }
 
+  get regionsEnabled() {
+    return this.analysisContext.getters.regionsEnabled;
+  }
+
   get showWorkspace() {
     return this.mainContext.getters.showWorkspace;
   }
 
   get showOptions() {
     return this.mainContext.getters.showOptions;
+  }
+
+  @Watch("regionsEnabled")
+  regionsEnabledChanged(state: boolean) {
+    if (this.map) {
+      if (state) {
+        this.map.getInteractions().extend([this.draw, this.select, this.translate]);
+        this.map.getLayers().extend([this.vectorLayer]);
+      } else {
+        this.map.getInteractions().remove(this.select);
+        this.map.getInteractions().remove(this.translate);
+        this.map.getInteractions().remove(this.draw);
+        this.map.getLayers().remove(this.vectorLayer);
+      }
+      this.map.updateSize();
+    }
   }
 
   @Watch("showWorkspace")
@@ -72,14 +97,9 @@ export default class VisualizationView extends Vue {
       this.initMap();
     }
 
-    const features = this.vectorSource.getFeatures();
-    features.forEach((item) => {
-      console.log((item.getGeometry() as any).getCoordinates());
-    })
-
     if (image !== null) {
       const projection = this.map.getView().getProjection();
-      const layer = new ImageLayer({
+      const imageLayer = new ImageLayer({
         source: new ImageStatic({
           url: ``,
           imageExtent: projection.getExtent(),
@@ -90,7 +110,8 @@ export default class VisualizationView extends Vue {
       });
 
       this.map.getLayers().clear();
-      this.map.getLayers().extend([layer, this.vectorLayer]);
+      const layers = this.regionsEnabled ? [imageLayer, this.vectorLayer] : [imageLayer];
+      this.map.getLayers().extend(layers);
     }
   }
 
@@ -147,10 +168,17 @@ export default class VisualizationView extends Vue {
   beforeDestroy() {
     if (this.map) {
       this.map.un("precompose", this.precompose);
-
-      this.vectorSource.un('addfeature', this.featureAddedHandler);
-      this.vectorSource.un('removefeature', this.featureRemovedHandler);
+      this.select.un("select", this.selectHandler);
     }
+  }
+
+  deleteRegions() {
+    this.select.getFeatures().forEach(feature => {
+      this.vectorSource.removeFeature(feature);
+    });
+    this.select.getFeatures().clear();
+    this.analysisContext.mutations.setSelectedRegion(null);
+    this.analysisContext.mutations.setSelectedRegionStats([]);
   }
 
   private initMap() {
@@ -197,17 +225,24 @@ export default class VisualizationView extends Vue {
     });
 
     this.vectorSource = new VectorSource({ wrapX: false, useSpatialIndex: false });
-    this.vectorSource.on('addfeature', this.featureAddedHandler);
-    this.vectorSource.on('removefeature', this.featureRemovedHandler);
 
     this.vectorLayer = new VectorLayer({
       source: this.vectorSource
     });
 
-    const draw = new Draw({
+    this.select = new Select({
+      multi: false
+    });
+    this.select.on("select", this.selectHandler);
+
+    this.draw = new Draw({
       source: this.vectorSource,
       type: GeometryType.POLYGON,
       freehand: true
+    });
+
+    this.translate = new Translate({
+      features: this.select.getFeatures()
     });
 
     this.map = new Map({
@@ -216,7 +251,7 @@ export default class VisualizationView extends Vue {
         attribution: false,
         rotate: false
       }).extend([new ScaleLine(), new FullScreen(), this.overviewMap]),
-      interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 }), draw],
+      interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 })],
       view: view,
       target: this.$el as HTMLElement
     });
@@ -224,14 +259,9 @@ export default class VisualizationView extends Vue {
     this.map.on("precompose", this.precompose);
   }
 
-  private featureAddedHandler(event: VectorSourceEvent) {
-    console.log(event.feature)
-    this.experimentContext.mutations.addFeature(event.feature);
-  }
-
-  private featureRemovedHandler(event: VectorSourceEvent) {
-    console.log(event.feature)
-    this.experimentContext.mutations.removeFeature(event.feature);
+  private selectHandler(event: SelectEvent) {
+    const region = event.selected.length === 0 ? null : event.selected[0].clone();
+    this.analysisContext.mutations.setSelectedRegion(region);
   }
 
   private precompose(evt: RenderEvent) {

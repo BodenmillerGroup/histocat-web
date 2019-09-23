@@ -7,6 +7,7 @@ import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
+from skimage.measure import regionprops
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
@@ -18,11 +19,12 @@ from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, g
 from app.core.utils import stream_bytes
 from app.modules.analysis.processors import pca, tsne, umap
 from app.modules.channel import crud as channel_crud
+from app.modules.acquisition import crud as acquisition_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
 from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel, \
-    UMAPSubmissionModel, UMAPModel
+    UMAPSubmissionModel, UMAPModel, RegionStatsSubmissionModel, RegionChannelStatsModel
 
 logger = logging.getLogger(__name__)
 
@@ -321,4 +323,38 @@ async def read_umap_data(
     """
 
     content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
+    return UJSONResponse(content=content)
+
+
+@router.post("/region/stats", response_model=List[RegionChannelStatsModel])
+async def calculate_region_stats(
+    params: RegionStatsSubmissionModel,
+    request: Request,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Calculate region's statistics
+    """
+
+    acquisition = acquisition_crud.get(db, id=params.acquisition_id)
+    parser = OmetiffParser(acquisition.location)
+    acq = parser.get_imc_acquisition()
+    mask = None
+    contour = np.array(params.region_polygon).astype(int)
+    content = []
+    for metal in acq.channel_metals:
+        channel_img = acq.get_img_by_metal(metal)
+        if mask is None:
+            mask = np.zeros(channel_img.shape, np.uint8)
+            mask = cv2.drawContours(mask, [contour], 0, 255, -1)
+        props = regionprops(mask, intensity_image=channel_img, cache=True, coordinates=None)
+        props = props[0]
+        content.append({
+            'metal': metal,
+            'min': float("{0:.3f}".format(props.min_intensity)),
+            'max': float("{0:.3f}".format(props.max_intensity)),
+            'mean': float("{0:.3f}".format(props.mean_intensity)),
+        })
+
     return UJSONResponse(content=content)

@@ -29,4 +29,16 @@ export class AnalysisGetters extends Getters<AnalysisState> {
   get umapData() {
     return this.state.umapData;
   }
+
+  get regionsEnabled() {
+    return this.state.regionsEnabled;
+  }
+
+  get selectedRegion() {
+    return this.state.selectedRegion;
+  }
+
+  get selectedRegionStats() {
+    return this.state.selectedRegionStats;
+  }
 }
