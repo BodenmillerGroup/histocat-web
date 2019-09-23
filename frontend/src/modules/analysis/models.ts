@@ -86,3 +86,16 @@ export interface IUMAPData {
   z?: IPlotSeries;
   heatmap?: IPlotSeries;
 }
+
+export interface IRegionChannelStats {
+  metal: string;
+  min: number;
+  max: number;
+  mean: number;
+}
+
+export interface IRegionStatsParams {
+  experiment_id: number;
+  acquisition_id: number;
+  region_polygon: any[];
+}

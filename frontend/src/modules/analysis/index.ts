@@ -1,7 +1,8 @@
+import Feature from "ol/Feature";
 import { Module } from "vuex-smart-module";
 import { AnalysisActions } from "./actions";
 import { AnalysisGetters } from "./getters";
-import { IPCAData, IPlotSeries, IScatterPlotData, ITSNEData, IUMAPData } from "./models";
+import { IPCAData, IPlotSeries, IRegionChannelStats, IScatterPlotData, ITSNEData, IUMAPData } from "./models";
 import { AnalysisMutations } from "./mutations";
 
 export class AnalysisState {
@@ -12,6 +13,10 @@ export class AnalysisState {
   pcaData: IPCAData | null = null;
   tsneData: ITSNEData | null = null;
   umapData: IUMAPData | null = null;
+
+  regionsEnabled = false;
+  selectedRegion: Feature | null = null;
+  selectedRegionStats: IRegionChannelStats[] = [];
 }
 
 export const analysisModule = new Module({

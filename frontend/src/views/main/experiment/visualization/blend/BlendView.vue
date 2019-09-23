@@ -3,19 +3,22 @@
 </template>
 
 <script lang="ts">
+import { analysisModule } from "@/modules/analysis";
 import { experimentModule } from "@/modules/experiment";
 import { IAcquisition, IChannel } from "@/modules/experiment/models";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from "ol/control";
 import { getCenter } from "ol/extent";
-import { DragPan, MouseWheelZoom } from "ol/interaction";
-import ImageLayer from "ol/layer/Image";
+import GeometryType from "ol/geom/GeometryType";
+import { DragPan, Draw, MouseWheelZoom, Select, Translate } from "ol/interaction";
+import { SelectEvent } from "ol/interaction/Select";
+import { Image as ImageLayer, Vector as VectorLayer } from "ol/layer";
 import Map from "ol/Map";
 import "ol/ol.css";
 import Projection from "ol/proj/Projection";
 import RenderEvent from "ol/render/Event";
-import Static from "ol/source/ImageStatic";
+import { ImageStatic, Vector as VectorSource } from "ol/source";
 import View from "ol/View";
 import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
@@ -24,11 +27,17 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 export default class VisualizationView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
+  readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
   // TODO: check for a better solution
   map!: Map;
   overviewMap!: OverviewMap;
+  vectorSource!: VectorSource;
+  vectorLayer!: VectorLayer;
+  select!: Select;
+  draw!: Draw;
+  translate!: Translate;
 
   get selectedChannels() {
     return this.experimentContext.getters.selectedChannels;
@@ -46,12 +55,32 @@ export default class VisualizationView extends Vue {
     return this.experimentContext.getters.channelStackImage;
   }
 
+  get regionsEnabled() {
+    return this.analysisContext.getters.regionsEnabled;
+  }
+
   get showWorkspace() {
     return this.mainContext.getters.showWorkspace;
   }
 
   get showOptions() {
     return this.mainContext.getters.showOptions;
+  }
+
+  @Watch("regionsEnabled")
+  regionsEnabledChanged(state: boolean) {
+    if (this.map) {
+      if (state) {
+        this.map.getInteractions().extend([this.draw, this.select, this.translate]);
+        this.map.getLayers().extend([this.vectorLayer]);
+      } else {
+        this.map.getInteractions().remove(this.select);
+        this.map.getInteractions().remove(this.translate);
+        this.map.getInteractions().remove(this.draw);
+        this.map.getLayers().remove(this.vectorLayer);
+      }
+      this.map.updateSize();
+    }
   }
 
   @Watch("showWorkspace")
@@ -70,8 +99,8 @@ export default class VisualizationView extends Vue {
 
     if (image !== null) {
       const projection = this.map.getView().getProjection();
-      const layer = new ImageLayer({
-        source: new Static({
+      const imageLayer = new ImageLayer({
+        source: new ImageStatic({
           url: ``,
           imageExtent: projection.getExtent(),
           imageLoadFunction: (view, src: string) => {
@@ -79,8 +108,10 @@ export default class VisualizationView extends Vue {
           }
         })
       });
+
       this.map.getLayers().clear();
-      this.map.getLayers().extend([layer]);
+      const layers = this.regionsEnabled ? [imageLayer, this.vectorLayer] : [imageLayer];
+      this.map.getLayers().extend(layers);
     }
   }
 
@@ -137,7 +168,17 @@ export default class VisualizationView extends Vue {
   beforeDestroy() {
     if (this.map) {
       this.map.un("precompose", this.precompose);
+      this.select.un("select", this.selectHandler);
     }
+  }
+
+  deleteRegions() {
+    this.select.getFeatures().forEach(feature => {
+      this.vectorSource.removeFeature(feature);
+    });
+    this.select.getFeatures().clear();
+    this.analysisContext.mutations.setSelectedRegion(null);
+    this.analysisContext.mutations.setSelectedRegionStats([]);
   }
 
   private initMap() {
@@ -182,6 +223,28 @@ export default class VisualizationView extends Vue {
         projection: projection
       })
     });
+
+    this.vectorSource = new VectorSource({ wrapX: false, useSpatialIndex: false });
+
+    this.vectorLayer = new VectorLayer({
+      source: this.vectorSource
+    });
+
+    this.select = new Select({
+      multi: false
+    });
+    this.select.on("select", this.selectHandler);
+
+    this.draw = new Draw({
+      source: this.vectorSource,
+      type: GeometryType.POLYGON,
+      freehand: true
+    });
+
+    this.translate = new Translate({
+      features: this.select.getFeatures()
+    });
+
     this.map = new Map({
       controls: defaultControls({
         zoom: false,
@@ -194,6 +257,11 @@ export default class VisualizationView extends Vue {
     });
 
     this.map.on("precompose", this.precompose);
+  }
+
+  private selectHandler(event: SelectEvent) {
+    const region = event.selected.length === 0 ? null : event.selected[0].clone();
+    this.analysisContext.mutations.setSelectedRegion(region);
   }
 
   private precompose(evt: RenderEvent) {

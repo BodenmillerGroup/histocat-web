@@ -18,6 +18,23 @@
             </v-list-item>
           </v-list>
         </v-menu>
+        <v-switch v-model="regionsEnabled" label="Enable regions" hide-details class="ml-8"></v-switch>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn small elevation="1" v-on="on" @click="deleteRegions" class="ml-2" :disabled="!selectedRegion">
+              Delete region(s)
+            </v-btn>
+          </template>
+          <span>Delete selected regions</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn small elevation="1" v-on="on" @click="calculateRegionStats" class="ml-2" :disabled="!selectedRegion">
+              Region stats
+            </v-btn>
+          </template>
+          <span>Calculate region's statistics</span>
+        </v-tooltip>
         <!--        <v-tooltip bottom>-->
         <!--          <template v-slot:activator="{ on }">-->
         <!--            <v-btn-->
@@ -34,11 +51,11 @@
         <!--          </template>-->
         <!--          <span>Request calculation of colorized cell mask</span>-->
         <!--        </v-tooltip>-->
-        <v-switch v-model="applyMask" label="Mask overlay" hide-details class="ml-2"></v-switch>
+        <v-switch v-model="applyMask" label="Mask overlay" hide-details class="ml-8"></v-switch>
       </v-toolbar>
       <v-row no-gutters>
         <v-col>
-          <BlendView class="blend-view" />
+          <BlendView ref="blendView" class="blend-view" />
         </v-col>
         <IntensityView />
       </v-row>
@@ -47,11 +64,14 @@
 </template>
 
 <script lang="ts">
+import { analysisModule } from "@/modules/analysis";
+import { IRegionStatsParams } from "@/modules/analysis/models";
 import { experimentModule } from "@/modules/experiment";
 import { ExportFormat } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
 import BlendView from "@/views/main/experiment/visualization/blend/BlendView.vue";
 import IntensityView from "@/views/main/experiment/visualization/blend/IntensityView.vue";
+import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
@@ -59,6 +79,7 @@ import { Component, Vue } from "vue-property-decorator";
 })
 export default class BlendTab extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
+  readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
   get colorizeMaskInProgress() {
@@ -77,12 +98,49 @@ export default class BlendTab extends Vue {
     this.experimentContext.actions.getChannelStackImage();
   }
 
+  get regionsEnabled() {
+    return this.analysisContext.getters.regionsEnabled;
+  }
+
+  set regionsEnabled(value: boolean) {
+    this.analysisContext.mutations.setRegionsEnabled(value);
+  }
+
+  get selectedRegion() {
+    return this.analysisContext.getters.selectedRegion;
+  }
+
+  get activeExperimentId() {
+    return this.experimentContext.getters.activeExperimentId;
+  }
+
+  get activeAcquisition() {
+    return this.experimentContext.getters.activeAcquisition;
+  }
+
+  calculateRegionStats() {
+    if (!this.activeExperimentId || !this.activeAcquisition || !this.selectedRegion) {
+      return;
+    }
+    const polygon = (this.selectedRegion.getGeometry()! as Polygon).getCoordinates()[0];
+    const params: IRegionStatsParams = {
+      experiment_id: this.activeExperimentId,
+      acquisition_id: this.activeAcquisition.id,
+      region_polygon: polygon
+    };
+    return this.analysisContext.actions.calculateRegionStats(params);
+  }
+
   exportImage(format: ExportFormat) {
     this.experimentContext.actions.exportChannelStackImage(format);
   }
 
   getColorizedMaskImage() {
     this.experimentContext.actions.getColorizedMaskImage();
+  }
+
+  deleteRegions() {
+    (this.$refs.blendView as any).deleteRegions();
   }
 }
 </script>
