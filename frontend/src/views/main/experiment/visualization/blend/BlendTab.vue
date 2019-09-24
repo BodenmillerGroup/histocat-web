@@ -122,11 +122,15 @@ export default class BlendTab extends Vue {
     if (!this.activeExperimentId || !this.activeAcquisition || !this.selectedRegion) {
       return;
     }
-    const polygon = (this.selectedRegion.getGeometry()! as Polygon).getCoordinates()[0];
+    const polygon = this.selectedRegion.getGeometry()! as Polygon;
+    const coords = polygon.getCoordinates()[0];
+    const height = parseFloat(this.activeAcquisition.meta.MaxY);
+    // TODO: Y axis flip
+    const convertedCoords = coords.map(point => [point[0], Math.abs(point[1] - height)]);
     const params: IRegionStatsParams = {
       experiment_id: this.activeExperimentId,
       acquisition_id: this.activeAcquisition.id,
-      region_polygon: polygon
+      region_polygon: convertedCoords
     };
     return this.analysisContext.actions.calculateRegionStats(params);
   }

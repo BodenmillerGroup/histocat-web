@@ -118,6 +118,12 @@ const commonOptions: echarts.EChartOption = {
       saveAsImage: {
         show: true,
         title: "Export"
+      },
+      dataView: {
+        show: true,
+        title: "Data",
+        readOnly: true,
+        lang: ["Data View", "Hide", "Refresh"]
       }
     }
   }

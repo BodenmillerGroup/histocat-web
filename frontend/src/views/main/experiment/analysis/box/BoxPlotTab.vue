@@ -178,6 +178,12 @@ export default class BoxPlotTab extends Vue {
           saveAsImage: {
             show: true,
             title: "Export"
+          },
+          dataView: {
+            show: true,
+            title: "Data",
+            readOnly: true,
+            lang: ["Data View", "Hide", "Refresh"]
           }
         }
       }
