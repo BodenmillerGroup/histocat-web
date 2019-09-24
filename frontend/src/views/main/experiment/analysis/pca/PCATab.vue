@@ -4,7 +4,7 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <v-chart :options="options" autoresize />
+      <v-chart :options="options" autoresize/>
     </v-col>
     <v-col v-if="showOptions" cols="3">
       <v-card tile>
@@ -68,11 +68,11 @@ const commonOptions: echarts.EChartOption = {
   title: {
     text: "Principal Component Analysis",
     left: "center",
-    top: 0
+    top: 0,
   },
   animation: false,
   tooltip: {
-    show: true
+    show: true,
   },
   toolbox: {
     show: true,
@@ -80,20 +80,20 @@ const commonOptions: echarts.EChartOption = {
     feature: {
       restore: {
         show: true,
-        title: "Reset"
+        title: "Reset",
       },
       saveAsImage: {
         show: true,
-        title: "Export"
+        title: "Export",
       },
       dataView: {
         show: true,
         title: "Data",
         readOnly: true,
-        lang: ["Data View", "Hide", "Refresh"]
-      }
-    }
-  }
+        lang: ["Data View", "Hide", "Refresh"],
+      },
+    },
+  },
 };
 
 @Component
@@ -169,7 +169,7 @@ export default class PCATab extends Vue {
       n_components: parseInt(this.nComponents, 10),
       heatmapType: this.heatmap ? this.heatmap.type : "",
       heatmap: heatmap,
-      markers: this.selectedChannels
+      markers: this.selectedChannels,
     });
   }
 
@@ -191,11 +191,11 @@ export default class PCATab extends Vue {
   private plot2D(data: IPCAData) {
     const points = data.heatmap
       ? data.x.data.map((x, i) => {
-          return [x, data.y.data[i], data.heatmap!.data[i]];
-        })
+        return [x, data.y.data[i], data.heatmap!.data[i]];
+      })
       : data.x.data.map((x, i) => {
-          return [x, data.y.data[i]];
-        });
+        return [x, data.y.data[i]];
+      });
 
     const options: echarts.EChartOption = {
       ...commonOptions,
@@ -203,48 +203,60 @@ export default class PCATab extends Vue {
         type: "value",
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis: {
         type: "value",
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       dataset: {
         source: points,
         dimensions: [
           { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" }
-        ]
+          { name: data.y.label, type: "float" },
+        ],
       },
       series: [
         {
           type: "scatter",
           name: "Scatter2D",
           symbolSize: 4,
-          large: true, //!data.heatmap,
+          large: false, //!data.heatmap,
           encode: {
             x: data.x.label,
             y: data.y.label,
             tooltip: [
               data.x.label,
-              data.y.label
-            ]
+              data.y.label,
+            ],
           },
-        }
-      ]
+        },
+      ],
+      color: data.heatmap!.data as any
     };
 
-    if (data.heatmap) {
-      // (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+    // if (data.heatmap) {
+    //   // (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+    //
+    //   // options.visualMap = this.getVisualMap(data);
+    //   options.color = data.heatmap!.data.map(x => {
+    //     {
+    //       var letters = "0123456789ABCDEF";
+    //       var color = "#";
+    //       for (var i = 0; i < 6; i++) {
+    //         color += letters[Math.floor(Math.random() * 16)];
+    //       }
+    //       return color;
+    //     }
+    //   });
+    // }
 
-      // options.visualMap = this.getVisualMap(data);
-      options.color = data.heatmap!.data.map(x => '#879692');
-    }
-
+    console.log(data.heatmap!.data)
+    console.log(options.color)
     this.options = options;
   }
 
@@ -256,34 +268,34 @@ export default class PCATab extends Vue {
         type: "value",
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis3D: {
         type: "value",
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       zAxis3D: {
         type: "value",
         name: data.z!.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       dataset: {
         source: [
           data.x.data,
           data.y.data,
-          data.z!.data
+          data.z!.data,
         ],
         dimensions: [
           { name: data.x.label, type: "float" },
           { name: data.y.label, type: "float" },
-          { name: data.z!.label, type: "float" }
-        ]
+          { name: data.z!.label, type: "float" },
+        ],
       },
       series: [
         {
@@ -295,10 +307,10 @@ export default class PCATab extends Vue {
             x: data.x.label,
             y: data.y.label,
             z: data.z!.label,
-            tooltip: [data.x.label, data.y.label, data.z!.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label, data.z!.label],
+          },
+        },
+      ],
     } as echarts.EChartOption;
 
     if (data.heatmap) {
@@ -326,9 +338,9 @@ export default class PCATab extends Vue {
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#f45c00"]
-        }
-      }
+          color: ["#4457cc", "#f45c00"],
+        },
+      },
     ];
   }
 }
