@@ -65,7 +65,7 @@
 
 <script lang="ts">
 import { analysisModule } from "@/modules/analysis";
-import { IRegionStatsParams } from "@/modules/analysis/models";
+import { IRegionStatsSubmission } from "@/modules/analysis/models";
 import { experimentModule } from "@/modules/experiment";
 import { ExportFormat } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
@@ -127,7 +127,7 @@ export default class BlendTab extends Vue {
     const height = parseFloat(this.activeAcquisition.meta.MaxY);
     // TODO: Y axis flip
     const convertedCoords = coords.map(point => [point[0], Math.abs(point[1] - height)]);
-    const params: IRegionStatsParams = {
+    const params: IRegionStatsSubmission = {
       experiment_id: this.activeExperimentId,
       acquisition_id: this.activeAcquisition.id,
       region_polygon: convertedCoords

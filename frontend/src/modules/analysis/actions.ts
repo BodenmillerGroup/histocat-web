@@ -11,7 +11,7 @@ import { AnalysisGetters } from "./getters";
 import {
   IImageSegmentationSettings,
   IPCASubmission,
-  IRegionStatsParams,
+  IRegionStatsSubmission,
   ITSNESubmission,
   IUMAPSubmission
 } from "./models";
@@ -125,6 +125,8 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   async submitTSNE(payload: ITSNESubmission) {
     try {
       const response = await api.submitTSNE(this.main!.getters.token, payload);
+      const notification = { content: "t-SNE processing started. This may take a while..." };
+      this.main!.mutations.addNotification(notification);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -148,6 +150,8 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   async submitUMAP(payload: IUMAPSubmission) {
     try {
       const response = await api.submitUMAP(this.main!.getters.token, payload);
+      const notification = { content: "UMAP processing started. This may take a while..." };
+      this.main!.mutations.addNotification(notification);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -168,7 +172,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async calculateRegionStats(payload: IRegionStatsParams) {
+  async calculateRegionStats(payload: IRegionStatsSubmission) {
     try {
       const response = await api.calculateRegionStats(this.main!.getters.token, payload);
       this.mutations.setSelectedRegionStats(response);

@@ -1,14 +1,18 @@
 import logging
-from typing import Tuple, List
+import sys
+from typing import Tuple, List, Union
 
 import cv2
 import numpy as np
 import tifffile
+from matplotlib import cm
 from matplotlib.colors import to_rgb, LinearSegmentedColormap
 from skimage.color import label2rgb
 
 from app.modules.analysis.models import SegmentationSettingsModel
 from app.modules.channel.models import FilterModel, ScalebarModel, LegendModel, MaskSettingsModel
+
+EPSILON = sys.float_info.epsilon  # Smallest possible difference.
 
 logger = logging.getLogger(__name__)
 
@@ -190,3 +194,12 @@ def apply_morphology(mask, settings: SegmentationSettingsModel):
     mask = cv2.erode(mask, kernel, iterations=2)
     mask = cv2.dilate(mask, kernel, iterations=5)
     return mask
+
+
+def get_heatmap_colors(values: np.ndarray, categorical_values: bool):
+    keys = values.unique().astype(int).tolist()
+    color_range = np.linspace(0, 1, len(keys), endpoint=False).tolist()
+    colors = [cm.tab20b(x) for x in color_range]
+    color_dict = dict(zip(keys, colors))
+    result = ['#%02x%02x%02x' % color_dict.get(int(item)) for item in values]
+    return result

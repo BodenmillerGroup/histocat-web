@@ -158,9 +158,14 @@ export default class PCATab extends Vue {
       heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
     }
 
+    const acquisitionIds =
+      this.experimentContext.getters.selectedAcquisitionIds.length > 0
+        ? this.experimentContext.getters.selectedAcquisitionIds
+        : [this.activeAcquisition.id];
+
     await this.analysisContext.actions.getPCAData({
       dataset_id: this.activeDataset.id,
-      acquisition_id: this.activeAcquisition.id,
+      acquisition_ids: acquisitionIds,
       n_components: parseInt(this.nComponents, 10),
       heatmapType: this.heatmap ? this.heatmap.type : "",
       heatmap: heatmap,
@@ -210,27 +215,34 @@ export default class PCATab extends Vue {
       },
       dataset: {
         source: points,
-        dimensions: [{ name: data.x.label, type: "float" }, { name: data.y.label, type: "float" }]
+        dimensions: [
+          { name: data.x.label, type: "float" },
+          { name: data.y.label, type: "float" }
+        ]
       },
       series: [
         {
           type: "scatter",
           name: "Scatter2D",
           symbolSize: 4,
-          large: !data.heatmap,
+          large: true, //!data.heatmap,
           encode: {
             x: data.x.label,
             y: data.y.label,
-            tooltip: [data.x.label, data.y.label]
-          }
+            tooltip: [
+              data.x.label,
+              data.y.label
+            ]
+          },
         }
       ]
     };
 
     if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+      // (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
 
-      options.visualMap = this.getVisualMap(data);
+      // options.visualMap = this.getVisualMap(data);
+      options.color = data.heatmap!.data.map(x => '#879692');
     }
 
     this.options = options;
@@ -262,7 +274,11 @@ export default class PCATab extends Vue {
         }
       },
       dataset: {
-        source: [data.x.data, data.y.data, data.z!.data],
+        source: [
+          data.x.data,
+          data.y.data,
+          data.z!.data
+        ],
         dimensions: [
           { name: data.x.label, type: "float" },
           { name: data.y.label, type: "float" },
