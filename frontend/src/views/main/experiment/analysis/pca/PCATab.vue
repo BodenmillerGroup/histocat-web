@@ -62,6 +62,7 @@ import "echarts/lib/chart/scatter";
 import "echarts/lib/component/toolbox";
 import "echarts/lib/component/tooltip";
 import "echarts/lib/component/visualMap";
+import { uniq } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 const commonOptions: echarts.EChartOption = {
@@ -222,27 +223,19 @@ export default class PCATab extends Vue {
           type: "scatter",
           name: "Scatter2D",
           symbolSize: 4,
-          large: false, // !data.heatmap,
+          large: !data.heatmap,
           encode: {
             x: data.x.label,
             y: data.y.label,
             tooltip: [data.x.label, data.y.label]
-          },
-          itemStyle: {
-            normal: {
-              color: function(param) {
-                return data.heatmap!.data[param.dataIndex];
-              }
-            }
           }
         }
       ]
     };
 
     if (data.heatmap) {
-      // (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
-      //
-      // options.visualMap = this.getVisualMap(data);
+      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
+      options.visualMap = this.getVisualMap(data);
     }
 
     this.options = options;
@@ -292,30 +285,71 @@ export default class PCATab extends Vue {
             y: data.y.label,
             z: data.z!.label,
             tooltip: [data.x.label, data.y.label, data.z!.label]
-          },
-          itemStyle: {
-            normal: {
-              color: function(param) {
-                return data.heatmap!.data[param.dataIndex];
-              }
-            }
           }
         }
       ]
     } as echarts.EChartOption;
 
     if (data.heatmap) {
-      // (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
-      //
-      // (options.dataset as any).source.push(data.heatmap.data);
-      //
-      // options.visualMap = this.getVisualMap(data);
+      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
+      (options.dataset as any).source.push(data.heatmap.data);
+      options.visualMap = this.getVisualMap(data);
     }
 
     this.options = options;
   }
 
   private getVisualMap(data: IPCAData): echarts.EChartOption.VisualMap[] {
+    return data.heatmap!.label === "Acquisition"
+      ? this.getCategoricalVisualMap(data)
+      : this.getContinuousVisualMap(data);
+  }
+
+  private getCategoricalVisualMap(data: IPCAData): echarts.EChartOption.VisualMap[] {
+    const categories = uniq(data.heatmap!.data);
+    return [
+      {
+        type: "piecewise",
+        orient: "vertical",
+        top: "top",
+        left: "right",
+        categories: categories as any,
+        padding: [
+          60, // up
+          20, // right
+          5, // down
+          5 // left
+        ],
+        inRange: {
+          color: [
+            "#e6194b",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#46f0f0",
+            "#f032e6",
+            "#bcf60c",
+            "#fabebe",
+            "#008080",
+            "#e6beff",
+            "#9a6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#808080",
+            "#000000"
+          ]
+        }
+      }
+    ];
+  }
+
+  private getContinuousVisualMap(data: IPCAData): echarts.EChartOption.VisualMap[] {
     const min = Math.min(...data.heatmap!.data);
     const max = Math.max(...data.heatmap!.data);
     return [
@@ -329,7 +363,7 @@ export default class PCATab extends Vue {
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#f45c00"]
+          color: ["#4457cc", "#ff5200"]
         }
       }
     ];

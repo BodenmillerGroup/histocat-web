@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 
-from app.core.image import get_heatmap_colors
 from app.modules.dataset import crud as dataset_crud
 
 
@@ -77,9 +76,10 @@ def process_pca(
             "data": heatmap_data
         }
     elif len(acquisition_ids) > 1:
+        image_map_inv = {v: k for k, v in image_map.items()}
         output["heatmap"] = {
             "label": "Acquisition",
-            "data": get_heatmap_colors(df["ImageNumber"], True)
+            "data": [image_map_inv.get(item) for item in df["ImageNumber"]]
         }
 
     return output
