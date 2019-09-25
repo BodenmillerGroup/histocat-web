@@ -1,6 +1,9 @@
 <template>
-  <v-banner v-if="!activeDataset || !activeAcquisition" icon="mdi-alert-circle-outline">
-    Please select acquisition and dataset
+  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
+    Please select dataset
+  </v-banner>
+  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
+    Please select acquisition(s)
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
@@ -123,6 +126,10 @@ export default class PCATab extends Vue {
     return this.experimentContext.getters.activeAcquisition;
   }
 
+  get selectedAcquisitionIds() {
+    return this.experimentContext.getters.selectedAcquisitionIds;
+  }
+
   get activeDataset() {
     return this.datasetContext.getters.activeDataset;
   }
@@ -160,9 +167,7 @@ export default class PCATab extends Vue {
     }
 
     const acquisitionIds =
-      this.experimentContext.getters.selectedAcquisitionIds.length > 0
-        ? this.experimentContext.getters.selectedAcquisitionIds
-        : [this.activeAcquisition.id];
+      this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition.id];
 
     await this.analysisContext.actions.getPCAData({
       dataset_id: this.activeDataset.id,

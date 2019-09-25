@@ -63,11 +63,12 @@ class TSNESubmissionModel(BaseModel):
     t-SNE submission model
     """
     dataset_id: int
-    acquisition_id: int
+    acquisition_ids: List[int]
     n_components: int
     perplexity: int
     learning_rate: int
     iterations: int
+    theta: float
     markers: List[str]
 
 
@@ -86,7 +87,7 @@ class UMAPSubmissionModel(BaseModel):
     UMAP submission model
     """
     dataset_id: int
-    acquisition_id: int
+    acquisition_ids: List[int]
     n_components: int
     n_neighbors: int
     metric: str

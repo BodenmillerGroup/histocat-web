@@ -79,7 +79,7 @@ def import_data(uri: str, experiment_id: int, user_id: int):
         elif file_extension == ZIP_FILENDING:
             zip.import_zip(db_session, uri, experiment_id, user_id)
     except SlideImportError as error:
-        logger.warn(error)
+        logger.warning(error)
     finally:
         shutil.rmtree(path)
 
@@ -87,18 +87,19 @@ def import_data(uri: str, experiment_id: int, user_id: int):
 @dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
 def process_tsne(
     dataset_id: int,
-    acquisition_id: int,
+    acquisition_ids: List[int],
     n_components: int,
     perplexity: int,
     learning_rate: int,
     iterations: int,
+    theta: float,
     markers: List[str],
 ):
-    logger.info(f'Processing t-SNE for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
+    logger.info(f'Processing t-SNE for acquisitions [{acquisition_ids}] from dataset [{dataset_id}]')
     try:
-        tsne.process_tsne(db_session, dataset_id, acquisition_id, n_components, perplexity, learning_rate, iterations, markers)
+        tsne.process_tsne(db_session, dataset_id, acquisition_ids, n_components, perplexity, learning_rate, iterations, theta, markers)
     except Exception as error:
-        logger.warn(error)
+        logger.warning(error)
     finally:
         pass
 
@@ -106,17 +107,17 @@ def process_tsne(
 @dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
 def process_umap(
     dataset_id: int,
-    acquisition_id: int,
+    acquisition_ids: List[int],
     n_components: int,
     n_neighbors: int,
     metric: str,
     min_dist: float,
     markers: List[str],
 ):
-    logger.info(f'Processing UMAP for acquisition [{acquisition_id}] from dataset [{dataset_id}]')
+    logger.info(f'Processing UMAP for acquisitions [{acquisition_ids}] from dataset [{dataset_id}]')
     try:
-        umap.process_umap(db_session, dataset_id, acquisition_id, n_components, n_neighbors, metric, min_dist, markers)
+        umap.process_umap(db_session, dataset_id, acquisition_ids, n_components, n_neighbors, metric, min_dist, markers)
     except Exception as error:
-        logger.warn(error)
+        logger.warning(error)
     finally:
         pass

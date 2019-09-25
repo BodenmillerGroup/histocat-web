@@ -18,7 +18,7 @@ from app.modules.dataset import crud as dataset_crud
 def process_umap(
     db: Session,
     dataset_id: int,
-    acquisition_id: int,
+    acquisition_ids: List[int],
     n_components: int,
     n_neighbors: int,
     metric: str,
@@ -33,15 +33,20 @@ def process_umap(
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
     image_map = dataset.input.get("image_map")
-    image_number = image_map.get(str(acquisition_id))
-    if not cell_input or not image_number or not channel_map:
+
+    image_numbers = []
+    for acquisition_id in acquisition_ids:
+        image_number = image_map.get(str(acquisition_id))
+        image_numbers.append(image_number)
+
+    if not cell_input or not channel_map or len(image_numbers) == 0:
         raise HTTPException(
             status_code=400,
             detail="The dataset does not have a proper input.",
         )
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"] == image_number]
+    df = df[df["ImageNumber"].isin(image_numbers)]
 
     features = []
     for marker in markers:
@@ -61,7 +66,7 @@ def process_umap(
         "name": timestamp,
         "params": {
             "dataset_id": dataset_id,
-            "acquisition_id": acquisition_id,
+            "acquisition_ids": acquisition_ids,
             "n_components": n_components,
             "n_neighbors": n_neighbors,
             "metric": metric,
@@ -115,16 +120,20 @@ def get_umap_result(
             "data": result[:, 2].tolist()
         }
 
-    if heatmap_type and heatmap:
-        params = umap_result.get("params")
-        cell_input = dataset.input.get("cell")
-        image_map = dataset.input.get("image_map")
-        acquisition_id = params.get("acquisition_id")
+    params = umap_result.get("params")
+    acquisition_ids = params.get("acquisition_ids")
+    image_map = dataset.input.get("image_map")
+    cell_input = dataset.input.get("cell")
+
+    image_numbers = []
+    for acquisition_id in acquisition_ids:
         image_number = image_map.get(str(acquisition_id))
+        image_numbers.append(image_number)
 
-        df = pd.read_feather(cell_input.get("location"))
-        df = df[df["ImageNumber"] == image_number]
+    df = pd.read_feather(cell_input.get("location"))
+    df = df[df["ImageNumber"].isin(image_numbers)]
 
+    if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
             heatmap_data = df[f'Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}'] * 2 ** 16
@@ -134,6 +143,12 @@ def get_umap_result(
         output["heatmap"] = {
             "label": heatmap,
             "data": heatmap_data
+        }
+    elif len(acquisition_ids) > 1:
+        image_map_inv = {v: k for k, v in image_map.items()}
+        output["heatmap"] = {
+            "label": "Acquisition",
+            "data": [image_map_inv.get(item) for item in df["ImageNumber"]]
         }
 
     return output

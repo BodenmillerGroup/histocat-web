@@ -261,11 +261,12 @@ def submit_tsne(
     """
     worker.process_tsne.send(
         params.dataset_id,
-        params.acquisition_id,
+        params.acquisition_ids,
         params.n_components,
         params.perplexity,
         params.learning_rate,
         params.iterations,
+        params.theta,
         params.markers,
     )
     return {"status": "submitted"}
@@ -299,7 +300,7 @@ def submit_umap(
     """
     worker.process_umap.send(
         params.dataset_id,
-        params.acquisition_id,
+        params.acquisition_ids,
         params.n_components,
         params.n_neighbors,
         params.metric,

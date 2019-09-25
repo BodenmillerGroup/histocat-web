@@ -55,12 +55,13 @@ export interface IPCAData {
 
 export interface ITSNESubmission {
   dataset_id: number;
-  acquisition_id: number;
+  acquisition_ids: number[];
   markers: string[];
   n_components: number;
   perplexity: number;
   learning_rate: number;
   iterations: number;
+  theta: number;
 }
 
 export interface ITSNEData {
@@ -72,7 +73,7 @@ export interface ITSNEData {
 
 export interface IUMAPSubmission {
   dataset_id: number;
-  acquisition_id: number;
+  acquisition_ids: number[];
   markers: string[];
   n_components: number;
   n_neighbors: number;
