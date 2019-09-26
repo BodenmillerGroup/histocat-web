@@ -72,6 +72,7 @@ import UploadButton from "@/components/UploadButton.vue";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { IExperiment } from "@/modules/experiment/models";
+import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 @Component({
@@ -83,7 +84,9 @@ export default class SlidesTreeView extends Vue {
 
   @Prop(Object) readonly experiment!: IExperiment;
 
-  selected = [];
+  mutex = false;
+
+  selected: any[] = [];
   search = null;
   showROI = false;
 
@@ -109,10 +112,48 @@ export default class SlidesTreeView extends Vue {
     this.experimentContext.mutations.setActiveWorkspaceNode(items[0]);
   }
 
+  get selectedAcquisitionIds() {
+    return this.experimentContext.getters.selectedAcquisitionIds;
+  }
+
   @Watch("selected")
-  onSelectedChanged(items) {
+  async selectedChanged(items: any[]) {
+    this.mutex = true;
     const ids = items.filter(item => item.type === "acquisition").map(acquisition => acquisition.id);
-    this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
+    await this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
+    this.mutex = false;
+  }
+
+  @Watch("selectedAcquisitionIds")
+  selectedAcquisitionIdsChanged(newIds: number[], oldIds: number[]) {
+    if (!this.mutex && !equals(newIds, oldIds)) {
+      const items: any[] = [];
+      const nodes = {
+        children: this.items
+      };
+
+      for (const id of newIds) {
+        const item = this.searchTree(nodes, id);
+        if (item) {
+          items.push(item);
+        }
+      }
+      this.selected = items;
+    }
+  }
+
+  searchTree(element, id) {
+    if (element.type === "acquisition" && element.id === id) {
+      return element;
+    } else if (element.children != null) {
+      var i;
+      var result = null;
+      for (i = 0; result == null && i < element.children.length; i++) {
+        result = this.searchTree(element.children[i], id);
+      }
+      return result;
+    }
+    return null;
   }
 
   get filter() {
@@ -139,7 +180,7 @@ export default class SlidesTreeView extends Vue {
               }
               return Object.assign({}, acquisition, {
                 type: "acquisition",
-                name: acquisition.meta.Description,
+                name: `${acquisition.id}: ${acquisition.meta.Description}`,
                 uid: `acquisition-${acquisition.id}`,
                 hasMask: hasMask
               });

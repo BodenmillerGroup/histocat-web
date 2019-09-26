@@ -1,3 +1,4 @@
+import { equals } from "rambda";
 import { Mutations } from "vuex-smart-module";
 import { ExperimentState } from ".";
 import { IExperiment, IShare } from "./models";
@@ -30,7 +31,9 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   }
 
   setSelectedAcquisitionIds(ids: number[]) {
-    this.state.selectedAcquisitionIds = ids;
+    if (!equals(ids, this.state.selectedAcquisitionIds)) {
+      this.state.selectedAcquisitionIds = ids;
+    }
   }
 
   setActiveExperimentId(id?: number) {

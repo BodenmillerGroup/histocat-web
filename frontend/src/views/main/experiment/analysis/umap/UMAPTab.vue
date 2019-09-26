@@ -1,6 +1,9 @@
 <template>
-  <v-banner v-if="!activeDataset || !activeAcquisition" icon="mdi-alert-circle-outline">
-    Please select acquisition and dataset
+  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
+    Please select dataset
+  </v-banner>
+  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
+    Please select acquisition(s)
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
@@ -24,32 +27,36 @@
                 Clear all
               </v-btn>
             </v-card-actions>
-            <v-radio-group v-model="nComponents" row mandatory>
+            <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
               <v-radio label="2D" value="2"></v-radio>
               <v-radio label="3D" value="3"></v-radio>
             </v-radio-group>
-            <v-text-field
-              class="input-row"
-              type="number"
-              min="2"
-              max="200"
-              step="1"
-              label="Neighbors"
-              v-model.number="nNeighbors"
-              :rules="[required]"
-              hide-details
-            ></v-text-field>
-            <v-text-field
-              class="input-row"
-              type="number"
-              min="0.0"
-              max="0.99"
-              step="0.01"
-              label="Minimum distance"
-              v-model.number="minDist"
-              :rules="[required]"
-              hide-details
-            ></v-text-field>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  type="number"
+                  min="2"
+                  max="200"
+                  step="1"
+                  label="Neighbors"
+                  v-model.number="nNeighbors"
+                  :rules="[required]"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  type="number"
+                  min="0.0"
+                  max="0.99"
+                  step="0.01"
+                  label="Minimum distance"
+                  v-model.number="minDist"
+                  :rules="[required]"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <v-select :items="metrics" v-model="metric" label="Metric" hide-details clearable></v-select>
           </v-form>
         </v-card-text>
@@ -106,6 +113,7 @@ import "echarts/lib/chart/scatter";
 import "echarts/lib/component/toolbox";
 import "echarts/lib/component/tooltip";
 import "echarts/lib/component/visualMap";
+import { uniq } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 const commonOptions: echarts.EChartOption = {
@@ -190,6 +198,10 @@ export default class UMAPTab extends Vue {
     return this.experimentContext.getters.activeAcquisition;
   }
 
+  get selectedAcquisitionIds() {
+    return this.experimentContext.getters.selectedAcquisitionIds;
+  }
+
   get activeDataset() {
     return this.datasetContext.getters.activeDataset;
   }
@@ -216,19 +228,12 @@ export default class UMAPTab extends Vue {
 
   async submit() {
     if ((this.$refs.form as any).validate()) {
-      if (!this.activeDataset) {
-        self.alert("Please select a dataset");
-        return;
-      }
-
-      if (!this.activeAcquisition) {
-        self.alert("Please select an acquisition");
-        return;
-      }
+      const acquisitionIds =
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
 
       await this.analysisContext.actions.submitUMAP({
-        dataset_id: this.activeDataset.id,
-        acquisition_id: this.activeAcquisition.id,
+        dataset_id: this.activeDataset!.id,
+        acquisition_ids: acquisitionIds,
         n_components: parseInt(this.nComponents, 10),
         markers: this.selectedChannels,
         n_neighbors: this.nNeighbors,
@@ -332,7 +337,7 @@ export default class UMAPTab extends Vue {
     };
 
     if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
       options.visualMap = this.getVisualMap(data);
     }
 
@@ -389,10 +394,8 @@ export default class UMAPTab extends Vue {
     } as echarts.EChartOption;
 
     if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
-
+      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
       (options.dataset as any).source.push(data.heatmap.data);
-
       options.visualMap = this.getVisualMap(data);
     }
 
@@ -400,6 +403,56 @@ export default class UMAPTab extends Vue {
   }
 
   private getVisualMap(data: IUMAPData): echarts.EChartOption.VisualMap[] {
+    return data.heatmap!.label === "Acquisition"
+      ? this.getCategoricalVisualMap(data)
+      : this.getContinuousVisualMap(data);
+  }
+
+  private getCategoricalVisualMap(data: IUMAPData): echarts.EChartOption.VisualMap[] {
+    const categories = uniq(data.heatmap!.data);
+    return [
+      {
+        type: "piecewise",
+        orient: "vertical",
+        top: "top",
+        left: "right",
+        categories: categories as any,
+        padding: [
+          60, // up
+          20, // right
+          5, // down
+          5 // left
+        ],
+        inRange: {
+          color: [
+            "#e6194b",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#46f0f0",
+            "#f032e6",
+            "#bcf60c",
+            "#fabebe",
+            "#008080",
+            "#e6beff",
+            "#9a6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#808080",
+            "#000000"
+          ]
+        }
+      }
+    ];
+  }
+
+  private getContinuousVisualMap(data: IUMAPData): echarts.EChartOption.VisualMap[] {
     const min = Math.min(...data.heatmap!.data);
     const max = Math.max(...data.heatmap!.data);
     return [
@@ -413,7 +466,7 @@ export default class UMAPTab extends Vue {
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#f45c00"]
+          color: ["#4457cc", "#ff5200"]
         }
       }
     ];
@@ -424,9 +477,5 @@ export default class UMAPTab extends Vue {
 <style scoped>
 .chart-container {
   height: calc(100vh - 154px);
-}
-
-.input-row {
-  margin-bottom: 18px;
 }
 </style>

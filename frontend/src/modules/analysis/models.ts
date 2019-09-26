@@ -38,7 +38,7 @@ export interface IScatterPlotData {
 
 export interface IPCASubmission {
   dataset_id: number;
-  acquisition_id: number;
+  acquisition_ids: number[];
   n_components: number;
   markers: string[];
   heatmapType: string;
@@ -55,12 +55,14 @@ export interface IPCAData {
 
 export interface ITSNESubmission {
   dataset_id: number;
-  acquisition_id: number;
+  acquisition_ids: number[];
   markers: string[];
   n_components: number;
   perplexity: number;
   learning_rate: number;
   iterations: number;
+  theta: number;
+  init: string;
 }
 
 export interface ITSNEData {
@@ -72,7 +74,7 @@ export interface ITSNEData {
 
 export interface IUMAPSubmission {
   dataset_id: number;
-  acquisition_id: number;
+  acquisition_ids: number[];
   markers: string[];
   n_components: number;
   n_neighbors: number;
@@ -87,14 +89,14 @@ export interface IUMAPData {
   heatmap?: IPlotSeries;
 }
 
-export interface IRegionChannelStats {
+export interface IRegionChannelData {
   metal: string;
   min: number;
   max: number;
   mean: number;
 }
 
-export interface IRegionStatsParams {
+export interface IRegionStatsSubmission {
   experiment_id: number;
   acquisition_id: number;
   region_polygon: any[];

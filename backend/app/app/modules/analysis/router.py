@@ -234,8 +234,8 @@ async def read_box_plot_data(
 @router.get("/pca", response_model=PCAModel)
 async def read_pca_data(
     dataset_id: int,
-    acquisition_id: int,
     n_components: int,
+    acquisition_ids: List[int] = Query(None),
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     markers: List[str] = Query(None),
@@ -246,7 +246,7 @@ async def read_pca_data(
     Calculate Principal Component Analysis data for the dataset
     """
 
-    content = pca.process_pca(db, dataset_id, acquisition_id, n_components, markers, heatmap_type, heatmap)
+    content = pca.process_pca(db, dataset_id, acquisition_ids, n_components, markers, heatmap_type, heatmap)
     return UJSONResponse(content=content)
 
 
@@ -261,11 +261,13 @@ def submit_tsne(
     """
     worker.process_tsne.send(
         params.dataset_id,
-        params.acquisition_id,
+        params.acquisition_ids,
         params.n_components,
         params.perplexity,
         params.learning_rate,
         params.iterations,
+        params.theta,
+        params.init,
         params.markers,
     )
     return {"status": "submitted"}
@@ -299,7 +301,7 @@ def submit_umap(
     """
     worker.process_umap.send(
         params.dataset_id,
-        params.acquisition_id,
+        params.acquisition_ids,
         params.n_components,
         params.n_neighbors,
         params.metric,

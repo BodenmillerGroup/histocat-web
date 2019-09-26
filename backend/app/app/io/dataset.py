@@ -69,6 +69,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         probability_masks[acquisition_id] = mask_meta
         image_map[acquisition_id] = mask_meta.get("image_number")
     input["probability_masks"] = probability_masks
+    # Map acquisition database ID to ImageNumber column
     input["image_map"] = image_map
 
     for channels_filename in locate(str(root_folder), f"*{CHANNELS_FULL_CSV_ENDING}"):

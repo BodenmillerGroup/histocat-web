@@ -51,7 +51,7 @@
         <!--          </template>-->
         <!--          <span>Request calculation of colorized cell mask</span>-->
         <!--        </v-tooltip>-->
-        <v-switch v-model="applyMask" label="Mask overlay" hide-details class="ml-8"></v-switch>
+        <v-switch v-model="applyMask" label="Mask overlay" hide-details class="ml-8" :disabled="!hasMask"></v-switch>
       </v-toolbar>
       <v-row no-gutters>
         <v-col>
@@ -65,7 +65,8 @@
 
 <script lang="ts">
 import { analysisModule } from "@/modules/analysis";
-import { IRegionStatsParams } from "@/modules/analysis/models";
+import { IRegionStatsSubmission } from "@/modules/analysis/models";
+import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { ExportFormat } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
@@ -81,6 +82,7 @@ export default class BlendTab extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
+  readonly datasetContext = datasetModule.context(this.$store);
 
   get colorizeMaskInProgress() {
     return this.experimentContext.getters.colorizeMaskInProgress;
@@ -118,6 +120,18 @@ export default class BlendTab extends Vue {
     return this.experimentContext.getters.activeAcquisition;
   }
 
+  get dataset() {
+    return this.datasetContext.getters.activeDataset;
+  }
+
+  get hasMask() {
+    let hasMask = false;
+    if (this.activeAcquisition && this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
+      hasMask = !!this.dataset.input.probability_masks[this.activeAcquisition.id];
+    }
+    return hasMask;
+  }
+
   calculateRegionStats() {
     if (!this.activeExperimentId || !this.activeAcquisition || !this.selectedRegion) {
       return;
@@ -127,7 +141,7 @@ export default class BlendTab extends Vue {
     const height = parseFloat(this.activeAcquisition.meta.MaxY);
     // TODO: Y axis flip
     const convertedCoords = coords.map(point => [point[0], Math.abs(point[1] - height)]);
-    const params: IRegionStatsParams = {
+    const params: IRegionStatsSubmission = {
       experiment_id: this.activeExperimentId,
       acquisition_id: this.activeAcquisition.id,
       region_polygon: convertedCoords

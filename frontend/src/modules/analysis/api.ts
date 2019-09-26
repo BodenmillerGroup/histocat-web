@@ -5,8 +5,8 @@ import {
   IPCAData,
   IPCASubmission,
   IPlotSeries,
-  IRegionChannelStats,
-  IRegionStatsParams,
+  IRegionChannelData,
+  IRegionStatsSubmission,
   IScatterPlotData,
   ITSNEData,
   ITSNESubmission,
@@ -70,11 +70,13 @@ export const api = {
       .json<IPlotSeries[]>();
   },
   async getPCAData(token: string, params: IPCASubmission) {
+    const acquisitionIdsArray = params.acquisition_ids.map(acquisition_id => `&acquisition_ids=${acquisition_id}`);
+    const acquisitionIds = acquisitionIdsArray.join("");
     const markersArray = params.markers.map(marker => `&markers=${marker}`);
     const markers = markersArray.join("");
     return ky
       .get(
-        `${apiUrl}/api/v1/analysis/pca?dataset_id=${params.dataset_id}&acquisition_id=${params.acquisition_id}&n_components=${params.n_components}&heatmap_type=${params.heatmapType}&heatmap=${params.heatmap}${markers}`,
+        `${apiUrl}/api/v1/analysis/pca?dataset_id=${params.dataset_id}&n_components=${params.n_components}&heatmap_type=${params.heatmapType}&heatmap=${params.heatmap}${acquisitionIds}${markers}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -127,7 +129,7 @@ export const api = {
       )
       .json<IUMAPData>();
   },
-  async calculateRegionStats(token: string, params: IRegionStatsParams) {
+  async calculateRegionStats(token: string, params: IRegionStatsSubmission) {
     return ky
       .post(`${apiUrl}/api/v1/analysis/region/stats`, {
         json: params,
@@ -135,6 +137,6 @@ export const api = {
           Authorization: `Bearer ${token}`
         }
       })
-      .json<IRegionChannelStats[]>();
+      .json<IRegionChannelData[]>();
   }
 };

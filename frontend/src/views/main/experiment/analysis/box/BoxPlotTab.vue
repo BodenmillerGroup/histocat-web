@@ -1,6 +1,9 @@
 <template>
-  <v-banner v-if="!activeDataset || !activeAcquisition" icon="mdi-alert-circle-outline">
-    Please select acquisition and dataset
+  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
+    Please select dataset
+  </v-banner>
+  <v-banner v-else-if="!activeAcquisition" icon="mdi-alert-circle-outline">
+    Please select acquisition
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
