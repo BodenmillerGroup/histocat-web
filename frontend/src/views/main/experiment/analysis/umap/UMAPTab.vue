@@ -250,6 +250,8 @@ export default class UMAPTab extends Vue {
       this.minDist = result.params.min_dist;
       this.metric = result.params.metric;
       this.selectedChannels = result.params.markers;
+
+      this.experimentContext.mutations.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 
