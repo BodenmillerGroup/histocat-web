@@ -30,6 +30,10 @@ export class AnalysisGetters extends Getters<AnalysisState> {
     return this.state.umapData;
   }
 
+  get phenographData() {
+    return this.state.phenographData;
+  }
+
   get regionsEnabled() {
     return this.state.regionsEnabled;
   }

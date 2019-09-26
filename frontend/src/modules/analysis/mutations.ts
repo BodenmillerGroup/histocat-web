@@ -1,7 +1,15 @@
 import Feature from "ol/Feature";
 import { Mutations } from "vuex-smart-module";
 import { AnalysisState } from ".";
-import { IPCAData, IPlotSeries, IRegionChannelData, IScatterPlotData, ITSNEData, IUMAPData } from "./models";
+import {
+  IPCAData,
+  IPhenoGraphData,
+  IPlotSeries,
+  IRegionChannelData,
+  IScatterPlotData,
+  ITSNEData,
+  IUMAPData,
+} from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
   setSegmentationImage(base64Image: string | ArrayBuffer | null) {
@@ -32,6 +40,10 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
     this.state.umapData = data;
   }
 
+  setPhenoGraphData(data: IPhenoGraphData | null) {
+    this.state.phenographData = data;
+  }
+
   setRegionsEnabled(state: boolean) {
     this.state.regionsEnabled = state;
   }
@@ -52,6 +64,7 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
     this.setPCAData(null);
     this.setTSNEData(null);
     this.setUMAPData(null);
+    this.setPhenoGraphData(null);
     this.state.regionsEnabled = false;
     this.state.selectedRegion = null;
     this.state.selectedRegionStats = [];

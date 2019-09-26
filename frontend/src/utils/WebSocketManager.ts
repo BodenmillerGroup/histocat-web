@@ -87,6 +87,15 @@ export class WebSocketManager {
             });
             break;
           }
+          case "phenograph_result_ready": {
+            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
+            WebSocketManager.datasetContext.mutations.updateDatasetPhenoGraphOutput(message);
+            WebSocketManager.mainContext.mutations.addNotification({
+              content: "PhenoGraph result is ready",
+              color: "success"
+            });
+            break;
+          }
         }
       }
     };

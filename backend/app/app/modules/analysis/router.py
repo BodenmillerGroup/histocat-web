@@ -17,14 +17,15 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
-from app.modules.analysis.processors import pca, tsne, umap
+from app.modules.analysis.processors import pca, tsne, umap, phenograph
 from app.modules.channel import crud as channel_crud
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
 from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel, \
-    UMAPSubmissionModel, UMAPModel, RegionStatsSubmissionModel, RegionChannelStatsModel
+    UMAPSubmissionModel, UMAPModel, RegionStatsSubmissionModel, RegionChannelStatsModel, PhenographSubmissionModel, \
+    PhenographModel
 
 logger = logging.getLogger(__name__)
 
@@ -325,6 +326,41 @@ async def read_umap_data(
     """
 
     content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
+    return UJSONResponse(content=content)
+
+
+@router.post("/phenograph")
+def submit_phenograph(
+    params: PhenographSubmissionModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Start PhenoGraph data processing
+    """
+
+    worker.process_phenograph.send(
+        params.dataset_id,
+        params.acquisition_ids,
+        params.markers,
+    )
+    return {"status": "submitted"}
+
+
+@router.get("/phenograph", response_model=PhenographModel)
+async def read_phenograph_data(
+    dataset_id: int,
+    name: str,
+    heatmap_type: Optional[str],
+    heatmap: Optional[str],
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read PhenoGraph result data
+    """
+
+    content = phenograph.get_phenograph_result(db, dataset_id, name, heatmap_type, heatmap)
     return UJSONResponse(content=content)
 
 

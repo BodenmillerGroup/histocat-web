@@ -26,6 +26,12 @@ export interface IDatasetUMAPOutput {
   params: any;
 }
 
+export interface IDatasetPhenoGraphOutput {
+  name: string;
+  location: string;
+  params: any;
+}
+
 export interface IDataset {
   id: number;
   experiment_id: number;
@@ -72,6 +78,7 @@ export interface IDataset {
   output?: {
     tsne: { [name: string]: IDatasetTSNEOutput };
     umap: { [name: string]: IDatasetUMAPOutput };
+    phenograph: { [name: string]: IDatasetPhenoGraphOutput };
   };
   meta?: object;
   location: string;

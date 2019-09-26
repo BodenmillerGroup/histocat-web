@@ -89,6 +89,19 @@ export interface IUMAPData {
   heatmap?: IPlotSeries;
 }
 
+export interface IPhenoGraphSubmission {
+  dataset_id: number;
+  acquisition_ids: number[];
+  markers: string[];
+}
+
+export interface IPhenoGraphData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
 export interface IRegionChannelData {
   metal: string;
   min: number;

@@ -11,12 +11,12 @@
     </v-col>
     <v-col v-if="showOptions" cols="3">
       <v-card tile>
-        <v-card-title>t-SNE Settings</v-card-title>
+        <v-card-title>PhenoGraph Settings</v-card-title>
         <v-card-text>
           <v-form v-model="valid" ref="form">
             <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
-              <v-chip v-for="channel in channels" :key="channel" :value="channel" small>
-                {{ channel }}
+              <v-chip v-for="item in channels" :key="item" :value="item" small>
+                {{ item }}
               </v-chip>
             </v-chip-group>
             <v-card-actions>
@@ -27,29 +27,19 @@
                 Clear all
               </v-btn>
             </v-card-actions>
-            <v-row>
-              <v-col>
-                <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
-                  <v-radio label="2D" value="2"></v-radio>
-                  <v-radio label="3D" value="3"></v-radio>
-                </v-radio-group>
-              </v-col>
-              <v-col>
-                <v-radio-group v-model="init" mandatory hide-details label="Initialization">
-                  <v-radio label="PCA" value="pca"></v-radio>
-                  <v-radio label="Random" value="random"></v-radio>
-                </v-radio-group>
-              </v-col>
-            </v-row>
+            <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
+              <v-radio label="2D" value="2"></v-radio>
+              <v-radio label="3D" value="3"></v-radio>
+            </v-radio-group>
             <v-row>
               <v-col>
                 <v-text-field
                   type="number"
-                  min="5"
-                  max="50"
+                  min="2"
+                  max="200"
                   step="1"
-                  label="Perplexity"
-                  v-model.number="perplexity"
+                  label="Neighbors"
+                  v-model.number="nNeighbors"
                   :rules="[required]"
                   hide-details
                 ></v-text-field>
@@ -57,41 +47,17 @@
               <v-col>
                 <v-text-field
                   type="number"
-                  min="10"
-                  max="1000"
-                  step="1"
-                  label="Learning rate"
-                  v-model.number="learningRate"
-                  :rules="[required]"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  type="number"
-                  min="250"
-                  step="1"
-                  label="Iterations"
-                  v-model.number="iterations"
-                  :rules="[required]"
-                  hide-details
-                ></v-text-field>
-              </v-col>
-              <v-col>
-                <v-text-field
-                  type="number"
-                  min="0"
-                  max="1"
+                  min="0.0"
+                  max="0.99"
                   step="0.01"
-                  label="Angle (theta)"
-                  v-model.number="theta"
+                  label="Minimum distance"
+                  v-model.number="minDist"
                   :rules="[required]"
                   hide-details
                 ></v-text-field>
               </v-col>
             </v-row>
+            <v-select :items="metrics" v-model="metric" label="Metric" hide-details dense></v-select>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -106,7 +72,7 @@
             item-text="name"
             return-object
             label="Results"
-            hint="t-SNE processed data"
+            hint="PhenoGraph processed data"
             persistent-hint
             clearable
             dense
@@ -136,7 +102,7 @@
 
 <script lang="ts">
 import { analysisModule } from "@/modules/analysis";
-import { ITSNEData } from "@/modules/analysis/models";
+import { IPhenoGraphData } from "@/modules/analysis/models";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
@@ -154,7 +120,7 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 const commonOptions: echarts.EChartOption = {
   title: {
-    text: "t-Distributed Stochastic Neighbor Embedding",
+    text: "PhenoGraph",
     left: "center",
     top: 0
   },
@@ -185,7 +151,7 @@ const commonOptions: echarts.EChartOption = {
 };
 
 @Component
-export default class TSNETab extends Vue {
+export default class PhenoGraphTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
@@ -193,6 +159,20 @@ export default class TSNETab extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
 
   readonly required = required;
+  readonly metrics = [
+    "euclidean",
+    "manhattan",
+    "chebyshev",
+    "minkowski",
+    "canberra",
+    "braycurtis",
+    "haversine",
+    "mahalanobis",
+    "wminkowski",
+    "seuclidean",
+    "cosine",
+    "correlation"
+  ];
 
   valid = false;
 
@@ -200,11 +180,9 @@ export default class TSNETab extends Vue {
 
   selectedChannels: any[] = [];
   nComponents = "2";
-  perplexity = 30;
-  learningRate = 200;
-  iterations = 1000;
-  theta = 0.5;
-  init = "pca";
+  nNeighbors = 15;
+  minDist = 0.1;
+  metric = "euclidean";
 
   heatmap: { type: string; label: string } | null = null;
 
@@ -239,7 +217,7 @@ export default class TSNETab extends Vue {
   }
 
   get results() {
-    return this.datasetContext.getters.tsneResults;
+    return this.datasetContext.getters.phenographResults;
   }
 
   selectAll() {
@@ -255,29 +233,17 @@ export default class TSNETab extends Vue {
       const acquisitionIds =
         this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
 
-      await this.analysisContext.actions.submitTSNE({
+      await this.analysisContext.actions.submitPhenoGraph({
         dataset_id: this.activeDataset!.id,
         acquisition_ids: acquisitionIds,
-        n_components: parseInt(this.nComponents, 10),
         markers: this.selectedChannels,
-        perplexity: this.perplexity,
-        learning_rate: this.learningRate,
-        iterations: this.iterations,
-        theta: this.theta,
-        init: this.init
       });
     }
   }
 
   resultChanged(result) {
     if (result) {
-      this.nComponents = result.params.n_components.toString();
-      this.perplexity = result.params.perplexity;
-      this.iterations = result.params.iterations;
-      this.learningRate = result.params.learning_rate;
       this.selectedChannels = result.params.markers;
-      this.theta = result.params.theta;
-      this.init = result.params.init;
 
       this.experimentContext.mutations.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
@@ -299,7 +265,7 @@ export default class TSNETab extends Vue {
       heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
     }
 
-    await this.analysisContext.actions.getTSNEResult({
+    await this.analysisContext.actions.getPhenoGraphResult({
       datasetId: this.activeDataset.id,
       name: this.result ? this.result.name : "",
       heatmapType: this.heatmap ? this.heatmap.type : "",
@@ -307,12 +273,12 @@ export default class TSNETab extends Vue {
     });
   }
 
-  get tsneData() {
-    return this.analysisContext.getters.tsneData;
+  get phenographData() {
+    return this.analysisContext.getters.phenographData;
   }
 
-  @Watch("tsneData")
-  tsneDataChanged(data: ITSNEData) {
+  @Watch("phenographData")
+  phenographDataChanged(data: IPhenoGraphData) {
     if (data) {
       if (data.z) {
         this.plot3D(data);
@@ -322,7 +288,7 @@ export default class TSNETab extends Vue {
     }
   }
 
-  private plot2D(data: ITSNEData) {
+  private plot2D(data: IPhenoGraphData) {
     const points = data.heatmap
       ? data.x.data.map((x, i) => {
           return [x, data.y.data[i], data.heatmap!.data[i]];
@@ -374,7 +340,7 @@ export default class TSNETab extends Vue {
     this.options = options;
   }
 
-  private plot3D(data: ITSNEData) {
+  private plot3D(data: IPhenoGraphData) {
     const options = {
       ...commonOptions,
       grid3D: {},
@@ -432,13 +398,13 @@ export default class TSNETab extends Vue {
     this.options = options;
   }
 
-  private getVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
+  private getVisualMap(data: IPhenoGraphData): echarts.EChartOption.VisualMap[] {
     return data.heatmap!.label === "Acquisition"
       ? this.getCategoricalVisualMap(data)
       : this.getContinuousVisualMap(data);
   }
 
-  private getCategoricalVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
+  private getCategoricalVisualMap(data: IPhenoGraphData): echarts.EChartOption.VisualMap[] {
     const categories = uniq(data.heatmap!.data);
     return [
       {
@@ -482,7 +448,7 @@ export default class TSNETab extends Vue {
     ];
   }
 
-  private getContinuousVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
+  private getContinuousVisualMap(data: IPhenoGraphData): echarts.EChartOption.VisualMap[] {
     const min = Math.min(...data.heatmap!.data);
     const max = Math.max(...data.heatmap!.data);
     return [

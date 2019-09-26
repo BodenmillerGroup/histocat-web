@@ -21,6 +21,7 @@
               hint="X axis marker"
               persistent-hint
               :rules="[required]"
+              dense
             ></v-select>
             <v-select
               :items="items"
@@ -29,6 +30,7 @@
               hint="Y axis marker"
               persistent-hint
               :rules="[required]"
+              dense
             ></v-select>
             <v-select
               :items="items"
@@ -37,6 +39,7 @@
               hint="Z axis marker"
               persistent-hint
               clearable
+              dense
             ></v-select>
             <v-select
               :items="heatmaps"
@@ -47,6 +50,7 @@
               return-object
               persistent-hint
               clearable
+              dense
               class="input-row"
             ></v-select>
             <v-switch v-if="!markerZ" v-model="showRegression" label="Show regression"></v-switch>
@@ -57,6 +61,7 @@
               v-model="regressionType"
               label="Regression type"
               hide-details
+              dense
             ></v-select>
             <v-text-field
               v-if="!markerZ && regressionType === 'polynomial'"

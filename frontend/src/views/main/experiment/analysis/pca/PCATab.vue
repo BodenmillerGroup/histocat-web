@@ -39,6 +39,7 @@
             return-object
             persistent-hint
             clearable
+            dense
           ></v-select>
         </v-card-text>
         <v-card-actions>

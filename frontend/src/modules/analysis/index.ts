@@ -2,7 +2,15 @@ import Feature from "ol/Feature";
 import { Module } from "vuex-smart-module";
 import { AnalysisActions } from "./actions";
 import { AnalysisGetters } from "./getters";
-import { IPCAData, IPlotSeries, IRegionChannelData, IScatterPlotData, ITSNEData, IUMAPData } from "./models";
+import {
+  IPCAData,
+  IPhenoGraphData,
+  IPlotSeries,
+  IRegionChannelData,
+  IScatterPlotData,
+  ITSNEData,
+  IUMAPData,
+} from "./models";
 import { AnalysisMutations } from "./mutations";
 
 export class AnalysisState {
@@ -13,6 +21,7 @@ export class AnalysisState {
   pcaData: IPCAData | null = null;
   tsneData: ITSNEData | null = null;
   umapData: IUMAPData | null = null;
+  phenographData: IPhenoGraphData | null = null;
 
   regionsEnabled = false;
   selectedRegion: Feature | null = null;

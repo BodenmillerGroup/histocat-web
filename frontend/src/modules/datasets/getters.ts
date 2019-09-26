@@ -46,4 +46,10 @@ export class DatasetGetters extends Getters<DatasetState> {
       ? Object.values(this.activeDataset.output["umap"])
       : [];
   }
+
+  get phenographResults() {
+    return this.activeDataset && this.activeDataset.output && this.activeDataset.output["phenograph"]
+      ? Object.values(this.activeDataset.output["phenograph"])
+      : [];
+  }
 }

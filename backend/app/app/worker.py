@@ -14,7 +14,7 @@ from app.core.errors import SlideImportError
 from app.db.session import db_session
 from app.io import mcd
 from app.io import zip
-from app.modules.analysis.processors import tsne, umap
+from app.modules.analysis.processors import tsne, umap, phenograph
 
 import app.db.init_db  # noqa
 
@@ -118,6 +118,21 @@ def process_umap(
     logger.info(f'Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
     try:
         umap.process_umap(db_session, dataset_id, acquisition_ids, n_components, n_neighbors, metric, min_dist, markers)
+    except Exception as error:
+        logger.warning(error)
+    finally:
+        pass
+
+
+@dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
+def process_phenograph(
+    dataset_id: int,
+    acquisition_ids: List[int],
+    markers: List[str],
+):
+    logger.info(f'Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
+    try:
+        phenograph.process_phenograph(db_session, dataset_id, acquisition_ids, markers)
     except Exception as error:
         logger.warning(error)
     finally:

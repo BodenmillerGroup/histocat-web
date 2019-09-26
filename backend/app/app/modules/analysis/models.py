@@ -106,6 +106,25 @@ class UMAPModel(BaseModel):
     heatmap: Optional[PlotSeriesModel]
 
 
+class PhenographSubmissionModel(BaseModel):
+    """
+    PhenoGraph submission model
+    """
+    dataset_id: int
+    acquisition_ids: List[int]
+    markers: List[str]
+
+
+class PhenographModel(BaseModel):
+    """
+    PhenoGraph result model
+    """
+    x: PlotSeriesModel
+    y: PlotSeriesModel
+    z: Optional[PlotSeriesModel]
+    heatmap: Optional[PlotSeriesModel]
+
+
 class RegionStatsSubmissionModel(BaseModel):
     """
     Region's stats submission model
