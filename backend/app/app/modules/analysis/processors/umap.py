@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from umap import UMAP
@@ -52,9 +53,16 @@ def process_umap(
     for marker in markers:
         features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
 
+    # Get a numpy array instead of DataFrame
+    feature_values = df[features].values
+
+    # Normalize data
+    min_max_scaler = preprocessing.MinMaxScaler()
+    feature_values_scaled = min_max_scaler.fit_transform(feature_values)
+
     # umap-learn implementation
     umap = UMAP(n_components=n_components, n_neighbors=n_neighbors, min_dist=min_dist, metric=metric, verbose=6, random_state=42)
-    umap_result = umap.fit_transform(df[features].values * 2 ** 16)
+    umap_result = umap.fit_transform(feature_values_scaled)
 
     timestamp = str(datetime.utcnow())
 

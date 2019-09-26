@@ -26,7 +26,7 @@
               Clear all
             </v-btn>
           </v-card-actions>
-          <v-radio-group v-model="nComponents" row mandatory>
+          <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
             <v-radio label="2D" value="2"></v-radio>
             <v-radio label="3D" value="3"></v-radio>
           </v-radio-group>
@@ -151,26 +151,16 @@ export default class PCATab extends Vue {
   }
 
   async submit() {
-    if (!this.activeDataset) {
-      self.alert("Please select a dataset");
-      return;
-    }
-
-    if (!this.activeAcquisition) {
-      self.alert("Please select an acquisition");
-      return;
-    }
-
     let heatmap = "";
     if (this.heatmap) {
       heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
     }
 
     const acquisitionIds =
-      this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition.id];
+      this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
 
     await this.analysisContext.actions.getPCAData({
-      dataset_id: this.activeDataset.id,
+      dataset_id: this.activeDataset!.id,
       acquisition_ids: acquisitionIds,
       n_components: parseInt(this.nComponents, 10),
       heatmapType: this.heatmap ? this.heatmap.type : "",

@@ -62,6 +62,7 @@ export interface ITSNESubmission {
   learning_rate: number;
   iterations: number;
   theta: number;
+  init: string;
 }
 
 export interface ITSNEData {

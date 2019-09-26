@@ -69,6 +69,7 @@ class TSNESubmissionModel(BaseModel):
     learning_rate: int
     iterations: int
     theta: float
+    init: str
     markers: List[str]
 
 

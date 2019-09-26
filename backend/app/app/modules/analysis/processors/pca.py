@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import pandas as pd
+from sklearn import preprocessing
 from fastapi import HTTPException
 from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
@@ -45,7 +46,16 @@ def process_pca(
         features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
 
     pca = PCA(n_components=n_components)
-    result = pca.fit_transform(df[features].values * 2 ** 16)
+
+    # Get a numpy array instead of DataFrame
+    feature_values = df[features].values
+
+    # Normalize data
+    min_max_scaler = preprocessing.MinMaxScaler()
+    feature_values_scaled = min_max_scaler.fit_transform(feature_values)
+
+    # Run PCA
+    result = pca.fit_transform(feature_values_scaled)
 
     output = {
         "x": {

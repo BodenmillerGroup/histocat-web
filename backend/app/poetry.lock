@@ -1192,7 +1192,7 @@ backend = ["alembic", "python-multipart", "gunicorn", "uvicorn"]
 worker = []
 
 [metadata]
-content-hash = "6b9cf781dc17df400bedab82fbfbb35d833f13a036ec4417bc2c2e1c529bc56f"
+content-hash = "53348e83ec5d250517d322495b033a85b46dd7e4f54de7373a0cf3156d98646e"
 python-versions = "3.7.*"
 
 [metadata.hashes]

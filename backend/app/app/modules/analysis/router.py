@@ -267,6 +267,7 @@ def submit_tsne(
         params.learning_rate,
         params.iterations,
         params.theta,
+        params.init,
         params.markers,
     )
     return {"status": "submitted"}

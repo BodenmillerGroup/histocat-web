@@ -93,11 +93,12 @@ def process_tsne(
     learning_rate: int,
     iterations: int,
     theta: float,
+    init: str,
     markers: List[str],
 ):
-    logger.info(f'Processing t-SNE for acquisitions [{acquisition_ids}] from dataset [{dataset_id}]')
+    logger.info(f'Processing t-SNE for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
     try:
-        tsne.process_tsne(db_session, dataset_id, acquisition_ids, n_components, perplexity, learning_rate, iterations, theta, markers)
+        tsne.process_tsne(db_session, dataset_id, acquisition_ids, n_components, perplexity, learning_rate, iterations, theta, init, markers)
     except Exception as error:
         logger.warning(error)
     finally:
@@ -114,7 +115,7 @@ def process_umap(
     min_dist: float,
     markers: List[str],
 ):
-    logger.info(f'Processing UMAP for acquisitions [{acquisition_ids}] from dataset [{dataset_id}]')
+    logger.info(f'Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
     try:
         umap.process_umap(db_session, dataset_id, acquisition_ids, n_components, n_neighbors, metric, min_dist, markers)
     except Exception as error:

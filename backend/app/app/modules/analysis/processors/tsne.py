@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 from fastapi import HTTPException
 from sklearn.manifold import TSNE
 # from openTSNE import TSNE
@@ -26,6 +27,7 @@ def process_tsne(
     learning_rate: int,
     iterations: int,
     theta: float,
+    init: str,
     markers: List[str],
 ):
     """
@@ -55,9 +57,16 @@ def process_tsne(
     for marker in markers:
         features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
 
+    # Get a numpy array instead of DataFrame
+    feature_values = df[features].values
+
+    # Normalize data
+    min_max_scaler = preprocessing.MinMaxScaler()
+    feature_values_scaled = min_max_scaler.fit_transform(feature_values)
+
     # scikit-learn implementation
-    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations, verbose=6, random_state=42)
-    tsne_result = tsne.fit_transform(df[features].values * 2 ** 16)
+    tsne = TSNE(n_components=n_components, perplexity=perplexity, learning_rate=learning_rate, n_iter=iterations, verbose=6, random_state=42, init=init)
+    tsne_result = tsne.fit_transform(feature_values_scaled)
 
     # openTSNE implementation
     # tsne = TSNE(
@@ -85,6 +94,8 @@ def process_tsne(
             "perplexity": perplexity,
             "learning_rate": learning_rate,
             "iterations": iterations,
+            "theta": theta,
+            "init": init,
             "markers": markers,
         },
         "location": location,

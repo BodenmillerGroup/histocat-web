@@ -61,7 +61,7 @@ services:
 
   redis:
     restart: always
-    image: redis:5.0.5-alpine3.10
+    image: redis:5.0.6-alpine3.10
     env_file:
       - env-redis.env
     volumes:

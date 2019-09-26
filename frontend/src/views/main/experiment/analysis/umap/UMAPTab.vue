@@ -27,32 +27,36 @@
                 Clear all
               </v-btn>
             </v-card-actions>
-            <v-radio-group v-model="nComponents" row mandatory>
+            <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
               <v-radio label="2D" value="2"></v-radio>
               <v-radio label="3D" value="3"></v-radio>
             </v-radio-group>
-            <v-text-field
-              class="input-row"
-              type="number"
-              min="2"
-              max="200"
-              step="1"
-              label="Neighbors"
-              v-model.number="nNeighbors"
-              :rules="[required]"
-              hide-details
-            ></v-text-field>
-            <v-text-field
-              class="input-row"
-              type="number"
-              min="0.0"
-              max="0.99"
-              step="0.01"
-              label="Minimum distance"
-              v-model.number="minDist"
-              :rules="[required]"
-              hide-details
-            ></v-text-field>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  type="number"
+                  min="2"
+                  max="200"
+                  step="1"
+                  label="Neighbors"
+                  v-model.number="nNeighbors"
+                  :rules="[required]"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  type="number"
+                  min="0.0"
+                  max="0.99"
+                  step="0.01"
+                  label="Minimum distance"
+                  v-model.number="minDist"
+                  :rules="[required]"
+                  hide-details
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <v-select :items="metrics" v-model="metric" label="Metric" hide-details clearable></v-select>
           </v-form>
         </v-card-text>
@@ -223,22 +227,12 @@ export default class UMAPTab extends Vue {
   }
 
   async submit() {
-    if (!this.activeDataset) {
-      self.alert("Please select a dataset");
-      return;
-    }
-
-    if (!this.activeAcquisition) {
-      self.alert("Please select an acquisition");
-      return;
-    }
-
     if ((this.$refs.form as any).validate()) {
       const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition.id];
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
 
       await this.analysisContext.actions.submitUMAP({
-        dataset_id: this.activeDataset.id,
+        dataset_id: this.activeDataset!.id,
         acquisition_ids: acquisitionIds,
         n_components: parseInt(this.nComponents, 10),
         markers: this.selectedChannels,
@@ -483,9 +477,5 @@ export default class UMAPTab extends Vue {
 <style scoped>
 .chart-container {
   height: calc(100vh - 154px);
-}
-
-.input-row {
-  margin-bottom: 18px;
 }
 </style>
