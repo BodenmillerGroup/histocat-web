@@ -129,10 +129,14 @@ def process_phenograph(
     dataset_id: int,
     acquisition_ids: List[int],
     markers: List[str],
+    nearest_neighbors: int,
+    jaccard: bool,
+    primary_metric: str,
+    min_cluster_size: int
 ):
     logger.info(f'Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
     try:
-        phenograph.process_phenograph(db_session, dataset_id, acquisition_ids, markers)
+        phenograph.process_phenograph(db_session, dataset_id, acquisition_ids, markers, nearest_neighbors, jaccard, primary_metric, min_cluster_size)
     except Exception as error:
         logger.warning(error)
     finally:

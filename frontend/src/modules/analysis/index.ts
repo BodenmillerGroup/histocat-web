@@ -9,7 +9,7 @@ import {
   IRegionChannelData,
   IScatterPlotData,
   ITSNEData,
-  IUMAPData,
+  IUMAPData
 } from "./models";
 import { AnalysisMutations } from "./mutations";
 

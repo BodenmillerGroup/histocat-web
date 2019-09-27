@@ -354,6 +354,10 @@ def submit_phenograph(
         params.dataset_id,
         params.acquisition_ids,
         params.markers,
+        params.nearest_neighbors,
+        params.jaccard,
+        params.primary_metric,
+        params.min_cluster_size
     )
     return {"status": "submitted"}
 
@@ -362,8 +366,6 @@ def submit_phenograph(
 async def read_phenograph_data(
     dataset_id: int,
     name: str,
-    heatmap_type: Optional[str],
-    heatmap: Optional[str],
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -371,7 +373,7 @@ async def read_phenograph_data(
     Read PhenoGraph result data
     """
 
-    content = phenograph.get_phenograph_result(db, dataset_id, name, heatmap_type, heatmap)
+    content = phenograph.get_phenograph_result(db, dataset_id, name)
     return UJSONResponse(content=content)
 
 

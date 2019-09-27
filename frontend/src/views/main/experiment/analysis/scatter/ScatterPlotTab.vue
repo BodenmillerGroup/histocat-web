@@ -2,8 +2,8 @@
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
     Please select dataset
   </v-banner>
-  <v-banner v-else-if="!activeAcquisition" icon="mdi-alert-circle-outline">
-    Please select acquisition
+  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
+    Please select acquisition(s)
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
@@ -199,7 +199,8 @@ export default class ScatterPlotTab extends Vue {
         heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
       }
 
-      const acquisitionIds = this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+      const acquisitionIds =
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
 
       await this.analysisContext.actions.getScatterPlotData({
         datasetId: this.activeDataset!.id,

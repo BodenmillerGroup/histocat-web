@@ -93,13 +93,14 @@ export interface IPhenoGraphSubmission {
   dataset_id: number;
   acquisition_ids: number[];
   markers: string[];
+  nearest_neighbors: number;
+  jaccard: boolean;
+  primary_metric: string;
+  min_cluster_size: number;
 }
 
 export interface IPhenoGraphData {
-  x: IPlotSeries;
-  y: IPlotSeries;
-  z?: IPlotSeries;
-  heatmap?: IPlotSeries;
+  community: IPlotSeries;
 }
 
 export interface IRegionChannelData {

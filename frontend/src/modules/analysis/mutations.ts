@@ -8,7 +8,7 @@ import {
   IRegionChannelData,
   IScatterPlotData,
   ITSNEData,
-  IUMAPData,
+  IUMAPData
 } from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {

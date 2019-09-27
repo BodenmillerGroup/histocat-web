@@ -3,7 +3,9 @@ import ky from "ky";
 import {
   IImageSegmentationSubmission,
   IPCAData,
-  IPCASubmission, IPhenoGraphData, IPhenoGraphSubmission,
+  IPCASubmission,
+  IPhenoGraphData,
+  IPhenoGraphSubmission,
   IPlotSeries,
   IRegionChannelData,
   IRegionStatsSubmission,
@@ -11,7 +13,7 @@ import {
   ITSNEData,
   ITSNESubmission,
   IUMAPData,
-  IUMAPSubmission,
+  IUMAPSubmission
 } from "./models";
 
 export const api = {
@@ -141,16 +143,13 @@ export const api = {
       })
       .json();
   },
-  async getPhenoGraphData(token: string, datasetId: number, name: string, heatmapType: string, heatmap: string) {
+  async getPhenoGraphData(token: string, datasetId: number, name: string) {
     return ky
-      .get(
-        `${apiUrl}/api/v1/analysis/phenograph?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      .get(`${apiUrl}/api/v1/analysis/phenograph?dataset_id=${datasetId}&name=${name}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
       .json<IPhenoGraphData>();
   },
   async calculateRegionStats(token: string, params: IRegionStatsSubmission) {

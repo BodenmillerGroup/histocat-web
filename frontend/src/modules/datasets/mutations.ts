@@ -29,7 +29,7 @@ export class DatasetMutations extends Mutations<DatasetState> {
         dataset.output = {
           tsne: {},
           umap: {},
-          phenograph: {},
+          phenograph: {}
         };
       }
       if (!dataset.output.tsne) {
@@ -47,7 +47,7 @@ export class DatasetMutations extends Mutations<DatasetState> {
         dataset.output = {
           tsne: {},
           umap: {},
-          phenograph: {},
+          phenograph: {}
         };
       }
       if (!dataset.output.umap) {
@@ -65,7 +65,7 @@ export class DatasetMutations extends Mutations<DatasetState> {
         dataset.output = {
           tsne: {},
           umap: {},
-          phenograph: {},
+          phenograph: {}
         };
       }
       if (!dataset.output.phenograph) {

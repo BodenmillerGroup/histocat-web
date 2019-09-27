@@ -10,10 +10,11 @@ import { api } from "./api";
 import { AnalysisGetters } from "./getters";
 import {
   IImageSegmentationSettings,
-  IPCASubmission, IPhenoGraphSubmission,
+  IPCASubmission,
+  IPhenoGraphSubmission,
   IRegionStatsSubmission,
   ITSNESubmission,
-  IUMAPSubmission,
+  IUMAPSubmission
 } from "./models";
 import { AnalysisMutations } from "./mutations";
 
@@ -182,15 +183,9 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getPhenoGraphResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
+  async getPhenoGraphResult(payload: { datasetId: number; name: string }) {
     try {
-      const response = await api.getPhenoGraphData(
-        this.main!.getters.token,
-        payload.datasetId,
-        payload.name,
-        payload.heatmapType,
-        payload.heatmap
-      );
+      const response = await api.getPhenoGraphData(this.main!.getters.token, payload.datasetId, payload.name);
       this.mutations.setPhenoGraphData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);

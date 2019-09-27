@@ -23,6 +23,10 @@ def process_phenograph(
     dataset_id: int,
     acquisition_ids: List[int],
     markers: List[str],
+    nearest_neighbors: int,
+    jaccard: bool,
+    primary_metric: str,
+    min_cluster_size: int
 ):
     """
     Calculate PhenoGraph data
@@ -59,21 +63,18 @@ def process_phenograph(
     feature_values_scaled = min_max_scaler.fit_transform(feature_values)
 
     # PhenoGraph implementation
-    communities, graph, Q = phenograph.cluster(feature_values_scaled, n_jobs=1)
+    communities, graph, Q = phenograph.cluster(feature_values_scaled, n_jobs=1, k=nearest_neighbors, jaccard=jaccard, primary_metric=primary_metric, min_cluster_size=min_cluster_size)
+
+    result = df[features]
+    result = result.assign(community = communities)
+    result = result.groupby('community', as_index=False).mean()
 
     timestamp = str(datetime.utcnow())
 
     os.makedirs(os.path.join(dataset.location, 'phenograph'), exist_ok=True)
-
-    communities_location = os.path.join(dataset.location, 'phenograph', f'{timestamp}_communities.npy')
-    np.save(communities_location, communities)
-
-    graph_location = os.path.join(dataset.location, 'phenograph', f'{timestamp}_graph.npz')
-    sparse.save_npz(graph_location, graph)
-
-    q_location = os.path.join(dataset.location, 'phenograph', f'{timestamp}_Q.pickle')
-    with open(q_location, "wb") as f:
-        pickle.dump(Q, f)
+    location = os.path.join(dataset.location, 'phenograph', f'{timestamp}.pickle')
+    with open(location, 'wb') as f:
+        pickle.dump(result, f)
 
     result = {
         "name": timestamp,
@@ -81,10 +82,12 @@ def process_phenograph(
             "dataset_id": dataset_id,
             "acquisition_ids": acquisition_ids,
             "markers": markers,
+            "nearest_neighbors": nearest_neighbors,
+            "jaccard": jaccard,
+            "primary_metric": primary_metric,
+            "min_cluster_size": min_cluster_size
         },
-        "communities_location": communities_location,
-        "graph_location": graph_location,
-        "q_location": q_location,
+        "location": location,
     }
     dataset_crud.update_output(db, dataset_id=dataset_id, result_type='phenograph', result=result)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "phenograph_result_ready", result))
@@ -94,8 +97,6 @@ def get_phenograph_result(
     db: Session,
     dataset_id: int,
     name: str,
-    heatmap_type: Optional[str],
-    heatmap: Optional[str],
 ):
     """
     Read PhenoGraph result data
@@ -111,55 +112,27 @@ def get_phenograph_result(
         )
 
     phenograph_result = phenograph_output.get(name)
-    communities = np.load(phenograph_result.get("communities_location"), allow_pickle=True)
-    graph = sparse.load_npz(phenograph_result.get("graph_location"))
-    with open(phenograph_result.get("q_location"), "rb") as f:
-        Q = pickle.load(f)
+    with open(phenograph_result.get("location"), 'rb') as f:
+        result = pickle.load(f)
 
-    output = {
-        "communities": {
-            "label": "communities",
-            "data": communities
-        },
-        "graph": {
-            "label": "graph",
-            "data": graph
-        },
-        "Q": {
-            "label": "Q",
-            "data": Q
-        }
-    }
+    params = phenograph_result.get("params")
+    acquisition_ids = params.get("acquisition_ids")
+    image_map = dataset.input.get("image_map")
+    channel_map = dataset.input.get("channel_map")
+    channel_map_updated = {}
+    for key, item in channel_map.items():
+        channel_map_updated[key] = f'Intensity_MeanIntensity_FullStack_c{item}'
+    channel_map_inv = {v: k for k, v in channel_map_updated.items()}
 
-    # params = umap_result.get("params")
-    # acquisition_ids = params.get("acquisition_ids")
-    # image_map = dataset.input.get("image_map")
-    # cell_input = dataset.input.get("cell")
-    #
-    # image_numbers = []
-    # for acquisition_id in acquisition_ids:
-    #     image_number = image_map.get(str(acquisition_id))
-    #     image_numbers.append(image_number)
-    #
-    # df = pd.read_feather(cell_input.get("location"))
-    # df = df[df["ImageNumber"].isin(image_numbers)]
-    #
-    # if heatmap_type and heatmap:
-    #     if heatmap_type == "channel":
-    #         channel_map = dataset.input.get("channel_map")
-    #         heatmap_data = df[f'Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}'] * 2 ** 16
-    #     else:
-    #         heatmap_data = df[heatmap]
-    #
-    #     output["heatmap"] = {
-    #         "label": heatmap,
-    #         "data": heatmap_data
-    #     }
-    # elif len(acquisition_ids) > 1:
-    #     image_map_inv = {v: k for k, v in image_map.items()}
-    #     output["heatmap"] = {
-    #         "label": "Acquisition",
-    #         "data": [image_map_inv.get(item) for item in df["ImageNumber"]]
-    #     }
+    image_numbers = []
+    for acquisition_id in acquisition_ids:
+        image_number = image_map.get(str(acquisition_id))
+        image_numbers.append(image_number)
+
+    output = {}
+    for (columnName, columnData) in result.iteritems():
+        if columnName != 'community':
+            columnName = channel_map_inv.get(columnName)
+        output[columnName] = columnData.tolist()
 
     return output

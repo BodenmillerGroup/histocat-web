@@ -27,9 +27,9 @@
                 Clear all
               </v-btn>
             </v-card-actions>
-            <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
-              <v-radio label="2D" value="2"></v-radio>
-              <v-radio label="3D" value="3"></v-radio>
+            <v-radio-group v-model="jaccard" mandatory hide-details label="Mode">
+              <v-radio label="Jaccard metric" value="jaccard"></v-radio>
+              <v-radio label="Gaussian kernel" value="gaussian"></v-radio>
             </v-radio-group>
             <v-row>
               <v-col>
@@ -39,7 +39,7 @@
                   max="200"
                   step="1"
                   label="Neighbors"
-                  v-model.number="nNeighbors"
+                  v-model.number="nearestNeighbors"
                   :rules="[required]"
                   hide-details
                 ></v-text-field>
@@ -47,17 +47,16 @@
               <v-col>
                 <v-text-field
                   type="number"
-                  min="0.0"
-                  max="0.99"
-                  step="0.01"
-                  label="Minimum distance"
-                  v-model.number="minDist"
+                  min="2"
+                  step="1"
+                  label="Minimum cluster size"
+                  v-model.number="minClusterSize"
                   :rules="[required]"
                   hide-details
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-select :items="metrics" v-model="metric" label="Metric" hide-details dense></v-select>
+            <v-select :items="metrics" v-model="primaryMetric" label="Metric" hide-details dense></v-select>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -115,40 +114,7 @@ import "echarts/lib/chart/scatter";
 import "echarts/lib/component/toolbox";
 import "echarts/lib/component/tooltip";
 import "echarts/lib/component/visualMap";
-import { uniq } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
-
-const commonOptions: echarts.EChartOption = {
-  title: {
-    text: "PhenoGraph",
-    left: "center",
-    top: 0
-  },
-  animation: false,
-  tooltip: {
-    show: true
-  },
-  toolbox: {
-    show: true,
-    right: "9%",
-    feature: {
-      restore: {
-        show: true,
-        title: "Reset"
-      },
-      saveAsImage: {
-        show: true,
-        title: "Export"
-      },
-      dataView: {
-        show: true,
-        title: "Data",
-        readOnly: true,
-        lang: ["Data View", "Hide", "Refresh"]
-      }
-    }
-  }
-};
 
 @Component
 export default class PhenoGraphTab extends Vue {
@@ -159,30 +125,17 @@ export default class PhenoGraphTab extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
 
   readonly required = required;
-  readonly metrics = [
-    "euclidean",
-    "manhattan",
-    "chebyshev",
-    "minkowski",
-    "canberra",
-    "braycurtis",
-    "haversine",
-    "mahalanobis",
-    "wminkowski",
-    "seuclidean",
-    "cosine",
-    "correlation"
-  ];
+  readonly metrics = ["euclidean", "manhattan", "correlation", "cosine"];
 
   valid = false;
 
   options: echarts.EChartOption = {};
 
   selectedChannels: any[] = [];
-  nComponents = "2";
-  nNeighbors = 15;
-  minDist = 0.1;
-  metric = "euclidean";
+  nearestNeighbors = 30;
+  jaccard = "jaccard";
+  minClusterSize = 10;
+  primaryMetric = "euclidean";
 
   heatmap: { type: string; label: string } | null = null;
 
@@ -237,39 +190,36 @@ export default class PhenoGraphTab extends Vue {
         dataset_id: this.activeDataset!.id,
         acquisition_ids: acquisitionIds,
         markers: this.selectedChannels,
+        jaccard: this.jaccard === "jaccard",
+        min_cluster_size: this.minClusterSize,
+        nearest_neighbors: this.nearestNeighbors,
+        primary_metric: this.primaryMetric
       });
     }
   }
 
   resultChanged(result) {
     if (result) {
+      console.log(result);
       this.selectedChannels = result.params.markers;
+      this.nearestNeighbors = result.params.nearest_neighbors;
+      this.primaryMetric = result.params.primary_metric;
+      this.minClusterSize = result.params.min_cluster_size;
+      this.jaccard = result.params.jaccard ? "jaccard" : "gaussian";
 
       this.experimentContext.mutations.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 
   async display() {
-    if (!this.activeDataset) {
-      self.alert("Please select a dataset");
-      return;
-    }
-
-    if (!this.result) {
-      self.alert("Please select result data");
-      return;
-    }
-
     let heatmap = "";
     if (this.heatmap) {
       heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
     }
 
     await this.analysisContext.actions.getPhenoGraphResult({
-      datasetId: this.activeDataset.id,
-      name: this.result ? this.result.name : "",
-      heatmapType: this.heatmap ? this.heatmap.type : "",
-      heatmap: heatmap
+      datasetId: this.activeDataset!.id,
+      name: this.result ? this.result.name : ""
     });
   }
 
@@ -280,192 +230,101 @@ export default class PhenoGraphTab extends Vue {
   @Watch("phenographData")
   phenographDataChanged(data: IPhenoGraphData) {
     if (data) {
-      if (data.z) {
-        this.plot3D(data);
-      } else {
-        this.plot2D(data);
-      }
+      this.plot(data);
     }
   }
 
-  private plot2D(data: IPhenoGraphData) {
-    const points = data.heatmap
-      ? data.x.data.map((x, i) => {
-          return [x, data.y.data[i], data.heatmap!.data[i]];
-        })
-      : data.x.data.map((x, i) => {
-          return [x, data.y.data[i]];
-        });
-
+  private plot(data: any) {
+    const communities = data.community;
+    const markers = Object.keys(data).filter(item => item !== "community");
+    const points: any[] = [];
+    const mins: any[] = [];
+    const maxs: any[] = [];
+    for (let m = 0; m < markers.length; m++) {
+      mins.push(Math.min(...data[markers[m]]));
+      maxs.push(Math.max(...data[markers[m]]));
+      for (let c = 0; c < communities.length; c++) {
+        const v = data[markers[m]][c];
+        points.push([c, m, v]);
+      }
+    }
     const options: echarts.EChartOption = {
-      ...commonOptions,
+      title: {
+        text: "PhenoGraph",
+        left: "center",
+        top: 0
+      },
+      animation: false,
+      tooltip: {
+        show: true
+      },
+      toolbox: {
+        show: true,
+        right: "9%",
+        feature: {
+          restore: {
+            show: true,
+            title: "Reset"
+          },
+          saveAsImage: {
+            show: true,
+            title: "Export"
+          },
+          dataView: {
+            show: true,
+            title: "Data",
+            readOnly: true,
+            lang: ["Data View", "Hide", "Refresh"]
+          }
+        }
+      },
       xAxis: {
-        type: "value",
-        name: data.x.label,
+        type: "category",
+        name: "Community",
         nameTextStyle: {
           fontWeight: "bold"
+        },
+        data: communities,
+        splitArea: {
+          show: true
         }
       },
       yAxis: {
-        type: "value",
-        name: data.y.label,
+        type: "category",
+        name: "Marker",
         nameTextStyle: {
           fontWeight: "bold"
+        },
+        data: markers,
+        splitArea: {
+          show: true
         }
-      },
-      dataset: {
-        source: points,
-        dimensions: [{ name: data.x.label, type: "float" }, { name: data.y.label, type: "float" }]
       },
       series: [
         {
-          type: "scatter",
-          name: "Scatter2D",
-          symbolSize: 4,
-          large: !data.heatmap,
-          encode: {
-            x: data.x.label,
-            y: data.y.label,
-            tooltip: [data.x.label, data.y.label]
+          type: "heatmap",
+          name: "PhenoGraph",
+          data: points,
+          itemStyle: {
+            emphasis: {
+              shadowBlur: 10,
+              shadowColor: "rgba(0, 0, 0, 0.5)"
+            }
           }
+        }
+      ],
+      visualMap: [
+        {
+          min: Math.min(...mins),
+          max: Math.max(...maxs),
+          calculable: true,
+          orient: "horizontal",
+          left: "center"
         }
       ]
     };
 
-    if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
-      options.visualMap = this.getVisualMap(data);
-    }
-
     this.options = options;
-  }
-
-  private plot3D(data: IPhenoGraphData) {
-    const options = {
-      ...commonOptions,
-      grid3D: {},
-      xAxis3D: {
-        type: "value",
-        name: data.x.label,
-        nameTextStyle: {
-          fontWeight: "bold"
-        }
-      },
-      yAxis3D: {
-        type: "value",
-        name: data.y.label,
-        nameTextStyle: {
-          fontWeight: "bold"
-        }
-      },
-      zAxis3D: {
-        type: "value",
-        name: data.z!.label,
-        nameTextStyle: {
-          fontWeight: "bold"
-        }
-      },
-      dataset: {
-        source: [data.x.data, data.y.data, data.z!.data],
-        dimensions: [
-          { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" },
-          { name: data.z!.label, type: "float" }
-        ]
-      },
-      series: [
-        {
-          type: "scatter3D",
-          name: "Scatter3D",
-          seriesLayoutBy: "row",
-          symbolSize: 4,
-          encode: {
-            x: data.x.label,
-            y: data.y.label,
-            z: data.z!.label,
-            tooltip: [data.x.label, data.y.label, data.z!.label]
-          }
-        }
-      ]
-    } as echarts.EChartOption;
-
-    if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
-      (options.dataset as any).source.push(data.heatmap.data);
-      options.visualMap = this.getVisualMap(data);
-    }
-
-    this.options = options;
-  }
-
-  private getVisualMap(data: IPhenoGraphData): echarts.EChartOption.VisualMap[] {
-    return data.heatmap!.label === "Acquisition"
-      ? this.getCategoricalVisualMap(data)
-      : this.getContinuousVisualMap(data);
-  }
-
-  private getCategoricalVisualMap(data: IPhenoGraphData): echarts.EChartOption.VisualMap[] {
-    const categories = uniq(data.heatmap!.data);
-    return [
-      {
-        type: "piecewise",
-        orient: "vertical",
-        top: "top",
-        left: "right",
-        categories: categories as any,
-        padding: [
-          60, // up
-          20, // right
-          5, // down
-          5 // left
-        ],
-        inRange: {
-          color: [
-            "#e6194b",
-            "#3cb44b",
-            "#ffe119",
-            "#4363d8",
-            "#f58231",
-            "#911eb4",
-            "#46f0f0",
-            "#f032e6",
-            "#bcf60c",
-            "#fabebe",
-            "#008080",
-            "#e6beff",
-            "#9a6324",
-            "#fffac8",
-            "#800000",
-            "#aaffc3",
-            "#808000",
-            "#ffd8b1",
-            "#000075",
-            "#808080",
-            "#000000"
-          ]
-        }
-      }
-    ];
-  }
-
-  private getContinuousVisualMap(data: IPhenoGraphData): echarts.EChartOption.VisualMap[] {
-    const min = Math.min(...data.heatmap!.data);
-    const max = Math.max(...data.heatmap!.data);
-    return [
-      {
-        type: "continuous",
-        orient: "horizontal",
-        left: "center",
-        text: ["Max", "Min"],
-        calculable: true,
-        realtime: false,
-        min: min,
-        max: max,
-        inRange: {
-          color: ["#4457cc", "#ff5200"]
-        }
-      }
-    ];
   }
 }
 </script>

@@ -113,6 +113,10 @@ class PhenographSubmissionModel(BaseModel):
     dataset_id: int
     acquisition_ids: List[int]
     markers: List[str]
+    nearest_neighbors: int
+    jaccard: bool
+    primary_metric: str
+    min_cluster_size: int
 
 
 class PhenographModel(BaseModel):
