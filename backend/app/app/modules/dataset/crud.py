@@ -58,10 +58,11 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Da
 
 def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> Dataset:
 
-    item = session.query(Dataset).with_for_update().filter(Dataset.id == dataset_id).first()
+    item = session.query(Dataset).with_for_update(of=Dataset).filter(Dataset.id == dataset_id).first()
 
     output = item.output if item.output else {}
     result_output = output.get(result_type) if result_type in output else {}
+    logger.info("PRE: ", result_output)
     result_output[result.get("name")] = result
     output[result_type] = result_output
     item.output = output
@@ -71,6 +72,9 @@ def update_output(session: Session, *, dataset_id: int, result_type: str, result
     session.add(item)
     session.commit()
     session.refresh(item)
+    output = item.output if item.output else {}
+    result_output = output.get(result_type) if result_type in output else {}
+    logger.info("POST: ", result_output)
     return item
 
 

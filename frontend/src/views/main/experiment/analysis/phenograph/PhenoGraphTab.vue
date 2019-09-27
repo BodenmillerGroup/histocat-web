@@ -77,17 +77,6 @@
             dense
             @change="resultChanged"
           ></v-select>
-          <v-select
-            :items="heatmaps"
-            v-model="heatmap"
-            label="Heatmap"
-            hint="Heatmap marker"
-            item-text="label"
-            return-object
-            persistent-hint
-            clearable
-            dense
-          ></v-select>
         </v-card-text>
         <v-card-actions>
           <v-btn @click="display" color="primary" block :disabled="!result">
@@ -137,8 +126,6 @@ export default class PhenoGraphTab extends Vue {
   minClusterSize = 10;
   primaryMetric = "euclidean";
 
-  heatmap: { type: string; label: string } | null = null;
-
   result: any = null;
 
   get showOptions() {
@@ -163,10 +150,6 @@ export default class PhenoGraphTab extends Vue {
 
   get channels() {
     return this.datasetContext.getters.channels;
-  }
-
-  get heatmaps() {
-    return this.datasetContext.getters.heatmaps;
   }
 
   get results() {
@@ -212,11 +195,6 @@ export default class PhenoGraphTab extends Vue {
   }
 
   async display() {
-    let heatmap = "";
-    if (this.heatmap) {
-      heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
-    }
-
     await this.analysisContext.actions.getPhenoGraphResult({
       datasetId: this.activeDataset!.id,
       name: this.result ? this.result.name : ""
