@@ -11,6 +11,7 @@ import { AnalysisGetters } from "./getters";
 import {
   IImageSegmentationSettings,
   IPCASubmission,
+  IPhenoGraphSubmission,
   IRegionStatsSubmission,
   ITSNESubmission,
   IUMAPSubmission
@@ -75,7 +76,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getScatterPlotData(payload: {
     datasetId: number;
-    acquisitionId: number;
+    acquisitionIds: number[];
     markerX: string;
     markerY: string;
     markerZ: string;
@@ -86,7 +87,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       const response = await api.getScatterPlotData(
         this.main!.getters.token,
         payload.datasetId,
-        payload.acquisitionId,
+        payload.acquisitionIds,
         payload.markerX,
         payload.markerY,
         payload.markerZ,
@@ -167,6 +168,25 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         payload.heatmap
       );
       this.mutations.setUMAPData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async submitPhenoGraph(payload: IPhenoGraphSubmission) {
+    try {
+      const response = await api.submitPhenoGraph(this.main!.getters.token, payload);
+      const notification = { content: "PhenoGraph processing started. This may take a while..." };
+      this.main!.mutations.addNotification(notification);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getPhenoGraphResult(payload: { datasetId: number; name: string }) {
+    try {
+      const response = await api.getPhenoGraphData(this.main!.getters.token, payload.datasetId, payload.name);
+      this.mutations.setPhenoGraphData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

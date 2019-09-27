@@ -17,14 +17,15 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, get_mask, apply_morphology
 from app.core.utils import stream_bytes
-from app.modules.analysis.processors import pca, tsne, umap
+from app.modules.analysis.processors import pca, tsne, umap, phenograph
 from app.modules.channel import crud as channel_crud
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
 from .models import AnalysisModel, ScatterPlotModel, PlotSeriesModel, PCAModel, TSNESubmissionModel, TSNEModel, \
-    UMAPSubmissionModel, UMAPModel, RegionStatsSubmissionModel, RegionChannelStatsModel
+    UMAPSubmissionModel, UMAPModel, RegionStatsSubmissionModel, RegionChannelStatsModel, PhenographSubmissionModel, \
+    PhenographModel
 
 logger = logging.getLogger(__name__)
 
@@ -128,9 +129,9 @@ async def produce_segmentation_contours(
 @router.get("/scatterplot", response_model=ScatterPlotModel)
 async def read_scatter_plot_data(
     dataset_id: int,
-    acquisition_id: int,
     marker_x: str,
     marker_y: str,
+    acquisition_ids: List[int] = Query(None),
     marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
@@ -148,15 +149,20 @@ async def read_scatter_plot_data(
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
     image_map = dataset.input.get("image_map")
-    image_number = image_map.get(str(acquisition_id))
-    if not cell_input or not image_number or not channel_map:
+
+    image_numbers = []
+    for acquisition_id in acquisition_ids:
+        image_number = image_map.get(str(acquisition_id))
+        image_numbers.append(image_number)
+
+    if not cell_input or not channel_map or len(image_numbers) == 0:
         raise HTTPException(
             status_code=400,
             detail="The dataset does not have a proper input.",
         )
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"] == image_number]
+    df = df[df["ImageNumber"].isin(image_numbers)]
 
     content = {
         "x": {
@@ -185,6 +191,12 @@ async def read_scatter_plot_data(
         content["heatmap"] = {
             "label": heatmap,
             "data": heatmap_data
+        }
+    elif len(acquisition_ids) > 1:
+        image_map_inv = {v: k for k, v in image_map.items()}
+        content["heatmap"] = {
+            "label": "Acquisition",
+            "data": [image_map_inv.get(item) for item in df["ImageNumber"]]
         }
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
@@ -325,6 +337,43 @@ async def read_umap_data(
     """
 
     content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
+    return UJSONResponse(content=content)
+
+
+@router.post("/phenograph")
+def submit_phenograph(
+    params: PhenographSubmissionModel,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Start PhenoGraph data processing
+    """
+
+    worker.process_phenograph.send(
+        params.dataset_id,
+        params.acquisition_ids,
+        params.markers,
+        params.nearest_neighbors,
+        params.jaccard,
+        params.primary_metric,
+        params.min_cluster_size
+    )
+    return {"status": "submitted"}
+
+
+@router.get("/phenograph", response_model=PhenographModel)
+async def read_phenograph_data(
+    dataset_id: int,
+    name: str,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Read PhenoGraph result data
+    """
+
+    content = phenograph.get_phenograph_result(db, dataset_id, name)
     return UJSONResponse(content=content)
 
 

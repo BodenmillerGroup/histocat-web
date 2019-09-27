@@ -2,8 +2,8 @@
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
     Please select dataset
   </v-banner>
-  <v-banner v-else-if="!activeAcquisition" icon="mdi-alert-circle-outline">
-    Please select acquisition
+  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
+    Please select acquisition(s)
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
@@ -21,6 +21,7 @@
               hint="X axis marker"
               persistent-hint
               :rules="[required]"
+              dense
             ></v-select>
             <v-select
               :items="items"
@@ -29,6 +30,7 @@
               hint="Y axis marker"
               persistent-hint
               :rules="[required]"
+              dense
             ></v-select>
             <v-select
               :items="items"
@@ -37,6 +39,7 @@
               hint="Z axis marker"
               persistent-hint
               clearable
+              dense
             ></v-select>
             <v-select
               :items="heatmaps"
@@ -47,6 +50,7 @@
               return-object
               persistent-hint
               clearable
+              dense
               class="input-row"
             ></v-select>
             <v-switch v-if="!markerZ" v-model="showRegression" label="Show regression"></v-switch>
@@ -57,6 +61,7 @@
               v-model="regressionType"
               label="Regression type"
               hide-details
+              dense
             ></v-select>
             <v-text-field
               v-if="!markerZ && regressionType === 'polynomial'"
@@ -96,6 +101,7 @@ import "echarts/lib/chart/scatter";
 import "echarts/lib/component/toolbox";
 import "echarts/lib/component/tooltip";
 import "echarts/lib/component/visualMap";
+import { uniq } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 type RegressionType = "linear" | "exponential" | "logarithmic" | "polynomial";
@@ -176,6 +182,10 @@ export default class ScatterPlotTab extends Vue {
     return this.datasetContext.getters.activeDataset;
   }
 
+  get selectedAcquisitionIds() {
+    return this.experimentContext.getters.selectedAcquisitionIds;
+  }
+
   get items() {
     return this.activeDataset && this.activeDataset.input["channel_map"]
       ? Object.keys(this.activeDataset.input["channel_map"])
@@ -183,25 +193,18 @@ export default class ScatterPlotTab extends Vue {
   }
 
   async submit() {
-    if (!this.activeDataset) {
-      self.alert("Please select a dataset");
-      return;
-    }
-
-    if (!this.activeAcquisition) {
-      self.alert("Please select an acquisition");
-      return;
-    }
-
     if ((this.$refs.form as any).validate()) {
       let heatmap = "";
       if (this.heatmap) {
         heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
       }
 
+      const acquisitionIds =
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+
       await this.analysisContext.actions.getScatterPlotData({
-        datasetId: this.activeDataset.id,
-        acquisitionId: this.activeAcquisition.id,
+        datasetId: this.activeDataset!.id,
+        acquisitionIds: acquisitionIds,
         markerX: this.markerX!,
         markerY: this.markerY!,
         markerZ: this.markerZ ? this.markerZ : "",
@@ -344,6 +347,56 @@ export default class ScatterPlotTab extends Vue {
   }
 
   private getVisualMap(data: IScatterPlotData): echarts.EChartOption.VisualMap[] {
+    return data.heatmap!.label === "Acquisition"
+      ? this.getCategoricalVisualMap(data)
+      : this.getContinuousVisualMap(data);
+  }
+
+  private getCategoricalVisualMap(data: IScatterPlotData): echarts.EChartOption.VisualMap[] {
+    const categories = uniq(data.heatmap!.data);
+    return [
+      {
+        type: "piecewise",
+        orient: "vertical",
+        top: "top",
+        left: "right",
+        categories: categories as any,
+        padding: [
+          60, // up
+          20, // right
+          5, // down
+          5 // left
+        ],
+        inRange: {
+          color: [
+            "#e6194b",
+            "#3cb44b",
+            "#ffe119",
+            "#4363d8",
+            "#f58231",
+            "#911eb4",
+            "#46f0f0",
+            "#f032e6",
+            "#bcf60c",
+            "#fabebe",
+            "#008080",
+            "#e6beff",
+            "#9a6324",
+            "#fffac8",
+            "#800000",
+            "#aaffc3",
+            "#808000",
+            "#ffd8b1",
+            "#000075",
+            "#808080",
+            "#000000"
+          ]
+        }
+      }
+    ];
+  }
+
+  private getContinuousVisualMap(data: IScatterPlotData): echarts.EChartOption.VisualMap[] {
     const min = Math.min(...data.heatmap!.data);
     const max = Math.max(...data.heatmap!.data);
     return [
@@ -357,7 +410,7 @@ export default class ScatterPlotTab extends Vue {
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#f45c00"]
+          color: ["#4457cc", "#ff5200"]
         }
       }
     ];

@@ -70,7 +70,9 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
     channel_data = _load_meta_csv(channel_csv_filename)
 
     slide_map: Dict[str, Slide] = dict()
-    for slide_item in slide_data.values():
+    for slide_key, slide_item in slide_data.items():
+        if slide_key is None:
+            continue
         item = slide_crud.get_by_name(db, experiment_id=experiment_id, name=basename)
         if item:
             logger.warn(f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]")
@@ -86,30 +88,40 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
         copy_dir(src_folder, origin_location)
 
     panorama_map: Dict[str, Panorama] = dict()
-    for panorama_item in panorama_data.values():
+    for panorama_key, panorama_item in panorama_data.items():
+        if panorama_key is None:
+            continue
         slide = slide_map.get(panorama_item.get(mcdxmlparser.SLIDEID))
         panorama = _import_panorama(db, panorama_item, slide)
         panorama_map[str(panorama.origin_id)] = panorama
 
     roi_map: Dict[str, ROI] = dict()
-    for roi_item in roi_data.values():
+    for roi_key, roi_item in roi_data.items():
+        if roi_key is None:
+            continue
         panorama = panorama_map.get(roi_item.get(mcdxmlparser.PANORAMAID))
         roi = _import_roi(db, roi_item, panorama)
         roi_map[str(roi.origin_id)] = roi
 
     roi_point_map: Dict[str, ROIPoint] = dict()
-    for roi_point_item in roi_point_data.values():
+    for roi_point_key, roi_point_item in roi_point_data.items():
+        if roi_point_key is None:
+            continue
         roi = roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID))
         roi_point = _import_roi_point(db, roi_point_item, roi)
         roi_point_map[str(roi_point.origin_id)] = roi_point
 
     acquisition_map: Dict[str, Acquisition] = dict()
-    for acquisition_item in acquisition_data.values():
+    for acquisition_key, acquisition_item in acquisition_data.items():
+        if acquisition_key is None:
+            continue
         roi = roi_map.get(acquisition_item.get(mcdxmlparser.ACQUISITIONROIID))
         acquisition = _import_acquisition(db, acquisition_item, roi, basename)
         acquisition_map[str(acquisition.origin_id)] = acquisition
 
-    for channel_item in channel_data.values():
+    for channel_key, channel_item in channel_data.items():
+        if channel_key is None:
+            continue
         acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
         _import_channel(db, channel_item, acquisition)
 

@@ -57,7 +57,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-select :items="metrics" v-model="metric" label="Metric" hide-details clearable></v-select>
+            <v-select :items="metrics" v-model="metric" label="Metric" dense hide-details></v-select>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -75,6 +75,7 @@
             hint="UMAP processed data"
             persistent-hint
             clearable
+            dense
             @change="resultChanged"
           ></v-select>
           <v-select
@@ -86,6 +87,7 @@
             return-object
             persistent-hint
             clearable
+            dense
           ></v-select>
         </v-card-text>
         <v-card-actions>

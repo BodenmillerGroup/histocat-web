@@ -109,6 +109,7 @@
             hint="t-SNE processed data"
             persistent-hint
             clearable
+            dense
             @change="resultChanged"
           ></v-select>
           <v-select
@@ -120,6 +121,7 @@
             return-object
             persistent-hint
             clearable
+            dense
           ></v-select>
         </v-card-text>
         <v-card-actions>

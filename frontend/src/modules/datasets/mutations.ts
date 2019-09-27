@@ -28,7 +28,8 @@ export class DatasetMutations extends Mutations<DatasetState> {
       if (!dataset.output) {
         dataset.output = {
           tsne: {},
-          umap: {}
+          umap: {},
+          phenograph: {}
         };
       }
       if (!dataset.output.tsne) {
@@ -45,13 +46,32 @@ export class DatasetMutations extends Mutations<DatasetState> {
       if (!dataset.output) {
         dataset.output = {
           tsne: {},
-          umap: {}
+          umap: {},
+          phenograph: {}
         };
       }
       if (!dataset.output.umap) {
         dataset.output.umap = {};
       }
       dataset.output.umap[message.payload.name] = message.payload;
+      this.state.activeDataset = Object.assign({}, dataset);
+    }
+  }
+
+  updateDatasetPhenoGraphOutput(message: WebSocketMessage) {
+    const dataset = this.state.datasets.find(item => item.id === message.payload.params.dataset_id);
+    if (dataset) {
+      if (!dataset.output) {
+        dataset.output = {
+          tsne: {},
+          umap: {},
+          phenograph: {}
+        };
+      }
+      if (!dataset.output.phenograph) {
+        dataset.output.phenograph = {};
+      }
+      dataset.output.phenograph[message.payload.name] = message.payload;
       this.state.activeDataset = Object.assign({}, dataset);
     }
   }
