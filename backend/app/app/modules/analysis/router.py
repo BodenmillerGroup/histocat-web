@@ -129,9 +129,9 @@ async def produce_segmentation_contours(
 @router.get("/scatterplot", response_model=ScatterPlotModel)
 async def read_scatter_plot_data(
     dataset_id: int,
-    acquisition_id: int,
     marker_x: str,
     marker_y: str,
+    acquisition_ids: List[int] = Query(None),
     marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
@@ -149,15 +149,20 @@ async def read_scatter_plot_data(
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
     image_map = dataset.input.get("image_map")
-    image_number = image_map.get(str(acquisition_id))
-    if not cell_input or not image_number or not channel_map:
+
+    image_numbers = []
+    for acquisition_id in acquisition_ids:
+        image_number = image_map.get(str(acquisition_id))
+        image_numbers.append(image_number)
+
+    if not cell_input or not channel_map or len(image_numbers) == 0:
         raise HTTPException(
             status_code=400,
             detail="The dataset does not have a proper input.",
         )
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"] == image_number]
+    df = df[df["ImageNumber"].isin(image_numbers)]
 
     content = {
         "x": {
@@ -186,6 +191,12 @@ async def read_scatter_plot_data(
         content["heatmap"] = {
             "label": heatmap,
             "data": heatmap_data
+        }
+    elif len(acquisition_ids) > 1:
+        image_map_inv = {v: k for k, v in image_map.items()}
+        content["heatmap"] = {
+            "label": "Acquisition",
+            "data": [image_map_inv.get(item) for item in df["ImageNumber"]]
         }
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))

@@ -36,16 +36,18 @@ export const api = {
   async getScatterPlotData(
     token: string,
     datasetId: number,
-    acquisitionId: number,
+    acquisitionIds: number[],
     markerX: string,
     markerY: string,
     markerZ: string,
     heatmapType: string,
     heatmap: string
   ) {
+    const acquisitionIdsArray = acquisitionIds.map(acquisition_id => `&acquisition_ids=${acquisition_id}`);
+    const acquisition_ids = acquisitionIdsArray.join("");
     return ky
       .get(
-        `${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap_type=${heatmapType}&heatmap=${heatmap}`,
+        `${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap_type=${heatmapType}&heatmap=${heatmap}${acquisition_ids}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

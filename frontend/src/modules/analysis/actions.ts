@@ -75,7 +75,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getScatterPlotData(payload: {
     datasetId: number;
-    acquisitionId: number;
+    acquisitionIds: number[];
     markerX: string;
     markerY: string;
     markerZ: string;
@@ -86,7 +86,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       const response = await api.getScatterPlotData(
         this.main!.getters.token,
         payload.datasetId,
-        payload.acquisitionId,
+        payload.acquisitionIds,
         payload.markerX,
         payload.markerY,
         payload.markerZ,
