@@ -209,10 +209,3 @@ export default class Main extends Vue {
   }
 }
 </script>
-
-<style>
-.v-toolbar__extension {
-  padding-left: 0;
-  padding-right: 0;
-}
-</style>
