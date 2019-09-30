@@ -40,4 +40,12 @@ export class MainMutations extends Mutations<MainState> {
     this.state.showWorkspace = payload.showWorkspace;
     this.state.showOptions = payload.showOptions;
   }
+
+  setProcessing(payload: boolean) {
+    this.state.processing = payload;
+  }
+
+  setProcessingProgress(payload: number) {
+    this.state.processingProgress = payload;
+  }
 }

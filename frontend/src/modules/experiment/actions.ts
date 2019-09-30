@@ -104,11 +104,26 @@ export class ExperimentActions extends Actions<
       return;
     }
     try {
-      const notification = { content: "uploading", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      await api.upload(this.main!.getters.token, payload.id, payload.data);
-      this.main!.mutations.removeNotification(notification);
-      this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
+      await api.upload(
+        this.main!.getters.token,
+        payload.id,
+        payload.data,
+        () => {
+          console.log("Upload has started.");
+          this.main!.mutations.setProcessing(true);
+        },
+        () => {
+          console.log("Upload completed successfully.");
+          this.main!.mutations.setProcessing(false);
+          this.main!.mutations.setProcessingProgress(0);
+          this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
+        },
+        event => {
+          const percent = Math.round((100 * event.loaded) / event.total);
+          this.main!.mutations.setProcessingProgress(percent);
+        },
+        () => {}
+      );
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

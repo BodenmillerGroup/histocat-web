@@ -102,12 +102,14 @@ export default class ChannelSettingsView extends Vue {
       settings = {
         id: this.channel.id,
         customLabel: this.channel.label,
-        levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) }
+        levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) },
+        suppressBroadcast: false
       };
     } else {
       settings = {
         ...settings,
-        levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) }
+        levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) },
+        suppressBroadcast: false
       };
     }
     this.settingsContext.mutations.setChannelSettings(settings);

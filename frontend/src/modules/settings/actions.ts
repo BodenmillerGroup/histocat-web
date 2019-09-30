@@ -14,6 +14,6 @@ export class SettingsActions extends Actions<SettingsState, SettingsGetters, Set
         );
       });
     }
-    this.mutations.resetSettings();
+    this.mutations.resetSettings({});
   }
 }

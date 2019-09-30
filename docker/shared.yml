@@ -91,7 +91,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:2.0.0
+    image: traefik:2.0.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

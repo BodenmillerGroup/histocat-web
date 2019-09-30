@@ -41,4 +41,12 @@ export class MainGetters extends Getters<MainState> {
   get showOptions() {
     return this.state.showOptions;
   }
+
+  get processing() {
+    return this.state.processing;
+  }
+
+  get processingProgress() {
+    return this.state.processingProgress;
+  }
 }

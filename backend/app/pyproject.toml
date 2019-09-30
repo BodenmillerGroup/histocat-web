@@ -16,7 +16,7 @@ alembic = { version = "^1.2.1", optional = true }
 dramatiq = { version = "^1.7.0", extras = ["rabbitmq", "watch"] }
 email-validator = "^1.0.4"
 emails = "^0.5.15"
-fastapi = "^0.38.1"
+fastapi = "^0.39.0"
 gunicorn = { version = "^19.9.0", optional = true }
 imctools = "^1.0.3"
 jinja2 = "^2.10.1"

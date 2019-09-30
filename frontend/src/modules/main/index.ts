@@ -15,6 +15,9 @@ export class MainState {
   notifications: AppNotification[] = [];
   showWorkspace: boolean = true;
   showOptions: boolean = true;
+
+  processing: boolean = false;
+  processingProgress: number = 0;
 }
 
 export const mainModule = new Module({

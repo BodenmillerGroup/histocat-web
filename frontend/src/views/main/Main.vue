@@ -54,7 +54,7 @@
         </v-col>
       </v-row>
     </v-navigation-drawer>
-    <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp">
+    <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title>{{ appName }}</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -100,6 +100,13 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <ToolbarProgressBar
+        :processing="processing"
+        :progress="processingProgress"
+        :indeterminate="false"
+        color="light-blue lighten-2"
+        slot="extension"
+      />
     </v-app-bar>
     <v-content>
       <router-view></router-view>
@@ -108,8 +115,10 @@
 </template>
 
 <script lang="ts">
+import ToolbarProgressBar from "@/components/ToolbarProgressBar.vue";
 import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
+import { BroadcastManager } from "@/utils/BroadcastManager";
 import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
@@ -120,8 +129,9 @@ const routeGuardMain = async (to, from, next) => {
     next();
   }
 };
-
-@Component
+@Component({
+  components: { ToolbarProgressBar }
+})
 export default class Main extends Vue {
   readonly mainContext = mainModule.context(this.$store);
 
@@ -180,8 +190,29 @@ export default class Main extends Vue {
     await this.mainContext.actions.userLogOut();
   }
 
+  get processing() {
+    return this.mainContext.getters.processing;
+  }
+
+  get processingProgress() {
+    return this.mainContext.getters.processingProgress;
+  }
+
   mounted() {
     WebSocketManager.init(this.$store);
+    BroadcastManager.init(this.$store);
+  }
+
+  beforeDestroy() {
+    WebSocketManager.close();
+    BroadcastManager.close();
   }
 }
 </script>
+
+<style>
+.v-toolbar__extension {
+  padding-left: 0;
+  padding-right: 0;
+}
+</style>

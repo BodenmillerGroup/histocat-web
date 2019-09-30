@@ -8,6 +8,7 @@ export interface IImageSegmentationSettings {
   kernel_size: number;
   mask_color: string;
   result_type: ImageResultType;
+  suppressBroadcast?: boolean;
 }
 
 export interface IImageSegmentationSubmission {

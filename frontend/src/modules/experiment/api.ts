@@ -51,14 +51,36 @@ export const api = {
       })
       .json<IExperiment>();
   },
-  async upload(token: string, id: number, data) {
-    return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload`, {
-      body: data,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      timeout: false
-    });
+  async upload(
+    token: string,
+    id: number,
+    data,
+    onLoadStart: () => void,
+    onLoad: () => void,
+    onProgress: (event: ProgressEvent) => void,
+    onError: () => void
+  ) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${apiUrl}/api/v1/experiments/${id}/upload`);
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+
+    xhr.upload.onloadstart = onLoadStart;
+    xhr.upload.onprogress = onProgress;
+    xhr.upload.onload = onLoad;
+    xhr.upload.onerror = function() {
+      console.log(`Error during file upload: ${xhr.status}.`);
+      onError();
+    };
+
+    xhr.send(data);
+
+    // return ky.post(`${apiUrl}/api/v1/experiments/${id}/upload`, {
+    //   body: data,
+    //   headers: {
+    //     Authorization: `Bearer ${token}`
+    //   },
+    //   timeout: false
+    // });
   },
   async deleteExperiment(token: string, id: number) {
     return ky

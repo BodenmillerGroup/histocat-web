@@ -1,10 +1,11 @@
 import { IImageSegmentationSettings } from "@/modules/analysis/models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
 import { Mutations } from "vuex-smart-module";
 import { SettingsState } from ".";
 import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
-  resetSettings() {
+  resetSettings(payload: { suppressBroadcast?: boolean }) {
     this.state.channelsSettings = new Map<number, IChannelSettings>();
     this.state.metalColorMap = new Map<string, string>();
     this.state.filter = {
@@ -18,7 +19,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.legend = {
       apply: false,
       fontScale: 1.0,
-      showIntensity: true
+      showIntensity: false
     };
     this.state.scalebar = {
       apply: false,
@@ -37,35 +38,83 @@ export class SettingsMutations extends Mutations<SettingsState> {
       apply: false,
       location: undefined
     };
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.resetSettings.name,
+        payload: payload
+      });
+    }
   }
 
-  setChannelSettings(channelSettings: IChannelSettings) {
-    this.state.channelsSettings.set(channelSettings.id, channelSettings);
+  setChannelSettings(payload: IChannelSettings) {
+    this.state.channelsSettings.set(payload.id, payload);
     this.state.channelsSettings = new Map(this.state.channelsSettings);
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setChannelSettings.name,
+        payload: payload
+      });
+    }
   }
 
-  setMetalColor(payload: { metal: string; color: string }) {
+  setMetalColor(payload: { metal: string; color: string; suppressBroadcast?: boolean }) {
     this.state.metalColorMap.set(payload.metal, payload.color);
     this.state.metalColorMap = new Map(this.state.metalColorMap);
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setMetalColor.name,
+        payload: payload
+      });
+    }
   }
 
-  setFilter(filter: IImageFilter) {
-    this.state.filter = filter;
+  setFilter(payload: IImageFilter) {
+    this.state.filter = payload;
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setFilter.name,
+        payload: payload
+      });
+    }
   }
 
-  setLegend(legend: IImageLegend) {
-    this.state.legend = legend;
+  setLegend(payload: IImageLegend) {
+    this.state.legend = payload;
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setLegend.name,
+        payload: payload
+      });
+    }
   }
 
-  setScalebar(scalebar: IImageScalebar) {
-    this.state.scalebar = scalebar;
+  setScalebar(payload: IImageScalebar) {
+    this.state.scalebar = payload;
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setScalebar.name,
+        payload: payload
+      });
+    }
   }
 
-  setSegmentationSettings(settings: IImageSegmentationSettings) {
-    this.state.segmentationSettings = settings;
+  setSegmentationSettings(payload: IImageSegmentationSettings) {
+    this.state.segmentationSettings = payload;
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setSegmentationSettings.name,
+        payload: payload
+      });
+    }
   }
 
-  setMaskSettings(settings: IMaskSettings) {
-    this.state.mask = settings;
+  setMaskSettings(payload: IMaskSettings) {
+    this.state.mask = payload;
+    if (!payload.suppressBroadcast) {
+      BroadcastManager.postMessage({
+        method: this.setMaskSettings.name,
+        payload: payload
+      });
+    }
   }
 }
