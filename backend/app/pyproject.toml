@@ -56,5 +56,5 @@ backend = [ "alembic", "python-multipart", "gunicorn", "uvicorn" ]
 worker = []
 
 [tool.black]
-line-length = 120
+line-length = 88
 target-version = [ "py37" ]

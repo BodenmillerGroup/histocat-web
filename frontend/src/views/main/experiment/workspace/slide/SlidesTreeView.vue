@@ -23,7 +23,16 @@
       </v-tooltip>
     </v-toolbar>
     <v-toolbar dense flat>
-      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable flat />
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        clearable
+        flat
+        dense
+      />
     </v-toolbar>
     <v-treeview
       v-model="selected"
@@ -224,11 +233,5 @@ export default class SlidesTreeView extends Vue {
 <style scoped>
 .scroll-view {
   height: calc(100vh - 196px);
-}
-</style>
-
-<style>
-.v-text-field.v-text-field--solo .v-input__control {
-  min-height: 28px;
 }
 </style>

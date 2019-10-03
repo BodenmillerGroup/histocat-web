@@ -35,20 +35,26 @@ CHANNELS_FULL_CSV_ENDING = "_ac_full.csv"
 PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
-def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int, user_id: int):
+def import_dataset(
+    db: Session,
+    root_folder: Path,
+    cell_csv_filename: str,
+    experiment_id: int,
+    user_id: int,
+):
     """
     Import dataset from the folder compatible with 'cpout' IMC pipeline folders
     """
 
     experiment = experiment_crud.get(db, id=experiment_id)
     if not experiment:
-        logger.warn(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
+        logger.warn(
+            f"Cannot import dataset: experiment [id: {experiment_id}] does not exist."
+        )
         return
 
     create_params = DatasetCreateModel(
-        experiment_id=experiment_id,
-        user_id=user_id,
-        status="pending",
+        experiment_id=experiment_id, user_id=user_id, status="pending"
     )
     dataset = dataset_crud.create(db, params=create_params)
     input = {}
@@ -77,7 +83,9 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         input["channel_map"] = channels_input
         break
 
-    object_relationships_df, object_relationships_input = _import_object_relationships(db, src_folder, dst_folder)
+    object_relationships_df, object_relationships_input = _import_object_relationships(
+        db, src_folder, dst_folder
+    )
     if object_relationships_input:
         input["object_relationships"] = object_relationships_input
 
@@ -86,19 +94,20 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         input["cell"] = cell_input
 
     # Register heatmap columns
-    neighbors_cols = [col for col in cell_df.columns if 'Neighbors_' in col]
+    neighbors_cols = [col for col in cell_df.columns if "Neighbors_" in col]
     input["neighbors_columns"] = neighbors_cols
 
-    acquisition_metadata_df, acquisition_metadata_input = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
+    acquisition_metadata_df, acquisition_metadata_input = _import_acquisition_metadata_csv(
+        db, src_folder, dst_folder
+    )
     if acquisition_metadata_input:
         input["acquisition_metadata"] = acquisition_metadata_input
 
-    update_params = DatasetUpdateModel(
-        status="ready",
-        input=input,
-    )
+    update_params = DatasetUpdateModel(status="ready", input=input)
     dataset = dataset_crud.update(db, item=dataset, params=update_params)
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported"))
+    redis_manager.publish(
+        UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported")
+    )
 
 
 def _import_image_csv(db: Session, src_folder: Path, dst_folder: Path):
@@ -110,9 +119,7 @@ def _import_image_csv(db: Session, src_folder: Path, dst_folder: Path):
     dst_uri = dst_folder / f"{IMAGE_FILENAME}{FEATHER_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
     df.to_feather(dst_uri)
-    artifact = {
-        "location": str(dst_uri),
-    }
+    artifact = {"location": str(dst_uri)}
     return df, artifact
 
 
@@ -143,9 +150,7 @@ def _import_object_relationships(db: Session, src_folder: Path, dst_folder: Path
     df = pd.read_csv(src_uri, dtype=dtype)
     df.columns = df.columns.str.replace(" ", "_")
     df.to_feather(dst_uri)
-    artifact = {
-        "location": str(dst_uri),
-    }
+    artifact = {"location": str(dst_uri)}
     return df, artifact
 
 
@@ -158,47 +163,46 @@ def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path):
     dst_uri = dst_folder / f"{CELL_FILENAME}{FEATHER_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
     df.to_feather(dst_uri)
-    artifact = {
-        "location": str(dst_uri),
-    }
+    artifact = {"location": str(dst_uri)}
     return df, artifact
 
 
-def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, dataset: Dataset):
+def _import_probabilities_mask(
+    db: Session, src_folder: Path, row: pd.Series, dataset: Dataset
+):
     filename = row["FileName_CellImage"]
     image_number = row["ImageNumber"]
     uri = src_folder / filename
 
     p = re.compile(
-        '(?P<Name>.*)_s(?P<SlideID>[0-9]+)_p(?P<PanoramaID>[0-9]+)_r(?P<AcquisitionROIID>[0-9]+)_a(?P<AcquisitionID>[0-9]+)_ac.*')
-    name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(filename)[0]
+        "(?P<Name>.*)_s(?P<SlideID>[0-9]+)_p(?P<PanoramaID>[0-9]+)_r(?P<AcquisitionROIID>[0-9]+)_a(?P<AcquisitionID>[0-9]+)_ac.*"
+    )
+    name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(
+        filename
+    )[
+        0
+    ]
 
     slide = slide_crud.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
-    panorama = panorama_crud.get_by_origin_id(db, slide_id=slide.id, origin_id=panorama_origin_id)
-    roi = roi_crud.get_by_origin_id(db, panorama_id=panorama.id, origin_id=roi_origin_id)
-    acquisition = acquisition_crud.get_by_origin_id(db, roi_id=roi.id, origin_id=acquisition_origin_id)
+    panorama = panorama_crud.get_by_origin_id(
+        db, slide_id=slide.id, origin_id=panorama_origin_id
+    )
+    roi = roi_crud.get_by_origin_id(
+        db, panorama_id=panorama.id, origin_id=roi_origin_id
+    )
+    acquisition = acquisition_crud.get_by_origin_id(
+        db, roi_id=roi.id, origin_id=acquisition_origin_id
+    )
 
     location = copy_file(uri, dataset.location)
 
     meta = {
         "image_number": image_number,
         "location": location,
-        "slide": {
-            "id": slide.id,
-            "origin_id": slide.origin_id,
-        },
-        "panorama": {
-            "id": panorama.id,
-            "origin_id": panorama.origin_id,
-        },
-        "roi": {
-            "id": roi.id,
-            "origin_id": roi.origin_id,
-        },
-        "acquisition": {
-            "id": acquisition.id,
-            "origin_id": acquisition.origin_id,
-        },
+        "slide": {"id": slide.id, "origin_id": slide.origin_id},
+        "panorama": {"id": panorama.id, "origin_id": panorama.origin_id},
+        "roi": {"id": roi.id, "origin_id": roi.origin_id},
+        "acquisition": {"id": acquisition.id, "origin_id": acquisition.origin_id},
     }
     return meta
 
@@ -220,8 +224,5 @@ def _import_acquisition_metadata_csv(db: Session, src_folder: Path, dst_folder: 
     }
     df = pd.read_csv(src_uri, dtype=dtype)
     df.to_feather(dst_uri)
-    artifact = {
-        "location": str(dst_uri),
-    }
+    artifact = {"location": str(dst_uri)}
     return df, artifact
-

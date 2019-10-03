@@ -34,16 +34,9 @@
               </v-list-item-action>
               <v-list-item-title>Manage Experiments</v-list-item-title>
             </v-list-item>
-            <!--            <v-list-item to="/main/admin/workflows/all">-->
-            <!--              <v-list-item-action>-->
-            <!--                <v-icon>mdi-sitemap</v-icon>-->
-            <!--              </v-list-item-action>-->
-            <!--              <v-list-item-title>Manage Workflows</v-list-item-title>-->
-            <!--            </v-list-item>-->
           </v-list>
-          <v-spacer></v-spacer>
+          <v-divider></v-divider>
           <v-list>
-            <v-divider></v-divider>
             <v-list-item @click="switchMiniDrawer">
               <v-list-item-action>
                 <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"></v-icon>
@@ -56,12 +49,12 @@
     </v-navigation-drawer>
     <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>{{ appName }}</v-toolbar-title>
+      <v-toolbar-title @click="$router.push('/')">{{ appName }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn-toggle v-model="views" multiple>
+      <v-btn-toggle v-model="views" multiple background-color="primary">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" value="workspace">
+            <v-btn v-on="on" value="workspace">
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
@@ -70,7 +63,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn color="primary" v-on="on" value="options">
+            <v-btn v-on="on" value="options">
               <v-icon>mdi-tune</v-icon>
             </v-btn>
           </template>

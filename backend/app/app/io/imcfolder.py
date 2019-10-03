@@ -42,14 +42,16 @@ ACQUISITION_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITION}{mcdxmlparser.META_CS
 CHANNEL_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONCHANNEL}{mcdxmlparser.META_CSV}"
 
 
-def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user_id: int):
+def import_imcfolder(
+    db: Session, schema_filename: str, experiment_id: int, user_id: int
+):
     """
     Import slides from the folder compatible with IMC pipeline
     """
 
     schema_path = Path(schema_filename)
     src_folder = schema_path.parent
-    basename = schema_path.stem.replace('_schema', '')
+    basename = schema_path.stem.replace("_schema", "")
 
     slide_csv_filename = src_folder / f"{basename}{SLIDE_META_CSV_ENDING}"
     slide_data = _load_meta_csv(slide_csv_filename)
@@ -75,16 +77,18 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
             continue
         item = slide_crud.get_by_name(db, experiment_id=experiment_id, name=basename)
         if item:
-            logger.warn(f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]")
+            logger.warn(
+                f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]"
+            )
             return
 
-        with open(schema_filename, 'rt') as f:
+        with open(schema_filename, "rt") as f:
             xml_meta = f.read()
 
         slide = _import_slide(db, slide_item, xml_meta, experiment_id, basename)
         slide_map[str(slide.origin_id)] = slide
 
-        origin_location = os.path.join(slide.location, 'origin')
+        origin_location = os.path.join(slide.location, "origin")
         copy_dir(src_folder, origin_location)
 
     panorama_map: Dict[str, Panorama] = dict()
@@ -125,10 +129,14 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
         acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
         _import_channel(db, channel_item, acquisition)
 
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
+    redis_manager.publish(
+        UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported")
+    )
 
 
-def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str):
+def _import_slide(
+    db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str
+):
     origin_id = meta.get(mcdxmlparser.ID)
     params = SlideCreateModel(
         experiment_id=experiment_id,
@@ -143,46 +151,34 @@ def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_i
 
 def _import_panorama(db: Session, meta: Dict[str, str], slide: Slide):
     origin_id = meta.get(mcdxmlparser.ID)
-    params = PanoramaCreateModel(
-        slide_id=slide.id,
-        origin_id=origin_id,
-        meta=meta,
-    )
+    params = PanoramaCreateModel(slide_id=slide.id, origin_id=origin_id, meta=meta)
     panorama = panorama_crud.create(db, params=params)
     return panorama
 
 
 def _import_roi(db: Session, meta: Dict[str, str], panorama: Panorama):
     origin_id = meta.get(mcdxmlparser.ID)
-    params = ROICreateModel(
-        panorama_id=panorama.id,
-        origin_id=origin_id,
-        meta=meta,
-    )
+    params = ROICreateModel(panorama_id=panorama.id, origin_id=origin_id, meta=meta)
     roi = roi_crud.create(db, params=params)
     return roi
 
 
 def _import_roi_point(db: Session, meta: Dict[str, str], roi: ROI):
     origin_id = meta.get(mcdxmlparser.ID)
-    params = ROIPointCreateModel(
-        roi_id=roi.id,
-        origin_id=origin_id,
-        meta=meta,
-    )
+    params = ROIPointCreateModel(roi_id=roi.id, origin_id=origin_id, meta=meta)
     roi_point = roi_point_crud.create(db, params=params)
     return roi_point
 
 
 def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: str):
     origin_id = meta.get(mcdxmlparser.ID)
-    origin_location = os.path.join(roi.panorama.slide.location, 'origin')
-    location = os.path.join(origin_location, f'{basename}_s{roi.panorama.slide.origin_id}_p{roi.panorama.origin_id}_r{roi.origin_id}_a{origin_id}_ac.ome.tiff')
+    origin_location = os.path.join(roi.panorama.slide.location, "origin")
+    location = os.path.join(
+        origin_location,
+        f"{basename}_s{roi.panorama.slide.origin_id}_p{roi.panorama.origin_id}_r{roi.origin_id}_a{origin_id}_ac.ome.tiff",
+    )
     params = AcquisitionCreateModel(
-        roi_id=roi.id,
-        origin_id=origin_id,
-        location=location,
-        meta=meta,
+        roi_id=roi.id, origin_id=origin_id, location=location, meta=meta
     )
     acquisition = acquisition_crud.create(db, params=params)
     return acquisition
@@ -191,12 +187,14 @@ def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: s
 def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition):
     origin_id = meta.get(mcdxmlparser.ID)
 
-    if meta.get(mcdxmlparser.CHANNELNAME) in ['X', 'Y', 'Z']:
+    if meta.get(mcdxmlparser.CHANNELNAME) in ["X", "Y", "Z"]:
         return
 
-    metal = meta.get(mcdxmlparser.CHANNELNAME).replace('(', '').replace(')', '').strip()
-    label = meta.get(mcdxmlparser.CHANNELLABEL).replace('(', '').replace(')', '').strip()
-    mass = ''.join([m for m in metal if m.isdigit()])
+    metal = meta.get(mcdxmlparser.CHANNELNAME).replace("(", "").replace(")", "").strip()
+    label = (
+        meta.get(mcdxmlparser.CHANNELLABEL).replace("(", "").replace(")", "").strip()
+    )
+    mass = "".join([m for m in metal if m.isdigit()])
 
     parser = OmetiffParser(acquisition.location)
     imc_acquisition: ImcAcquisition = parser.get_imc_acquisition()
@@ -210,14 +208,14 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition)
         mass=mass,
         max_intensity=img.max(),
         min_intensity=img.min(),
-        meta=meta
+        meta=meta,
     )
     channel = channel_crud.create(db, params=params)
     return channel
 
 
 def _load_meta_csv(filepath: Path) -> Dict[str, Dict[str, str]]:
-    with filepath.open('rt') as f:
+    with filepath.open("rt") as f:
         reader = csv.reader(f)
         line_count = 0
         header = None
