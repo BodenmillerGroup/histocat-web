@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  backend:
+    restart: "no"
+    build:
+      context: ../backend
+      dockerfile: backend.dockerfile
+      args:
+        BACKEND_ENV: stage
+    environment:
+      - SMTP_PASSWORD
+
+  worker:
+    restart: "no"
+    build:
+      context: ../backend
+      dockerfile: worker.dockerfile
+      args:
+        BACKEND_ENV: stage
+
+  frontend:
+    restart: "no"
+    build:
+      context: ../frontend
+      args:
+        FRONTEND_ENV: stage
+
+  proxy:
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--api.debug=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"

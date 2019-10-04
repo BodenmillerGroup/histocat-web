@@ -4,7 +4,7 @@ let envApiUrl = "";
 
 if (env === "production") {
   envApiUrl = `http://${process.env.VUE_APP_DOMAIN_PROD}`;
-} else if (env === "staging") {
+} else if (env === "stage") {
   envApiUrl = `http://${process.env.VUE_APP_DOMAIN_STAG}`;
 } else {
   envApiUrl = `http://${process.env.VUE_APP_DOMAIN_DEV}`;

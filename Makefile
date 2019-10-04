@@ -11,6 +11,9 @@ deploy:
 deploy-prod:
 	./scripts/deploy-prod.sh
 
+deploy-stage:
+	./scripts/deploy-stage.sh
+
 build:
 	./scripts/build.sh
 
