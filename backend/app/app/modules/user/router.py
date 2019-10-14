@@ -80,8 +80,7 @@ def update_me(
 
 @router.get("/me", response_model=UserModel)
 def read_me(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
     """
     Get current user
@@ -158,19 +157,12 @@ def update(
 
 
 @router.get("/check/{email}")
-def check_user_exists(
-    email: str,
-    db: Session = Depends(get_db),
-):
+def check_user_exists(email: str, db: Session = Depends(get_db)):
     """
     Check if user with the email exists
     """
     user = crud.get_by_email(db, email=email)
     if user:
-        return {
-            'exists': True
-        }
+        return {"exists": True}
     else:
-        return {
-            'exists': False
-        }
+        return {"exists": False}

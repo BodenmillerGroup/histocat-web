@@ -52,4 +52,9 @@ async def read_slide_image(
     Get slide image by id
     """
     item = crud.get(db, id=id)
-    return FileResponse(os.path.join(item.location, "origin", f"{item.name}_s{item.origin_id}_slide.png"), media_type="image/png")
+    return FileResponse(
+        os.path.join(
+            item.location, "origin", f"{item.name}_s{item.origin_id}_slide.png"
+        ),
+        media_type="image/png",
+    )

@@ -14,9 +14,13 @@ from app.modules.analysis import router as analysis_router
 api_router = APIRouter()
 api_router.include_router(auth_router.router, prefix="/auth", tags=["auth"])
 api_router.include_router(core_router.router, prefix="/utils", tags=["utils"])
-api_router.include_router(experiment_router.router, prefix="/experiments", tags=["experiments"])
+api_router.include_router(
+    experiment_router.router, prefix="/experiments", tags=["experiments"]
+)
 api_router.include_router(slide_router.router, prefix="/slides", tags=["slides"])
-api_router.include_router(panorama_router.router, prefix="/panoramas", tags=["panoramas"])
+api_router.include_router(
+    panorama_router.router, prefix="/panoramas", tags=["panoramas"]
+)
 api_router.include_router(channel_router.router, prefix="/channels", tags=["channels"])
 api_router.include_router(user_router.router, prefix="/users", tags=["users"])
 api_router.include_router(dataset_router.router, prefix="/datasets", tags=["datasets"])

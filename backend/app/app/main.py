@@ -19,7 +19,8 @@ if os.environ.get("BACKEND_ENV") == "development":
         # VS Code Debugging
         # Allow other computers to attach to ptvsd at this IP address and port.
         import ptvsd
-        ptvsd.enable_attach(address=('0.0.0.0', 5678), redirect_output=True)
+
+        ptvsd.enable_attach(address=("0.0.0.0", 5678), redirect_output=True)
 
         # PyCharm Debugging
         # TODO: Don't forget to modify IP address!!
@@ -31,8 +32,7 @@ if os.environ.get("BACKEND_ENV") == "development":
         logger.error(e)
 
 app = FastAPI(
-    title=config.PROJECT_NAME,
-    openapi_url=f"{config.API_V1_STR}/openapi.json",
+    title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json"
 )
 
 # CORS
@@ -57,9 +57,7 @@ app.include_router(api_router, prefix=config.API_V1_STR)
 
 @app.websocket("/ws/{experiment_id}")
 async def experiment_websocket_endpoint(
-    websocket: WebSocket,
-    experiment_id: int,
-    token: str = None,
+    websocket: WebSocket, experiment_id: int, token: str = None
 ):
     if not token:
         raise Exception("WebSocket authorization token is missing")

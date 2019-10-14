@@ -12,11 +12,7 @@ class Message:
 
     @staticmethod
     def from_json(json: Dict[str, Any]):
-        return Message(
-            json.get("experiment_id"),
-            json.get("type"),
-            json.get("payload"),
-        )
+        return Message(json.get("experiment_id"), json.get("type"), json.get("payload"))
 
     def to_json(self):
         return {

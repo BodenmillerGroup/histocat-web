@@ -37,6 +37,7 @@ class ChannelStatsModel(BaseModel):
     """
     Channel stats model
     """
+
     hist: List[int]
     edges: List[float]
 
@@ -80,4 +81,4 @@ class ChannelStackModel(BaseModel):
     scalebar: ScalebarModel
     channels: List[ChannelSettingsModel]
     mask: Optional[MaskSettingsModel]
-    format: Optional[str] = 'png'
+    format: Optional[str] = "png"

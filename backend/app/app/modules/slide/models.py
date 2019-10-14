@@ -32,6 +32,7 @@ class SlideDatasetModel(SlideModel):
     """
     Full slide dataset
     """
+
     panoramas: List[PanoramaDatasetModel]
 
     class Config:

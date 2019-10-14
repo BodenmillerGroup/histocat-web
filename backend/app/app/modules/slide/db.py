@@ -25,20 +25,26 @@ class Slide(Base):
 
     __tablename__ = "slide"
     __table_args__ = (
-        sa.UniqueConstraint('experiment_id', 'name', name='uq_experiment_slide_name'),
+        sa.UniqueConstraint("experiment_id", "name", name="uq_experiment_slide_name"),
     )
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
-    experiment_id: int = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
-    name: str = sa.Column('name', sa.String(4096))
-    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
-    xml_meta: str = sa.Column('xml_meta', sa.Text())
-    meta: Dict[str, str] = sa.Column('meta', JSONB())
-    location: str = sa.Column('location', sa.String(4096))
-    created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    experiment_id: int = sa.Column(
+        sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True
+    )
+    name: str = sa.Column("name", sa.String(4096))
+    origin_id: int = sa.Column("origin_id", sa.Integer(), index=True)
+    xml_meta: str = sa.Column("xml_meta", sa.Text())
+    meta: Dict[str, str] = sa.Column("meta", JSONB())
+    location: str = sa.Column("location", sa.String(4096))
+    created_at: datetime = sa.Column(
+        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
+    )
 
     experiment = relationship("Experiment", back_populates="slides")
-    panoramas = relationship("Panorama", back_populates="slide", cascade="all, delete, delete-orphan")
+    panoramas = relationship(
+        "Panorama", back_populates="slide", cascade="all, delete, delete-orphan"
+    )
 
     @property
     def UID(self) -> Optional[str]:

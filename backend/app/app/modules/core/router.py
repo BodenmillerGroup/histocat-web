@@ -12,8 +12,7 @@ router = APIRouter()
 
 @router.post("/test-worker/", response_model=MsgModel, status_code=201)
 def test_worker(
-    msg: MsgModel,
-    current_user: UserDBModel = Depends(get_current_active_superuser)
+    msg: MsgModel, current_user: UserDBModel = Depends(get_current_active_superuser)
 ):
     """
     Test worker

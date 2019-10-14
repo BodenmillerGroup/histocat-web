@@ -73,29 +73,25 @@ def delete_by_id(
 
 
 @router.get("/{id}/download")
-async def download_by_id(
-    id: int,
-    db: Session = Depends(get_db),
-):
+async def download_by_id(id: int, db: Session = Depends(get_db)):
     """
     Download dataset by id
     """
     item = crud.get(db, id=id)
     if item is None:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Cannot find dataset [{id}]",
-        )
+        raise HTTPException(status_code=400, detail=f"Cannot find dataset [{id}]")
 
-    file_name = f'{item.name}.zip'
+    file_name = f"{item.name}.zip"
     abs_src = os.path.abspath(item.location)
     buffer = BytesIO()
-    with ZipFile(buffer, 'w', ZIP_DEFLATED) as zip:
+    with ZipFile(buffer, "w", ZIP_DEFLATED) as zip:
         for folderName, _, filenames in os.walk(item.location):
             for filename in filenames:
                 absname = os.path.abspath(os.path.join(folderName, filename))
-                arcname = absname[len(abs_src) + 1:]
+                arcname = absname[len(abs_src) + 1 :]
                 zip.write(absname, arcname)
 
-    headers = {'Content-Disposition': f'attachment; filename="{file_name}"'}
-    return StreamingResponse(stream_bytes(buffer.getvalue()), media_type="application/zip", headers=headers)
+    headers = {"Content-Disposition": f'attachment; filename="{file_name}"'}
+    return StreamingResponse(
+        stream_bytes(buffer.getvalue()), media_type="application/zip", headers=headers
+    )

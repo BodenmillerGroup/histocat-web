@@ -53,7 +53,7 @@ class RedisManager:
     #         await self.pub.publish_json(channel_name, message.to_json())
 
     async def _reader(self, channel: aioredis.Channel):
-        while (await channel.wait_message()):
+        while await channel.wait_message():
             json = await channel.get_json()
             message = Message.from_json(json)
             await notifier.push(message)

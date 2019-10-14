@@ -26,7 +26,7 @@ def process_phenograph(
     nearest_neighbors: int,
     jaccard: bool,
     primary_metric: str,
-    min_cluster_size: int
+    min_cluster_size: int,
 ):
     """
     Calculate PhenoGraph data
@@ -44,8 +44,7 @@ def process_phenograph(
 
     if not cell_input or not channel_map or len(image_numbers) == 0:
         raise HTTPException(
-            status_code=400,
-            detail="The dataset does not have a proper input.",
+            status_code=400, detail="The dataset does not have a proper input."
         )
 
     df = pd.read_feather(cell_input.get("location"))
@@ -53,7 +52,7 @@ def process_phenograph(
 
     features = []
     for marker in markers:
-        features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
+        features.append(f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}")
 
     # Get a numpy array instead of DataFrame
     feature_values = df[features].values
@@ -63,17 +62,24 @@ def process_phenograph(
     feature_values_scaled = min_max_scaler.fit_transform(feature_values)
 
     # PhenoGraph implementation
-    communities, graph, Q = phenograph.cluster(feature_values_scaled, n_jobs=1, k=nearest_neighbors, jaccard=jaccard, primary_metric=primary_metric, min_cluster_size=min_cluster_size)
+    communities, graph, Q = phenograph.cluster(
+        feature_values_scaled,
+        n_jobs=1,
+        k=nearest_neighbors,
+        jaccard=jaccard,
+        primary_metric=primary_metric,
+        min_cluster_size=min_cluster_size,
+    )
 
     result = df[features]
-    result = result.assign(community = communities)
-    result = result.groupby('community', as_index=False).mean()
+    result = result.assign(community=communities)
+    result = result.groupby("community", as_index=False).mean()
 
     timestamp = str(datetime.utcnow())
 
-    os.makedirs(os.path.join(dataset.location, 'phenograph'), exist_ok=True)
-    location = os.path.join(dataset.location, 'phenograph', f'{timestamp}.pickle')
-    with open(location, 'wb') as f:
+    os.makedirs(os.path.join(dataset.location, "phenograph"), exist_ok=True)
+    location = os.path.join(dataset.location, "phenograph", f"{timestamp}.pickle")
+    with open(location, "wb") as f:
         pickle.dump(result, f)
 
     result = {
@@ -85,19 +91,20 @@ def process_phenograph(
             "nearest_neighbors": nearest_neighbors,
             "jaccard": jaccard,
             "primary_metric": primary_metric,
-            "min_cluster_size": min_cluster_size
+            "min_cluster_size": min_cluster_size,
         },
         "location": location,
     }
-    dataset_crud.update_output(db, dataset_id=dataset_id, result_type='phenograph', result=result)
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "phenograph_result_ready", result))
+    dataset_crud.update_output(
+        db, dataset_id=dataset_id, result_type="phenograph", result=result
+    )
+    redis_manager.publish(
+        UPDATES_CHANNEL_NAME,
+        Message(dataset.experiment_id, "phenograph_result_ready", result),
+    )
 
 
-def get_phenograph_result(
-    db: Session,
-    dataset_id: int,
-    name: str,
-):
+def get_phenograph_result(db: Session, dataset_id: int, name: str):
     """
     Read PhenoGraph result data
     """
@@ -112,7 +119,7 @@ def get_phenograph_result(
         )
 
     phenograph_result = phenograph_output.get(name)
-    with open(phenograph_result.get("location"), 'rb') as f:
+    with open(phenograph_result.get("location"), "rb") as f:
         result = pickle.load(f)
 
     params = phenograph_result.get("params")
@@ -121,7 +128,7 @@ def get_phenograph_result(
     channel_map = dataset.input.get("channel_map")
     channel_map_updated = {}
     for key, item in channel_map.items():
-        channel_map_updated[key] = f'Intensity_MeanIntensity_FullStack_c{item}'
+        channel_map_updated[key] = f"Intensity_MeanIntensity_FullStack_c{item}"
     channel_map_inv = {v: k for k, v in channel_map_updated.items()}
 
     image_numbers = []
@@ -131,7 +138,7 @@ def get_phenograph_result(
 
     output = {}
     for (columnName, columnData) in result.iteritems():
-        if columnName != 'community':
+        if columnName != "community":
             columnName = channel_map_inv.get(columnName)
         output[columnName] = columnData.tolist()
 

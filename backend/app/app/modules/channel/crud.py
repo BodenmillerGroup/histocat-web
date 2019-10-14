@@ -14,7 +14,9 @@ def get(session: Session, *, id: int) -> Optional[Channel]:
     return session.query(Channel).filter(Channel.id == id).first()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Channel]]:
+def get_multi(
+    session: Session, *, skip: int = 0, limit: int = 100
+) -> List[Optional[Channel]]:
     return session.query(Channel).offset(skip).limit(limit).all()
 
 

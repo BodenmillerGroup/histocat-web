@@ -12,7 +12,14 @@ from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
-from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend, draw_mask
+from app.core.image import (
+    scale_image,
+    colorize,
+    apply_filter,
+    draw_scalebar,
+    draw_legend,
+    draw_mask,
+)
 from app.core.redis_manager import redis_manager
 from app.core.utils import stream_bytes
 from app.modules.analysis.router import get_additive_image
@@ -96,10 +103,14 @@ async def read_channel_image(
     acq = parser.get_imc_acquisition()
     data = acq.get_img_by_metal(item.metal)
 
-    levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
+    levels = (
+        (min, max)
+        if min is not None and max is not None
+        else (item.min_intensity, item.max_intensity)
+    )
     data = scale_image(data, levels)
 
-    color = f'#{color}' if color else '#ffffff'
+    color = f"#{color}" if color else "#ffffff"
     image = colorize(data, color)
 
     image = cv2.cvtColor(image.astype(data.dtype), cv2.COLOR_BGR2RGB)
@@ -136,6 +147,8 @@ async def download_channel_stack(
     if params.scalebar.apply:
         additive_image = draw_scalebar(additive_image, params.scalebar)
 
-    format = params.format if params.format is not None else 'png'
-    status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == 'tiff' else additive_image)
+    format = params.format if params.format is not None else "png"
+    status, result = cv2.imencode(
+        f".{format}", additive_image.astype(int) if format == "tiff" else additive_image
+    )
     return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")

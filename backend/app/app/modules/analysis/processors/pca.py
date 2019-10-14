@@ -34,8 +34,7 @@ def process_pca(
 
     if not cell_input or not channel_map or len(image_numbers) == 0:
         raise HTTPException(
-            status_code=400,
-            detail="The dataset does not have a proper input.",
+            status_code=400, detail="The dataset does not have a proper input."
         )
 
     df = pd.read_feather(cell_input.get("location"))
@@ -43,7 +42,7 @@ def process_pca(
 
     features = []
     for marker in markers:
-        features.append(f'Intensity_MeanIntensity_FullStack_c{channel_map[marker]}')
+        features.append(f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}")
 
     pca = PCA(n_components=n_components)
 
@@ -58,38 +57,29 @@ def process_pca(
     result = pca.fit_transform(feature_values_scaled)
 
     output = {
-        "x": {
-            "label": "PC1",
-            "data": result[:, 0]
-        },
-        "y": {
-            "label": "PC2",
-            "data": result[:, 1],
-        },
+        "x": {"label": "PC1", "data": result[:, 0]},
+        "y": {"label": "PC2", "data": result[:, 1]},
     }
 
     if n_components == 3:
-        output["z"] = {
-            "label": "PC3",
-            "data": result[:, 2],
-        }
+        output["z"] = {"label": "PC3", "data": result[:, 2]}
 
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = df[f'Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}'] * 2 ** 16
+            heatmap_data = (
+                df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"]
+                * 2 ** 16
+            )
         else:
             heatmap_data = df[heatmap]
 
-        output["heatmap"] = {
-            "label": heatmap,
-            "data": heatmap_data
-        }
+        output["heatmap"] = {"label": heatmap, "data": heatmap_data}
     elif len(acquisition_ids) > 1:
         image_map_inv = {v: k for k, v in image_map.items()}
         output["heatmap"] = {
             "label": "Acquisition",
-            "data": [image_map_inv.get(item) for item in df["ImageNumber"]]
+            "data": [image_map_inv.get(item) for item in df["ImageNumber"]],
         }
 
     return output
