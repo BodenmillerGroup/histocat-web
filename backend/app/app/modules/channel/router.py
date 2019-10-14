@@ -11,7 +11,7 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
 
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.api.utils.security import get_current_active_user
 from app.core.image import scale_image, colorize, apply_filter, draw_scalebar, draw_legend, draw_mask
 from app.core.redis_manager import redis_manager
 from app.core.utils import stream_bytes

@@ -3,14 +3,12 @@ import os
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from starlette.requests import Request
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from app.api.api_v1.api import api_router
 from app.core import config
 from app.core.notifier import notifier
 from app.core.redis_manager import redis_manager
-from app.db.session import Session
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -52,17 +50,9 @@ if config.BACKEND_CORS_ORIGINS:
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
-    ),
+    )
 
 app.include_router(api_router, prefix=config.API_V1_STR)
-
-
-@app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    request.state.db = Session()
-    response = await call_next(request)
-    request.state.db.close()
-    return response
 
 
 @app.websocket("/ws/{experiment_id}")

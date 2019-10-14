@@ -81,7 +81,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer:1.22.0
+    image: portainer/portainer:1.22.1
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -91,7 +91,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:2.0.1
+    image: traefik:2.0.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

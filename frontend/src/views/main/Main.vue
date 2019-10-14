@@ -51,10 +51,10 @@
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
       <v-toolbar-title @click="$router.push('/')">{{ appName }}</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn-toggle v-model="views" multiple background-color="primary">
+      <v-btn-toggle v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="workspace">
+            <v-btn v-on="on" value="workspace" color="primary">
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
@@ -63,7 +63,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="options">
+            <v-btn v-on="on" value="options" color="primary">
               <v-icon>mdi-tune</v-icon>
             </v-btn>
           </template>
