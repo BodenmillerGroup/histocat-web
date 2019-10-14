@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Tuple, List, Union
+from typing import Tuple, List
 
 import cv2
 import numpy as np

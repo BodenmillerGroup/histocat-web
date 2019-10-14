@@ -262,6 +262,21 @@ export class ExperimentActions extends Actions<
     }
   }
 
+  async deleteSlide(id: number) {
+    try {
+      const notification = { content: "deleting", showProgress: true };
+      this.main!.mutations.addNotification(notification);
+      const data = (await Promise.all([
+        api.deleteSlide(this.main!.getters.token, id),
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
+      ]))[0];
+      this.main!.mutations.removeNotification(notification);
+      this.main!.mutations.addNotification({ content: "Slide successfully deleted", color: "success" });
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
   private prepareStackParams(format: "png" | "tiff" = "png") {
     const channels = this.getters.selectedChannels.map(channel => {
       const color = this.settings!.getters.metalColorMap.get(channel.metal);
