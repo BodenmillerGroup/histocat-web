@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Optional, Dict
 
 from pydantic import BaseModel
@@ -19,9 +18,7 @@ class AcquisitionModel(BaseModel):
     id: int
     roi_id: int
     origin_id: int
-    location: str
     meta: Dict[str, Optional[str]]
-    created_at: datetime
 
     class Config:
         orm_mode = True

@@ -19,9 +19,7 @@ class SlideModel(BaseModel):
     experiment_id: int
     name: str
     origin_id: int
-    xml_meta: str
     meta: Dict[str, Optional[str]]
-    location: Optional[str]
     created_at: datetime
 
     class Config:

@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import List, Optional, Dict
 
 from pydantic import BaseModel
@@ -27,7 +26,6 @@ class ChannelModel(BaseModel):
     max_intensity: Optional[float]
     min_intensity: Optional[float]
     meta: Dict[str, Optional[str]]
-    created_at: datetime
 
     class Config:
         orm_mode = True
