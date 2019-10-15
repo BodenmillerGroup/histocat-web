@@ -2,6 +2,7 @@
   <div>
     <v-navigation-drawer
       :mini-variant="miniDrawer"
+      mini-variant-width="60"
       :clipped="$vuetify.breakpoint.lgAndUp"
       v-model="showDrawer"
       fixed
@@ -11,7 +12,6 @@
       <v-row no-gutters>
         <v-col>
           <v-list>
-            <v-subheader>Main</v-subheader>
             <v-list-item to="/main/dashboard">
               <v-list-item-action>
                 <v-icon>mdi-view-dashboard-outline</v-icon>
@@ -21,7 +21,7 @@
           </v-list>
           <v-divider v-if="hasAdminAccess"></v-divider>
           <v-list subheader v-if="hasAdminAccess">
-            <v-subheader>Admin</v-subheader>
+            <v-subheader class="subheader">Admin</v-subheader>
             <v-list-item to="/main/admin/users/all">
               <v-list-item-action>
                 <v-icon>mdi-account-multiple-outline</v-icon>
@@ -49,7 +49,7 @@
     </v-navigation-drawer>
     <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
       <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
-      <v-toolbar-title @click="$router.push('/')">{{ appName }}</v-toolbar-title>
+      <v-toolbar-title @click="$router.push('/')" class="toolbar-title">{{ appName }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn-toggle v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>
@@ -202,3 +202,14 @@ export default class Main extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.subheader {
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.toolbar-title {
+  cursor: pointer;
+}
+</style>

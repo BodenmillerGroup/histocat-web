@@ -24,7 +24,7 @@ import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
-export default class VisualizationView extends Vue {
+export default class BlendView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);

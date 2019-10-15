@@ -130,6 +130,6 @@ export default class DatasetsView extends Vue {
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 148px);
+  height: calc(100vh - 136px);
 }
 </style>

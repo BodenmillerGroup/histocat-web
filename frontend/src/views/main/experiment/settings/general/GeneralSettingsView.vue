@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panels v-model="panel" multiple>
+  <v-expansion-panels v-model="panel" multiple accordion>
     <LegendSettingsView></LegendSettingsView>
     <ScalebarSettingsView></ScalebarSettingsView>
     <FilterSettingsView></FilterSettingsView>

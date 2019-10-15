@@ -103,6 +103,10 @@ async def read_channel_image(
     acq = parser.get_imc_acquisition()
     data = acq.get_img_by_metal(item.metal)
 
+    # lmin = float(data.min())
+    # lmax = float(data.max())
+    # data = np.floor((data - lmin) / (lmax - lmin) * 255.)
+
     levels = (
         (min, max)
         if min is not None and max is not None

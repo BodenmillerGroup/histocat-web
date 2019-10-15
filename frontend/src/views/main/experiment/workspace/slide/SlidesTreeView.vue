@@ -247,6 +247,6 @@ export default class SlidesTreeView extends Vue {
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 196px);
+  height: calc(100vh - 184px);
 }
 </style>
