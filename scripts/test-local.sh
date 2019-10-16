@@ -10,7 +10,7 @@ fi
 
 docker-compose \
     -f .deploy/shared.yml \
-    -f .deploy/prod.yml \
+    -f .deploy/production.yml \
     -f .deploy/test.yml \
     config > docker-stack.yml
 

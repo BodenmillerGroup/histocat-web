@@ -5,14 +5,14 @@ init:
 	cd backend/app && poetry install --extras backend
 	cd frontend && yarn install
 
-deploy:
-	./scripts/deploy.sh
+deploy-development:
+	./scripts/deploy-development.sh
 
-deploy-prod:
-	./scripts/deploy-prod.sh
+deploy-production:
+	./scripts/deploy-production.sh
 
-deploy-stage:
-	./scripts/deploy-stage.sh
+deploy-staging:
+	./scripts/deploy-staging.sh
 
 build:
 	./scripts/build.sh
@@ -34,8 +34,6 @@ update-frontend:
 
 update-backend:
 	cd backend/app && poetry update
-
-update: update-frontend update-backend
 
 mypy:
 	cd backend/app && mypy app

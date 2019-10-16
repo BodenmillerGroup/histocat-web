@@ -9,7 +9,7 @@ FRONTEND_ENV=development \
 VUE_APP_ENV=development \
 docker-compose \
 -f .deploy/shared.yml \
--f .deploy/dev.yml \
+-f .deploy/development.yml \
 config > docker-stack.yml
 
 docker-compose -f docker-stack.yml up -d
