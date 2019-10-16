@@ -7,8 +7,8 @@ BACKEND_ENV=stage \
 FRONTEND_ENV=stage \
 VUE_APP_ENV=stage \
 docker-compose \
--f docker/shared.yml \
--f docker/stage.yml \
+-f .deploy/shared.yml \
+-f .deploy/stage.yml \
 config > docker-stack.yml
 
 docker-compose -f docker-stack.yml up -d

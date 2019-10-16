@@ -5,9 +5,9 @@ set -e
 
 DOMAIN=backend \
 docker-compose \
--f docker/shared.yml \
--f docker/prod.yml \
--f docker/test.yml \
+-f .deploy/shared.yml \
+-f .deploy/prod.yml \
+-f .deploy/test.yml \
 config > docker-stack.yml
 
 docker-compose -f docker-stack.yml build

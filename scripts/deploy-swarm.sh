@@ -8,8 +8,8 @@ TRAEFIK_TAG=${TRAEFIK_TAG} \
 STACK_NAME=${STACK_NAME} \
 TAG=${TAG} \
 docker-compose \
--f docker/shared.yml \
--f docker/swarm.yml \
+-f .deploy/shared.yml \
+-f .deploy/swarm.yml \
 config > docker-stack.yml
 
 docker-auto-labels docker-stack.yml
