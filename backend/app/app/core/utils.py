@@ -146,6 +146,7 @@ def send_test_email(email_to: str):
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
         template_str = f.read()
     from app import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -166,6 +167,7 @@ def send_reset_password_email(email_to: str, email: str, token):
     server_host = config.SERVER_HOST
     link = f"{server_host}/reset-password?token={use_token}"
     from app import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -187,6 +189,7 @@ def send_new_account_email(email_to: str, username: str, password: str):
         template_str = f.read()
     link = config.SERVER_HOST
     from app import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,

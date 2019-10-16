@@ -1,6 +1,16 @@
 <template>
   <v-container fluid>
     <v-row class="mt-6 mx-6">
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        clearable
+        solo
+        class="mt-1"
+      />
       <v-select
         v-model="tags"
         :items="items"
@@ -10,7 +20,7 @@
         label="Tags"
         multiple
         solo
-        class="mt-1"
+        class="mt-1 ml-4"
       ></v-select>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -45,6 +55,7 @@ export default class Dashboard extends Vue {
   mainContext = mainModule.context(this.$store);
   experimentContext = experimentModule.context(this.$store);
 
+  search = "";
   tags: string[] = [];
 
   get items(): any[] {
@@ -61,11 +72,13 @@ export default class Dashboard extends Vue {
   }
 
   get experiments() {
-    const all = this.experimentContext.getters.experiments;
+    const items = this.search
+      ? this.experimentContext.getters.experiments.filter(item => item.name.includes(this.search))
+      : this.experimentContext.getters.experiments;
     if (this.tags.length === 0) {
-      return all;
+      return items;
     } else {
-      return all.filter(experiment => {
+      return items.filter(experiment => {
         if (experiment.tags && this.tags.some(r => experiment.tags.includes(r))) {
           return experiment;
         }

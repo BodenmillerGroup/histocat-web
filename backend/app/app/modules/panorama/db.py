@@ -20,13 +20,19 @@ class Panorama(Base):
     __tablename__ = "panorama"
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
-    slide_id: int = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True)
-    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
-    meta: dict = sa.Column('meta', JSONB())
-    created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    slide_id: int = sa.Column(
+        sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True
+    )
+    origin_id: int = sa.Column("origin_id", sa.Integer(), index=True)
+    meta: dict = sa.Column("meta", JSONB())
+    created_at: datetime = sa.Column(
+        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
+    )
 
     slide = relationship("Slide", back_populates="panoramas")
-    rois = relationship("ROI", back_populates="panorama", cascade="all, delete, delete-orphan")
+    rois = relationship(
+        "ROI", back_populates="panorama", cascade="all, delete, delete-orphan"
+    )
 
     @property
     def Description(self) -> Optional[str]:

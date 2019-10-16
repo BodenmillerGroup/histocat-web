@@ -7,7 +7,8 @@ import {
   IExperimentCreate,
   IExperimentUpdate,
   IShare,
-  IShareCreate
+  IShareCreate,
+  ISlide
 } from "./models";
 
 const cacheAvailable = false; // 'caches' in self;
@@ -158,5 +159,14 @@ export const api = {
         }
       })
       .json<IShare[]>();
+  },
+  async deleteSlide(token: string, id: number) {
+    return ky
+      .delete(`${apiUrl}/api/v1/slides/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .json<ISlide>();
   }
 };

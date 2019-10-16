@@ -19,15 +19,21 @@ class Acquisition(Base):
 
     __tablename__ = "acquisition"
 
-    id: int = sa.Column('id', sa.Integer(), primary_key=True, index=True)
-    roi_id: int = sa.Column('roi_id', sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
-    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
-    meta: dict = sa.Column('meta', JSONB())
-    location: str = sa.Column('location', sa.String(4096))
-    created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    id: int = sa.Column("id", sa.Integer(), primary_key=True, index=True)
+    roi_id: int = sa.Column(
+        "roi_id", sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True
+    )
+    origin_id: int = sa.Column("origin_id", sa.Integer(), index=True)
+    meta: dict = sa.Column("meta", JSONB())
+    location: str = sa.Column("location", sa.String(4096))
+    created_at: datetime = sa.Column(
+        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
+    )
 
     roi = relationship("ROI", back_populates="acquisitions")
-    channels = relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
+    channels = relationship(
+        "Channel", back_populates="acquisition", cascade="all, delete, delete-orphan"
+    )
 
     @property
     def Description(self) -> Optional[str]:

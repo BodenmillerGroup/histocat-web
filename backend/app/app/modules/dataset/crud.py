@@ -1,7 +1,6 @@
 import logging
 import os
 from typing import List, Optional
-import json
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
@@ -37,7 +36,7 @@ def create(session: Session, *, params: DatasetCreateModel) -> Dataset:
         DATASET_LOCATION_FORMAT.format(id=entity.id),
     )
     if not os.path.exists(entity.location):
-        logger.debug(f'Create location for dataset {entity.id}: {entity.location}')
+        logger.debug(f"Create location for dataset {entity.id}: {entity.location}")
         os.makedirs(entity.location)
 
     session.commit()
@@ -57,10 +56,11 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Da
     return item
 
 
-def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> Dataset:
-
+def update_output(
+    session: Session, *, dataset_id: int, result_type: str, result: dict
+) -> Dataset:
     item = session.query(Dataset).filter(Dataset.id == dataset_id).first()
-    session.refresh(item, attribute_names=['output'])
+    session.refresh(item, attribute_names=["output"])
 
     output = item.output if item.output else {}
     result_output = output.get(result_type) if result_type in output else {}

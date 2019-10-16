@@ -1,10 +1,10 @@
 <template>
-  <v-container grid-list-sm fluid class="overflow-y-auto tiles-view">
-    <v-layout row wrap>
-      <v-flex v-for="item in items" :key="item.id" :class="layoutSize" flex-grow-1>
-        <v-card flat flex-grow-1>
+  <v-container fluid class="overflow-y-auto tiles-view">
+    <v-row>
+      <v-col v-for="item in items" :key="item.id" class="d-flex child-flex" :cols="cols">
+        <v-card flat>
           <v-card-title class="subtitle-2 pa-0">{{ item.caption }}</v-card-title>
-          <v-img :src="`${item.url}`" aspect-ratio="1" class="grey lighten-2">
+          <v-img :src="`${item.url}`" aspect-ratio="1" class="grey lighten-2" eager>
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
@@ -12,8 +12,8 @@
             </template>
           </v-img>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -49,14 +49,14 @@ export default class TilesView extends Vue {
     return this.settingsContext.getters.metalColorMap;
   }
 
-  get layoutSize() {
+  get cols() {
     const l = this.items.length;
     if (l === 1) {
-      return "xs12";
+      return 12;
     } else if (l < 5) {
-      return "xs6";
+      return 6;
     }
-    return "xs4";
+    return 4;
   }
 }
 </script>

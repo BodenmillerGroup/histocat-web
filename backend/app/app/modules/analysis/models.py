@@ -18,7 +18,7 @@ class AnalysisModel(BaseModel):
     filter: FilterModel
     scalebar: ScalebarModel
     channels: List[ChannelSettingsModel]
-    format: Optional[str] = 'png'
+    format: Optional[str] = "png"
     settings: SegmentationSettingsModel
 
 
@@ -26,6 +26,7 @@ class PlotSeriesModel(BaseModel):
     """
     Scatter plot axis model
     """
+
     label: str
     data: List[float]
 
@@ -34,6 +35,7 @@ class ScatterPlotModel(BaseModel):
     """
     Scatter plot model
     """
+
     x: PlotSeriesModel
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
@@ -44,6 +46,7 @@ class BoxPlotModel(BaseModel):
     """
     Box plot model
     """
+
     series: List[PlotSeriesModel]
 
 
@@ -51,6 +54,7 @@ class PCAModel(BaseModel):
     """
     PCA plot model
     """
+
     x: PlotSeriesModel
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
@@ -62,6 +66,7 @@ class TSNESubmissionModel(BaseModel):
     """
     t-SNE submission model
     """
+
     dataset_id: int
     acquisition_ids: List[int]
     n_components: int
@@ -77,6 +82,7 @@ class TSNEModel(BaseModel):
     """
     t-SNE result model
     """
+
     x: PlotSeriesModel
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
@@ -87,6 +93,7 @@ class UMAPSubmissionModel(BaseModel):
     """
     UMAP submission model
     """
+
     dataset_id: int
     acquisition_ids: List[int]
     n_components: int
@@ -100,6 +107,7 @@ class UMAPModel(BaseModel):
     """
     UMAP result model
     """
+
     x: PlotSeriesModel
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
@@ -110,6 +118,7 @@ class PhenographSubmissionModel(BaseModel):
     """
     PhenoGraph submission model
     """
+
     dataset_id: int
     acquisition_ids: List[int]
     markers: List[str]
@@ -123,6 +132,7 @@ class PhenographModel(BaseModel):
     """
     PhenoGraph result model
     """
+
     x: PlotSeriesModel
     y: PlotSeriesModel
     z: Optional[PlotSeriesModel]
@@ -133,6 +143,7 @@ class RegionStatsSubmissionModel(BaseModel):
     """
     Region's stats submission model
     """
+
     experiment_id: int
     acquisition_id: int
     region_polygon: List[Any]
@@ -142,6 +153,7 @@ class RegionChannelStatsModel(BaseModel):
     """
     Region's channel stats model
     """
+
     metal: str
     min: float
     max: float

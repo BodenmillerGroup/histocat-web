@@ -8,19 +8,17 @@ import { experimentModule } from "@/modules/experiment";
 import { IAcquisition } from "@/modules/experiment/models";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from "ol/control";
+import { defaults as defaultControls, FullScreen, ScaleLine } from "ol/control";
 import { getCenter } from "ol/extent";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import { DragPan, MouseWheelZoom } from "ol/interaction";
-import ImageLayer from "ol/layer/Image";
-import VectorLayer from "ol/layer/Vector";
+import { Image as ImageLayer, Vector as VectorLayer } from "ol/layer";
 import Map from "ol/Map";
 import "ol/ol.css";
 import Projection from "ol/proj/Projection";
-import Static from "ol/source/ImageStatic";
-import VectorSource from "ol/source/Vector";
-import { Fill, Stroke, Style } from "ol/style.js";
+import { Vector as VectorSource, ImageStatic as StaticSource } from "ol/source";
+import { Fill, Stroke, Style } from "ol/style";
 import View from "ol/View";
 import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
@@ -34,7 +32,6 @@ export default class SegmentationView extends Vue {
 
   // TODO: check for a better solution
   map!: Map;
-  overviewMap!: OverviewMap;
   vectorLayer!: VectorLayer;
   imageLayer!: ImageLayer;
   featureLayer!: VectorLayer;
@@ -71,7 +68,7 @@ export default class SegmentationView extends Vue {
 
     if (image !== null) {
       const projection = this.map.getView().getProjection();
-      const source = new Static({
+      const source = new StaticSource({
         url: ``,
         imageExtent: projection.getExtent(),
         imageLoadFunction: (view, src: string) => {
@@ -103,8 +100,8 @@ export default class SegmentationView extends Vue {
       });
       source.addFeatures(features);
       this.map.getLayers().clear();
-      this.vectorLayer.setSource(source);
       this.vectorLayer.setExtent(projection.getExtent());
+      this.vectorLayer.setSource(source);
       this.map.getLayers().extend([this.imageLayer, this.vectorLayer, this.featureLayer]);
       this.analysisContext.mutations.setSegmentationImage(null);
     }
@@ -136,6 +133,13 @@ export default class SegmentationView extends Vue {
   mounted() {
     if (this.activeAcquisition) {
       this.onActiveAcquisitionChanged(this.activeAcquisition);
+    }
+  }
+
+  beforeDestroy() {
+    if (this.map) {
+      this.map.un("pointermove", this.onPointerMove);
+      this.map.un("click", this.onClick);
     }
   }
 
@@ -192,12 +196,6 @@ export default class SegmentationView extends Vue {
       enableRotation: false
     });
 
-    this.overviewMap = new OverviewMap({
-      view: new View({
-        projection: projection
-      })
-    });
-
     this.imageLayer = new ImageLayer();
     this.vectorLayer = new VectorLayer();
     this.featureLayer = new VectorLayer({
@@ -205,11 +203,11 @@ export default class SegmentationView extends Vue {
       map: this.map,
       style: new Style({
         stroke: new Stroke({
-          color: "#f00",
+          color: "#f00000",
           width: 1
         }),
         fill: new Fill({
-          color: "rgba(255,0,0,0.1)"
+          color: "rgba(255, 0, 0, 0.1)"
         })
       })
     });
@@ -219,24 +217,28 @@ export default class SegmentationView extends Vue {
         zoom: false,
         attribution: false,
         rotate: false
-      }).extend([new ScaleLine(), new FullScreen(), this.overviewMap]),
+      }).extend([new ScaleLine(), new FullScreen()]),
       interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 })],
       view: view,
-      target: this.$el as HTMLElement,
-      layers: [this.imageLayer, this.vectorLayer, this.featureLayer]
+      target: this.$el as HTMLElement
     });
 
-    this.map.on("pointermove", evt => {
-      if (evt.dragging) {
-        return;
-      }
-      const pixel = this.map.getEventPixel(evt.originalEvent);
+    this.map.on("pointermove", this.onPointerMove);
+    this.map.on("click", this.onClick);
+  }
+
+  private onPointerMove(ev) {
+    if (ev.dragging) {
+      return;
+    }
+    const pixel = this.map.getEventPixel(ev.originalEvent);
+    if (pixel) {
       this.displayFeatureInfo(pixel);
-    });
+    }
+  }
 
-    this.map.on("click", evt => {
-      this.displayFeatureInfo(evt.pixel);
-    });
+  private onClick(ev) {
+    this.displayFeatureInfo(ev.pixel);
   }
 }
 </script>

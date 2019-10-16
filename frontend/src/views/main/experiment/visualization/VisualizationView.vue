@@ -54,7 +54,7 @@ import { Component, Vue } from "vue-property-decorator";
     TilesView
   }
 })
-export default class ImageView extends Vue {
+export default class VisualizationView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
 
   mainTab = 0;

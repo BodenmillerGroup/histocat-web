@@ -23,7 +23,16 @@
       </v-tooltip>
     </v-toolbar>
     <v-toolbar dense flat>
-      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable flat />
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        clearable
+        flat
+        dense
+      />
     </v-toolbar>
     <v-treeview
       v-model="selected"
@@ -45,13 +54,21 @@
         </v-icon>
       </template>
       <template v-slot:append="{ item }">
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.type === 'acquisition' && item.hasMask">
           <template v-slot:activator="{ on }">
-            <v-icon v-if="item.type === 'acquisition' && item.hasMask" small color="grey" v-on="on">
+            <v-icon small color="grey" v-on="on">
               mdi-transition-masked
             </v-icon>
           </template>
           <span>Mask available</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="item.type === 'slide'">
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" small icon color="grey" @click.stop="deleteSlide(item.id)">
+              <v-icon small>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+          <span>Delete slide</span>
         </v-tooltip>
         <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
           <template v-slot:activator="{ on }">
@@ -218,17 +235,18 @@ export default class SlidesTreeView extends Vue {
       return [];
     }
   }
+
+  async deleteSlide(id: number) {
+    if (self.confirm("Do you really want to delete the slide?")) {
+      await this.experimentContext.actions.deleteSlide(id);
+      await this.refreshSlides();
+    }
+  }
 }
 </script>
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 196px);
-}
-</style>
-
-<style>
-.v-text-field.v-text-field--solo .v-input__control {
-  min-height: 28px;
+  height: calc(100vh - 184px);
 }
 </style>

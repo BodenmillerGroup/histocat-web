@@ -13,7 +13,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
       type: "gaussian",
       settings: {
         sigma: 1.0,
-        kernel_size: 1
+        kernel_size: 3
       }
     };
     this.state.legend = {

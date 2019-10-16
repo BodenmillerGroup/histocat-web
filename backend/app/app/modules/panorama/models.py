@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional, List, Dict
 
 from pydantic import BaseModel
@@ -19,7 +18,6 @@ class PanoramaModel(BaseModel):
     slide_id: int
     origin_id: int
     meta: Dict[str, Optional[str]]
-    created_at: datetime
 
     class Config:
         orm_mode = True

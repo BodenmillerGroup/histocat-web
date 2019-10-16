@@ -16,7 +16,8 @@ from .models import (
     ExperimentCreateModel,
     ExperimentDatasetModel,
     ExperimentModel,
-    ExperimentUpdateModel)
+    ExperimentUpdateModel,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -38,8 +39,7 @@ def read_all(
 
 @router.get("/tags", response_model=Set[str])
 def read_tags(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
     """
     Retrieve tags
@@ -60,8 +60,7 @@ def create(
     """
     if not current_user.is_active:
         raise HTTPException(
-            status_code=401,
-            detail="The user cannot create experiments.",
+            status_code=401, detail="The user cannot create experiments."
         )
 
     item = crud.get_by_name(db, name=params.name)
@@ -133,7 +132,7 @@ def upload_data(
     if not os.path.exists(path):
         os.makedirs(path)
     uri = os.path.join(path, file.filename)
-    with open(uri, 'wb') as f:
+    with open(uri, "wb") as f:
         f.write(file.file.read())
     worker.import_data.send(uri, id, user.id)
     return {"uri": uri}

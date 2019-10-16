@@ -24,7 +24,7 @@ import { equals } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 @Component
-export default class VisualizationView extends Vue {
+export default class BlendView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
@@ -35,6 +35,8 @@ export default class VisualizationView extends Vue {
   overviewMap!: OverviewMap;
   vectorSource!: VectorSource;
   vectorLayer!: VectorLayer;
+  imageLayer!: ImageLayer;
+  imageLayerOverview!: ImageLayer;
   select!: Select;
   draw!: Draw;
   translate!: Translate;
@@ -99,18 +101,19 @@ export default class VisualizationView extends Vue {
 
     if (image !== null) {
       const projection = this.map.getView().getProjection();
-      const imageLayer = new ImageLayer({
-        source: new ImageStatic({
-          url: ``,
-          imageExtent: projection.getExtent(),
-          imageLoadFunction: (view, src: string) => {
-            (view.getImage() as any).src = image;
-          }
-        })
+      const source = new ImageStatic({
+        url: ``,
+        imageExtent: projection.getExtent(),
+        imageLoadFunction: (view, src: string) => {
+          (view.getImage() as any).src = image;
+        }
       });
 
+      this.imageLayer.setSource(source);
+      this.imageLayerOverview.setSource(source);
+
       this.map.getLayers().clear();
-      const layers = this.regionsEnabled ? [imageLayer, this.vectorLayer] : [imageLayer];
+      const layers = this.regionsEnabled ? [this.imageLayer, this.vectorLayer] : [this.imageLayer];
       this.map.getLayers().extend(layers);
     }
   }
@@ -166,8 +169,10 @@ export default class VisualizationView extends Vue {
   }
 
   beforeDestroy() {
-    if (this.map) {
-      this.map.un("precompose", this.precompose);
+    if (this.imageLayer) {
+      this.imageLayer.un("prerender", this.prerender);
+    }
+    if (this.select) {
       this.select.un("select", this.selectHandler);
     }
   }
@@ -218,12 +223,6 @@ export default class VisualizationView extends Vue {
       enableRotation: false
     });
 
-    this.overviewMap = new OverviewMap({
-      view: new View({
-        projection: projection
-      })
-    });
-
     this.vectorSource = new VectorSource({ wrapX: false, useSpatialIndex: false });
 
     this.vectorLayer = new VectorLayer({
@@ -245,6 +244,19 @@ export default class VisualizationView extends Vue {
       features: this.select.getFeatures()
     });
 
+    this.imageLayer = new ImageLayer();
+    this.imageLayer.on("prerender", this.prerender);
+
+    this.imageLayerOverview = new ImageLayer();
+
+    this.overviewMap = new OverviewMap({
+      layers: [this.imageLayerOverview],
+      view: new View({
+        projection: projection,
+        center: getCenter(projection.getExtent())
+      })
+    });
+
     this.map = new Map({
       controls: defaultControls({
         zoom: false,
@@ -253,10 +265,9 @@ export default class VisualizationView extends Vue {
       }).extend([new ScaleLine(), new FullScreen(), this.overviewMap]),
       interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 })],
       view: view,
-      target: this.$el as HTMLElement
+      target: this.$el as HTMLElement,
+      layers: [this.imageLayer]
     });
-
-    this.map.on("precompose", this.precompose);
   }
 
   private selectHandler(event: SelectEvent) {
@@ -264,7 +275,7 @@ export default class VisualizationView extends Vue {
     this.analysisContext.mutations.setSelectedRegion(region);
   }
 
-  private precompose(evt: RenderEvent) {
+  private prerender(evt: RenderEvent) {
     evt.context.imageSmoothingEnabled = false;
   }
 }

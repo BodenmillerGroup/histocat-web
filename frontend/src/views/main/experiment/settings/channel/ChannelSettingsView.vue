@@ -1,9 +1,9 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header hide-actions>
-      <v-container fluid class="ma-0 pa-0">
-        <v-row no-gutters>
-          <b>{{ label }}</b>
+    <v-expansion-panel-header hide-actions class="ma-0 pa-0">
+      <v-container class="ma-0 pa-0">
+        <v-row no-gutters class="ml-2 mr-1 mt-1">
+          <span class="label">{{ label }}</span>
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -13,51 +13,51 @@
             </template>
             <span>Share levels</span>
           </v-tooltip>
-          <input type="color" v-model.lazy="color" @click.stop class="ml-1 pa-0" />
+          <input type="color" v-model.lazy="color" @click.stop />
         </v-row>
-        <v-row no-gutters>
-          <v-col>
-            <v-range-slider
-              v-model="levels"
+        <v-range-slider
+          v-model="levels"
+          :max="channel.max_intensity"
+          :min="channel.min_intensity"
+          :step="1"
+          @click.stop
+          @end="submitLimit"
+          hide-details
+          class="align-center"
+        >
+          <template v-slot:prepend>
+            <v-text-field
+              v-model.number="levels[0]"
+              @change="submitLimit"
+              @click.stop
+              class="ma-0 pa-0 text-input"
+              hide-details
+              type="number"
               :max="channel.max_intensity"
               :min="channel.min_intensity"
               :step="1"
+              solo
+              flat
+              dense
+            ></v-text-field>
+          </template>
+          <template v-slot:append>
+            <v-text-field
+              v-model.number="levels[1]"
+              @change="submitLimit"
               @click.stop
-              @end="submitLimit"
+              class="ma-0 pa-0 text-input"
               hide-details
-              class="align-center"
-            >
-              <template v-slot:prepend>
-                <v-text-field
-                  v-model.number="levels[0]"
-                  @change="submitLimit"
-                  @click.stop
-                  class="mt-0 pt-0 text-input"
-                  hide-details
-                  single-line
-                  type="number"
-                  :max="channel.max_intensity"
-                  :min="channel.min_intensity"
-                  :step="1"
-                ></v-text-field>
-              </template>
-              <template v-slot:append>
-                <v-text-field
-                  v-model.number="levels[1]"
-                  @change="submitLimit"
-                  @click.stop
-                  class="mt-0 pt-0 text-input"
-                  hide-details
-                  single-line
-                  type="number"
-                  :max="channel.max_intensity"
-                  :min="channel.min_intensity"
-                  :step="1"
-                ></v-text-field>
-              </template>
-            </v-range-slider>
-          </v-col>
-        </v-row>
+              type="number"
+              :max="channel.max_intensity"
+              :min="channel.min_intensity"
+              :step="1"
+              solo
+              flat
+              dense
+            ></v-text-field>
+          </template>
+        </v-range-slider>
       </v-container>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
@@ -144,6 +144,11 @@ export default class ChannelSettingsView extends Vue {
 
 <style scoped>
 .text-input {
-  width: 55px;
+  width: 70px;
+}
+
+.label {
+  font-size: 10pt;
+  font-weight: 500;
 }
 </style>

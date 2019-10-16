@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 @timeit
 def import_zip(db: Session, uri: str, experiment_id: int, user_id: int):
     path = Path(uri)
-    output_dir = path.parent / 'output'
-    with zipfile.ZipFile(path, 'r') as zip:
+    output_dir = path.parent / "output"
+    with zipfile.ZipFile(path, "r") as zip:
         zip.extractall(output_dir)
 
     for mcd_filename in locate(output_dir, f"*{MCD_FILENDING}"):

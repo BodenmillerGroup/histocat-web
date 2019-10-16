@@ -16,7 +16,11 @@ def get(session: Session, *, id: int) -> Optional[Slide]:
 
 
 def get_by_name(session: Session, *, experiment_id: int, name: str) -> Optional[Slide]:
-    return session.query(Slide).filter(Slide.experiment_id == experiment_id, Slide.name == name).first()
+    return (
+        session.query(Slide)
+        .filter(Slide.experiment_id == experiment_id, Slide.name == name)
+        .first()
+    )
 
 
 def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Slide]:
@@ -31,11 +35,10 @@ def create(session: Session, *, params: SlideCreateModel) -> Slide:
     session.refresh(entity)
 
     entity.location = os.path.join(
-        entity.experiment.slides_location,
-        SLIDE_LOCATION_FORMAT.format(id=entity.id),
+        entity.experiment.slides_location, SLIDE_LOCATION_FORMAT.format(id=entity.id)
     )
     if not os.path.exists(entity.location):
-        logger.debug(f'Create location for slide {entity.id}: {entity.location}')
+        logger.debug(f"Create location for slide {entity.id}: {entity.location}")
         os.makedirs(entity.location)
 
     session.commit()

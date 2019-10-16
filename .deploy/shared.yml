@@ -1,5 +1,6 @@
 version: '3.7'
 services:
+
   backend:
     env_file:
       - env-postgres.env
@@ -55,7 +56,7 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.7.18-alpine
+    image: rabbitmq:3.8.0-alpine
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 
@@ -69,7 +70,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:4.13
     depends_on:
       - db
     env_file:
@@ -81,7 +82,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer:1.22.0
+    image: portainer/portainer:1.22.1
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -91,7 +92,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:2.0.1
+    image: traefik:2.0.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

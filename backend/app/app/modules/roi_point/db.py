@@ -20,10 +20,14 @@ class ROIPoint(Base):
     __tablename__ = "roi_point"
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
-    roi_id: int = sa.Column(sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
-    origin_id: int = sa.Column('origin_id', sa.Integer(), index=True)
-    meta: dict = sa.Column('meta', JSONB())
-    created_at: datetime = sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    roi_id: int = sa.Column(
+        sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True
+    )
+    origin_id: int = sa.Column("origin_id", sa.Integer(), index=True)
+    meta: dict = sa.Column("meta", JSONB())
+    created_at: datetime = sa.Column(
+        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
+    )
 
     roi = relationship("ROI", back_populates="roi_points")
 

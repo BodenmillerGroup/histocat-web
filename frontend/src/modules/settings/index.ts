@@ -1,4 +1,4 @@
-import { IImageSegmentationSettings, ImageResultType } from "@/modules/analysis/models";
+import { IImageSegmentationSettings } from "@/modules/analysis/models";
 import { Module } from "vuex-smart-module";
 import { SettingsActions } from "./actions";
 import { SettingsGetters } from "./getters";
@@ -13,7 +13,7 @@ export class SettingsState {
     type: "gaussian",
     settings: {
       sigma: 1.0,
-      kernel_size: 1
+      kernel_size: 3
     }
   };
   legend: IImageLegend = {

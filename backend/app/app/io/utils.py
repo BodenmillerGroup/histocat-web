@@ -6,7 +6,7 @@ from pathlib import Path
 SCHEMA_XML_ENDING = "_schema.xml"
 
 
-def locate(root: str, pattern: str) -> str:
+def locate(root: str, pattern: str):
     """
     Locate all files matching supplied filename pattern in and below supplied root directory.
     """

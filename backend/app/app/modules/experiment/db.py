@@ -25,17 +25,25 @@ class Experiment(Base):
     __tablename__ = "experiment"
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
-    user_id: int = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
+    user_id: int = sa.Column(
+        sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True
+    )
     name: str = sa.Column(sa.String(), index=True)
     description: str = sa.Column(sa.Text())
     meta: dict = sa.Column(JSONB())
     tags: List[str] = sa.Column(ARRAY(sa.String(64)))
     location: str = sa.Column("location", sa.String(4096))
-    created_at: datetime = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    created_at: datetime = sa.Column(
+        sa.DateTime(), default=sa.sql.func.now(), nullable=False
+    )
 
     user = relationship("User", back_populates="experiments")
-    slides = relationship("Slide", back_populates="experiment", cascade="all, delete, delete-orphan")
-    datasets = relationship("Dataset", back_populates="experiment", cascade="all, delete, delete-orphan")
+    slides = relationship(
+        "Slide", back_populates="experiment", cascade="all, delete, delete-orphan"
+    )
+    datasets = relationship(
+        "Dataset", back_populates="experiment", cascade="all, delete, delete-orphan"
+    )
 
     @autocreate_directory_property
     def slides_location(self) -> str:

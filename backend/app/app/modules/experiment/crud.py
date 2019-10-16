@@ -23,13 +23,21 @@ def get_by_name(session: Session, *, name: str) -> Optional[Experiment]:
     return session.query(Experiment).filter(Experiment.name == name).first()
 
 
-def get_multi(session: Session, *, user: User, skip: int = 0, limit: int = 100) -> List[Optional[Experiment]]:
+def get_multi(
+    session: Session, *, user: User, skip: int = 0, limit: int = 100
+) -> List[Optional[Experiment]]:
     if user.is_superuser:
         items = session.query(Experiment).offset(skip).limit(limit).all()
     else:
         shares = get_by_user_id(session, user_id=user.id)
         shared_experiments = [item.experiment for item in shares]
-        items = session.query(Experiment).filter(Experiment.user_id == user.id).offset(skip).limit(limit).all()
+        items = (
+            session.query(Experiment)
+            .filter(Experiment.user_id == user.id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
         items.extend(shared_experiments)
 
     return items
@@ -40,24 +48,25 @@ def get_tags(session: Session) -> Set[str]:
     return {e[0] for e in items}
 
 
-def create(session: Session, *, user_id: int, params: ExperimentCreateModel) -> Experiment:
+def create(
+    session: Session, *, user_id: int, params: ExperimentCreateModel
+) -> Experiment:
     entity = Experiment(
         user_id=user_id,
         name=params.name,
         description=params.description,
         meta=params.meta,
-        tags=params.tags
+        tags=params.tags,
     )
     session.add(entity)
     session.commit()
     session.refresh(entity)
 
     entity.location = os.path.join(
-        ROOT_DATA_DIRECTORY,
-        EXPERIMENT_LOCATION_FORMAT.format(id=entity.id),
+        ROOT_DATA_DIRECTORY, EXPERIMENT_LOCATION_FORMAT.format(id=entity.id)
     )
     if not os.path.exists(entity.location):
-        logger.debug(f'Create location for experiment {entity.id}: {entity.location}')
+        logger.debug(f"Create location for experiment {entity.id}: {entity.location}")
         os.makedirs(entity.location)
 
     session.commit()
@@ -66,7 +75,9 @@ def create(session: Session, *, user_id: int, params: ExperimentCreateModel) -> 
     return entity
 
 
-def update(session: Session, *, item: Experiment, params: ExperimentUpdateModel) -> Experiment:
+def update(
+    session: Session, *, item: Experiment, params: ExperimentUpdateModel
+) -> Experiment:
     data = jsonable_encoder(item)
     update_data = params.dict(skip_defaults=True)
     for field in data:

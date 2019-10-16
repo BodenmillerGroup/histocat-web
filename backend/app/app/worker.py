@@ -40,14 +40,14 @@ if os.environ.get("BACKEND_ENV") == "development":
         logger.error(e)
 
 
-@dramatiq.actor(queue_name='default')
+@dramatiq.actor(queue_name="default")
 def test_worker(word: str):
-    logger.info(f'Testing worker: [{word}]')
+    logger.info(f"Testing worker: [{word}]")
 
 
-@dramatiq.actor(queue_name='email')
+@dramatiq.actor(queue_name="email")
 def send_email(email_to: str, subject_template="", html_template="", environment={}):
-    logger.info(f'Sending email to: [{email_to}]')
+    logger.info(f"Sending email to: [{email_to}]")
     assert config.EMAILS_ENABLED, "no provided configuration for email variables"
     message = emails.Message(
         subject=JinjaTemplate(subject_template),
@@ -65,9 +65,9 @@ def send_email(email_to: str, subject_template="", html_template="", environment
     logging.info(f"Send email result: {response}")
 
 
-@dramatiq.actor(queue_name='import', max_retries=0)
+@dramatiq.actor(queue_name="import", max_retries=0)
 def import_data(uri: str, experiment_id: int, user_id: int):
-    logger.info(f'Importing data into experiment [{experiment_id}] from {uri}')
+    logger.info(f"Importing data into experiment [{experiment_id}] from {uri}")
 
     path = os.path.dirname(os.path.abspath(uri))
     filename, file_extension = os.path.splitext(uri)
@@ -84,7 +84,7 @@ def import_data(uri: str, experiment_id: int, user_id: int):
         shutil.rmtree(path)
 
 
-@dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
+@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)
 def process_tsne(
     dataset_id: int,
     acquisition_ids: List[int],
@@ -96,16 +96,29 @@ def process_tsne(
     init: str,
     markers: List[str],
 ):
-    logger.info(f'Processing t-SNE for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
+    logger.info(
+        f"Processing t-SNE for acquisitions {acquisition_ids} from dataset [{dataset_id}]"
+    )
     try:
-        tsne.process_tsne(db_session, dataset_id, acquisition_ids, n_components, perplexity, learning_rate, iterations, theta, init, markers)
+        tsne.process_tsne(
+            db_session,
+            dataset_id,
+            acquisition_ids,
+            n_components,
+            perplexity,
+            learning_rate,
+            iterations,
+            theta,
+            init,
+            markers,
+        )
     except Exception as error:
         logger.warning(error)
     finally:
         pass
 
 
-@dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
+@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)
 def process_umap(
     dataset_id: int,
     acquisition_ids: List[int],
@@ -115,16 +128,27 @@ def process_umap(
     min_dist: float,
     markers: List[str],
 ):
-    logger.info(f'Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
+    logger.info(
+        f"Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]"
+    )
     try:
-        umap.process_umap(db_session, dataset_id, acquisition_ids, n_components, n_neighbors, metric, min_dist, markers)
+        umap.process_umap(
+            db_session,
+            dataset_id,
+            acquisition_ids,
+            n_components,
+            n_neighbors,
+            metric,
+            min_dist,
+            markers,
+        )
     except Exception as error:
         logger.warning(error)
     finally:
         pass
 
 
-@dramatiq.actor(queue_name='process', max_retries=0, time_limit=1000 * 60 * 60 * 10)
+@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)
 def process_phenograph(
     dataset_id: int,
     acquisition_ids: List[int],
@@ -132,11 +156,22 @@ def process_phenograph(
     nearest_neighbors: int,
     jaccard: bool,
     primary_metric: str,
-    min_cluster_size: int
+    min_cluster_size: int,
 ):
-    logger.info(f'Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]')
+    logger.info(
+        f"Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]"
+    )
     try:
-        phenograph.process_phenograph(db_session, dataset_id, acquisition_ids, markers, nearest_neighbors, jaccard, primary_metric, min_cluster_size)
+        phenograph.process_phenograph(
+            db_session,
+            dataset_id,
+            acquisition_ids,
+            markers,
+            nearest_neighbors,
+            jaccard,
+            primary_metric,
+            min_cluster_size,
+        )
     except Exception as error:
         logger.warning(error)
     finally:

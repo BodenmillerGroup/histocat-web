@@ -7,8 +7,8 @@ BACKEND_ENV=production \
 FRONTEND_ENV=production \
 VUE_APP_ENV=production \
 docker-compose \
--f docker/shared.yml \
--f docker/prod.yml \
+-f .deploy/shared.yml \
+-f .deploy/production.yml \
 config > docker-stack.yml
 
 docker-compose -f docker-stack.yml up -d

@@ -14,8 +14,14 @@ def get(session: Session, *, id: int) -> Optional[Panorama]:
     return session.query(Panorama).filter(Panorama.id == id).first()
 
 
-def get_by_origin_id(session: Session, *, slide_id: int, origin_id: int) -> Optional[Panorama]:
-    return session.query(Panorama).filter(Panorama.slide_id == slide_id, Panorama.origin_id == origin_id).first()
+def get_by_origin_id(
+    session: Session, *, slide_id: int, origin_id: int
+) -> Optional[Panorama]:
+    return (
+        session.query(Panorama)
+        .filter(Panorama.slide_id == slide_id, Panorama.origin_id == origin_id)
+        .first()
+    )
 
 
 def get_by_slide_id(session: Session, *, slide_id: int) -> List[Panorama]:
