@@ -148,7 +148,7 @@ table.v-table tbody th {
 }
 
 .scroll-view {
-  height: calc(50vh - 100px);
+  height: calc(50vh - 108px);
 }
 </style>
 
