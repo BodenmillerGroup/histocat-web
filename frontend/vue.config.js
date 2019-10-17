@@ -1,6 +1,9 @@
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: false,
+  transpileDependencies: [
+    "vuetify"
+  ],
 
   pwa: {
     name: "HistoCAT"
@@ -22,14 +25,5 @@ module.exports = {
 
   devServer: {
     port: 9999
-  },
-
-  css: {
-    sourceMap: true,
-    loaderOptions: {
-      sass: {
-        prependData: `@import "~@/sass/main.scss"`
-      }
-    }
   }
 };
