@@ -18,7 +18,7 @@ email-validator = "^1.0.4"
 emails = "^0.5.15"
 fastapi = "^0.42.0"
 gunicorn = { version = "^19.9.0", optional = true }
-imctools = "^1.0.3"
+imctools = "^1.0.4"
 jinja2 = "^2.10.3"
 opencv-python-headless = "^4.1"
 psycopg2-binary = "^2.8.3"
