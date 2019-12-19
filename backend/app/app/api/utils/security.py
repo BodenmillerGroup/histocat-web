@@ -12,7 +12,7 @@ from app.modules.auth.models import TokenPayloadModel
 from app.modules.user.crud import get, is_active, is_superuser
 from app.modules.user.db import User
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/access-token")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 def get_current_user(

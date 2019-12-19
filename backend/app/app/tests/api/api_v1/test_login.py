@@ -11,7 +11,7 @@ def test_get_access_token():
         "password": config.FIRST_SUPERUSER_PASSWORD,
     }
     r = requests.post(
-        f"{server_api}{config.API_V1_STR}/auth/access-token", data=login_data
+        f"{server_api}{config.API_V1_STR}/auth/login", data=login_data
     )
     tokens = r.json()
     assert r.status_code == 200

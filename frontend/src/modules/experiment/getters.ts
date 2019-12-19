@@ -11,16 +11,16 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   }
 
   getExperiment(id?: number) {
-    return this.experiments.find(item => item.id === id);
+    return this.getters.experiments.find(item => item.id === id);
   }
 
   get activeExperiment() {
-    return this.getExperiment(this.activeExperimentId);
+    return this.getters.getExperiment(this.getters.activeExperimentId);
   }
 
   get activeAcquisition() {
-    if (this.activeExperiment && this.activeExperiment.slides) {
-      for (const slide of this.activeExperiment.slides) {
+    if (this.getters.activeExperiment && this.getters.activeExperiment.slides) {
+      for (const slide of this.getters.activeExperiment.slides) {
         for (const panorama of slide.panoramas) {
           for (const roi of panorama.rois) {
             const acquisition = roi.acquisitions.find(item => item.id === this.state.activeAcquisitionId);
@@ -39,9 +39,9 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   }
 
   get selectedChannels() {
-    if (this.activeAcquisition) {
-      return this.activeAcquisition.channels.filter(channel => {
-        if (this.selectedMetals.includes(channel.metal)) {
+    if (this.getters.activeAcquisition) {
+      return this.getters.activeAcquisition.channels.filter(channel => {
+        if (this.getters.selectedMetals.includes(channel.metal)) {
           return channel;
         }
       });

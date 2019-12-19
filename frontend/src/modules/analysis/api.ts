@@ -1,5 +1,3 @@
-import { apiUrl } from "@/env";
-import ky from "ky";
 import {
   IImageSegmentationSubmission,
   IPCAData,
@@ -15,28 +13,22 @@ import {
   IUMAPData,
   IUMAPSubmission
 } from "./models";
+import { ApiManager } from "@/utils/api";
 
 export const api = {
-  async produceSegmentationImage(token: string, params: IImageSegmentationSubmission) {
-    return ky.post(`${apiUrl}/api/v1/analysis/segmentation/image`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+  async produceSegmentationImage(params: IImageSegmentationSubmission) {
+    return ApiManager.api.post(`analysis/segmentation/image`, {
       json: params
     });
   },
-  async produceSegmentationContours(token: string, params: IImageSegmentationSubmission) {
-    return ky
-      .post(`${apiUrl}/api/v1/analysis/segmentation/contours`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
+  async produceSegmentationContours(params: IImageSegmentationSubmission) {
+    return ApiManager.api
+      .post(`analysis/segmentation/contours`, {
         json: params
       })
       .json<number[][]>();
   },
   async getScatterPlotData(
-    token: string,
     datasetId: number,
     acquisitionIds: number[],
     markerX: string,
@@ -47,118 +39,67 @@ export const api = {
   ) {
     const acquisitionIdsArray = acquisitionIds.map(acquisition_id => `&acquisition_ids=${acquisition_id}`);
     const acquisition_ids = acquisitionIdsArray.join("");
-    return ky
+    return ApiManager.api
       .get(
-        `${apiUrl}/api/v1/analysis/scatterplot?dataset_id=${datasetId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap_type=${heatmapType}&heatmap=${heatmap}${acquisition_ids}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        `analysis/scatterplot?dataset_id=${datasetId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap_type=${heatmapType}&heatmap=${heatmap}${acquisition_ids}`
       )
       .json<IScatterPlotData>();
   },
-  async getBoxPlotData(token: string, datasetId: number, acquisitionId: number, markers: string[]) {
+  async getBoxPlotData(datasetId: number, acquisitionId: number, markers: string[]) {
     const markersArray = markers.map(marker => `&markers=${marker}`);
-    return ky
-      .get(
-        `${apiUrl}/api/v1/analysis/boxplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}${markersArray.join(
-          ""
-        )}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
+    return ApiManager.api
+      .get(`analysis/boxplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}${markersArray.join("")}`)
       .json<IPlotSeries[]>();
   },
-  async getPCAData(token: string, params: IPCASubmission) {
+  async getPCAData(params: IPCASubmission) {
     const acquisitionIdsArray = params.acquisition_ids.map(acquisition_id => `&acquisition_ids=${acquisition_id}`);
     const acquisitionIds = acquisitionIdsArray.join("");
     const markersArray = params.markers.map(marker => `&markers=${marker}`);
     const markers = markersArray.join("");
-    return ky
+    return ApiManager.api
       .get(
-        `${apiUrl}/api/v1/analysis/pca?dataset_id=${params.dataset_id}&n_components=${params.n_components}&heatmap_type=${params.heatmapType}&heatmap=${params.heatmap}${acquisitionIds}${markers}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
+        `analysis/pca?dataset_id=${params.dataset_id}&n_components=${params.n_components}&heatmap_type=${params.heatmapType}&heatmap=${params.heatmap}${acquisitionIds}${markers}`
       )
       .json<IPCAData>();
   },
-  async submitTSNE(token: string, data: ITSNESubmission) {
-    return ky
-      .post(`${apiUrl}/api/v1/analysis/tsne`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async submitTSNE(data: ITSNESubmission) {
+    return ApiManager.api
+      .post(`analysis/tsne`, {
+        json: data
       })
       .json();
   },
-  async getTSNEData(token: string, datasetId: number, name: string, heatmapType: string, heatmap: string) {
-    return ky
-      .get(
-        `${apiUrl}/api/v1/analysis/tsne?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
+  async getTSNEData(datasetId: number, name: string, heatmapType: string, heatmap: string) {
+    return ApiManager.api
+      .get(`analysis/tsne?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`)
       .json<ITSNEData>();
   },
-  async submitUMAP(token: string, data: IUMAPSubmission) {
-    return ky
-      .post(`${apiUrl}/api/v1/analysis/umap`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async submitUMAP(data: IUMAPSubmission) {
+    return ApiManager.api
+      .post(`analysis/umap`, {
+        json: data
       })
       .json();
   },
-  async getUMAPData(token: string, datasetId: number, name: string, heatmapType: string, heatmap: string) {
-    return ky
-      .get(
-        `${apiUrl}/api/v1/analysis/umap?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
+  async getUMAPData(datasetId: number, name: string, heatmapType: string, heatmap: string) {
+    return ApiManager.api
+      .get(`analysis/umap?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`)
       .json<IUMAPData>();
   },
-  async submitPhenoGraph(token: string, data: IPhenoGraphSubmission) {
-    return ky
-      .post(`${apiUrl}/api/v1/analysis/phenograph`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async submitPhenoGraph(data: IPhenoGraphSubmission) {
+    return ApiManager.api
+      .post(`analysis/phenograph`, {
+        json: data
       })
       .json();
   },
-  async getPhenoGraphData(token: string, datasetId: number, name: string) {
-    return ky
-      .get(`${apiUrl}/api/v1/analysis/phenograph?dataset_id=${datasetId}&name=${name}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IPhenoGraphData>();
+  async getPhenoGraphData(datasetId: number, name: string) {
+    return ApiManager.api.get(`analysis/phenograph?dataset_id=${datasetId}&name=${name}`).json<IPhenoGraphData>();
   },
-  async calculateRegionStats(token: string, params: IRegionStatsSubmission) {
-    return ky
-      .post(`${apiUrl}/api/v1/analysis/region/stats`, {
-        json: params,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async calculateRegionStats(params: IRegionStatsSubmission) {
+    return ApiManager.api
+      .post(`analysis/region/stats`, {
+        json: params
       })
       .json<IRegionChannelData[]>();
   }

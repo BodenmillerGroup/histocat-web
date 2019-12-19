@@ -44,7 +44,7 @@ services:
 
   db:
     restart: always
-    image: postgres:11.5-alpine
+    image: postgres:11.6-alpine
     env_file:
       - env-postgres.env
     environment:
@@ -54,23 +54,9 @@ services:
     ports:
       - 5432:5432
 
-  rabbitmq:
-    restart: always
-    image: rabbitmq:3.8.0-alpine
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-
-  redis:
-    restart: always
-    image: redis:5.0.6-alpine3.10
-    env_file:
-      - env-redis.env
-    volumes:
-      - redis-data:/data
-
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.13
+    image: dpage/pgadmin4:4.15
     depends_on:
       - db
     env_file:
@@ -78,21 +64,45 @@ services:
     ports:
       - 5050:5050
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
+
+  rabbitmq:
+    restart: always
+    image: rabbitmq:3.8.2-alpine
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  redis:
+    restart: always
+    image: redis:5.0.7-alpine3.10
+    env_file:
+      - env-redis.env
+    volumes:
+      - redis_data:/data
+
+  redisinsight:
+    restart: always
+    image: redislabs/redisinsight:1.1.0
+    depends_on:
+      - redis
+    ports:
+      - 8001:8001
+    volumes:
+      - redisinsight_data:/db
 
   portainer:
     restart: always
-    image: portainer/portainer:1.22.1
+    image: portainer/portainer:1.23.0
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer-data:/data
+      - portainer_data:/data
     ports:
       - 9000:9000
 
   proxy:
     restart: always
-    image: traefik:2.0.2
+    image: traefik:2.1.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
@@ -103,7 +113,8 @@ services:
 volumes:
   app-data:
   app-db-data:
-  portainer-data:
-  redis-data:
-  rabbitmq-data:
-  pgadmin-data:
+  portainer_data:
+  redis_data:
+  redisinsight_data:
+  rabbitmq_data:
+  pgadmin_data:

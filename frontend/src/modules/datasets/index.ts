@@ -10,7 +10,7 @@ export class DatasetState {
 }
 
 export const datasetModule = new Module({
-  namespaced: false,
+  namespaced: true,
 
   state: DatasetState,
   getters: DatasetGetters,

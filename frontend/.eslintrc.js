@@ -1,22 +1,17 @@
 module.exports = {
-  root: true,
   env: {
-    node: true
+    "browser": true,
+    "commonjs": true,
+    "jest": true,
+    "serviceworker": true
   },
-  extends: ["plugin:vue/essential", "@vue/prettier", "@vue/typescript"],
-  rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off"
-  },
+  parser: "vue-eslint-parser",
   parserOptions: {
-    parser: "@typescript-eslint/parser"
-  },
-  overrides: [
-    {
-      files: ["**/__tests__/*.{j,t}s?(x)", "**/tests/unit/**/*.spec.{j,t}s?(x)"],
-      env: {
-        jest: true
-      }
-    }
-  ]
+    parser: "@typescript-eslint/parser",
+    ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
+    sourceType: "module", // Allows for the use of imports
+    extraFileExtensions: [
+      ".vue"
+    ]
+  }
 };

@@ -38,7 +38,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       return;
     }
     try {
-      const response = await api.produceSegmentationImage(this.main!.getters.token, params);
+      const response = await api.produceSegmentationImage(params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -53,7 +53,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   async exportSegmentationImage(payload: { settings: IImageSegmentationSettings; format: ExportFormat }) {
     const params = this.prepareSegmentationParams(payload.settings, payload.format);
     try {
-      const response = await api.produceSegmentationImage(this.main!.getters.token, params);
+      const response = await api.produceSegmentationImage(params);
       const blob = await response.blob();
       saveAs(blob);
     } catch (error) {
@@ -67,7 +67,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       return;
     }
     try {
-      const response = await api.produceSegmentationContours(this.main!.getters.token, params);
+      const response = await api.produceSegmentationContours(params);
       this.mutations.setSegmentationContours(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -85,7 +85,6 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   }) {
     try {
       const response = await api.getScatterPlotData(
-        this.main!.getters.token,
         payload.datasetId,
         payload.acquisitionIds,
         payload.markerX,
@@ -102,12 +101,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getBoxPlotData(payload: { datasetId: number; acquisitionId: number; markers: string[] }) {
     try {
-      const response = await api.getBoxPlotData(
-        this.main!.getters.token,
-        payload.datasetId,
-        payload.acquisitionId,
-        payload.markers
-      );
+      const response = await api.getBoxPlotData(payload.datasetId, payload.acquisitionId, payload.markers);
       this.mutations.setBoxPlotData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -116,7 +110,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getPCAData(payload: IPCASubmission) {
     try {
-      const response = await api.getPCAData(this.main!.getters.token, payload);
+      const response = await api.getPCAData(payload);
       this.mutations.setPCAData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -125,7 +119,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async submitTSNE(payload: ITSNESubmission) {
     try {
-      const response = await api.submitTSNE(this.main!.getters.token, payload);
+      const response = await api.submitTSNE(payload);
       const notification = { content: "t-SNE processing started. This may take a while..." };
       this.main!.mutations.addNotification(notification);
     } catch (error) {
@@ -135,13 +129,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getTSNEResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
     try {
-      const response = await api.getTSNEData(
-        this.main!.getters.token,
-        payload.datasetId,
-        payload.name,
-        payload.heatmapType,
-        payload.heatmap
-      );
+      const response = await api.getTSNEData(payload.datasetId, payload.name, payload.heatmapType, payload.heatmap);
       this.mutations.setTSNEData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -150,7 +138,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async submitUMAP(payload: IUMAPSubmission) {
     try {
-      const response = await api.submitUMAP(this.main!.getters.token, payload);
+      const response = await api.submitUMAP(payload);
       const notification = { content: "UMAP processing started. This may take a while..." };
       this.main!.mutations.addNotification(notification);
     } catch (error) {
@@ -160,13 +148,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getUMAPResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
     try {
-      const response = await api.getUMAPData(
-        this.main!.getters.token,
-        payload.datasetId,
-        payload.name,
-        payload.heatmapType,
-        payload.heatmap
-      );
+      const response = await api.getUMAPData(payload.datasetId, payload.name, payload.heatmapType, payload.heatmap);
       this.mutations.setUMAPData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -175,7 +157,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async submitPhenoGraph(payload: IPhenoGraphSubmission) {
     try {
-      const response = await api.submitPhenoGraph(this.main!.getters.token, payload);
+      const response = await api.submitPhenoGraph(payload);
       const notification = { content: "PhenoGraph processing started. This may take a while..." };
       this.main!.mutations.addNotification(notification);
     } catch (error) {
@@ -185,7 +167,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async getPhenoGraphResult(payload: { datasetId: number; name: string }) {
     try {
-      const response = await api.getPhenoGraphData(this.main!.getters.token, payload.datasetId, payload.name);
+      const response = await api.getPhenoGraphData(payload.datasetId, payload.name);
       this.mutations.setPhenoGraphData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -194,7 +176,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   async calculateRegionStats(payload: IRegionStatsSubmission) {
     try {
-      const response = await api.calculateRegionStats(this.main!.getters.token, payload);
+      const response = await api.calculateRegionStats(payload);
       this.mutations.setSelectedRegionStats(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);

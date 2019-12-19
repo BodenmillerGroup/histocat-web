@@ -23,7 +23,7 @@ from .models import TokenModel
 router = APIRouter()
 
 
-@router.post("/access-token", response_model=TokenModel)
+@router.post("/login", response_model=TokenModel)
 def login_access_token(
     db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):

@@ -29,7 +29,7 @@ export class AnalysisState {
 }
 
 export const analysisModule = new Module({
-  namespaced: false,
+  namespaced: true,
 
   state: AnalysisState,
   getters: AnalysisGetters,

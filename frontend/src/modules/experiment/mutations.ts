@@ -48,7 +48,7 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     this.state.activeWorkspaceNode = node;
     if (node) {
       if (node.type === "acquisition") {
-        this.setActiveAcquisitionId(node.id);
+        this.state.activeAcquisitionId = node.id;
       }
     }
   }

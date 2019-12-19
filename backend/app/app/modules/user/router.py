@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from pydantic.types import EmailStr
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
@@ -54,7 +54,7 @@ def create(
     return item
 
 
-@router.put("/me", response_model=UserModel)
+@router.patch("/profile", response_model=UserModel)
 def update_me(
     *,
     db: Session = Depends(get_db),
@@ -78,7 +78,7 @@ def update_me(
     return item
 
 
-@router.get("/me", response_model=UserModel)
+@router.get("/profile", response_model=UserModel)
 def read_me(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
 ):
