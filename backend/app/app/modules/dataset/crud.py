@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
-from .db import Dataset, DATASET_LOCATION_FORMAT
+from .db import DATASET_LOCATION_FORMAT, Dataset
 from .models import DatasetCreateModel, DatasetUpdateModel
 
 logger = logging.getLogger(__name__)
@@ -31,10 +31,7 @@ def create(session: Session, *, params: DatasetCreateModel) -> Dataset:
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(
-        entity.experiment.datasets_location,
-        DATASET_LOCATION_FORMAT.format(id=entity.id),
-    )
+    entity.location = os.path.join(entity.experiment.datasets_location, DATASET_LOCATION_FORMAT.format(id=entity.id),)
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for dataset {entity.id}: {entity.location}")
         os.makedirs(entity.location)
@@ -56,9 +53,7 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateModel) -> Da
     return item
 
 
-def update_output(
-    session: Session, *, dataset_id: int, result_type: str, result: dict
-) -> Dataset:
+def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> Dataset:
     item = session.query(Dataset).filter(Dataset.id == dataset_id).first()
     session.refresh(item, attribute_names=["output"])
 

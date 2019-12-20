@@ -16,33 +16,34 @@ from app import worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import (
-    scale_image,
-    colorize,
     apply_filter,
+    apply_morphology,
+    colorize,
     draw_scalebar,
     get_mask,
-    apply_morphology,
+    scale_image,
 )
 from app.core.utils import stream_bytes
-from app.modules.analysis.processors import pca, tsne, umap, phenograph
-from app.modules.channel import crud as channel_crud
 from app.modules.acquisition import crud as acquisition_crud
+from app.modules.analysis.processors import pca, phenograph, tsne, umap
+from app.modules.channel import crud as channel_crud
 from app.modules.channel.models import ChannelSettingsModel
 from app.modules.dataset import crud as dataset_crud
 from app.modules.user.db import User
+
 from .models import (
     AnalysisModel,
-    ScatterPlotModel,
-    PlotSeriesModel,
     PCAModel,
-    TSNESubmissionModel,
-    TSNEModel,
-    UMAPSubmissionModel,
-    UMAPModel,
-    RegionStatsSubmissionModel,
-    RegionChannelStatsModel,
-    PhenographSubmissionModel,
     PhenographModel,
+    PhenographSubmissionModel,
+    PlotSeriesModel,
+    RegionChannelStatsModel,
+    RegionStatsSubmissionModel,
+    ScatterPlotModel,
+    TSNEModel,
+    TSNESubmissionModel,
+    UMAPModel,
+    UMAPSubmissionModel,
 )
 
 logger = logging.getLogger(__name__)
@@ -81,18 +82,14 @@ def get_additive_image(db: Session, channels: List[ChannelSettingsModel]):
         legend_labels.append((label, color, levels[1]))
 
         if additive_image is None:
-            additive_image = np.zeros(
-                shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype
-            )
+            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
         additive_image += image
     return additive_image, legend_labels
 
 
 @router.post("/segmentation/image")
 async def produce_segmentation_image(
-    params: AnalysisModel,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: AnalysisModel, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Produce segmentation image
@@ -120,9 +117,7 @@ async def produce_segmentation_image(
         pass
 
     format = params.format if params.format is not None else "png"
-    status, result = cv2.imencode(
-        f".{format}", additive_image.astype(int) if format == "tiff" else additive_image
-    )
+    status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)
     return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")
 
 
@@ -146,9 +141,7 @@ async def produce_segmentation_contours(
     if params.settings.iterations > 0:
         mask = apply_morphology(mask, params.settings)
 
-    contours0, hierarchy = cv2.findContours(
-        cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE
-    )
+    contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
     contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
     return UJSONResponse(content=contours)
 
@@ -183,40 +176,26 @@ async def read_scatter_plot_data(
         image_numbers.append(image_number)
 
     if not cell_input or not channel_map or len(image_numbers) == 0:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper input."
-        )
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
     df = df[df["ImageNumber"].isin(image_numbers)]
 
     content = {
-        "x": {
-            "label": marker_x,
-            "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"]
-            * 2 ** 16,
-        },
-        "y": {
-            "label": marker_y,
-            "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"]
-            * 2 ** 16,
-        },
+        "x": {"label": marker_x, "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16,},
+        "y": {"label": marker_y, "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"] * 2 ** 16,},
     }
 
     if marker_z:
         content["z"] = {
             "label": marker_z,
-            "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}"]
-            * 2 ** 16,
+            "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}"] * 2 ** 16,
         }
 
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = (
-                df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"]
-                * 2 ** 16
-            )
+            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
         else:
             heatmap_data = df[heatmap]
 
@@ -253,9 +232,7 @@ async def read_box_plot_data(
     image_map = dataset.input.get("image_map")
     image_number = image_map.get(str(acquisition_id))
     if not cell_input or not image_number or not channel_map:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper input."
-        )
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     content = []
     df = pd.read_feather(cell_input.get("location"))
@@ -263,11 +240,7 @@ async def read_box_plot_data(
 
     for marker in markers:
         content.append(
-            {
-                "label": marker,
-                "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"]
-                * 2 ** 16,
-            }
+            {"label": marker, "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"] * 2 ** 16,}
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
@@ -289,17 +262,13 @@ async def read_pca_data(
     Calculate Principal Component Analysis data for the dataset
     """
 
-    content = pca.process_pca(
-        db, dataset_id, acquisition_ids, n_components, markers, heatmap_type, heatmap
-    )
+    content = pca.process_pca(db, dataset_id, acquisition_ids, n_components, markers, heatmap_type, heatmap)
     return UJSONResponse(content=content)
 
 
 @router.post("/tsne")
 def submit_tsne(
-    params: TSNESubmissionModel,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: TSNESubmissionModel, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Start t-SNE data processing
@@ -322,8 +291,8 @@ def submit_tsne(
 async def read_tsne_data(
     dataset_id: int,
     name: str,
-    heatmap_type: Optional[str],
-    heatmap: Optional[str],
+    heatmap_type: Optional[str] = None,
+    heatmap: Optional[str] = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -337,9 +306,7 @@ async def read_tsne_data(
 
 @router.post("/umap")
 def submit_umap(
-    params: UMAPSubmissionModel,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: UMAPSubmissionModel, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Start UMAP data processing
@@ -360,8 +327,8 @@ def submit_umap(
 async def read_umap_data(
     dataset_id: int,
     name: str,
-    heatmap_type: Optional[str],
-    heatmap: Optional[str],
+    heatmap_type: Optional[str] = None,
+    heatmap: Optional[str] = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -397,10 +364,7 @@ def submit_phenograph(
 
 @router.get("/phenograph", response_model=PhenographModel)
 async def read_phenograph_data(
-    dataset_id: int,
-    name: str,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    dataset_id: int, name: str, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Read PhenoGraph result data
@@ -432,9 +396,7 @@ async def calculate_region_stats(
         if mask is None:
             mask = np.zeros(channel_img.shape, np.uint8)
             mask = cv2.drawContours(mask, [contour], 0, 255, -1)
-        props = regionprops(
-            mask, intensity_image=channel_img, cache=True, coordinates=None
-        )
+        props = regionprops(mask, intensity_image=channel_img, cache=True, coordinates=None)
         props = props[0]
         content.append(
             {

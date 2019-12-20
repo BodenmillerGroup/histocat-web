@@ -1,8 +1,8 @@
 from typing import List, Optional
 
 import pandas as pd
-from sklearn import preprocessing
 from fastapi import HTTPException
+from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 
@@ -33,9 +33,7 @@ def process_pca(
         image_numbers.append(image_number)
 
     if not cell_input or not channel_map or len(image_numbers) == 0:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper input."
-        )
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
     df = df[df["ImageNumber"].isin(image_numbers)]
@@ -67,10 +65,7 @@ def process_pca(
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = (
-                df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"]
-                * 2 ** 16
-            )
+            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
         else:
             heatmap_data = df[heatmap]
 

@@ -10,6 +10,7 @@ from app.api.utils.security import get_current_active_superuser, get_current_act
 from app.core import config
 from app.core.utils import send_new_account_email
 from app.modules.user.db import User
+
 from . import crud
 from .models import UserCreateModel, UserDBModel, UserModel, UserUpdateModel
 
@@ -43,14 +44,11 @@ def create(
     item = crud.get_by_email(db, email=params.email)
     if item:
         raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system.",
+            status_code=400, detail="The user with this username already exists in the system.",
         )
     item = crud.create(db, params=params)
     if config.EMAILS_ENABLED and params.email:
-        send_new_account_email(
-            email_to=params.email, username=params.email, password=params.password
-        )
+        send_new_account_email(email_to=params.email, username=params.email, password=params.password)
     return item
 
 
@@ -79,9 +77,7 @@ def update_me(
 
 
 @router.get("/profile", response_model=UserModel)
-def read_me(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
-):
+def read_me(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     """
     Get current user
     """
@@ -101,14 +97,12 @@ def create_open(
     """
     if not config.USERS_OPEN_REGISTRATION:
         raise HTTPException(
-            status_code=403,
-            detail="Open user resgistration is forbidden on this server",
+            status_code=403, detail="Open user resgistration is forbidden on this server",
         )
     user = crud.get_by_email(db, email=email)
     if user:
         raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system",
+            status_code=400, detail="The user with this username already exists in the system",
         )
     user_in = UserCreateModel(password=password, email=email, full_name=full_name)
     item = crud.create(db, params=user_in)
@@ -117,9 +111,7 @@ def create_open(
 
 @router.get("/{id}", response_model=UserModel)
 def read_by_id(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific user by id
@@ -128,9 +120,7 @@ def read_by_id(
     if user == current_user:
         return user
     if not crud.is_superuser(current_user):
-        raise HTTPException(
-            status_code=400, detail="The user doesn't have enough privileges"
-        )
+        raise HTTPException(status_code=400, detail="The user doesn't have enough privileges")
     return user
 
 
@@ -149,8 +139,7 @@ def update(
 
     if not item:
         raise HTTPException(
-            status_code=404,
-            detail="The user with this username does not exist in the system",
+            status_code=404, detail="The user with this username does not exist in the system",
         )
     item = crud.update(db, item=item, params=params)
     return item

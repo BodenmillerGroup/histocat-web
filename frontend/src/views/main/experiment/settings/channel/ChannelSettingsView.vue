@@ -4,7 +4,7 @@
       <v-container class="ma-0 pa-0">
         <v-row no-gutters class="ml-2 mr-1 mt-1">
           <span class="label">{{ label }}</span>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn icon x-small color="primary" @click.stop="setSharedChannelLevels" v-on="on">
@@ -39,7 +39,7 @@
               solo
               flat
               dense
-            ></v-text-field>
+            />
           </template>
           <template v-slot:append>
             <v-text-field
@@ -55,13 +55,13 @@
               solo
               flat
               dense
-            ></v-text-field>
+            />
           </template>
         </v-range-slider>
       </v-container>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <ChannelHistogramView :channel="channel"></ChannelHistogramView>
+      <ChannelHistogramView :channel="channel" />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -80,7 +80,7 @@ export default class ChannelSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
 
-  @Prop(Object) channel!: IChannel;
+  @Prop(Object) readonly channel!: IChannel;
 
   color = this.channel ? this.metalColor : "#ffffff";
   levels: number[] =

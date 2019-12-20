@@ -14,7 +14,7 @@ export class ApiManager {
         beforeRequest: [
           async request => {
             request.headers.set("Authorization", `Bearer ${ApiManager._token}`);
-          },
+          }
         ],
         afterResponse: [
           async (request, options, response) => {
@@ -26,9 +26,9 @@ export class ApiManager {
                 console.log(e);
               }
             }
-          },
-        ],
-      },
+          }
+        ]
+      }
     });
   }
 

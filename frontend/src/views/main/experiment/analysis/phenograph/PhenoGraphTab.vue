@@ -28,8 +28,8 @@
               </v-btn>
             </v-card-actions>
             <v-radio-group v-model="jaccard" mandatory hide-details label="Mode">
-              <v-radio label="Jaccard metric" value="jaccard"></v-radio>
-              <v-radio label="Gaussian kernel" value="gaussian"></v-radio>
+              <v-radio label="Jaccard metric" value="jaccard" />
+              <v-radio label="Gaussian kernel" value="gaussian" />
             </v-radio-group>
             <v-row>
               <v-col>
@@ -42,7 +42,7 @@
                   v-model.number="nearestNeighbors"
                   :rules="[required]"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -53,10 +53,10 @@
                   v-model.number="minClusterSize"
                   :rules="[required]"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
             </v-row>
-            <v-select :items="metrics" v-model="primaryMetric" label="Metric" hide-details dense></v-select>
+            <v-select :items="metrics" v-model="primaryMetric" label="Metric" hide-details dense class="mt-5" />
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -76,7 +76,7 @@
             clearable
             dense
             @change="resultChanged"
-          ></v-select>
+          />
         </v-card-text>
         <v-card-actions>
           <v-btn @click="display" color="primary" block :disabled="!result">
@@ -183,7 +183,6 @@ export default class PhenoGraphTab extends Vue {
 
   resultChanged(result) {
     if (result) {
-      console.log(result);
       this.selectedChannels = result.params.markers;
       this.nearestNeighbors = result.params.nearest_neighbors;
       this.primaryMetric = result.params.primary_metric;

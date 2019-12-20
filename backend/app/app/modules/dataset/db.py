@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import text
@@ -26,41 +25,24 @@ class Dataset(Base):
 
     id: int = sa.Column("id", sa.Integer(), primary_key=True, index=True)
     experiment_id: int = sa.Column(
-        "experiment_id",
-        sa.Integer(),
-        sa.ForeignKey("experiment.id", ondelete="CASCADE"),
-        index=True,
+        "experiment_id", sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True,
     )
     user_id: int = sa.Column(
-        "user_id",
-        sa.Integer(),
-        sa.ForeignKey("user.id", ondelete="CASCADE"),
-        index=True,
+        "user_id", sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True,
     )
     uid: str = sa.Column(
-        "uid",
-        UUID(),
-        server_default=text("uuid_generate_v4()"),
-        nullable=False,
-        index=True,
+        "uid", UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True,
     )
-    status: str = sa.Column(
-        "status", sa.String(64), default="pending", nullable=False, index=True
-    )
+    status: str = sa.Column("status", sa.String(64), default="pending", nullable=False, index=True)
     name: str = sa.Column("name", sa.String())
     description: str = sa.Column("description", sa.String())
     input: dict = sa.Column("input", JSONB())
     output: dict = sa.Column("output", JSONB())
     meta: dict = sa.Column("meta", JSONB())
     location: str = sa.Column("location", sa.String(4096))
-    created_at: datetime = sa.Column(
-        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
-    )
+    created_at: datetime = sa.Column("created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False)
     updated_at: datetime = sa.Column(
-        sa.DateTime(),
-        default=sa.sql.func.now(),
-        onupdate=sa.sql.func.now(),
-        nullable=False,
+        sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False,
     )
 
     experiment = relationship("Experiment", back_populates="datasets")

@@ -13,19 +13,20 @@ from starlette.responses import StreamingResponse, UJSONResponse
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.image import (
-    scale_image,
-    colorize,
     apply_filter,
-    draw_scalebar,
+    colorize,
     draw_legend,
     draw_mask,
+    draw_scalebar,
+    scale_image,
 )
 from app.core.redis_manager import redis_manager
 from app.core.utils import stream_bytes
 from app.modules.analysis.router import get_additive_image
 from app.modules.user.db import User
+
 from . import crud
-from .models import ChannelModel, ChannelStatsModel, ChannelStackModel
+from .models import ChannelModel, ChannelStackModel, ChannelStatsModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -47,9 +48,7 @@ def read_channels(
 
 @router.get("/{id}", response_model=ChannelModel)
 def read_channel_by_id(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific channel by id
@@ -107,11 +106,7 @@ async def read_channel_image(
     # lmax = float(data.max())
     # data = np.floor((data - lmin) / (lmax - lmin) * 255.)
 
-    levels = (
-        (min, max)
-        if min is not None and max is not None
-        else (item.min_intensity, item.max_intensity)
-    )
+    levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
     data = scale_image(data, levels)
 
     color = f"#{color}" if color else "#ffffff"
@@ -125,9 +120,7 @@ async def read_channel_image(
 
 @router.post("/stack")
 async def download_channel_stack(
-    params: ChannelStackModel,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: ChannelStackModel, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Download channel stack (additive) image
@@ -152,7 +145,5 @@ async def download_channel_stack(
         additive_image = draw_scalebar(additive_image, params.scalebar)
 
     format = params.format if params.format is not None else "png"
-    status, result = cv2.imencode(
-        f".{format}", additive_image.astype(int) if format == "tiff" else additive_image
-    )
+    status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)
     return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")

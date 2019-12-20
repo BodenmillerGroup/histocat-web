@@ -10,23 +10,22 @@ from app.core import config
 from app.core.jwt import create_access_token
 from app.core.security import get_password_hash
 from app.core.utils import (
-    send_reset_password_email,
     generate_password_reset_token,
+    send_reset_password_email,
     verify_password_reset_token,
 )
 from app.modules.core.models import MsgModel
 from app.modules.user import crud
 from app.modules.user.db import User as DBUser
 from app.modules.user.models import UserModel
+
 from .models import TokenModel
 
 router = APIRouter()
 
 
 @router.post("/login", response_model=TokenModel)
-def login_access_token(
-    db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
-):
+def login_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     """
     OAuth2 compatible token login, get an access token for future requests
     """
@@ -37,9 +36,7 @@ def login_access_token(
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {
-        "access_token": create_access_token(
-            data={"user_id": user.id}, expires_delta=access_token_expires
-        ),
+        "access_token": create_access_token(data={"user_id": user.id}, expires_delta=access_token_expires),
         "token_type": "bearer",
     }
 
@@ -61,20 +58,15 @@ def recover_password(email: str, db: Session = Depends(get_db)):
 
     if not user:
         raise HTTPException(
-            status_code=404,
-            detail="The user with this username does not exist in the system.",
+            status_code=404, detail="The user with this username does not exist in the system.",
         )
     password_reset_token = generate_password_reset_token(email=email)
-    send_reset_password_email(
-        email_to=user.email, email=email, token=password_reset_token
-    )
+    send_reset_password_email(email_to=user.email, email=email, token=password_reset_token)
     return {"msg": "Password recovery email sent"}
 
 
 @router.post("/reset-password/", response_model=MsgModel)
-def reset_password(
-    token: str = Body(...), new_password: str = Body(...), db: Session = Depends(get_db)
-):
+def reset_password(token: str = Body(...), new_password: str = Body(...), db: Session = Depends(get_db)):
     """
     Reset password
     """
@@ -84,8 +76,7 @@ def reset_password(
     user = crud.get_by_email(db, email=email)
     if not user:
         raise HTTPException(
-            status_code=404,
-            detail="The user with this username does not exist in the system.",
+            status_code=404, detail="The user with this username does not exist in the system.",
         )
     elif not crud.is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")

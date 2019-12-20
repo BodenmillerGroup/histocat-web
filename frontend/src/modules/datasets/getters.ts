@@ -48,7 +48,9 @@ export class DatasetGetters extends Getters<DatasetState> {
   }
 
   get phenographResults() {
-    return this.getters.activeDataset && this.getters.activeDataset.output && this.getters.activeDataset.output["phenograph"]
+    return this.getters.activeDataset &&
+      this.getters.activeDataset.output &&
+      this.getters.activeDataset.output["phenograph"]
       ? Object.values(this.getters.activeDataset.output["phenograph"])
       : [];
   }

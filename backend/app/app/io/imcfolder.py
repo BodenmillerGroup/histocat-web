@@ -12,7 +12,7 @@ from imctools.io.ometiffparser import OmetiffParser
 from sqlalchemy.orm import Session
 
 from app.core.notifier import Message
-from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
+from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.io.utils import copy_dir
 from app.modules.acquisition import crud as acquisition_crud
 from app.modules.acquisition.db import Acquisition
@@ -42,9 +42,7 @@ ACQUISITION_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITION}{mcdxmlparser.META_CS
 CHANNEL_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONCHANNEL}{mcdxmlparser.META_CSV}"
 
 
-def import_imcfolder(
-    db: Session, schema_filename: str, experiment_id: int, user_id: int
-):
+def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user_id: int):
     """
     Import slides from the folder compatible with IMC pipeline
     """
@@ -77,9 +75,7 @@ def import_imcfolder(
             continue
         item = slide_crud.get_by_name(db, experiment_id=experiment_id, name=basename)
         if item:
-            logger.warn(
-                f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]"
-            )
+            logger.warn(f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]")
             return
 
         with open(schema_filename, "rt") as f:
@@ -129,21 +125,13 @@ def import_imcfolder(
         acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
         _import_channel(db, channel_item, acquisition)
 
-    redis_manager.publish(
-        UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported")
-    )
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
 
 
-def _import_slide(
-    db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str
-):
+def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str):
     origin_id = meta.get(mcdxmlparser.ID)
     params = SlideCreateModel(
-        experiment_id=experiment_id,
-        name=name,
-        origin_id=origin_id,
-        xml_meta=xml_meta,
-        meta=meta,
+        experiment_id=experiment_id, name=name, origin_id=origin_id, xml_meta=xml_meta, meta=meta,
     )
     slide = slide_crud.create(db, params=params)
     return slide
@@ -177,9 +165,7 @@ def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: s
         origin_location,
         f"{basename}_s{roi.panorama.slide.origin_id}_p{roi.panorama.origin_id}_r{roi.origin_id}_a{origin_id}_ac.ome.tiff",
     )
-    params = AcquisitionCreateModel(
-        roi_id=roi.id, origin_id=origin_id, location=location, meta=meta
-    )
+    params = AcquisitionCreateModel(roi_id=roi.id, origin_id=origin_id, location=location, meta=meta)
     acquisition = acquisition_crud.create(db, params=params)
     return acquisition
 
@@ -191,9 +177,7 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition)
         return
 
     metal = meta.get(mcdxmlparser.CHANNELNAME).replace("(", "").replace(")", "").strip()
-    label = (
-        meta.get(mcdxmlparser.CHANNELLABEL).replace("(", "").replace(")", "").strip()
-    )
+    label = meta.get(mcdxmlparser.CHANNELLABEL).replace("(", "").replace(")", "").strip()
     mass = "".join([m for m in metal if m.isdigit()])
 
     parser = OmetiffParser(acquisition.location)

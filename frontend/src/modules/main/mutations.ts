@@ -2,7 +2,7 @@ import { IUserProfile } from "@/modules/user/models";
 import { Mutations } from "vuex-smart-module";
 import { MainState } from ".";
 import { AppNotification } from "./models";
-import {ApiManager} from "@/utils/api";
+import { ApiManager } from "@/utils/api";
 
 export class MainMutations extends Mutations<MainState> {
   setToken(payload: string) {

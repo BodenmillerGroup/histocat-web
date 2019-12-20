@@ -30,14 +30,14 @@
             <v-row>
               <v-col>
                 <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
-                  <v-radio label="2D" value="2"></v-radio>
-                  <v-radio label="3D" value="3"></v-radio>
+                  <v-radio label="2D" value="2" />
+                  <v-radio label="3D" value="3" />
                 </v-radio-group>
               </v-col>
               <v-col>
                 <v-radio-group v-model="init" mandatory hide-details label="Initialization">
-                  <v-radio label="PCA" value="pca"></v-radio>
-                  <v-radio label="Random" value="random"></v-radio>
+                  <v-radio label="PCA" value="pca" />
+                  <v-radio label="Random" value="random" />
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -52,7 +52,7 @@
                   v-model.number="perplexity"
                   :rules="[required]"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -64,7 +64,7 @@
                   v-model.number="learningRate"
                   :rules="[required]"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
             </v-row>
             <v-row>
@@ -77,7 +77,7 @@
                   v-model.number="iterations"
                   :rules="[required]"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
               <v-col>
                 <v-text-field
@@ -89,7 +89,7 @@
                   v-model.number="theta"
                   :rules="[required]"
                   hide-details
-                ></v-text-field>
+                />
               </v-col>
             </v-row>
           </v-form>
@@ -111,7 +111,7 @@
             clearable
             dense
             @change="resultChanged"
-          ></v-select>
+          />
           <v-select
             :items="heatmaps"
             v-model="heatmap"
@@ -122,7 +122,8 @@
             persistent-hint
             clearable
             dense
-          ></v-select>
+            class="mt-5"
+          />
         </v-card-text>
         <v-card-actions>
           <v-btn @click="display" color="primary" block :disabled="!result">
@@ -349,7 +350,10 @@ export default class TSNETab extends Vue {
       },
       dataset: {
         source: points,
-        dimensions: [{ name: data.x.label, type: "float" }, { name: data.y.label, type: "float" }]
+        dimensions: [
+          { name: data.x.label, type: "float" },
+          { name: data.y.label, type: "float" }
+        ]
       },
       series: [
         {

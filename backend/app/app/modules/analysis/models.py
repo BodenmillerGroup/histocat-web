@@ -1,9 +1,9 @@
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
 
 # Properties to receive via API on creation
-from app.modules.channel.models import FilterModel, ScalebarModel, ChannelSettingsModel
+from app.modules.channel.models import ChannelSettingsModel, FilterModel, ScalebarModel
 
 
 class SegmentationSettingsModel(BaseModel):
