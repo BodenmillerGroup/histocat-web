@@ -21,7 +21,7 @@ WORKDIR /app
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
 COPY /app/poetry.lock /app/pyproject.toml /app/
-RUN poetry install --no-interaction
+RUN poetry install
 
 COPY ./app /app
 RUN chmod +x /app/bin/tests-start.sh

@@ -19,7 +19,7 @@
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
           </v-list>
-          <v-divider v-if="hasAdminAccess"></v-divider>
+          <v-divider v-if="hasAdminAccess" />
           <v-list subheader v-if="hasAdminAccess">
             <v-subheader class="subheader">Admin</v-subheader>
             <v-list-item to="/main/admin/users/all">
@@ -35,11 +35,11 @@
               <v-list-item-title>Manage Experiments</v-list-item-title>
             </v-list-item>
           </v-list>
-          <v-divider></v-divider>
+          <v-divider />
           <v-list>
             <v-list-item @click="switchMiniDrawer">
               <v-list-item-action>
-                <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'"></v-icon>
+                <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'" />
               </v-list-item-action>
               <v-list-item-title>Collapse</v-list-item-title>
             </v-list-item>
@@ -48,9 +48,9 @@
       </v-row>
     </v-navigation-drawer>
     <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
-      <v-app-bar-nav-icon @click.stop="switchShowDrawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="switchShowDrawer" />
       <v-toolbar-title @click="$router.push('/')" class="toolbar-title">{{ appName }}</v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-btn-toggle v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -102,7 +102,7 @@
       />
     </v-app-bar>
     <v-content>
-      <router-view></router-view>
+      <router-view />
     </v-content>
   </div>
 </template>

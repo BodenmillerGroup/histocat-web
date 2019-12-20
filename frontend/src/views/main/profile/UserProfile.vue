@@ -23,7 +23,7 @@
       <v-card-actions>
         <v-btn to="/main/profile/edit">Edit</v-btn>
         <v-btn to="/main/profile/password">Change password</v-btn>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-btn color="secondary" @click="resetSettings">Reset Settings</v-btn>
       </v-card-actions>
     </v-card>

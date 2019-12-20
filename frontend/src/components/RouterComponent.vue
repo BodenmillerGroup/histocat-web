@@ -1,4 +1,4 @@
-<template functional>
+<template>
   <router-view />
 </template>
 

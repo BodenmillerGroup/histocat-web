@@ -21,7 +21,7 @@
         multiple
         solo
         class="mt-1 ml-4"
-      ></v-select>
+      />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" dark fab color="primary lighten-1" to="/main/experiments/create" class="ml-4">
