@@ -36,7 +36,7 @@ class RedisManager:
         self._cache = await aioredis.create_redis("redis://redis")
         channels = await self.sub.subscribe(UPDATES_CHANNEL_NAME)
         updates_channel: aioredis.Channel = channels[0]
-        task = asyncio.ensure_future(self._reader(updates_channel))
+        asyncio.ensure_future(self._reader(updates_channel))
 
     async def stop(self):
         await self.sub.unsubscribe(UPDATES_CHANNEL_NAME)

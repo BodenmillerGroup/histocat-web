@@ -1,18 +1,16 @@
 import os
-from datetime import datetime
 import pickle
-from typing import List, Optional
+from datetime import datetime
+from typing import List
 
-import numpy as np
 import pandas as pd
-from scipy import sparse
-from sklearn import preprocessing
-from fastapi import HTTPException
-from sqlalchemy.orm import Session
 import phenograph
+from fastapi import HTTPException
+from sklearn import preprocessing
+from sqlalchemy.orm import Session
 
 from app.core.notifier import Message
-from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
+from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.core.utils import timeit
 from app.modules.dataset import crud as dataset_crud
 
@@ -43,9 +41,7 @@ def process_phenograph(
         image_numbers.append(image_number)
 
     if not cell_input or not channel_map or len(image_numbers) == 0:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper input."
-        )
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
     df = df[df["ImageNumber"].isin(image_numbers)]
@@ -95,12 +91,9 @@ def process_phenograph(
         },
         "location": location,
     }
-    dataset_crud.update_output(
-        db, dataset_id=dataset_id, result_type="phenograph", result=result
-    )
+    dataset_crud.update_output(db, dataset_id=dataset_id, result_type="phenograph", result=result)
     redis_manager.publish(
-        UPDATES_CHANNEL_NAME,
-        Message(dataset.experiment_id, "phenograph_result_ready", result),
+        UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "phenograph_result_ready", result),
     )
 
 
@@ -114,8 +107,7 @@ def get_phenograph_result(db: Session, dataset_id: int, name: str):
 
     if not phenograph_output or name not in phenograph_output:
         raise HTTPException(
-            status_code=400,
-            detail="The dataset does not have a proper PhenoGraph output.",
+            status_code=400, detail="The dataset does not have a proper PhenoGraph output.",
         )
 
     phenograph_result = phenograph_output.get(name)

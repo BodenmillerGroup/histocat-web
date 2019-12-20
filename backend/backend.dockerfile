@@ -1,4 +1,4 @@
-FROM python:3.7.4
+FROM python:3.7.5
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
@@ -11,12 +11,12 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=0.12.17 \
+  POETRY_VERSION=1.0.0 \
   BACKEND_ENV=${BACKEND_ENV} \
   WORKERS_PER_CORE=${WORKERS_PER_CORE}
 
 # Install Poetry
-RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config settings.virtualenvs.create false
+RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config virtualenvs.create false
 
 WORKDIR /app
 

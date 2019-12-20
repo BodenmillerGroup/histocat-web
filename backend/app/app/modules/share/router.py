@@ -1,21 +1,21 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 from typing import List
 
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.api.utils.security import get_current_active_user
 from app.modules.user.db import User
+
 from . import crud
-from .models import ShareModel, ShareCreateModel
+from .models import ShareCreateModel, ShareModel
 
 router = APIRouter()
 
 
 @router.get("/{experiment_id}", response_model=List[ShareModel])
 def read_all_by_experiment_id(
-    experiment_id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    experiment_id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Retrieve all experiment shares
@@ -26,10 +26,7 @@ def read_all_by_experiment_id(
 
 @router.post("/", response_model=List[ShareModel])
 def create(
-    *,
-    db: Session = Depends(get_db),
-    params: ShareCreateModel,
-    current_user: User = Depends(get_current_active_user),
+    *, db: Session = Depends(get_db), params: ShareCreateModel, current_user: User = Depends(get_current_active_user),
 ):
     """
     Create new share

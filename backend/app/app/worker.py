@@ -1,22 +1,20 @@
 import logging
 import os
 import shutil
+from typing import List
 
 import dramatiq
 import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
 from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDING
-from typing import List
 
+import app.db.init_db  # noqa
 from app.core import config
 from app.core.errors import SlideImportError
 from app.db.session import db_session
-from app.io import mcd
-from app.io import zip
-from app.modules.analysis.processors import tsne, umap, phenograph
-
-import app.db.init_db  # noqa
+from app.io import mcd, zip
+from app.modules.analysis.processors import phenograph, tsne, umap
 
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
 dramatiq.set_broker(rabbitmq_broker)
@@ -27,15 +25,15 @@ if os.environ.get("BACKEND_ENV") == "development":
     try:
         # VS Code Debugging
         # Allow other computers to attach to ptvsd at this IP address and port.
-        # import ptvsd
-        # ptvsd.enable_attach(address=('0.0.0.0', 5688), redirect_output=True)
+        import ptvsd
+
+        ptvsd.enable_attach(address=("0.0.0.0", 5688), redirect_output=True)
 
         # PyCharm Debugging
         # TODO: Don't forget to modify IP address!!
         # import pydevd_pycharm
         # pydevd_pycharm.settrace('130.60.106.31', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
-        pass
     except Exception as e:
         logger.error(e)
 
@@ -96,9 +94,7 @@ def process_tsne(
     init: str,
     markers: List[str],
 ):
-    logger.info(
-        f"Processing t-SNE for acquisitions {acquisition_ids} from dataset [{dataset_id}]"
-    )
+    logger.info(f"Processing t-SNE for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
     try:
         tsne.process_tsne(
             db_session,
@@ -128,19 +124,10 @@ def process_umap(
     min_dist: float,
     markers: List[str],
 ):
-    logger.info(
-        f"Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]"
-    )
+    logger.info(f"Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
     try:
         umap.process_umap(
-            db_session,
-            dataset_id,
-            acquisition_ids,
-            n_components,
-            n_neighbors,
-            metric,
-            min_dist,
-            markers,
+            db_session, dataset_id, acquisition_ids, n_components, n_neighbors, metric, min_dist, markers,
         )
     except Exception as error:
         logger.warning(error)
@@ -158,9 +145,7 @@ def process_phenograph(
     primary_metric: str,
     min_cluster_size: int,
 ):
-    logger.info(
-        f"Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]"
-    )
+    logger.info(f"Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
     try:
         phenograph.process_phenograph(
             db_session,

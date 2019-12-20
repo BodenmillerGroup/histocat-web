@@ -1,20 +1,20 @@
 import logging
 import sys
-from typing import Tuple, List
+from typing import List, Tuple
 
 import cv2
 import numpy as np
 import tifffile
 from matplotlib import cm
-from matplotlib.colors import to_rgb, rgb2hex, LinearSegmentedColormap
+from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage.color import label2rgb
 
 from app.modules.analysis.models import SegmentationSettingsModel
 from app.modules.channel.models import (
     FilterModel,
-    ScalebarModel,
     LegendModel,
     MaskSettingsModel,
+    ScalebarModel,
 )
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
@@ -32,17 +32,11 @@ def apply_filter(image: np.ndarray, filter: FilterModel):
         sigma = filter.settings.get("sigma")
         sigma = float(sigma) if sigma is not None and sigma != "" else 1.0
         kernel_size = filter.settings.get("kernel_size")
-        kernel_size = (
-            (kernel_size, kernel_size)
-            if kernel_size is not None and kernel_size != ""
-            else (0, 0)
-        )
+        kernel_size = (kernel_size, kernel_size) if kernel_size is not None and kernel_size != "" else (0, 0)
         return cv2.GaussianBlur(image, kernel_size, sigma)
     elif filter.type == "median":
         kernel_size = filter.settings.get("kernel_size")
-        kernel_size = (
-            kernel_size if kernel_size is not None and kernel_size != "" else 3
-        )
+        kernel_size = kernel_size if kernel_size is not None and kernel_size != "" else 3
         return cv2.medianBlur(image, kernel_size)
 
 
@@ -51,9 +45,7 @@ def colorize(image: np.ndarray, color: str):
         channel_color = to_rgb(color)
     except:
         channel_color = to_rgb("#ffffff")
-    channel_colormap = LinearSegmentedColormap.from_list(
-        None, [(0, 0, 0), channel_color]
-    )
+    channel_colormap = LinearSegmentedColormap.from_list(None, [(0, 0, 0), channel_color])
     result = channel_colormap(image)
     return result * 255.0
 
@@ -67,16 +59,12 @@ def scale_image(image: np.ndarray, levels: Tuple[float, float]):
 def draw_mask(image: np.ndarray, mask_settings: MaskSettingsModel):
     mask = tifffile.imread(mask_settings.location)
     if mask_settings.colorize:
-        return label2rgb(
-            mask, image=image, alpha=0.3, bg_label=0, image_alpha=1, kind="avg"
-        )
+        return label2rgb(mask, image=image, alpha=0.3, bg_label=0, image_alpha=1, kind="avg")
     else:
         return mask_color_img(image, mask)
 
 
-def mask_color_img(
-    image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), alpha=0.7
-):
+def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), alpha=0.7):
     """
     img: cv2 image
     mask: bool or np.where
@@ -97,12 +85,7 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
     height, width, _ = image.shape
     length = 64
     cv2.line(
-        image,
-        (width - 60, height - 60),
-        (width - 60 - length, height - 60),
-        (255, 255, 255),
-        2,
-        cv2.LINE_4,
+        image, (width - 60, height - 60), (width - 60 - length, height - 60), (255, 255, 255), 2, cv2.LINE_4,
     )
 
     scale_text = length
@@ -123,16 +106,10 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
     return image
 
 
-def draw_legend(
-    image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendModel
-):
+def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendModel):
     for i, label in enumerate(legend_labels):
-        text = (
-            f"{label[0]} - {int(label[2])}" if legend.showIntensity else f"{label[0]}"
-        )
-        (label_width, label_height), baseline = cv2.getTextSize(
-            text, cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1
-        )
+        text = f"{label[0]} - {int(label[2])}" if legend.showIntensity else f"{label[0]}"
+        (label_width, label_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1)
         cv2.rectangle(
             image,
             (5, (label_height + 20) * (i + 1) + 5),
@@ -159,9 +136,7 @@ def draw_legend(
 
 def otsu_grayscale(image_rgb):
     image_gray = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2GRAY)
-    _, mask = cv2.threshold(
-        image_gray.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    )
+    _, mask = cv2.threshold(image_gray.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     return mask
 
 
@@ -172,9 +147,7 @@ def _otsu_hls(image_rgb, channel_name: str, flip: bool):
     hsl = locals()[channel_name]
     hsl = hsl.reshape((hsl.shape[0], hsl.shape[1]))
 
-    _, mask = cv2.threshold(
-        hsl.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    )
+    _, mask = cv2.threshold(hsl.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     if flip:
         mask = ~mask
@@ -208,9 +181,7 @@ def get_mask(image_rgb, settings: SegmentationSettingsModel):
 
 def apply_morphology(mask, settings: SegmentationSettingsModel):
     kernel = np.ones((settings.kernel_size, settings.kernel_size), np.uint8)
-    mask = cv2.morphologyEx(
-        mask, cv2.MORPH_OPEN, kernel, iterations=settings.iterations
-    )
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=settings.iterations)
     mask = cv2.erode(mask, kernel, iterations=2)
     mask = cv2.dilate(mask, kernel, iterations=5)
     return mask

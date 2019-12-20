@@ -17,23 +17,13 @@ class Share(Base):
     """
 
     __tablename__ = "share"
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "user_id", "experiment_id", name="uq_share_user_id_experiment_id"
-        ),
-    )
+    __table_args__ = (sa.UniqueConstraint("user_id", "experiment_id", name="uq_share_user_id_experiment_id"),)
 
     id: int = sa.Column(sa.Integer(), primary_key=True, index=True)
-    experiment_id: int = sa.Column(
-        sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True
-    )
-    user_id: int = sa.Column(
-        sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True
-    )
+    experiment_id: int = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
+    user_id: int = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
     permissions: List[str] = sa.Column(ARRAY(sa.String(64)))
-    created_at: datetime = sa.Column(
-        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
-    )
+    created_at: datetime = sa.Column("created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     user = relationship("User")
     experiment = relationship("Experiment")

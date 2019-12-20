@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import FileResponse
 
 from app.api.utils.db import get_db
-from app.api.utils.security import get_current_active_superuser, get_current_active_user
+from app.api.utils.security import get_current_active_user
 from app.modules.user.db import User
 
 from . import crud
@@ -31,9 +31,7 @@ def read_all(
 
 @router.get("/{id}", response_model=SlideModel)
 def read_by_id(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific slide by id
@@ -53,18 +51,13 @@ async def read_slide_image(
     """
     item = crud.get(db, id=id)
     return FileResponse(
-        os.path.join(
-            item.location, "origin", f"{item.name}_s{item.origin_id}_slide.png"
-        ),
-        media_type="image/png",
+        os.path.join(item.location, "origin", f"{item.name}_s{item.origin_id}_slide.png"), media_type="image/png",
     )
 
 
 @router.delete("/{id}", response_model=SlideModel)
 def delete_by_id(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific slide by id

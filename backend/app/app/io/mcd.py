@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.utils import timeit
 from app.io.imcfolder import import_imcfolder
-from app.io.utils import locate, SCHEMA_XML_ENDING
+from app.io.utils import SCHEMA_XML_ENDING, locate
 
 logger = logging.getLogger(__name__)
 

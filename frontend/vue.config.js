@@ -1,9 +1,10 @@
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: false,
+  transpileDependencies: ["vuetify"],
 
   pwa: {
-    name: "HistoCAT"
+    name: "HistoCAT",
   },
 
   configureWebpack: config => {
@@ -16,20 +17,17 @@ module.exports = {
 
   pluginOptions: {
     webpackBundleAnalyzer: {
-      openAnalyzer: false
-    }
+      analyzerMode: "disabled",
+      generateStatsFile: false,
+      openAnalyzer: false,
+      // Excludes module sources from stats file so there won't be any sensitive data
+      statsOptions: {
+        source: false,
+      },
+    },
   },
 
   devServer: {
-    port: 9999
+    port: 9999,
   },
-
-  css: {
-    sourceMap: true,
-    loaderOptions: {
-      sass: {
-        prependData: `@import "~@/sass/main.scss"`
-      }
-    }
-  }
 };

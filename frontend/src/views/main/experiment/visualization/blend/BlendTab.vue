@@ -18,7 +18,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-switch v-model="regionsEnabled" label="Enable regions" hide-details inset class="ml-8"></v-switch>
+        <v-switch v-model="regionsEnabled" label="Enable regions" hide-details inset class="ml-8" />
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn small elevation="1" v-on="on" @click="deleteRegions" class="ml-2" :disabled="!selectedRegion">
@@ -51,14 +51,7 @@
         <!--          </template>-->
         <!--          <span>Request calculation of colorized cell mask</span>-->
         <!--        </v-tooltip>-->
-        <v-switch
-          v-model="applyMask"
-          label="Mask overlay"
-          hide-details
-          inset
-          class="ml-8"
-          :disabled="!hasMask"
-        ></v-switch>
+        <v-switch v-model="applyMask" label="Mask overlay" hide-details inset class="ml-8" :disabled="!hasMask" />
       </v-toolbar>
       <v-row no-gutters>
         <v-col>

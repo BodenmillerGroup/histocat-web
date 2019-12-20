@@ -1,5 +1,4 @@
 import { mainModule } from "@/modules/main";
-import router from "@/router";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
 import { UserState } from ".";
@@ -20,7 +19,7 @@ export class UserActions extends Actions<UserState, UserGetters, UserMutations, 
 
   async getUsers() {
     try {
-      const data = await api.getUsers(this.main!.getters.token);
+      const data = await api.getUsers();
       if (data) {
         this.mutations.setUsers(data);
       }
@@ -31,14 +30,8 @@ export class UserActions extends Actions<UserState, UserGetters, UserMutations, 
 
   async updateUser(payload: { id: number; user: IUserProfileUpdate }) {
     try {
-      const notification = { content: "saving", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.updateUser(this.main!.getters.token, payload.id, payload.user),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.updateUser(payload.id, payload.user);
       this.mutations.setUser(data);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "User successfully updated", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -47,14 +40,8 @@ export class UserActions extends Actions<UserState, UserGetters, UserMutations, 
 
   async createUser(payload: IUserProfileCreate) {
     try {
-      const notification = { content: "saving", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.createUser(this.main!.getters.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.createUser(payload);
       this.mutations.setUser(data);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "User successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -72,14 +59,8 @@ export class UserActions extends Actions<UserState, UserGetters, UserMutations, 
 
   async signUp(payload: IUserProfileCreate) {
     try {
-      const notification = { content: "signing up", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.signUp(payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.signUp(payload);
       this.main!.actions.routeLogOut();
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "User successfully signed up", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);

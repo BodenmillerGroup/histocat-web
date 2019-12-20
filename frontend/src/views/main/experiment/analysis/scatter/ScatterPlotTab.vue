@@ -22,7 +22,7 @@
               persistent-hint
               :rules="[required]"
               dense
-            ></v-select>
+            />
             <v-select
               :items="items"
               v-model="markerY"
@@ -31,7 +31,8 @@
               persistent-hint
               :rules="[required]"
               dense
-            ></v-select>
+              class="mt-5"
+            />
             <v-select
               :items="items"
               v-model="markerZ"
@@ -40,7 +41,8 @@
               persistent-hint
               clearable
               dense
-            ></v-select>
+              class="mt-5"
+            />
             <v-select
               :items="heatmaps"
               v-model="heatmap"
@@ -51,18 +53,18 @@
               persistent-hint
               clearable
               dense
-              class="input-row"
-            ></v-select>
-            <v-switch v-if="!markerZ" v-model="showRegression" label="Show regression"></v-switch>
+              class="mt-5"
+            />
+            <v-switch v-if="!markerZ" v-model="showRegression" label="Show regression" />
             <v-select
               v-if="!markerZ"
-              class="input-row"
               :items="regressionTypes"
               v-model="regressionType"
               label="Regression type"
               hide-details
               dense
-            ></v-select>
+              class="mt-5"
+            />
             <v-text-field
               v-if="!markerZ && regressionType === 'polynomial'"
               type="number"
@@ -72,7 +74,8 @@
               v-model.number="polynomialOrder"
               :rules="[required]"
               hide-details
-            ></v-text-field>
+              class="mt-5"
+            />
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -256,7 +259,10 @@ export default class ScatterPlotTab extends Vue {
       },
       dataset: {
         source: points,
-        dimensions: [{ name: data.x.label, type: "float" }, { name: data.y.label, type: "float" }]
+        dimensions: [
+          { name: data.x.label, type: "float" },
+          { name: data.y.label, type: "float" }
+        ]
       },
       series: [
         {
@@ -461,9 +467,5 @@ export default class ScatterPlotTab extends Vue {
 <style scoped>
 .chart-container {
   height: calc(100vh - 154px);
-}
-
-.input-row {
-  margin-bottom: 32px;
 }
 </style>

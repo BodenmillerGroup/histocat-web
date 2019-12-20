@@ -8,10 +8,25 @@ services:
       args:
         BACKEND_ENV: development
     command: bash -c "while true; do sleep 1; done"
-    env_file:
-      - env-backend.env
-      - env-postgres.env
     environment:
+      - BACKEND_CORS_ORIGINS
+      - PROJECT_NAME
+      - SECRET_KEY
+      - FIRST_SUPERUSER
+      - FIRST_SUPERUSER_PASSWORD
+      - INBOX_DIRECTORY
+      - ROOT_DATA_DIRECTORY
+      - SMTP_TLS
+      - SMTP_PORT
+      - SMTP_HOST
+      - SMTP_USER
+      - SMTP_PASSWORD
+      - EMAILS_FROM_EMAIL
+      - USERS_OPEN_REGISTRATION
+      - POSTGRES_SERVER
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
       - SERVER_NAME=backend
     volumes:
       - ../backend/app:/app

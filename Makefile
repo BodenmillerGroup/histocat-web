@@ -20,9 +20,6 @@ build:
 build-push:
 	./scripts/build-push.sh
 
-serve:
-	cd frontend && yarn serve
-
 clean:
 	sudo find . -type d -name __pycache__ -exec rm -r {} \+
 	find . -type d -name .pytest_cache -exec rm -r {} \+

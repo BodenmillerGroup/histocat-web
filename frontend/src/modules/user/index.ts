@@ -9,7 +9,7 @@ export class UserState {
 }
 
 export const userModule = new Module({
-  namespaced: false,
+  namespaced: true,
 
   state: UserState,
   getters: UserGetters,
