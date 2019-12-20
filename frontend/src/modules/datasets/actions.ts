@@ -27,7 +27,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
 
   async getExperimentDatasets(experimentId: number) {
     try {
-      const data = await api.getExperimentDatasets(this.main!.getters.token, experimentId);
+      const data = await api.getExperimentDatasets(experimentId);
       this.mutations.setDatasets(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -36,14 +36,8 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
 
   async deleteDataset(id: number) {
     try {
-      const notification = { content: "deleting", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.deleteDataset(this.main!.getters.token, id),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.deleteDataset(id);
       this.mutations.deleteDataset(id);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "Dataset successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -98,14 +92,8 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
     };
 
     try {
-      const notification = { content: "saving", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.createDataset(this.main!.getters.token, params),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.createDataset(params);
       this.mutations.setDataset(data);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "Dataset successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -114,7 +102,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
 
   async downloadDataset(payload: { datasetId: number; filename: string }) {
     try {
-      const response = await api.downloadDataset(this.main!.getters.token, payload.datasetId);
+      const response = await api.downloadDataset(payload.datasetId);
       const blob = await response.blob();
       saveAs(blob, payload.filename);
     } catch (error) {
@@ -127,10 +115,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
       return;
     }
     try {
-      const notification = { content: "uploading", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      await api.uploadDataset(this.main!.getters.token, payload.experimentId, payload.data);
-      this.main!.mutations.removeNotification(notification);
+      await api.uploadDataset(payload.experimentId, payload.data);
       this.main!.mutations.addNotification({ content: "Dataset successfully uploaded", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);

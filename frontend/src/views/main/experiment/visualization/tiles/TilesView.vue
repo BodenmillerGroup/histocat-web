@@ -39,7 +39,7 @@ export default class TilesView extends Vue {
       const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : "";
       return {
         id: channel.id,
-        url: `${apiUrl}/api/v1/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
+        url: `${apiUrl}/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
         caption: channelSettings && channelSettings.customLabel ? channelSettings.customLabel : channel.label
       };
     });

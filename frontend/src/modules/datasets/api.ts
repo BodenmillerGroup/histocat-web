@@ -1,50 +1,28 @@
-import { apiUrl } from "@/env";
-import ky from "ky";
 import { IDataset, IDatasetCreate } from "./models";
+import { ApiManager } from "@/utils/api";
 
 export const api = {
-  async createDataset(token: string, data: IDatasetCreate) {
-    return ky
-      .post(`${apiUrl}/api/v1/datasets/`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async createDataset(data: IDatasetCreate) {
+    return ApiManager.api
+      .post(`datasets`, {
+        json: data
       })
       .json<IDataset>();
   },
-  async uploadDataset(token: string, experimentId: number, data) {
-    return ky.post(`${apiUrl}/api/v1/datasets/experiment/${experimentId}/upload`, {
+  async uploadDataset(experimentId: number, data) {
+    return ApiManager.api.post(`datasets/experiment/${experimentId}/upload`, {
       body: data,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       timeout: false
     });
   },
-  async getExperimentDatasets(token: string, experimentId: number) {
-    return ky
-      .get(`${apiUrl}/api/v1/datasets/experiment/${experimentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IDataset[]>();
+  async getExperimentDatasets(experimentId: number) {
+    return ApiManager.api.get(`datasets/experiment/${experimentId}`).json<IDataset[]>();
   },
-  async deleteDataset(token: string, id: number) {
-    return ky
-      .delete(`${apiUrl}/api/v1/datasets/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json();
+  async deleteDataset(id: number) {
+    return ApiManager.api.delete(`datasets/${id}`).json();
   },
-  async downloadDataset(token: string, id: number) {
-    return ky.get(`${apiUrl}/api/v1/datasets/${id}/download`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+  async downloadDataset(id: number) {
+    return ApiManager.api.get(`datasets/${id}/download`, {
       timeout: false
     });
   }

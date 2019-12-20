@@ -31,7 +31,7 @@ export class ExperimentActions extends Actions<
 
   async getExperiments() {
     try {
-      const data = await api.getExperiments(this.main!.getters.token);
+      const data = await api.getExperiments();
       if (data) {
         this.mutations.setExperiments(data);
       }
@@ -42,7 +42,7 @@ export class ExperimentActions extends Actions<
 
   async getTags() {
     try {
-      const data = await api.getTags(this.main!.getters.token);
+      const data = await api.getTags();
       if (data) {
         this.mutations.setTags(data);
       }
@@ -53,14 +53,8 @@ export class ExperimentActions extends Actions<
 
   async updateExperiment(payload: { id: number; data: IExperimentUpdate }) {
     try {
-      const notification = { content: "saving", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.updateExperiment(this.main!.getters.token, payload.id, payload.data),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.updateExperiment(payload.id, payload.data);
       this.mutations.setExperiment(data);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "Experiment successfully updated", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -69,14 +63,8 @@ export class ExperimentActions extends Actions<
 
   async deleteExperiment(id: number) {
     try {
-      const notification = { content: "deleting", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.deleteExperiment(this.main!.getters.token, id),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.deleteExperiment(id);
       this.mutations.deleteExperiment(id);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "Experiment successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -85,14 +73,8 @@ export class ExperimentActions extends Actions<
 
   async createExperiment(payload: IExperimentCreate) {
     try {
-      const notification = { content: "saving", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.createExperiment(this.main!.getters.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.createExperiment(payload);
       this.mutations.setExperiment(data);
-      this.main!.mutations.removeNotification(notification);
       this.main!.mutations.addNotification({ content: "Experiment successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -131,7 +113,7 @@ export class ExperimentActions extends Actions<
 
   async getExperimentData(id: number) {
     try {
-      const data = await api.getExperimentData(this.main!.getters.token, id);
+      const data = await api.getExperimentData(id);
       if (data) {
         this.mutations.setExperiment(data);
       }
@@ -142,19 +124,19 @@ export class ExperimentActions extends Actions<
 
   async getChannelStats(id: number) {
     try {
-      return await api.getChannelStats(this.main!.getters.token, id);
+      return await api.getChannelStats(id);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
   async getChannelStackImage() {
-    const params = this.prepareStackParams();
+    const params = await this.actions.prepareStackParams();
     if (params.channels.length === 0) {
       return;
     }
     try {
-      const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
+      const response = await api.downloadChannelStackImage(params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -167,7 +149,7 @@ export class ExperimentActions extends Actions<
   }
 
   async getColorizedMaskImage() {
-    const params = this.prepareStackParams();
+    const params = await this.actions.prepareStackParams();
     if (params.channels.length === 0 || !params.hasOwnProperty("mask")) {
       return;
     }
@@ -175,7 +157,7 @@ export class ExperimentActions extends Actions<
     params["mask"]["colorize"] = true;
     try {
       this.mutations.setColorizeMaskInProgress(true);
-      const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
+      const response = await api.downloadChannelStackImage(params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -190,9 +172,9 @@ export class ExperimentActions extends Actions<
   }
 
   async exportChannelStackImage(format: ExportFormat = "png") {
-    const params = this.prepareStackParams(format);
+    const params = await this.actions.prepareStackParams(format);
     try {
-      const response = await api.downloadChannelStackImage(this.main!.getters.token, params);
+      const response = await api.downloadChannelStackImage(params);
       const blob = await response.blob();
       saveAs(blob);
     } catch (error) {
@@ -240,13 +222,7 @@ export class ExperimentActions extends Actions<
 
   async createShare(payload: IShareCreate) {
     try {
-      const notification = { content: "saving", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.createShare(this.main!.getters.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
-      this.main!.mutations.removeNotification(notification);
+      const data = await api.createShare(payload);
       this.main!.mutations.addNotification({ content: "Experiment successfully shared", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -255,7 +231,7 @@ export class ExperimentActions extends Actions<
 
   async getExperimentShares(experimentId: number) {
     try {
-      const data = await api.getExperimentShares(this.main!.getters.token, experimentId);
+      const data = await api.getExperimentShares(experimentId);
       this.mutations.setShares(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -264,13 +240,7 @@ export class ExperimentActions extends Actions<
 
   async deleteSlide(id: number) {
     try {
-      const notification = { content: "deleting", showProgress: true };
-      this.main!.mutations.addNotification(notification);
-      const data = (await Promise.all([
-        api.deleteSlide(this.main!.getters.token, id),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
-      this.main!.mutations.removeNotification(notification);
+      const data = await api.deleteSlide(id);
       this.main!.mutations.addNotification({ content: "Slide successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);

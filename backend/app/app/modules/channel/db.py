@@ -19,10 +19,7 @@ class Channel(Base):
 
     id: int = sa.Column("id", sa.Integer(), primary_key=True, index=True)
     acquisition_id: int = sa.Column(
-        "acquisition_id",
-        sa.Integer(),
-        sa.ForeignKey("acquisition.id", ondelete="CASCADE"),
-        index=True,
+        "acquisition_id", sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"), index=True,
     )
     origin_id: int = sa.Column("origin_id", sa.Integer(), index=True)
     metal: str = sa.Column("metal", sa.String(), index=True)
@@ -31,9 +28,7 @@ class Channel(Base):
     max_intensity: float = sa.Column("max_intensity", sa.Float())
     min_intensity: float = sa.Column("min_intensity", sa.Float())
     meta: dict = sa.Column("meta", JSONB())
-    created_at: datetime = sa.Column(
-        "created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False
-    )
+    created_at: datetime = sa.Column("created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     acquisition = relationship("Acquisition", back_populates="channels")
 

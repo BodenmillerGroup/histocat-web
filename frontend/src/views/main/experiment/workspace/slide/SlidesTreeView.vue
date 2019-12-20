@@ -211,12 +211,9 @@ export default class SlidesTreeView extends Vue {
           });
           const panoramaChildren = this.showROI
             ? rois
-            : rois.reduce(
-                (total, roi) => {
-                  return total.concat(roi.children);
-                },
-                [] as any
-              );
+            : rois.reduce((total, roi) => {
+                return total.concat(roi.children);
+              }, [] as any);
           return Object.assign({}, panorama, {
             type: "panorama",
             name: panorama.meta.Description,

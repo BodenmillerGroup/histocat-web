@@ -3,12 +3,12 @@
     <v-card-title>
       Info
     </v-card-title>
-    <v-divider></v-divider>
+    <v-divider />
     <v-card-title v-if="imageUrl">
       <v-img :src="imageUrl" class="grey lighten-2" width="380px">
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
-            <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+            <v-progress-circular indeterminate color="grey lighten-5" />
           </v-row>
         </template>
       </v-img>
@@ -17,11 +17,10 @@
       <template v-for="item in items">
         <v-list-item dense inactive :key="item.name">
           <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-title v-text="item.name" />
           </v-list-item-content>
-
           <v-list-item-action>
-            <v-list-item-action-text v-text="item.value"></v-list-item-action-text>
+            <v-list-item-action-text v-text="item.value" />
           </v-list-item-action>
         </v-list-item>
       </template>
@@ -40,9 +39,9 @@ export default class InfoCard extends Vue {
   get imageUrl() {
     switch (this.node.item.type) {
       case "slide":
-        return `${apiUrl}/api/v1/slides/${this.node.item.id}/image`;
+        return `${apiUrl}/slides/${this.node.item.id}/image`;
       case "panorama":
-        return `${apiUrl}/api/v1/panoramas/${this.node.item.id}/image`;
+        return `${apiUrl}/panoramas/${this.node.item.id}/image`;
       default:
         return undefined;
     }

@@ -11,6 +11,7 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core import config
 from app.modules.user.db import User
+
 from . import crud
 from .models import (
     ExperimentCreateModel,
@@ -38,9 +39,7 @@ def read_all(
 
 
 @router.get("/tags", response_model=Set[str])
-def read_tags(
-    db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)
-):
+def read_tags(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
     """
     Retrieve tags
     """
@@ -59,15 +58,12 @@ def create(
     Create new experiment
     """
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=401, detail="The user cannot create experiments."
-        )
+        raise HTTPException(status_code=401, detail="The user cannot create experiments.")
 
     item = crud.get_by_name(db, name=params.name)
     if item:
         raise HTTPException(
-            status_code=400,
-            detail="The experiment with this name already exists in the system.",
+            status_code=400, detail="The experiment with this name already exists in the system.",
         )
     item = crud.create(db, user_id=current_user.id, params=params)
     return item
@@ -75,9 +71,7 @@ def create(
 
 @router.get("/{id}", response_model=ExperimentModel)
 def read_by_id(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific experiment by id
@@ -88,9 +82,7 @@ def read_by_id(
 
 @router.delete("/{id}", response_model=ExperimentModel)
 def delete_by_id(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific experiment by id
@@ -114,8 +106,7 @@ def update(
 
     if not item:
         raise HTTPException(
-            status_code=404,
-            detail="The experiment with this id does not exist in the system",
+            status_code=404, detail="The experiment with this id does not exist in the system",
         )
     item = crud.update(db, item=item, params=params)
     return item
@@ -140,9 +131,7 @@ def upload_data(
 
 @router.get("/{id}/data", response_model=ExperimentDatasetModel)
 async def read_data(
-    id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get all experiment data

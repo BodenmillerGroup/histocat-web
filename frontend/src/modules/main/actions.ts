@@ -1,7 +1,7 @@
 import { settingsModule } from "@/modules/settings";
 import { api } from "@/modules/user/api";
 import router from "@/router";
-import { getLocalToken, removeLocalToken, saveLocalToken } from "@/utils";
+import { getLocalToken, removeLocalToken, saveLocalToken } from "@/utils/auth";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
 import { MainState } from ".";
@@ -27,48 +27,42 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
         this.mutations.setToken(token);
         this.mutations.setLoggedIn(true);
         this.mutations.setLogInError(false);
-        await this.getUserProfile();
-        await this.routeLoggedIn();
+        await this.actions.getUserProfile();
+        await this.actions.routeLoggedIn();
         this.mutations.addNotification({ content: "Logged in", color: "success" });
       } else {
-        await this.logOut();
+        await this.actions.logOut();
       }
     } catch (err) {
       this.mutations.setLogInError(true);
-      await this.logOut();
+      await this.actions.logOut();
     }
   }
 
   async getUserProfile() {
     try {
-      const data = await api.getMe(this.state.token);
+      const data = await api.getMe();
       if (data) {
         this.mutations.setUserProfile(data);
       }
     } catch (error) {
-      await this.checkApiError(error);
+      await this.actions.checkApiError(error);
     }
   }
 
   async updateUserProfile(payload) {
     try {
-      const loadingNotification = { content: "saving", showProgress: true };
-      this.mutations.addNotification(loadingNotification);
-      const data = (await Promise.all([
-        api.updateMe(this.state.token, payload),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
+      const data = await api.updateMe(payload);
       this.mutations.setUserProfile(data);
-      this.mutations.removeNotification(loadingNotification);
       this.mutations.addNotification({ content: "Profile successfully updated", color: "success" });
     } catch (error) {
-      await this.checkApiError(error);
+      await this.actions.checkApiError(error);
     }
   }
 
   async checkLoggedIn() {
-    if (!this.state.isLoggedIn) {
-      let token = this.state.token;
+    if (!this.getters.isLoggedIn) {
+      let token = this.getters.token;
       if (!token) {
         const localToken = getLocalToken();
         if (localToken) {
@@ -78,14 +72,14 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
       }
       if (token) {
         try {
-          const data = await api.getMe(token);
+          const data = await api.getMe();
           this.mutations.setLoggedIn(true);
           this.mutations.setUserProfile(data);
         } catch (error) {
-          await this.removeLogIn();
+          await this.actions.removeLogIn();
         }
       } else {
-        await this.removeLogIn();
+        await this.actions.removeLogIn();
       }
     }
   }
@@ -97,12 +91,12 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
   }
 
   async logOut() {
-    await this.removeLogIn();
-    await this.routeLogOut();
+    await this.actions.removeLogIn();
+    await this.actions.routeLogOut();
   }
 
   async userLogOut() {
-    await this.logOut();
+    await this.actions.logOut();
     this.mutations.addNotification({ content: "Logged out", color: "success" });
   }
 
@@ -112,10 +106,13 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
     }
   }
 
-  async checkApiError(payload) {
-    console.log("API error: ", payload);
-    if (payload.response && payload.response.status === 401) {
-      await this.logOut();
+  async checkApiError(error) {
+    this.mutations.addNotification({ content: error.message, color: "error" });
+    if (error.response) {
+      console.error("API error: ", error.response);
+      if (error.response.status === 401) {
+        // await this.actions.logOut();
+      }
     }
   }
 
@@ -135,36 +132,22 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
   }
 
   async passwordRecovery(payload: { username: string }) {
-    const loadingNotification = { content: "Sending password recovery email", showProgress: true };
     try {
-      this.mutations.addNotification(loadingNotification);
-      const response = (await Promise.all([
-        api.passwordRecovery(payload.username),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
-      this.mutations.removeNotification(loadingNotification);
+      await api.passwordRecovery(payload.username);
       this.mutations.addNotification({ content: "Password recovery email sent", color: "success" });
-      await this.logOut();
+      await this.actions.logOut();
     } catch (error) {
-      this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ color: "error", content: "Incorrect username" });
+      await this.actions.checkApiError(error);
     }
   }
 
   async resetPassword(payload: { password: string; token: string }) {
-    const loadingNotification = { content: "Resetting password", showProgress: true };
     try {
-      this.mutations.addNotification(loadingNotification);
-      const response = (await Promise.all([
-        api.resetPassword(payload.password, payload.token),
-        await new Promise((resolve, reject) => setTimeout(() => resolve(), 500))
-      ]))[0];
-      this.mutations.removeNotification(loadingNotification);
+      const response = await api.resetPassword(payload.password, payload.token);
       this.mutations.addNotification({ content: "Password successfully reset", color: "success" });
-      await this.logOut();
+      await this.actions.logOut();
     } catch (error) {
-      this.mutations.removeNotification(loadingNotification);
-      this.mutations.addNotification({ color: "error", content: "Error resetting password" });
+      await this.actions.checkApiError(error);
     }
   }
 }

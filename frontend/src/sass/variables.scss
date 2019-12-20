@@ -4,9 +4,9 @@
 // @import '~vuetify/src/styles/styles.sass';
 
 // Any component modifications must be imported
-@import '~vuetify/src/components/VTreeview/_variables.scss';
+@import "~vuetify/src/components/VTreeview/_variables.scss";
 $treeview-node-height: 24px;
 $treeview-label-font-size: 10pt;
 
-@import '~vuetify/src/components/VTabs/_variables.scss';
+@import "~vuetify/src/components/VTabs/_variables.scss";
 $tabs-bar-height: 36px;

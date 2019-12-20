@@ -1,12 +1,10 @@
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: false,
-  transpileDependencies: [
-    "vuetify"
-  ],
+  transpileDependencies: ["vuetify"],
 
   pwa: {
-    name: "HistoCAT"
+    name: "HistoCAT",
   },
 
   configureWebpack: config => {
@@ -24,12 +22,12 @@ module.exports = {
       openAnalyzer: false,
       // Excludes module sources from stats file so there won't be any sensitive data
       statsOptions: {
-        source: false
-      }
-    }
+        source: false,
+      },
+    },
   },
 
   devServer: {
-    port: 9999
-  }
+    port: 9999,
+  },
 };

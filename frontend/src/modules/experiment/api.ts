@@ -1,5 +1,4 @@
 import { apiUrl } from "@/env";
-import ky from "ky";
 import {
   IChannelStack,
   IChannelStats,
@@ -10,45 +9,28 @@ import {
   IShareCreate,
   ISlide
 } from "./models";
+import { ApiManager } from "@/utils/api";
 
 const cacheAvailable = false; // 'caches' in self;
 
 export const api = {
-  async getExperiments(token: string) {
-    return ky
-      .get(`${apiUrl}/api/v1/experiments/`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IExperiment[]>();
+  async getExperiments() {
+    return ApiManager.api.get(`experiments`).json<IExperiment[]>();
   },
-  async getTags(token: string) {
-    return ky
-      .get(`${apiUrl}/api/v1/experiments/tags`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<string[]>();
+  async getTags() {
+    return ApiManager.api.get(`experiments/tags`).json<string[]>();
   },
-  async updateExperiment(token: string, id: number, data: IExperimentUpdate) {
-    return ky
-      .put(`${apiUrl}/api/v1/experiments/${id}`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async updateExperiment(id: number, data: IExperimentUpdate) {
+    return ApiManager.api
+      .put(`experiments/${id}`, {
+        json: data
       })
       .json<IExperiment>();
   },
-  async createExperiment(token: string, data: IExperimentCreate) {
-    return ky
-      .post(`${apiUrl}/api/v1/experiments/`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async createExperiment(data: IExperimentCreate) {
+    return ApiManager.api
+      .post(`experiments`, {
+        json: data
       })
       .json<IExperiment>();
   },
@@ -62,7 +44,7 @@ export const api = {
     onError: () => void
   ) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${apiUrl}/api/v1/experiments/${id}/upload`);
+    xhr.open("POST", `${apiUrl}/experiments/${id}/upload`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
     xhr.upload.onloadstart = onLoadStart;
@@ -83,35 +65,17 @@ export const api = {
     //   timeout: false
     // });
   },
-  async deleteExperiment(token: string, id: number) {
-    return ky
-      .delete(`${apiUrl}/api/v1/experiments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IExperiment>();
+  async deleteExperiment(id: number) {
+    return ApiManager.api.delete(`experiments/${id}`).json<IExperiment>();
   },
-  async getExperiment(token: string, id: number) {
-    return ky
-      .get(`${apiUrl}/api/v1/experiments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IExperiment>();
+  async getExperiment(id: number) {
+    return ApiManager.api.get(`experiments/${id}`).json<IExperiment>();
   },
-  async getExperimentData(token: string, id: number) {
-    return ky
-      .get(`${apiUrl}/api/v1/experiments/${id}/data`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IExperiment>();
+  async getExperimentData(id: number) {
+    return ApiManager.api.get(`experiments/${id}/data`).json<IExperiment>();
   },
-  async getChannelStats(token: string, id: number) {
-    const url = `${apiUrl}/api/v1/channels/${id}/stats?bins=100`;
+  async getChannelStats(id: number) {
+    const url = `channels/${id}/stats?bins=100`;
     let cache;
     if (cacheAvailable) {
       cache = await self.caches.open("stats");
@@ -120,11 +84,7 @@ export const api = {
         return found.json() as Promise<IChannelStats>;
       }
     }
-    const response = await ky.get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await ApiManager.api.get(url);
     if (response.ok) {
       if (cacheAvailable) {
         await cache.put(url, response.clone());
@@ -132,41 +92,23 @@ export const api = {
     }
     return response.json() as Promise<IChannelStats>;
   },
-  async downloadChannelStackImage(token: string, params: IChannelStack) {
-    return ky.post(`${apiUrl}/api/v1/channels/stack`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+  async downloadChannelStackImage(params: IChannelStack) {
+    return ApiManager.api.post(`channels/stack`, {
       json: params,
       timeout: false
     });
   },
-  async createShare(token: string, data: IShareCreate) {
-    return ky
-      .post(`${apiUrl}/api/v1/share/`, {
-        json: data,
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+  async createShare(data: IShareCreate) {
+    return ApiManager.api
+      .post(`share`, {
+        json: data
       })
       .json<IShare>();
   },
-  async getExperimentShares(token: string, id: number) {
-    return ky
-      .get(`${apiUrl}/api/v1/share/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<IShare[]>();
+  async getExperimentShares(id: number) {
+    return ApiManager.api.get(`share/${id}`).json<IShare[]>();
   },
-  async deleteSlide(token: string, id: number) {
-    return ky
-      .delete(`${apiUrl}/api/v1/slides/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      .json<ISlide>();
+  async deleteSlide(id: number) {
+    return ApiManager.api.delete(`slides/${id}`).json<ISlide>();
   }
 };

@@ -14,8 +14,7 @@
     "noImplicitAny": false,
     "types": [
       "webpack-env",
-      "jest",
-      "vuetify"
+      "jest"
     ],
     "paths": {
       "@/*": [

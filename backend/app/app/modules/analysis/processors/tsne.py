@@ -4,8 +4,8 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
-from sklearn import preprocessing
 from fastapi import HTTPException
+from sklearn import preprocessing
 from sklearn.manifold import TSNE
 
 # from openTSNE import TSNE
@@ -13,7 +13,7 @@ from sklearn.manifold import TSNE
 from sqlalchemy.orm import Session
 
 from app.core.notifier import Message
-from app.core.redis_manager import redis_manager, UPDATES_CHANNEL_NAME
+from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.core.utils import timeit
 from app.modules.dataset import crud as dataset_crud
 
@@ -46,9 +46,7 @@ def process_tsne(
         image_numbers.append(image_number)
 
     if not cell_input or not channel_map or len(image_numbers) == 0:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper input."
-        )
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
     df = df[df["ImageNumber"].isin(image_numbers)]
@@ -108,21 +106,14 @@ def process_tsne(
         },
         "location": location,
     }
-    dataset_crud.update_output(
-        db, dataset_id=dataset_id, result_type="tsne", result=result
-    )
+    dataset_crud.update_output(db, dataset_id=dataset_id, result_type="tsne", result=result)
     redis_manager.publish(
-        UPDATES_CHANNEL_NAME,
-        Message(dataset.experiment_id, "tsne_result_ready", result),
+        UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "tsne_result_ready", result),
     )
 
 
 def get_tsne_result(
-    db: Session,
-    dataset_id: int,
-    name: str,
-    heatmap_type: Optional[str],
-    heatmap: Optional[str],
+    db: Session, dataset_id: int, name: str, heatmap_type: Optional[str], heatmap: Optional[str],
 ):
     """
     Read t-SNE result data
@@ -132,9 +123,7 @@ def get_tsne_result(
     tsne_output = dataset.output.get("tsne")
 
     if not tsne_output or name not in tsne_output:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper t-SNE output."
-        )
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper t-SNE output.")
 
     tsne_result = tsne_output.get(name)
     result = np.load(tsne_result.get("location"), allow_pickle=True)
@@ -164,10 +153,7 @@ def get_tsne_result(
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = (
-                df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"]
-                * 2 ** 16
-            )
+            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
         else:
             heatmap_data = df[heatmap]
 

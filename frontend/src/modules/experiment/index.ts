@@ -20,7 +20,7 @@ export class ExperimentState {
 }
 
 export const experimentModule = new Module({
-  namespaced: false,
+  namespaced: true,
 
   state: ExperimentState,
   getters: ExperimentGetters,

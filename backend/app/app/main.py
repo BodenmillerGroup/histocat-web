@@ -27,12 +27,11 @@ if os.environ.get("BACKEND_ENV") == "development":
         # import pydevd_pycharm
         # pydevd_pycharm.settrace('130.60.106.31', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
 
-        pass
     except Exception as e:
         logger.error(e)
 
 app = FastAPI(
-    title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json"
+    title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json", docs_url="/docs", redoc_url="/redoc"
 )
 
 # CORS
@@ -45,20 +44,14 @@ if config.BACKEND_CORS_ORIGINS:
         use_origin = origin.strip()
         origins.append(use_origin)
     app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
     )
 
 app.include_router(api_router, prefix=config.API_V1_STR)
 
 
 @app.websocket("/ws/{experiment_id}")
-async def experiment_websocket_endpoint(
-    websocket: WebSocket, experiment_id: int, token: str = None
-):
+async def experiment_websocket_endpoint(websocket: WebSocket, experiment_id: int, token: str = None):
     if not token:
         raise Exception("WebSocket authorization token is missing")
 

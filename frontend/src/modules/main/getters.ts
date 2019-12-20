@@ -3,7 +3,7 @@ import { MainState } from ".";
 
 export class MainGetters extends Getters<MainState> {
   get hasAdminAccess() {
-    return this.userProfile && this.userProfile.is_superuser && this.userProfile.is_active;
+    return this.state.userProfile && this.state.userProfile.is_superuser && this.state.userProfile.is_active;
   }
 
   get loginError() {

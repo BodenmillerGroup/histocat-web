@@ -27,8 +27,8 @@
             </v-btn>
           </v-card-actions>
           <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
-            <v-radio label="2D" value="2"></v-radio>
-            <v-radio label="3D" value="3"></v-radio>
+            <v-radio label="2D" value="2" />
+            <v-radio label="3D" value="3" />
           </v-radio-group>
           <v-select
             :items="heatmaps"
@@ -40,7 +40,8 @@
             persistent-hint
             clearable
             dense
-          ></v-select>
+            class="mt-5"
+          />
         </v-card-text>
         <v-card-actions>
           <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
@@ -212,7 +213,10 @@ export default class PCATab extends Vue {
       },
       dataset: {
         source: points,
-        dimensions: [{ name: data.x.label, type: "float" }, { name: data.y.label, type: "float" }]
+        dimensions: [
+          { name: data.x.label, type: "float" },
+          { name: data.y.label, type: "float" }
+        ]
       },
       series: [
         {
