@@ -44,7 +44,7 @@ def import_dataset(
 
     experiment = experiment_crud.get(db, id=experiment_id)
     if not experiment:
-        logger.warn(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
+        logger.warning(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
         return
 
     create_params = DatasetCreateModel(experiment_id=experiment_id, user_id=user_id, status="pending")
@@ -63,9 +63,10 @@ def import_dataset(
     image_map = {}
     for index, row in image_df.iterrows():
         mask_meta = _import_probabilities_mask(db, src_folder, row, dataset)
-        acquisition_id = mask_meta.get("acquisition").get("id")
-        probability_masks[acquisition_id] = mask_meta
-        image_map[acquisition_id] = mask_meta.get("image_number")
+        if mask_meta is not None:
+            acquisition_id = mask_meta.get("acquisition").get("id")
+            probability_masks[acquisition_id] = mask_meta
+            image_map[acquisition_id] = mask_meta.get("image_number")
     input["probability_masks"] = probability_masks
     # Map acquisition database ID to ImageNumber column
     input["image_map"] = image_map
@@ -164,6 +165,8 @@ def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, da
     name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(filename)[0]
 
     slide = slide_crud.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
+    if slide is None:
+        return None
     panorama = panorama_crud.get_by_origin_id(db, slide_id=slide.id, origin_id=panorama_origin_id)
     roi = roi_crud.get_by_origin_id(db, panorama_id=panorama.id, origin_id=roi_origin_id)
     acquisition = acquisition_crud.get_by_origin_id(db, roi_id=roi.id, origin_id=acquisition_origin_id)
