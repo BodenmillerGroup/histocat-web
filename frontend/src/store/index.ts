@@ -13,7 +13,7 @@ import createLogger from "vuex/dist/logger";
 
 Vue.use(Vuex);
 
-const debug = process.env.NODE_ENV !== "production";
+const debug = false; // process.env.NODE_ENV !== "production";
 
 const rootModule = new Module({
   modules: {

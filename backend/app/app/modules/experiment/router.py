@@ -28,7 +28,7 @@ router = APIRouter()
 def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 1000,
     current_user: User = Depends(get_current_active_user),
 ):
     """

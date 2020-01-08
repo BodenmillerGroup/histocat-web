@@ -180,22 +180,24 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition)
     label = meta.get(mcdxmlparser.CHANNELLABEL).replace("(", "").replace(")", "").strip()
     mass = "".join([m for m in metal if m.isdigit()])
 
-    parser = OmetiffParser(acquisition.location)
-    imc_acquisition: ImcAcquisition = parser.get_imc_acquisition()
-    img = imc_acquisition.get_img_by_label(label)
+    if os.path.exists(acquisition.location):
+        parser = OmetiffParser(acquisition.location)
+        imc_acquisition: ImcAcquisition = parser.get_imc_acquisition()
+        img = imc_acquisition.get_img_by_label(label)
 
-    params = ChannelCreateModel(
-        acquisition_id=acquisition.id,
-        origin_id=origin_id,
-        metal=metal,
-        label=label,
-        mass=mass,
-        max_intensity=img.max(),
-        min_intensity=img.min(),
-        meta=meta,
-    )
-    channel = channel_crud.create(db, params=params)
-    return channel
+        params = ChannelCreateModel(
+            acquisition_id=acquisition.id,
+            origin_id=origin_id,
+            metal=metal,
+            label=label,
+            mass=mass,
+            max_intensity=img.max(),
+            min_intensity=img.min(),
+            meta=meta,
+        )
+        channel = channel_crud.create(db, params=params)
+        return channel
+    return None
 
 
 def _load_meta_csv(filepath: Path) -> Dict[str, Dict[str, str]]:
