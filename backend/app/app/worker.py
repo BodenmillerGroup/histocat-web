@@ -62,7 +62,7 @@ def send_email(email_to: str, subject_template="", html_template="", environment
     logging.info(f"Send email result: {response}")
 
 
-@dramatiq.actor(queue_name="import", max_retries=0)
+@dramatiq.actor(queue_name="import", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
 def import_data(uri: str, experiment_id: int, user_id: int):
     logger.info(f"Importing data into experiment [{experiment_id}] from {uri}")
 
@@ -81,7 +81,7 @@ def import_data(uri: str, experiment_id: int, user_id: int):
         shutil.rmtree(path)
 
 
-@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)
+@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)   # 10 hours time limit
 def process_tsne(
     dataset_id: int,
     acquisition_ids: List[int],

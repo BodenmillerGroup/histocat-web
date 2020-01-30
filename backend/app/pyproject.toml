@@ -1,10 +1,10 @@
 [build-system]
-requires = ["poetry>=1.0.0"]
+requires = ["poetry>=1.0.2"]
 build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "histocat"
-version = "2019.12.20"
+version = "2020.01.30"
 description = "HistoCAT for Web"
 authors = ["Anton Rau <anton.rau@gmail.com>"]
 
