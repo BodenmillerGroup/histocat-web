@@ -24,7 +24,7 @@ def get_by_name(session: Session, *, name: str) -> Optional[Experiment]:
     return session.query(Experiment).filter(Experiment.name == name).first()
 
 
-def get_multi(session: Session, *, user: User, skip: int = 0, limit: int = 100) -> List[Optional[Experiment]]:
+def get_multi(session: Session, *, user: User, skip: int = 0, limit: int = 1000) -> List[Optional[Experiment]]:
     if user.is_superuser:
         items = session.query(Experiment).offset(skip).limit(limit).all()
     else:

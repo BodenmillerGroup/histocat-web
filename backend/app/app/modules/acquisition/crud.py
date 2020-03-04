@@ -18,7 +18,7 @@ def get_by_origin_id(session: Session, *, roi_id: int, origin_id: int) -> Option
     return session.query(Acquisition).filter(Acquisition.roi_id == roi_id, Acquisition.origin_id == origin_id).first()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Optional[Acquisition]]:
+def get_multi(session: Session, *, skip: int = 0, limit: int = 1000) -> List[Optional[Acquisition]]:
     return session.query(Acquisition).offset(skip).limit(limit).all()
 
 

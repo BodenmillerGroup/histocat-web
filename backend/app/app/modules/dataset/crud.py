@@ -20,7 +20,7 @@ def get_own_by_experiment_id(session: Session, *, experiment_id: int) -> List[Da
     return session.query(Dataset).filter(Dataset.experiment_id == experiment_id).all()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 100) -> List[Dataset]:
+def get_multi(session: Session, *, skip: int = 0, limit: int = 1000) -> List[Dataset]:
     return session.query(Dataset).offset(skip).limit(limit).all()
 
 

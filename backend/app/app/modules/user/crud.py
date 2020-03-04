@@ -34,7 +34,7 @@ def is_superuser(user: User) -> bool:
     return user.is_superuser
 
 
-def get_multi(session: Session, *, skip=0, limit=100) -> List[Optional[User]]:
+def get_multi(session: Session, *, skip=0, limit=1000) -> List[Optional[User]]:
     return session.query(User).offset(skip).limit(limit).all()
 
 

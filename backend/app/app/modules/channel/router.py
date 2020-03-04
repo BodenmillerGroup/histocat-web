@@ -36,7 +36,7 @@ router = APIRouter()
 def read_channels(
     db: Session = Depends(get_db),
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 1000,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -61,7 +61,7 @@ def read_channel_by_id(
 async def read_channel_stats(
     id: int,
     request: Request,
-    bins: int = 100,
+    bins: int = 1000,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
