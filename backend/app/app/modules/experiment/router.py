@@ -27,14 +27,12 @@ router = APIRouter()
 @router.get("/", response_model=List[ExperimentModel])
 def read_all(
     db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 1000,
     current_user: User = Depends(get_current_active_user),
 ):
     """
     Retrieve experiments
     """
-    items = crud.get_multi(db, user=current_user, skip=skip, limit=limit)
+    items = crud.get_multi(db, user=current_user)
     return items
 
 
