@@ -1,4 +1,4 @@
 # Editor configuration, see https://editorconfig.org
 
-[*]
+[*.{ts,json,js}]
 indent_size = 2
