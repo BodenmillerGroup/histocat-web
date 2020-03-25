@@ -1282,7 +1282,7 @@ description = "Ultra fast JSON encoder and decoder for Python"
 name = "ujson"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
-version = "2.0.2"
+version = "2.0.3"
 
 [[package]]
 category = "main"
@@ -1397,7 +1397,7 @@ backend = ["alembic", "python-multipart", "gunicorn", "uvicorn"]
 worker = []
 
 [metadata]
-content-hash = "4f7b1c1285c3ced232206ba0327dc9de3cbdb4d1bc74e1d19cf3cfaf9fa93bcc"
+content-hash = "febd78835dde00273c20a3854ff4d6a7b856630c8f4919c7fcc9073e16084ea6"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2506,13 +2506,13 @@ typing-extensions = [
     {file = "typing_extensions-3.7.4.1.tar.gz", hash = "sha256:091ecc894d5e908ac75209f10d5b4f118fbdb2eb1ede6a63544054bb1edb41f2"},
 ]
 ujson = [
-    {file = "ujson-2.0.2-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:1039b8857da6b4d6bdb4ca35a05c18e5013303e3a0da7252572dd8fc3352badc"},
-    {file = "ujson-2.0.2-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:749c445ceff194615d8df90a530a9bb7c1741c547aacd31970182998fb670d17"},
-    {file = "ujson-2.0.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:bb9a4636acf18d4698b26d3f28e274978e15b486dd56e68ad5f0c630e4c066c5"},
-    {file = "ujson-2.0.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:940bc49addf7075e1895d46acb65c7d717d920d480af56091d4006d17eb8f1f6"},
-    {file = "ujson-2.0.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:db264d95357ddad7318c39fec1f7480d13792c0a711755fa49d14d863cbceae3"},
-    {file = "ujson-2.0.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:a42ea3d279d9fa4768dd96b58cfa8f99b46ca1b6e20db778309366ade92943d7"},
-    {file = "ujson-2.0.2.tar.gz", hash = "sha256:91f30f0b6fd5cd4b43844a9c52febc80772aad6348a58369d0a08bd1b347a52c"},
+    {file = "ujson-2.0.3-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:7ae13733d9467d16ccac2f38212cdee841b49ae927085c533425be9076b0bc9d"},
+    {file = "ujson-2.0.3-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:6217c63a36e9b26e9271e686d212397ce7fb04c07d85509dd4e2ed73493320f8"},
+    {file = "ujson-2.0.3-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:c8369ef49169804944e920c427e350182e33756422b69989c55608fc28bebf98"},
+    {file = "ujson-2.0.3-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:0c23f21e8d2b60efab57bc6ce9d1fb7c4e96f4bfefbf5a6043a3f3309e2a738a"},
+    {file = "ujson-2.0.3-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:3d1f4705a4ec1e48ff383a4d92299d8ec25e9a8158bcea619912440948117634"},
+    {file = "ujson-2.0.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:2ab88e330405315512afe9276f29a60e9b3439187b273665630a57ed7fe1d936"},
+    {file = "ujson-2.0.3.tar.gz", hash = "sha256:bd2deffc983827510e5145fb66e4cc0f577480c62fe0b4882139f8f7d27ae9a3"},
 ]
 umap-learn = [
     {file = "umap-learn-0.3.10.tar.gz", hash = "sha256:21ce6b6d7486905318ba6458b5a9ba2cfb935878d30c24e6fba64ee3bd504d09"},

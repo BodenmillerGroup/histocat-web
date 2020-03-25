@@ -33,7 +33,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   }
 
   async getSegmentationImage(settings: IImageSegmentationSettings) {
-    const params = this.prepareSegmentationParams(settings);
+    const params = await this.actions.prepareSegmentationParams(settings);
     if (params.channels.length === 0) {
       return;
     }
@@ -51,7 +51,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   }
 
   async exportSegmentationImage(payload: { settings: IImageSegmentationSettings; format: ExportFormat }) {
-    const params = this.prepareSegmentationParams(payload.settings, payload.format);
+    const params = await this.actions.prepareSegmentationParams(payload.settings, payload.format);
     try {
       const response = await api.produceSegmentationImage(params);
       const blob = await response.blob();
@@ -62,7 +62,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   }
 
   async produceSegmentationContours(settings: IImageSegmentationSettings) {
-    const params = this.prepareSegmentationParams(settings);
+    const params = await this.actions.prepareSegmentationParams(settings);
     if (params.channels.length === 0) {
       return;
     }

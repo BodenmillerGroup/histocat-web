@@ -37,7 +37,7 @@
                   download
                   color="primary lighten-3"
                   @click.stop=""
-                  :href="`${apiUrl}/api/v1/datasets/${item.id}/download`"
+                  :href="`${apiUrl}/datasets/${item.id}/download`"
                 >
                   <v-icon>mdi-download</v-icon>
                 </v-btn>

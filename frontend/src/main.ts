@@ -10,11 +10,14 @@ import store from "@/store";
 import Vue from "vue";
 import "@mdi/font/css/materialdesignicons.css"; // Ensure you are using css-loader
 
+const isDev = process.env.NODE_ENV === "development";
+
 Vue.config.productionTip = false;
+Vue.config.performance = isDev;
 
 new Vue({
-  router,
-  store,
-  vuetify,
-  render: h => h(App)
+  router: router,
+  store: store,
+  vuetify: vuetify,
+  render: h => h(App),
 }).$mount("#app");

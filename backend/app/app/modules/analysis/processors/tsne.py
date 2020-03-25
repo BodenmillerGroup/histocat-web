@@ -153,9 +153,9 @@ def get_tsne_result(
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
+            heatmap_data = (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16).tolist()
         else:
-            heatmap_data = df[heatmap]
+            heatmap_data = df[heatmap].tolist()
 
         output["heatmap"] = {"label": heatmap, "data": heatmap_data}
     elif len(acquisition_ids) > 1:

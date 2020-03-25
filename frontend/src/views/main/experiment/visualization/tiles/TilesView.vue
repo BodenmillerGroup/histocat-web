@@ -30,16 +30,19 @@ export default class TilesView extends Vue {
 
   get items() {
     return this.experimentContext.getters.selectedChannels.map(channel => {
+      let url = `${apiUrl}/channels/${channel.id}/image`;
       let color = this.metalColorMap.get(channel.metal);
       if (color) {
         color = color.replace("#", "");
+        url += `?color=${color}`;
       }
       const channelSettings = this.settingsContext.getters.getChannelSettings(channel.id);
-      const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : "";
-      const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : "";
+      if (channelSettings && channelSettings.levels) {
+        url += `&min=${channelSettings.levels.min}&max=${channelSettings.levels.max}`;
+      }
       return {
         id: channel.id,
-        url: `${apiUrl}/channels/${channel.id}/image?color=${color}&min=${min}&max=${max}`,
+        url: url,
         caption: channelSettings && channelSettings.customLabel ? channelSettings.customLabel : channel.label
       };
     });

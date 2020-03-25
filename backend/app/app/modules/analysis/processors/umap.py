@@ -138,7 +138,7 @@ def get_umap_result(
         else:
             heatmap_data = df[heatmap]
 
-        output["heatmap"] = {"label": heatmap, "data": heatmap_data}
+        output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
     elif len(acquisition_ids) > 1:
         image_map_inv = {v: k for k, v in image_map.items()}
         output["heatmap"] = {

@@ -11,20 +11,20 @@ import {
   ITSNEData,
   ITSNESubmission,
   IUMAPData,
-  IUMAPSubmission
+  IUMAPSubmission,
 } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {
   async produceSegmentationImage(params: IImageSegmentationSubmission) {
     return ApiManager.api.post(`analysis/segmentation/image`, {
-      json: params
+      json: params,
     });
   },
   async produceSegmentationContours(params: IImageSegmentationSubmission) {
     return ApiManager.api
       .post(`analysis/segmentation/contours`, {
-        json: params
+        json: params,
       })
       .json<number[][]>();
   },
@@ -37,24 +37,27 @@ export const api = {
     heatmapType: string,
     heatmap: string
   ) {
-    const acquisitionIdsArray = acquisitionIds.map(acquisition_id => `&acquisition_ids=${acquisition_id}`);
+    const acquisitionIdsArray = acquisitionIds.map((acquisition_id) => `&acquisition_ids=${acquisition_id}`);
     const acquisition_ids = acquisitionIdsArray.join("");
-    return ApiManager.api
-      .get(
-        `analysis/scatterplot?dataset_id=${datasetId}&marker_x=${markerX}&marker_y=${markerY}&marker_z=${markerZ}&heatmap_type=${heatmapType}&heatmap=${heatmap}${acquisition_ids}`
-      )
-      .json<IScatterPlotData>();
+    let url = `analysis/scatterplot?dataset_id=${datasetId}&marker_x=${markerX}&marker_y=${markerY}${acquisition_ids}`;
+    if (markerZ) {
+      url += `&marker_z=${markerZ}`;
+    }
+    if (heatmapType && heatmap) {
+      url += `&heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+    }
+    return ApiManager.api.get(url).json<IScatterPlotData>();
   },
   async getBoxPlotData(datasetId: number, acquisitionId: number, markers: string[]) {
-    const markersArray = markers.map(marker => `&markers=${marker}`);
+    const markersArray = markers.map((marker) => `&markers=${marker}`);
     return ApiManager.api
       .get(`analysis/boxplot?dataset_id=${datasetId}&acquisition_id=${acquisitionId}${markersArray.join("")}`)
       .json<IPlotSeries[]>();
   },
   async getPCAData(params: IPCASubmission) {
-    const acquisitionIdsArray = params.acquisition_ids.map(acquisition_id => `&acquisition_ids=${acquisition_id}`);
+    const acquisitionIdsArray = params.acquisition_ids.map((acquisition_id) => `&acquisition_ids=${acquisition_id}`);
     const acquisitionIds = acquisitionIdsArray.join("");
-    const markersArray = params.markers.map(marker => `&markers=${marker}`);
+    const markersArray = params.markers.map((marker) => `&markers=${marker}`);
     const markers = markersArray.join("");
     return ApiManager.api
       .get(
@@ -65,31 +68,35 @@ export const api = {
   async submitTSNE(data: ITSNESubmission) {
     return ApiManager.api
       .post(`analysis/tsne`, {
-        json: data
+        json: data,
       })
       .json();
   },
   async getTSNEData(datasetId: number, name: string, heatmapType: string, heatmap: string) {
-    return ApiManager.api
-      .get(`analysis/tsne?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`)
-      .json<ITSNEData>();
+    let url = `analysis/tsne?dataset_id=${datasetId}&name=${name}`;
+    if (heatmapType && heatmap) {
+      url += `&heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+    }
+    return ApiManager.api.get(url).json<ITSNEData>();
   },
   async submitUMAP(data: IUMAPSubmission) {
     return ApiManager.api
       .post(`analysis/umap`, {
-        json: data
+        json: data,
       })
       .json();
   },
   async getUMAPData(datasetId: number, name: string, heatmapType: string, heatmap: string) {
-    return ApiManager.api
-      .get(`analysis/umap?dataset_id=${datasetId}&name=${name}&heatmap_type=${heatmapType}&heatmap=${heatmap}`)
-      .json<IUMAPData>();
+    let url = `analysis/umap?dataset_id=${datasetId}&name=${name}`;
+    if (heatmapType && heatmap) {
+      url += `&heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+    }
+    return ApiManager.api.get(url).json<IUMAPData>();
   },
   async submitPhenoGraph(data: IPhenoGraphSubmission) {
     return ApiManager.api
       .post(`analysis/phenograph`, {
-        json: data
+        json: data,
       })
       .json();
   },
@@ -99,8 +106,8 @@ export const api = {
   async calculateRegionStats(params: IRegionStatsSubmission) {
     return ApiManager.api
       .post(`analysis/region/stats`, {
-        json: params
+        json: params,
       })
       .json<IRegionChannelData[]>();
-  }
+  },
 };

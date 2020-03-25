@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -87,9 +87,9 @@ async def read_channel_stats(
 @router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
 async def read_channel_image(
     id: int,
-    color: str = None,
-    min: float = None,
-    max: float = None,
+    color: Optional[str] = None,
+    min: Optional[float] = None,
+    max: Optional[float] = None,
     # current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):

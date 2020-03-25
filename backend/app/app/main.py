@@ -14,21 +14,20 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-# if os.environ.get("BACKEND_ENV") == "development":
-#     try:
-#         # VS Code Debugging
-#         # Allow other computers to attach to ptvsd at this IP address and port.
-#         import ptvsd
-#
-#         ptvsd.enable_attach(address=("0.0.0.0", 5678), redirect_output=True)
-#
-#         # PyCharm Debugging
-#         # TODO: Don't forget to modify IP address!!
-#         # import pydevd_pycharm
-#         # pydevd_pycharm.settrace('130.60.106.31', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
-#
-#     except Exception as e:
-#         logger.error(e)
+if os.environ.get("BACKEND_ENV") == "development":
+    try:
+        # VS Code Debugging
+        # Allow other computers to attach to ptvsd at this IP address and port.
+        import ptvsd
+        ptvsd.enable_attach(address=("0.0.0.0", 5678), redirect_output=True)
+
+        # PyCharm Debugging
+        # TODO: Don't forget to modify IP address!!
+        # import pydevd_pycharm
+        # pydevd_pycharm.settrace('192.168.1.129', port=5679, stdoutToServer=True, stderrToServer=True, suspend=False)
+
+    except Exception as e:
+        logger.error(e)
 
 app = FastAPI(
     title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json", docs_url="/docs", redoc_url="/redoc"

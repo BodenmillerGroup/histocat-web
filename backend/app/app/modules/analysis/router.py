@@ -5,12 +5,13 @@ import cv2
 import numpy as np
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import ORJSONResponse
 from imctools.io.ometiffparser import OmetiffParser
 from matplotlib.colors import to_rgba
 from skimage.measure import regionprops
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, UJSONResponse
+from starlette.responses import StreamingResponse
 
 from app import worker
 from app.api.utils.db import get_db
@@ -143,7 +144,7 @@ async def produce_segmentation_contours(
 
     contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
     contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
-    return UJSONResponse(content=contours)
+    return ORJSONResponse(contours)
 
 
 @router.get("/scatterplot", response_model=ScatterPlotModel)
@@ -182,33 +183,33 @@ async def read_scatter_plot_data(
     df = df[df["ImageNumber"].isin(image_numbers)]
 
     content = {
-        "x": {"label": marker_x, "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16,},
-        "y": {"label": marker_y, "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"] * 2 ** 16,},
+        "x": {"label": marker_x, "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16).tolist(),},
+        "y": {"label": marker_y, "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"] * 2 ** 16).tolist(),},
     }
 
     if marker_z:
         content["z"] = {
             "label": marker_z,
-            "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}"] * 2 ** 16,
+            "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}"] * 2 ** 16).tolist(),
         }
 
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
+            heatmap_data = (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16).tolist()
         else:
-            heatmap_data = df[heatmap]
+            heatmap_data = df[heatmap].tolist()
 
         content["heatmap"] = {"label": heatmap, "data": heatmap_data}
     elif len(acquisition_ids) > 1:
         image_map_inv = {v: k for k, v in image_map.items()}
         content["heatmap"] = {
             "label": "Acquisition",
-            "data": [image_map_inv.get(item) for item in df["ImageNumber"]],
+            "data": ([image_map_inv.get(item) for item in df["ImageNumber"].tolist()]),
         }
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
 
 
 @router.get("/boxplot", response_model=List[PlotSeriesModel])
@@ -240,11 +241,11 @@ async def read_box_plot_data(
 
     for marker in markers:
         content.append(
-            {"label": marker, "data": df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"] * 2 ** 16,}
+            {"label": marker, "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"] * 2 ** 16).tolist(),}
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
 
 
 @router.get("/pca", response_model=PCAModel)
@@ -263,7 +264,7 @@ async def read_pca_data(
     """
 
     content = pca.process_pca(db, dataset_id, acquisition_ids, n_components, markers, heatmap_type, heatmap)
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
 
 
 @router.post("/tsne")
@@ -301,7 +302,7 @@ async def read_tsne_data(
     """
 
     content = tsne.get_tsne_result(db, dataset_id, name, heatmap_type, heatmap)
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
 
 
 @router.post("/umap")
@@ -337,7 +338,7 @@ async def read_umap_data(
     """
 
     content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
 
 
 @router.post("/phenograph")
@@ -371,7 +372,7 @@ async def read_phenograph_data(
     """
 
     content = phenograph.get_phenograph_result(db, dataset_id, name)
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
 
 
 @router.post("/region/stats", response_model=List[RegionChannelStatsModel])
@@ -407,4 +408,4 @@ async def calculate_region_stats(
             }
         )
 
-    return UJSONResponse(content=content)
+    return ORJSONResponse(content)
