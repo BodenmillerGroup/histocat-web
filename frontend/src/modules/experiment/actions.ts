@@ -285,6 +285,7 @@ export class ExperimentActions extends Actions<
         if (mask) {
           result["mask"] = {
             apply: maskSettings.apply,
+            colorize: false,
             location: mask.location
           };
         }
