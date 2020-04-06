@@ -9,12 +9,12 @@ from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage.color import label2rgb
 
-from app.modules.analysis.models import SegmentationSettingsModel
-from app.modules.channel.models import (
-    FilterModel,
-    LegendModel,
-    MaskSettingsModel,
-    ScalebarModel,
+from app.modules.analysis.dto import SegmentationSettingsDto
+from app.modules.channel.dto import (
+    FilterDto,
+    LegendDto,
+    MaskSettingsDto,
+    ScalebarDto,
 )
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
@@ -27,7 +27,7 @@ OTSU_SATURATION_ALGORITHM = "Otsu Saturation"
 OTSU_LIGHTNESS_ALGORITHM = "Otsu Lightness"
 
 
-def apply_filter(image: np.ndarray, filter: FilterModel):
+def apply_filter(image: np.ndarray, filter: FilterDto):
     if filter.type == "gaussian":
         sigma = filter.settings.get("sigma")
         sigma = float(sigma) if sigma is not None and sigma != "" else 1.0
@@ -56,7 +56,7 @@ def scale_image(image: np.ndarray, levels: Tuple[float, float]):
     return np.clip(channel_image, 0, 1, out=channel_image)
 
 
-def draw_mask(image: np.ndarray, mask_settings: MaskSettingsModel):
+def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto):
     mask = tifffile.imread(mask_settings.location)
     if mask_settings.colorize:
         return label2rgb(mask, image=image, alpha=0.3, bg_label=0, image_alpha=1, kind="avg")
@@ -81,7 +81,7 @@ def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), a
     return image
 
 
-def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
+def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
     height, width, _ = image.shape
     length = 64
     cv2.line(
@@ -106,7 +106,7 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarModel):
     return image
 
 
-def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendModel):
+def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendDto):
     for i, label in enumerate(legend_labels):
         text = f"{label[0]} - {int(label[2])}" if legend.showIntensity else f"{label[0]}"
         (label_width, label_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1)
@@ -167,7 +167,7 @@ def otsu_lightness(image_rgb):
     return _otsu_hls(image_rgb, channel_name="lightness", flip=False)
 
 
-def get_mask(image_rgb, settings: SegmentationSettingsModel):
+def get_mask(image_rgb, settings: SegmentationSettingsDto):
     if settings.algorithm == OTSU_GRAYSCALE:
         return otsu_grayscale(image_rgb)
     elif settings.algorithm == OTSU_HUE_ALGORITHM:
@@ -179,7 +179,7 @@ def get_mask(image_rgb, settings: SegmentationSettingsModel):
     return image_rgb
 
 
-def apply_morphology(mask, settings: SegmentationSettingsModel):
+def apply_morphology(mask, settings: SegmentationSettingsDto):
     kernel = np.ones((settings.kernel_size, settings.kernel_size), np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=settings.iterations)
     mask = cv2.erode(mask, kernel, iterations=2)

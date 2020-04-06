@@ -1,82 +1,36 @@
-from typing import Dict, List, Optional
+import logging
+from datetime import datetime
 
-from pydantic import BaseModel
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import relationship
 
+from app.db.base import Base
 
-# Properties to receive via API on creation
-class ChannelCreateModel(BaseModel):
-    acquisition_id: int
-    origin_id: int
-    metal: str
-    label: str
-    mass: int
-    max_intensity: Optional[float]
-    min_intensity: Optional[float]
-    meta: Dict[str, Optional[str]]
+logger = logging.getLogger(__name__)
 
 
-# Shared properties
-class ChannelModel(BaseModel):
-    id: int
-    acquisition_id: int
-    origin_id: int
-    metal: str
-    label: str
-    mass: int
-    max_intensity: Optional[float]
-    min_intensity: Optional[float]
-    meta: Dict[str, Optional[str]]
-
-    class Config:
-        orm_mode = True
-
-
-class ChannelStatsModel(BaseModel):
+class Channel(Base):
     """
-    Channel stats model
+    Channel
     """
 
-    hist: List[int]
-    edges: List[float]
+    __tablename__ = "channel"
 
+    id: int = sa.Column("id", sa.Integer(), primary_key=True, index=True)
+    acquisition_id: int = sa.Column(
+        "acquisition_id", sa.Integer(), sa.ForeignKey("acquisition.id", ondelete="CASCADE"), index=True,
+    )
+    origin_id: int = sa.Column("origin_id", sa.Integer(), index=True)
+    metal: str = sa.Column("metal", sa.String(), index=True)
+    label: str = sa.Column("label", sa.String(), index=True)
+    mass: int = sa.Column("mass", sa.Integer())
+    max_intensity: float = sa.Column("max_intensity", sa.Float())
+    min_intensity: float = sa.Column("min_intensity", sa.Float())
+    meta: dict = sa.Column("meta", JSONB())
+    created_at: datetime = sa.Column("created_at", sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-class ChannelSettingsModel(BaseModel):
-    id: int
-    color: Optional[str]
-    customLabel: Optional[str]
-    min: Optional[float]
-    max: Optional[float]
+    acquisition = relationship("Acquisition", back_populates="channels")
 
-
-class FilterModel(BaseModel):
-    apply: bool
-    type: str
-    settings: Optional[dict]
-
-
-class LegendModel(BaseModel):
-    apply: bool
-    fontScale: float
-    showIntensity: bool
-
-
-class ScalebarModel(BaseModel):
-    apply: bool
-    settings: Optional[dict]
-
-
-class MaskSettingsModel(BaseModel):
-    apply: bool
-    colorize: Optional[bool]
-    location: str
-    settings: Optional[dict]
-
-
-class ChannelStackModel(BaseModel):
-    datasetId: Optional[int]
-    filter: FilterModel
-    legend: LegendModel
-    scalebar: ScalebarModel
-    channels: List[ChannelSettingsModel]
-    mask: Optional[MaskSettingsModel]
-    format: Optional[str] = "png"
+    def __repr__(self):
+        return f"<Channel(id={self.id}, metal={self.metal}, label={self.label})>"

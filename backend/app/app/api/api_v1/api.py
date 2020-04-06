@@ -1,24 +1,24 @@
 from fastapi import APIRouter
 
-from app.modules.analysis import router as analysis_router
-from app.modules.auth import router as auth_router
-from app.modules.channel import router as channel_router
-from app.modules.core import router as core_router
-from app.modules.dataset import router as dataset_router
-from app.modules.experiment import router as experiment_router
-from app.modules.panorama import router as panorama_router
-from app.modules.share import router as share_router
-from app.modules.slide import router as slide_router
-from app.modules.user import router as user_router
+from app.modules.analysis import controller as analysis_controller
+from app.modules.auth import controller as auth_controller
+from app.modules.channel import controller as channel_controller
+from app.modules.core import controller as core_controller
+from app.modules.dataset import controller as dataset_controller
+from app.modules.experiment import controller as experiment_controller
+from app.modules.panorama import controller as panorama_controller
+from app.modules.share import controller as share_controller
+from app.modules.slide import controller as slide_controller
+from app.modules.user import controller as user_controller
 
 api_router = APIRouter()
-api_router.include_router(auth_router.router, prefix="/auth", tags=["auth"])
-api_router.include_router(core_router.router, prefix="/utils", tags=["utils"])
-api_router.include_router(experiment_router.router, prefix="/experiments", tags=["experiments"])
-api_router.include_router(slide_router.router, prefix="/slides", tags=["slides"])
-api_router.include_router(panorama_router.router, prefix="/panoramas", tags=["panoramas"])
-api_router.include_router(channel_router.router, prefix="/channels", tags=["channels"])
-api_router.include_router(user_router.router, prefix="/users", tags=["users"])
-api_router.include_router(dataset_router.router, prefix="/datasets", tags=["datasets"])
-api_router.include_router(share_router.router, prefix="/share", tags=["share"])
-api_router.include_router(analysis_router.router, prefix="/analysis", tags=["analysis"])
+api_router.include_router(auth_controller.router, prefix="/auth", tags=["auth"])
+api_router.include_router(core_controller.router, prefix="/utils", tags=["utils"])
+api_router.include_router(experiment_controller.router, prefix="/experiments", tags=["experiments"])
+api_router.include_router(slide_controller.router, prefix="/slides", tags=["slides"])
+api_router.include_router(panorama_controller.router, prefix="/panoramas", tags=["panoramas"])
+api_router.include_router(channel_controller.router, prefix="/channels", tags=["channels"])
+api_router.include_router(user_controller.router, prefix="/users", tags=["users"])
+api_router.include_router(dataset_controller.router, prefix="/datasets", tags=["datasets"])
+api_router.include_router(share_controller.router, prefix="/share", tags=["share"])
+api_router.include_router(analysis_controller.router, prefix="/analysis", tags=["analysis"])

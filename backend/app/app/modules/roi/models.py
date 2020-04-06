@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
-from app.modules.acquisition.models import AcquisitionDatasetModel
+from app.modules.acquisition.dto import AcquisitionDatasetDto
 
 
 # Properties to receive via API on creation
@@ -25,7 +25,7 @@ class ROIModel(BaseModel):
 
 # Full ROI dataset
 class ROIDatasetModel(ROIModel):
-    acquisitions: List[AcquisitionDatasetModel]
+    acquisitions: List[AcquisitionDatasetDto]
 
     class Config:
         orm_mode = True

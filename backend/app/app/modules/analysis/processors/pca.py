@@ -6,7 +6,7 @@ from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 
-from app.modules.dataset import crud as dataset_crud
+from app.modules.dataset import service as dataset_crud
 
 
 def process_pca(

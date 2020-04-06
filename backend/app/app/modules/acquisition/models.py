@@ -1,32 +1,143 @@
-from typing import Dict, List, Optional
+import logging
+from typing import Optional
 
-from pydantic import BaseModel
+import sqlalchemy as sa
+from imctools.io import mcdxmlparser
+from sqlalchemy.dialects.postgresql import JSONB
 
-from app.modules.channel.models import ChannelModel
+from app.db.base import Base
 
-
-# Properties to receive via API on creation
-class AcquisitionCreateModel(BaseModel):
-    roi_id: int
-    origin_id: int
-    location: str
-    meta: Dict[str, Optional[str]]
+logger = logging.getLogger(__name__)
 
 
-# Shared properties
-class AcquisitionModel(BaseModel):
-    id: int
-    roi_id: int
-    origin_id: int
-    meta: Dict[str, Optional[str]]
+class Acquisition(Base):
+    """
+    An *acquisition* contains all files belonging to one microscope image acquisition process.
+    """
 
-    class Config:
-        orm_mode = True
+    __tablename__ = "acquisition"
 
+    id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    roi_id = sa.Column(sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
+    origin_id = sa.Column(sa.Integer(), index=True)
+    meta = sa.Column(JSONB())
+    location = sa.Column(sa.String(4096))
+    created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-# Acquisition dataset with children items
-class AcquisitionDatasetModel(AcquisitionModel):
-    channels: Optional[List[ChannelModel]]
+    roi = sa.orm.relationship("ROI", back_populates="acquisitions")
+    channels = sa.orm.relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
 
-    class Config:
-        orm_mode = True
+    @property
+    def Description(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.DESCRIPTION)
+
+    @property
+    def OrderNumber(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ORDERNUMBER)
+
+    @property
+    def AblationPower(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ABLATIONPOWER)
+
+    @property
+    def AblationDistanceBetweenShotsX(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ABLATIONDISTANCEBETWEENSHOTSX)
+
+    @property
+    def AblationDistanceBetweenShotsY(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ABLATIONDISTANCEBETWEENSHOTSY)
+
+    @property
+    def AblationFrequency(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ABLATIONFREQUENCY)
+
+    @property
+    def SignalType(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SIGNALTYPE)
+
+    @property
+    def DualCountStart(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.DUALCOUNTSTART)
+
+    @property
+    def DataStartOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.DATASTARTOFFSET)
+
+    @property
+    def DataEndOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.DATAENDOFFSET)
+
+    @property
+    def StartTimeStamp(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.STARTTIMESTAMP)
+
+    @property
+    def EndTimeStamp(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ENDTIMESTAMP)
+
+    @property
+    def AfterAblationImageEndOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.AFTERABLATIONIMAGEENDOFFSET)
+
+    @property
+    def AfterAblationImageStartOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.AFTERABLATIONIMAGESTARTOFFSET)
+
+    @property
+    def BeforeAblationImageEndOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.BEFOREABLATIONIMAGEENDOFFSET)
+
+    @property
+    def BeforeAblationImageStartOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.BEFOREABLATIONIMAGESTARTOFFSET)
+
+    @property
+    def ROIStartXPosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ROISTARTXPOSUM)
+
+    @property
+    def ROIStartYPosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ROISTARTYPOSUM)
+
+    @property
+    def ROIEndXPosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ROIENDXPOSUM)
+
+    @property
+    def ROIEndYPosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.ROIENDYPOSUM)
+
+    @property
+    def MovementType(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.MOVEMENTTYPE)
+
+    @property
+    def SegmentDataFormat(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SEGMENTDATAFORMAT)
+
+    @property
+    def ValueBytes(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.VALUEBYTES)
+
+    @property
+    def MaxY(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.MAXY)
+
+    @property
+    def MaxX(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.MAXX)
+
+    @property
+    def PlumeStart(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.PLUMESTART)
+
+    @property
+    def PlumeEnd(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.PLUMEEND)
+
+    @property
+    def Template(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.TEMPLATE)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(id={self.id})>"

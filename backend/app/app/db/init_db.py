@@ -4,18 +4,17 @@
 
 from app.core import config
 from app.db.base import Base  # noqa
-from app.modules.acquisition.db import Acquisition  # noqa
-from app.modules.channel.db import Channel  # noqa
-from app.modules.dataset.db import Dataset  # noqa
-from app.modules.experiment.db import Experiment  # noqa
-from app.modules.panorama.db import Panorama  # noqa
+from app.modules.acquisition.models import Acquisition  # noqa
+from app.modules.channel.models import Channel  # noqa
+from app.modules.dataset.models import Dataset  # noqa
+from app.modules.experiment.models import Experiment  # noqa
+from app.modules.panorama.models import Panorama  # noqa
 from app.modules.roi.db import ROI  # noqa
-from app.modules.roi_point.db import ROIPoint  # noqa
-from app.modules.share.db import Share  # noqa
-from app.modules.slide.db import Slide  # noqa
-from app.modules.user import crud
-from app.modules.user.db import User  # noqa
-from app.modules.user.models import UserCreateModel
+from app.modules.share.models import Share  # noqa
+from app.modules.slide.models import Slide  # noqa
+from app.modules.user import service
+from app.modules.user.models import User  # noqa
+from app.modules.user.dto import UserCreateDto
 
 
 def init_db(db_session):
@@ -24,11 +23,11 @@ def init_db(db_session):
     # the tables un-commenting the next line
     # Base.metadata.create_all(bind=engine)
 
-    user = crud.get_by_email(db_session, email=config.FIRST_SUPERUSER)
+    user = service.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
-        user_in = UserCreateModel(
+        user_in = UserCreateDto(
             email=config.FIRST_SUPERUSER,
             password=config.FIRST_SUPERUSER_PASSWORD,
             is_admin=True,
         )
-        user = crud.create(db_session, params=user_in)
+        user = service.create(db_session, params=user_in)

@@ -14,30 +14,26 @@ from sqlalchemy.orm import Session
 from app.core.notifier import Message
 from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.io.utils import copy_dir
-from app.modules.acquisition import crud as acquisition_crud
-from app.modules.acquisition.db import Acquisition
-from app.modules.acquisition.models import AcquisitionCreateModel
-from app.modules.channel import crud as channel_crud
-from app.modules.channel.models import ChannelCreateModel
-from app.modules.panorama import crud as panorama_crud
-from app.modules.panorama.db import Panorama
-from app.modules.panorama.models import PanoramaCreateModel
+from app.modules.acquisition import service as acquisition_crud
+from app.modules.acquisition.models import Acquisition
+from app.modules.acquisition.dto import AcquisitionCreateDto
+from app.modules.channel import service as channel_crud
+from app.modules.channel.dto import ChannelCreateDto
+from app.modules.panorama import service as panorama_crud
+from app.modules.panorama.models import Panorama
+from app.modules.panorama.dto import PanoramaCreateDto
 from app.modules.roi import crud as roi_crud
 from app.modules.roi.db import ROI
 from app.modules.roi.models import ROICreateModel
-from app.modules.roi_point import crud as roi_point_crud
-from app.modules.roi_point.db import ROIPoint
-from app.modules.roi_point.models import ROIPointCreateModel
-from app.modules.slide import crud as slide_crud
-from app.modules.slide.db import Slide
-from app.modules.slide.models import SlideCreateModel
+from app.modules.slide import service as slide_crud
+from app.modules.slide.models import Slide
+from app.modules.slide.dto import SlideCreateDto
 
 logger = logging.getLogger(__name__)
 
 SLIDE_META_CSV_ENDING = f"_{mcdxmlparser.SLIDE}{mcdxmlparser.META_CSV}"
 PANORAMA_META_CSV_ENDING = f"_{mcdxmlparser.PANORAMA}{mcdxmlparser.META_CSV}"
 ROI_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONROI}{mcdxmlparser.META_CSV}"
-ROI_POINT_META_CSV_ENDING = f"_{mcdxmlparser.ROIPOINT}{mcdxmlparser.META_CSV}"
 ACQUISITION_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITION}{mcdxmlparser.META_CSV}"
 CHANNEL_META_CSV_ENDING = f"_{mcdxmlparser.ACQUISITIONCHANNEL}{mcdxmlparser.META_CSV}"
 
@@ -59,9 +55,6 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
 
     roi_csv_filename = src_folder / f"{basename}{ROI_META_CSV_ENDING}"
     roi_data = _load_meta_csv(roi_csv_filename)
-
-    roi_point_csv_filename = src_folder / f"{basename}{ROI_POINT_META_CSV_ENDING}"
-    roi_point_data = _load_meta_csv(roi_point_csv_filename)
 
     acquisition_csv_filename = src_folder / f"{basename}{ACQUISITION_META_CSV_ENDING}"
     acquisition_data = _load_meta_csv(acquisition_csv_filename)
@@ -103,14 +96,6 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
         roi = _import_roi(db, roi_item, panorama)
         roi_map[str(roi.origin_id)] = roi
 
-    roi_point_map: Dict[str, ROIPoint] = dict()
-    for roi_point_key, roi_point_item in roi_point_data.items():
-        if roi_point_key is None:
-            continue
-        roi = roi_map.get(roi_point_item.get(mcdxmlparser.ACQUISITIONROIID))
-        roi_point = _import_roi_point(db, roi_point_item, roi)
-        roi_point_map[str(roi_point.origin_id)] = roi_point
-
     acquisition_map: Dict[str, Acquisition] = dict()
     for acquisition_key, acquisition_item in acquisition_data.items():
         if acquisition_key is None:
@@ -130,7 +115,7 @@ def import_imcfolder(db: Session, schema_filename: str, experiment_id: int, user
 
 def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_id: int, name: str):
     origin_id = meta.get(mcdxmlparser.ID)
-    params = SlideCreateModel(
+    params = SlideCreateDto(
         experiment_id=experiment_id, name=name, origin_id=origin_id, xml_meta=xml_meta, meta=meta,
     )
     slide = slide_crud.create(db, params=params)
@@ -139,7 +124,7 @@ def _import_slide(db: Session, meta: Dict[str, str], xml_meta: str, experiment_i
 
 def _import_panorama(db: Session, meta: Dict[str, str], slide: Slide):
     origin_id = meta.get(mcdxmlparser.ID)
-    params = PanoramaCreateModel(slide_id=slide.id, origin_id=origin_id, meta=meta)
+    params = PanoramaCreateDto(slide_id=slide.id, origin_id=origin_id, meta=meta)
     panorama = panorama_crud.create(db, params=params)
     return panorama
 
@@ -151,13 +136,6 @@ def _import_roi(db: Session, meta: Dict[str, str], panorama: Panorama):
     return roi
 
 
-def _import_roi_point(db: Session, meta: Dict[str, str], roi: ROI):
-    origin_id = meta.get(mcdxmlparser.ID)
-    params = ROIPointCreateModel(roi_id=roi.id, origin_id=origin_id, meta=meta)
-    roi_point = roi_point_crud.create(db, params=params)
-    return roi_point
-
-
 def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: str):
     origin_id = meta.get(mcdxmlparser.ID)
     origin_location = os.path.join(roi.panorama.slide.location, "origin")
@@ -165,8 +143,8 @@ def _import_acquisition(db: Session, meta: Dict[str, str], roi: ROI, basename: s
         origin_location,
         f"{basename}_s{roi.panorama.slide.origin_id}_p{roi.panorama.origin_id}_r{roi.origin_id}_a{origin_id}_ac.ome.tiff",
     )
-    params = AcquisitionCreateModel(roi_id=roi.id, origin_id=origin_id, location=location, meta=meta)
-    acquisition = acquisition_crud.create(db, params=params)
+    params = AcquisitionCreateDto(roi_id=roi.id, origin_id=origin_id, location=location, meta=meta)
+    acquisition = acquisition_crud.create(db, params)
     return acquisition
 
 
@@ -185,7 +163,7 @@ def _import_channel(db: Session, meta: Dict[str, str], acquisition: Acquisition)
         imc_acquisition: ImcAcquisition = parser.get_imc_acquisition()
         img = imc_acquisition.get_img_by_label(label)
 
-        params = ChannelCreateModel(
+        params = ChannelCreateDto(
             acquisition_id=acquisition.id,
             origin_id=origin_id,
             metal=metal,

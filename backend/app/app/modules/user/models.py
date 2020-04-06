@@ -1,41 +1,22 @@
-from datetime import datetime
-from typing import Optional
+import sqlalchemy as sa
 
-from pydantic import BaseModel, EmailStr, SecretStr
-
-
-# Properties to receive via API on creation
-class UserCreateModel(BaseModel):
-    email: EmailStr
-    name: Optional[str]
-    password: str
-    is_active: Optional[bool] = True
-    is_admin: Optional[bool] = False
+from app.db.base import Base
 
 
-# Properties to receive via API on update
-class UserUpdateModel(BaseModel):
-    email: EmailStr
-    password: Optional[str]
-    is_active: Optional[bool]
-    is_admin: Optional[bool]
-    name: Optional[str]
+class User(Base):
+    __tablename__ = "user"
 
+    id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    name = sa.Column(sa.String(), index=True)
+    email = sa.Column(sa.String(), unique=True, index=True, nullable=False)
+    password = sa.Column(sa.String())
+    is_active = sa.Column(sa.Boolean(), default=True, nullable=False)
+    is_admin = sa.Column(sa.Boolean(), default=False, nullable=False)
+    created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    updated_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
-# Shared properties
-class UserModel(BaseModel):
-    id: int
-    email: EmailStr
-    is_active: bool
-    is_admin: bool
-    name: Optional[str]
-    created_at: datetime
-    updated_at: datetime
+    experiments = sa.orm.relationship("Experiment", back_populates="user", cascade="all, delete, delete-orphan")
+    datasets = sa.orm.relationship("Dataset", back_populates="user", cascade="all, delete, delete-orphan")
 
-    class Config:
-        orm_mode = True
-
-
-# Additional properties stored in DB
-class UserDBModel(UserModel):
-    password: SecretStr
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(id={self.id}, email={self.email}, name={self.name})>"

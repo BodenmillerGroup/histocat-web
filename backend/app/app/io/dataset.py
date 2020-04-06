@@ -11,14 +11,14 @@ from sqlalchemy.orm import Session
 from app.core.notifier import Message
 from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.io.utils import copy_file, locate
-from app.modules.acquisition import crud as acquisition_crud
-from app.modules.dataset import crud as dataset_crud
-from app.modules.dataset.db import Dataset
-from app.modules.dataset.models import DatasetCreateModel, DatasetUpdateModel
-from app.modules.experiment import crud as experiment_crud
-from app.modules.panorama import crud as panorama_crud
+from app.modules.acquisition import service as acquisition_crud
+from app.modules.dataset import service as dataset_crud
+from app.modules.dataset.models import Dataset
+from app.modules.dataset.dto import DatasetCreateDto, DatasetUpdateDto
+from app.modules.experiment import service as experiment_crud
+from app.modules.panorama import service as panorama_crud
 from app.modules.roi import crud as roi_crud
-from app.modules.slide import crud as slide_crud
+from app.modules.slide import service as slide_crud
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ def import_dataset(
         logger.warning(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
         return
 
-    create_params = DatasetCreateModel(experiment_id=experiment_id, user_id=user_id, status="pending")
+    create_params = DatasetCreateDto(experiment_id=experiment_id, user_id=user_id, status="pending")
     dataset = dataset_crud.create(db, params=create_params)
     input = {}
 
@@ -92,7 +92,7 @@ def import_dataset(
     if acquisition_metadata_input:
         input["acquisition_metadata"] = acquisition_metadata_input
 
-    update_params = DatasetUpdateModel(status="ready", input=input)
+    update_params = DatasetUpdateDto(status="ready", input=input)
     dataset = dataset_crud.update(db, item=dataset, params=update_params)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported"))
 

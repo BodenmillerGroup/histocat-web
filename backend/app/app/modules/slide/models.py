@@ -1,37 +1,35 @@
-from datetime import datetime
-from typing import Dict, List, Optional
+import logging
 
-from pydantic import BaseModel
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB
 
-from app.modules.panorama.models import PanoramaDatasetModel
+from app.core.utils import remove_location_upon_delete
+from app.db.base import Base
 
+logger = logging.getLogger(__name__)
 
-class SlideCreateModel(BaseModel):
-    experiment_id: int
-    name: str
-    origin_id: int
-    xml_meta: str
-    meta: Dict[str, Optional[str]]
+#: Format string for slide locations
+SLIDE_LOCATION_FORMAT = "slide_{id}"
 
 
-class SlideModel(BaseModel):
-    id: int
-    experiment_id: int
-    name: str
-    origin_id: int
-    meta: Dict[str, Optional[str]]
-    created_at: datetime
+@remove_location_upon_delete
+class Slide(Base):
+    """Slide."""
 
-    class Config:
-        orm_mode = True
+    __tablename__ = "slide"
+    __table_args__ = (sa.UniqueConstraint("experiment_id", "name", name="uq_experiment_slide_name"),)
 
+    id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    origin_id = sa.Column(sa.Integer(), index=True)
+    experiment_id = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
+    name = sa.Column(sa.String(4096))
+    xml_meta = sa.Column(sa.Text())
+    meta = sa.Column(JSONB())
+    location = sa.Column(sa.String(4096))
+    created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-class SlideDatasetModel(SlideModel):
-    """
-    Full slide dataset
-    """
+    experiment = sa.orm.relationship("Experiment", back_populates="slides")
+    panoramas = sa.orm.relationship("Panorama", back_populates="slide", cascade="all, delete, delete-orphan")
 
-    panoramas: List[PanoramaDatasetModel]
-
-    class Config:
-        orm_mode = True
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

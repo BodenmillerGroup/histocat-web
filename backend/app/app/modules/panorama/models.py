@@ -1,31 +1,88 @@
-from typing import Dict, List, Optional
+import logging
+from typing import Optional
 
-from pydantic import BaseModel
+import sqlalchemy as sa
+from imctools.io import mcdxmlparser
+from sqlalchemy.dialects.postgresql import JSONB
 
-from app.modules.roi.models import ROIDatasetModel
+from app.db.base import Base
 
-
-# Properties to receive via API on creation
-class PanoramaCreateModel(BaseModel):
-    slide_id: int
-    origin_id: int
-    meta: Dict[str, Optional[str]]
+logger = logging.getLogger(__name__)
 
 
-# Shared properties
-class PanoramaModel(BaseModel):
-    id: int
-    slide_id: int
-    origin_id: int
-    meta: Dict[str, Optional[str]]
+class Panorama(Base):
+    """Panorama."""
 
-    class Config:
-        orm_mode = True
+    __tablename__ = "panorama"
 
+    id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    slide_id = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True)
+    origin_id = sa.Column(sa.Integer(), index=True)
+    meta = sa.Column(JSONB())
+    created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-# Full panorama dataset
-class PanoramaDatasetModel(PanoramaModel):
-    rois: List[ROIDatasetModel]
+    slide = sa.orm.relationship("Slide", back_populates="panoramas")
+    rois = sa.orm.relationship("ROI", back_populates="panorama", cascade="all, delete, delete-orphan")
 
-    class Config:
-        orm_mode = True
+    @property
+    def Description(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.DESCRIPTION)
+
+    @property
+    def SlideX1PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEX1POSUM)
+
+    @property
+    def SlideY1PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEY1POSUM)
+
+    @property
+    def SlideX2PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEX2POSUM)
+
+    @property
+    def SlideY2PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEY2POSUM)
+
+    @property
+    def SlideX3PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEX3POSUM)
+
+    @property
+    def SlideY3PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEY3POSUM)
+
+    @property
+    def SlideX4PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEX4POSUM)
+
+    @property
+    def SlideY4PosUm(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.SLIDEY4POSUM)
+
+    @property
+    def ImageEndOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.IMAGEENDOFFSET)
+
+    @property
+    def ImageStartOffset(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.IMAGESTARTOFFSET)
+
+    @property
+    def PixelWidth(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.PIXELWIDTH)
+
+    @property
+    def PixelHeight(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.PIXELHEIGHT)
+
+    @property
+    def ImageFormat(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.IMAGEFORMAT)
+
+    @property
+    def PixelScaleCoef(self) -> Optional[str]:
+        return self.meta.get(mcdxmlparser.PIXELSCALECOEF)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(id={self.id})>"

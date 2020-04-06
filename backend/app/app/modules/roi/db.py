@@ -27,7 +27,6 @@ class ROI(Base):
 
     panorama = relationship("Panorama", back_populates="rois")
     acquisitions = relationship("Acquisition", back_populates="roi", cascade="all, delete, delete-orphan")
-    roi_points = relationship("ROIPoint", back_populates="roi", cascade="all, delete, delete-orphan")
 
     @property
     def ROIType(self) -> Optional[str]:

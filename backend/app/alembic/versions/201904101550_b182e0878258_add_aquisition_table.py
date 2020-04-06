@@ -1,7 +1,7 @@
 """Add aquisition table
 
 Revision ID: b182e0878258
-Revises: c537dg62e8je
+Revises: h741fd42b9kr
 Create Date: 2019-04-10 15:50:16.499555
 
 """
@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 # revision identifiers, used by Alembic.
 revision = 'b182e0878258'
-down_revision = 'c537dg62e8je'
+down_revision = 'h741fd42b9kr'
 branch_labels = None
 depends_on = None
 

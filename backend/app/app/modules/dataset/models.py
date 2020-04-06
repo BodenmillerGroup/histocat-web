@@ -1,42 +1,40 @@
-from datetime import datetime
-from typing import Optional
+import logging
 
-from pydantic import BaseModel
+import sqlalchemy as sa
+from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 
+from app.core.utils import remove_location_upon_delete
+from app.db.base import Base
 
-class DatasetCreateModel(BaseModel):
-    experiment_id: int
-    user_id: int
-    status: str
-    name: Optional[str]
-    description: Optional[str]
-    input: Optional[dict]
-    meta: Optional[dict]
+logger = logging.getLogger(__name__)
 
-
-class DatasetUpdateModel(BaseModel):
-    status: str
-    name: Optional[str]
-    description: Optional[str]
-    input: Optional[dict]
-    output: Optional[dict]
-    meta: Optional[dict]
+#: Format string for dataset locations
+DATASET_LOCATION_FORMAT = "dataset_{id}"
 
 
-class DatasetModel(BaseModel):
-    id: int
-    experiment_id: int
-    user_id: int
-    uid: str
-    status: str
-    name: Optional[str]
-    description: Optional[str]
-    input: Optional[dict]
-    output: Optional[dict]
-    meta: Optional[dict]
-    location: Optional[str]
-    created_at: datetime
-    updated_at: datetime
+@remove_location_upon_delete
+class Dataset(Base):
+    """Dataset."""
 
-    class Config:
-        orm_mode = True
+    __tablename__ = "dataset"
+
+    id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    experiment_id = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
+    user_id = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
+    uid = sa.Column(UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True)
+    status = sa.Column(sa.String(64), default="pending", nullable=False, index=True)
+    name = sa.Column(sa.String())
+    description = sa.Column(sa.String())
+    input = sa.Column(JSONB())
+    output = sa.Column(JSONB())
+    meta = sa.Column(JSONB())
+    location = sa.Column(sa.String(4096))
+    created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
+    updated_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
+
+    experiment = sa.orm.relationship("Experiment", back_populates="datasets")
+    user = sa.orm.relationship("User", back_populates="datasets")
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

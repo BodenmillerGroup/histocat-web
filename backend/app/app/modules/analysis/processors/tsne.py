@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.core.notifier import Message
 from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.core.utils import timeit
-from app.modules.dataset import crud as dataset_crud
+from app.modules.dataset import service as dataset_crud
 
 
 @timeit

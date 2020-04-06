@@ -1,45 +1,47 @@
-from datetime import datetime
-from typing import List, Optional
+import logging
+import os
 
-from pydantic import BaseModel
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 
-from app.modules.slide.models import SlideDatasetModel
+from app.core.utils import autocreate_directory_property, remove_location_upon_delete
+from app.db.base import Base
 
+logger = logging.getLogger(__name__)
 
-# Properties to receive via API on creation
-class ExperimentCreateModel(BaseModel):
-    name: str
-    description: Optional[str]
-    meta: Optional[dict]
-    tags: Optional[List[str]]
-
-
-# Properties to receive via API on update
-class ExperimentUpdateModel(BaseModel):
-    name: str
-    description: Optional[str]
-    meta: Optional[dict]
-    tags: Optional[List[str]]
+#: Format string for experiment locations.
+EXPERIMENT_LOCATION_FORMAT = "experiment_{id}"
 
 
-# Shared properties
-class ExperimentModel(BaseModel):
-    id: int
-    user_id: int
-    name: Optional[str]
-    description: Optional[str]
-    meta: Optional[dict]
-    tags: Optional[List[str]]
-    location: Optional[str]
-    created_at: datetime
+@remove_location_upon_delete
+class Experiment(Base):
+    """An *experiment* is the main organizational unit of `HistoCAT`."""
 
-    class Config:
-        orm_mode = True
+    __tablename__ = "experiment"
 
+    id = sa.Column(sa.Integer(), primary_key=True, index=True)
+    user_id = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
+    name = sa.Column(sa.String(), index=True)
+    description = sa.Column(sa.Text())
+    meta = sa.Column(JSONB())
+    tags = sa.Column(ARRAY(sa.String(64)))
+    is_public = sa.Column(sa.Boolean(), nullable=False, default=False)
+    location = sa.Column(sa.String(4096))
+    created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-# Full experiment dataset
-class ExperimentDatasetModel(ExperimentModel):
-    slides: List[SlideDatasetModel]
+    user = sa.orm.relationship("User", back_populates="experiments")
+    slides = sa.orm.relationship("Slide", back_populates="experiment", cascade="all, delete, delete-orphan")
+    datasets = sa.orm.relationship("Dataset", back_populates="experiment", cascade="all, delete, delete-orphan")
 
-    class Config:
-        orm_mode = True
+    @autocreate_directory_property
+    def slides_location(self) -> str:
+        """Location where slides data are stored."""
+        return os.path.join(self.location, "slides")
+
+    @autocreate_directory_property
+    def datasets_location(self) -> str:
+        """Location where datasets are stored."""
+        return os.path.join(self.location, "datasets")
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

@@ -8,9 +8,9 @@ from starlette.status import HTTP_403_FORBIDDEN
 from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
-from app.modules.auth.models import TokenPayloadModel
-from app.modules.user.crud import get
-from app.modules.user.db import User
+from app.modules.auth.dto import TokenPayloadDto
+from app.modules.user import service
+from app.modules.user.models import User
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -18,10 +18,10 @@ reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 def get_current_user(db: Session = Depends(get_db), token: str = Security(reusable_oauth2)):
     try:
         payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
-        token_data = TokenPayloadModel(**payload)
+        token_data = TokenPayloadDto(**payload)
     except PyJWTError:
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="Could not validate credentials")
-    user = get(db, id=token_data.user_id)
+    user = service.get_by_id(db, token_data.user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
