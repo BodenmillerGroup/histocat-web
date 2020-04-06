@@ -27,6 +27,8 @@ def init_db(db_session):
     user = crud.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
         user_in = UserCreateModel(
-            email=config.FIRST_SUPERUSER, password=config.FIRST_SUPERUSER_PASSWORD, is_superuser=True,
+            email=config.FIRST_SUPERUSER,
+            password=config.FIRST_SUPERUSER_PASSWORD,
+            is_admin=True,
         )
         user = crud.create(db_session, params=user_in)

@@ -9,7 +9,7 @@ from app.api.utils.db import get_db
 from app.core import config
 from app.core.jwt import ALGORITHM
 from app.modules.auth.models import TokenPayloadModel
-from app.modules.user.crud import get, is_active, is_superuser
+from app.modules.user.crud import get
 from app.modules.user.db import User
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
@@ -27,13 +27,13 @@ def get_current_user(db: Session = Depends(get_db), token: str = Security(reusab
     return user
 
 
-def get_current_active_user(current_user: User = Security(get_current_user)):
-    if not is_active(current_user):
+def get_current_active_user(user: User = Security(get_current_user)):
+    if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
+    return user
 
 
-def get_current_active_superuser(current_user: User = Security(get_current_user)):
-    if not is_superuser(current_user):
+def get_current_active_superuser(user: User = Security(get_current_user)):
+    if not user.is_admin:
         raise HTTPException(status_code=400, detail="The user doesn't have enough privileges")
-    return current_user
+    return user

@@ -12,9 +12,9 @@
             <div class="title primary--text text--darken-2" v-else>-----</div>
           </div>
           <v-form v-model="valid" ref="form">
-            <v-text-field label="Full Name" v-model="fullName"></v-text-field>
+            <v-text-field label="Name" v-model="name"></v-text-field>
             <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
-            <v-checkbox label="Is Superuser" v-model="isSuperuser"></v-checkbox>
+            <v-checkbox label="Is Admin" v-model="isAdmin"></v-checkbox>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
             <v-row align="center">
               <v-col class="shrink">
@@ -78,10 +78,10 @@ export default class EditUser extends Vue {
   }
 
   valid = true;
-  fullName: string = "";
+  name: string = "";
   email: string = "";
   isActive: boolean = true;
-  isSuperuser: boolean = false;
+  isAdmin: boolean = false;
   setPassword = false;
   password1: string = "";
   password2: string = "";
@@ -96,10 +96,10 @@ export default class EditUser extends Vue {
     this.password1 = "";
     this.password2 = "";
     if (this.user) {
-      this.fullName = this.user.full_name;
+      this.name = this.user.name;
       this.email = this.user.email;
       this.isActive = this.user.is_active;
-      this.isSuperuser = this.user.is_superuser;
+      this.isAdmin = this.user.is_admin;
     }
     if (this.$refs.form) {
       (this.$refs.form as any).resetValidation();
@@ -113,14 +113,14 @@ export default class EditUser extends Vue {
   async submit() {
     if ((this.$refs.form as any).validate()) {
       const data: IUserProfileUpdate = {};
-      if (this.fullName) {
-        data.full_name = this.fullName;
+      if (this.name) {
+        data.name = this.name;
       }
       if (this.email) {
         data.email = this.email;
       }
       data.is_active = this.isActive;
-      data.is_superuser = this.isSuperuser;
+      data.is_admin = this.isAdmin;
       if (this.setPassword) {
         data.password = this.password1;
       }

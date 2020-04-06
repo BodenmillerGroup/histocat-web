@@ -12,7 +12,7 @@ def test_create_user():
     user_in = UserCreateModel(email=email, password=password)
     user = crud.create(db_session, params=user_in)
     assert user.email == email
-    assert hasattr(user, "hashed_password")
+    assert hasattr(user, "password")
 
 
 def test_authenticate_user():
@@ -37,8 +37,7 @@ def test_check_if_user_is_active():
     password = random_lower_string()
     user_in = UserCreateModel(email=email, password=password)
     user = crud.create(db_session, params=user_in)
-    is_active = crud.is_active(user)
-    assert is_active is True
+    assert user.is_active is True
 
 
 def test_check_if_user_is_active_inactive():
@@ -48,33 +47,29 @@ def test_check_if_user_is_active_inactive():
     print(user_in)
     user = crud.create(db_session, params=user_in)
     print(user)
-    is_active = crud.is_active(user)
-    print(is_active)
-    assert is_active
+    assert user.is_active
 
 
-def test_check_if_user_is_superuser():
+def test_check_if_user_is_admin():
     email = f"{random_lower_string()}@test.com"
     password = random_lower_string()
-    user_in = UserCreateModel(email=email, password=password, is_superuser=True)
+    user_in = UserCreateModel(email=email, password=password, is_admin=True)
     user = crud.create(db_session, params=user_in)
-    is_superuser = crud.is_superuser(user)
-    assert is_superuser is True
+    assert user.is_admin is True
 
 
-def test_check_if_user_is_superuser_normal_user():
+def test_check_if_user_is_normal_user():
     username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     user_in = UserCreateModel(email=username, password=password)
     user = crud.create(db_session, params=user_in)
-    is_superuser = crud.is_superuser(user)
-    assert is_superuser is False
+    assert user.is_admin is False
 
 
 def test_get_user():
     password = random_lower_string()
     username = f"{random_lower_string()}@test.com"
-    user_in = UserCreateModel(email=username, password=password, is_superuser=True)
+    user_in = UserCreateModel(email=username, password=password, is_admin=True)
     user = crud.create(db_session, params=user_in)
     user_2 = crud.get(db_session, id=user.id)
     assert user.email == user_2.email

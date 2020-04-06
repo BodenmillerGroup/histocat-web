@@ -21,17 +21,9 @@ def authenticate(session: Session, *, email: str, password: str) -> Optional[Use
     user = get_by_email(session, email=email)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password):
         return None
     return user
-
-
-def is_active(user: User) -> bool:
-    return user.is_active
-
-
-def is_superuser(user: User) -> bool:
-    return user.is_superuser
 
 
 def get_multi(session: Session, *, skip=0, limit=1000) -> List[Optional[User]]:
@@ -41,9 +33,9 @@ def get_multi(session: Session, *, skip=0, limit=1000) -> List[Optional[User]]:
 def create(session: Session, *, params: UserCreateModel) -> User:
     entity = User(
         email=params.email,
-        hashed_password=get_password_hash(params.password),
-        full_name=params.full_name,
-        is_superuser=params.is_superuser,
+        password=get_password_hash(params.password),
+        name=params.name,
+        is_admin=params.is_admin,
         is_active=params.is_active,
     )
     session.add(entity)
@@ -61,7 +53,7 @@ def update(session: Session, *, item: User, params: UserUpdateModel) -> User:
                 setattr(item, field, value_in)
     if params.password:
         passwordhash = get_password_hash(params.password)
-        item.hashed_password = passwordhash
+        item.password = passwordhash
     session.add(item)
     session.commit()
     session.refresh(item)

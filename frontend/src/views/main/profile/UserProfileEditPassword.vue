@@ -8,8 +8,8 @@
         <template>
           <div class="my-4">
             <div class="subtitle-1 primary--text text--lighten-2">User</div>
-            <div class="title primary--text text--darken-2" v-if="userProfile.full_name">
-              {{ userProfile.full_name }}
+            <div class="title primary--text text--darken-2" v-if="userProfile.name">
+              {{ userProfile.name }}
             </div>
             <div class="title primary--text text--darken-2" v-else>{{ userProfile.email }}</div>
           </div>

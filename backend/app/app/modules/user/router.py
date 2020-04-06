@@ -55,7 +55,7 @@ def update_me(
     *,
     db: Session = Depends(get_db),
     password: str = Body(None),
-    full_name: str = Body(None),
+    name: str = Body(None),
     email: EmailStr = Body(None),
     current_user: User = Depends(get_current_active_user),
 ):
@@ -66,8 +66,8 @@ def update_me(
     params = UserUpdateModel(**data)
     if password is not None:
         params.password = password
-    if full_name is not None:
-        params.full_name = full_name
+    if name is not None:
+        params.name = name
     if email is not None:
         params.email = email
     item = crud.update(db, item=current_user, params=params)
@@ -88,7 +88,7 @@ def create_open(
     db: Session = Depends(get_db),
     password: str = Body(...),
     email: EmailStr = Body(...),
-    full_name: str = Body(None),
+    name: str = Body(None),
 ):
     """
     Create new user without the need to be logged in
@@ -102,7 +102,7 @@ def create_open(
         raise HTTPException(
             status_code=400, detail="The user with this username already exists in the system",
         )
-    user_in = UserCreateModel(password=password, email=email, full_name=full_name)
+    user_in = UserCreateModel(password=password, email=email, name=name)
     item = crud.create(db, params=user_in)
     return item
 
@@ -117,7 +117,7 @@ def read_by_id(
     user = crud.get(db, id=id)
     if user == current_user:
         return user
-    if not crud.is_superuser(current_user):
+    if not current_user.is_admin:
         raise HTTPException(status_code=400, detail="The user doesn't have enough privileges")
     return user
 

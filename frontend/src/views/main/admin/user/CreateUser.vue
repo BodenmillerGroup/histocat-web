@@ -7,9 +7,9 @@
       <v-card-text>
         <template>
           <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field label="Full Name" v-model="fullName"></v-text-field>
+            <v-text-field label="Name" v-model="name"></v-text-field>
             <v-text-field label="E-mail" type="email" v-model="email" :rules="emailRules"></v-text-field>
-            <v-checkbox label="Is Superuser" v-model="isSuperuser"></v-checkbox>
+            <v-checkbox label="Is Admin" v-model="isAdmin"></v-checkbox>
             <v-checkbox label="Is Active" v-model="isActive"></v-checkbox>
             <v-row align="center">
               <v-col>
@@ -62,10 +62,10 @@ export default class CreateUser extends Vue {
   }
 
   valid = false;
-  fullName: string = "";
+  name: string = "";
   email: string = "";
   isActive: boolean = true;
-  isSuperuser: boolean = false;
+  isAdmin: boolean = false;
   password1: string = "";
   password2: string = "";
 
@@ -76,10 +76,10 @@ export default class CreateUser extends Vue {
   reset() {
     this.password1 = "";
     this.password2 = "";
-    this.fullName = "";
+    this.name = "";
     this.email = "";
     this.isActive = true;
-    this.isSuperuser = false;
+    this.isAdmin = false;
     (this.$refs.form as any).resetValidation();
   }
 
@@ -92,14 +92,14 @@ export default class CreateUser extends Vue {
       const updatedProfile: IUserProfileCreate = {
         email: this.email
       };
-      if (this.fullName) {
-        updatedProfile.full_name = this.fullName;
+      if (this.name) {
+        updatedProfile.name = this.name;
       }
       if (this.email) {
         updatedProfile.email = this.email;
       }
       updatedProfile.is_active = this.isActive;
-      updatedProfile.is_superuser = this.isSuperuser;
+      updatedProfile.is_admin = this.isAdmin;
       updatedProfile.password = this.password1;
       await this.userContext.actions.createUser(updatedProfile);
       this.$router.push("/main/admin/users");

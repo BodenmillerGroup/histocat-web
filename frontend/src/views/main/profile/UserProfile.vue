@@ -6,9 +6,9 @@
       </v-card-title>
       <v-card-text>
         <div class="my-6">
-          <div class="subtitle-1 primary--text text--lighten-3">Full Name</div>
-          <div class="title primary--text text--darken-2" v-if="userProfile && userProfile.full_name">
-            {{ userProfile.full_name }}
+          <div class="subtitle-1 primary--text text--lighten-3">Name</div>
+          <div class="title primary--text text--darken-2" v-if="userProfile && userProfile.name">
+            {{ userProfile.name }}
           </div>
           <div class="title primary--text text--darken-2" v-else>-----</div>
         </div>

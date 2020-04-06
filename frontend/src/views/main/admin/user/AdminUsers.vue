@@ -12,8 +12,8 @@
         <v-icon v-if="item.is_active">mdi-check</v-icon>
       </template>
 
-      <template v-slot:item.is_superuser="{ item }">
-        <v-icon v-if="item.is_superuser">mdi-check</v-icon>
+      <template v-slot:item.is_admin="{ item }">
+        <v-icon v-if="item.is_admin">mdi-check</v-icon>
       </template>
 
       <template v-slot:item.action="{ item }">
@@ -46,9 +46,9 @@ export default class AdminUsers extends Vue {
       align: "left"
     },
     {
-      text: "Full Name",
+      text: "Name",
       sortable: true,
-      value: "full_name",
+      value: "name",
       align: "left"
     },
     {
@@ -58,9 +58,9 @@ export default class AdminUsers extends Vue {
       align: "left"
     },
     {
-      text: "Is Superuser",
+      text: "Is Admin",
       sortable: true,
-      value: "is_superuser",
+      value: "is_admin",
       align: "left"
     },
     {

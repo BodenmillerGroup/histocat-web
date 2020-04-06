@@ -1,7 +1,7 @@
 """Add experiment table
 
 Revision ID: 7bed832a38b0
-Revises: b9935fae5e7c
+Revises: fed22b8a9121
 Create Date: 2019-04-10 15:30:11.616899
 
 """
@@ -12,7 +12,7 @@ from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 # revision identifiers, used by Alembic.
 
 revision = '7bed832a38b0'
-down_revision = 'b9935fae5e7c'
+down_revision = 'fed22b8a9121'
 branch_labels = None
 depends_on = None
 

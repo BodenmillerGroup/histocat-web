@@ -25,7 +25,7 @@ def get_by_name(session: Session, *, name: str) -> Optional[Experiment]:
 
 
 def get_multi(session: Session, *, user: User, skip: int = 0, limit: int = 1000) -> List[Optional[Experiment]]:
-    if user.is_superuser:
+    if user.is_admin:
         items = session.query(Experiment).offset(skip).limit(limit).all()
     else:
         shares = get_by_user_id(session, user_id=user.id)

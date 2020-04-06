@@ -46,9 +46,9 @@ export default class ShareExperiment extends Vue {
       align: "left"
     },
     {
-      text: "Full Name",
+      text: "Name",
       sortable: true,
-      value: "full_name",
+      value: "name",
       align: "left"
     }
   ];
