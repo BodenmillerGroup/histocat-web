@@ -11,11 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_by_id(session: Session, id: int) -> Optional[Acquisition]:
-    return session.query(Acquisition).filter(Acquisition.id == id).one_or_none()
+    return session.query(Acquisition).filter(Acquisition.id == id).first()
 
 
 def get_by_origin_id(session: Session, *, roi_id: int, origin_id: int) -> Optional[Acquisition]:
-    return session.query(Acquisition).filter(Acquisition.roi_id == roi_id, Acquisition.origin_id == origin_id).one_or_none()
+    return session.query(Acquisition).filter(Acquisition.roi_id == roi_id, Acquisition.origin_id == origin_id).first()
 
 
 def create(session: Session, params: AcquisitionCreateDto) -> Acquisition:

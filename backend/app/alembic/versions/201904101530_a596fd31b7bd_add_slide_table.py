@@ -24,8 +24,9 @@ def upgrade():
         sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(4096), index=True),
         sa.Column('origin_id', sa.Integer(), index=True),
-        sa.Column('xml_meta', sa.Text()),
         sa.Column('meta', JSONB()),
+        sa.Column('session_meta', JSONB()),
+        sa.Column('xml_meta', sa.Text()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )

@@ -6,7 +6,7 @@ from app.modules.channel.dto import ChannelDto
 
 
 class AcquisitionCreateDto(BaseModel):
-    roi_id: int
+    slide_id: int
     origin_id: int
     location: str
     meta: Dict[str, Optional[str]]
@@ -14,7 +14,7 @@ class AcquisitionCreateDto(BaseModel):
 
 class AcquisitionDto(BaseModel):
     id: int
-    roi_id: int
+    slide_id: int
     origin_id: int
     meta: Dict[str, Optional[str]]
 

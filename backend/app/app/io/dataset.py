@@ -11,14 +11,13 @@ from sqlalchemy.orm import Session
 from app.core.notifier import Message
 from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.io.utils import copy_file, locate
-from app.modules.acquisition import service as acquisition_crud
-from app.modules.dataset import service as dataset_crud
+from app.modules.acquisition import service as acquisition_service
+from app.modules.dataset import service as dataset_service
 from app.modules.dataset.models import Dataset
 from app.modules.dataset.dto import DatasetCreateDto, DatasetUpdateDto
-from app.modules.experiment import service as experiment_crud
-from app.modules.panorama import service as panorama_crud
-from app.modules.roi import crud as roi_crud
-from app.modules.slide import service as slide_crud
+from app.modules.experiment import service as experiment_service
+from app.modules.panorama import service as panorama_service
+from app.modules.slide import service as slide_service
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +41,13 @@ def import_dataset(
     Import dataset from the folder compatible with 'cpout' IMC pipeline folders
     """
 
-    experiment = experiment_crud.get(db, id=experiment_id)
+    experiment = experiment_service.get(db, id=experiment_id)
     if not experiment:
         logger.warning(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
         return
 
     create_params = DatasetCreateDto(experiment_id=experiment_id, user_id=user_id, status="pending")
-    dataset = dataset_crud.create(db, params=create_params)
+    dataset = dataset_service.create(db, params=create_params)
     input = {}
 
     src_folder = Path(cell_csv_filename).parent
@@ -93,7 +92,7 @@ def import_dataset(
         input["acquisition_metadata"] = acquisition_metadata_input
 
     update_params = DatasetUpdateDto(status="ready", input=input)
-    dataset = dataset_crud.update(db, item=dataset, params=update_params)
+    dataset = dataset_service.update(db, item=dataset, params=update_params)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported"))
 
 
@@ -164,12 +163,12 @@ def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, da
     )
     name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(filename)[0]
 
-    slide = slide_crud.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
+    slide = slide_service.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
     if slide is None:
         return None
-    panorama = panorama_crud.get_by_origin_id(db, slide_id=slide.id, origin_id=panorama_origin_id)
+    panorama = panorama_service.get_by_origin_id(db, slide_id=slide.id, origin_id=panorama_origin_id)
     roi = roi_crud.get_by_origin_id(db, panorama_id=panorama.id, origin_id=roi_origin_id)
-    acquisition = acquisition_crud.get_by_origin_id(db, roi_id=roi.id, origin_id=acquisition_origin_id)
+    acquisition = acquisition_service.get_by_origin_id(db, roi_id=roi.id, origin_id=acquisition_origin_id)
 
     location = copy_file(uri, dataset.location)
 

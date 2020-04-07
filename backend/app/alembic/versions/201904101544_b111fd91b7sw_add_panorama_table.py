@@ -24,6 +24,7 @@ def upgrade():
         sa.Column('slide_id', sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True),
         sa.Column('origin_id', sa.Integer(), index=True),
         sa.Column('meta', JSONB()),
+        sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 

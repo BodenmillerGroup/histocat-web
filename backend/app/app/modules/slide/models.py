@@ -23,13 +23,15 @@ class Slide(Base):
     origin_id = sa.Column(sa.Integer(), index=True)
     experiment_id = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
     name = sa.Column(sa.String(4096))
-    xml_meta = sa.Column(sa.Text())
     meta = sa.Column(JSONB())
+    session_meta = sa.Column(JSONB())
+    xml_meta = sa.Column(sa.Text())
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     experiment = sa.orm.relationship("Experiment", back_populates="slides")
     panoramas = sa.orm.relationship("Panorama", back_populates="slide", cascade="all, delete, delete-orphan")
+    acquisitions = sa.orm.relationship("Acquisition", back_populates="slide", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

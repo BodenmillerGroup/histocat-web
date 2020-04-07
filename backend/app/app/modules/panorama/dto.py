@@ -1,8 +1,6 @@
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from pydantic import BaseModel
-
-from app.modules.roi.models import ROIDatasetModel
 
 
 class PanoramaCreateDto(BaseModel):
@@ -23,7 +21,5 @@ class PanoramaDto(BaseModel):
 
 class PanoramaDatasetDto(PanoramaDto):
     """Full panorama dataset."""
-    rois: List[ROIDatasetModel]
-
     class Config:
         orm_mode = True

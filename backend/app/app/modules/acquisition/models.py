@@ -1,8 +1,6 @@
 import logging
-from typing import Optional
 
 import sqlalchemy as sa
-from imctools.io import mcdxmlparser
 from sqlalchemy.dialects.postgresql import JSONB
 
 from app.db.base import Base
@@ -18,126 +16,14 @@ class Acquisition(Base):
     __tablename__ = "acquisition"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    roi_id = sa.Column(sa.Integer(), sa.ForeignKey("roi.id", ondelete="CASCADE"), index=True)
+    slide_id = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True)
     origin_id = sa.Column(sa.Integer(), index=True)
+    channels = sa.Column(JSONB())
     meta = sa.Column(JSONB())
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    roi = sa.orm.relationship("ROI", back_populates="acquisitions")
-    channels = sa.orm.relationship("Channel", back_populates="acquisition", cascade="all, delete, delete-orphan")
-
-    @property
-    def Description(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.DESCRIPTION)
-
-    @property
-    def OrderNumber(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ORDERNUMBER)
-
-    @property
-    def AblationPower(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ABLATIONPOWER)
-
-    @property
-    def AblationDistanceBetweenShotsX(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ABLATIONDISTANCEBETWEENSHOTSX)
-
-    @property
-    def AblationDistanceBetweenShotsY(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ABLATIONDISTANCEBETWEENSHOTSY)
-
-    @property
-    def AblationFrequency(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ABLATIONFREQUENCY)
-
-    @property
-    def SignalType(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.SIGNALTYPE)
-
-    @property
-    def DualCountStart(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.DUALCOUNTSTART)
-
-    @property
-    def DataStartOffset(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.DATASTARTOFFSET)
-
-    @property
-    def DataEndOffset(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.DATAENDOFFSET)
-
-    @property
-    def StartTimeStamp(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.STARTTIMESTAMP)
-
-    @property
-    def EndTimeStamp(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ENDTIMESTAMP)
-
-    @property
-    def AfterAblationImageEndOffset(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.AFTERABLATIONIMAGEENDOFFSET)
-
-    @property
-    def AfterAblationImageStartOffset(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.AFTERABLATIONIMAGESTARTOFFSET)
-
-    @property
-    def BeforeAblationImageEndOffset(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.BEFOREABLATIONIMAGEENDOFFSET)
-
-    @property
-    def BeforeAblationImageStartOffset(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.BEFOREABLATIONIMAGESTARTOFFSET)
-
-    @property
-    def ROIStartXPosUm(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ROISTARTXPOSUM)
-
-    @property
-    def ROIStartYPosUm(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ROISTARTYPOSUM)
-
-    @property
-    def ROIEndXPosUm(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ROIENDXPOSUM)
-
-    @property
-    def ROIEndYPosUm(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.ROIENDYPOSUM)
-
-    @property
-    def MovementType(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.MOVEMENTTYPE)
-
-    @property
-    def SegmentDataFormat(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.SEGMENTDATAFORMAT)
-
-    @property
-    def ValueBytes(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.VALUEBYTES)
-
-    @property
-    def MaxY(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.MAXY)
-
-    @property
-    def MaxX(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.MAXX)
-
-    @property
-    def PlumeStart(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.PLUMESTART)
-
-    @property
-    def PlumeEnd(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.PLUMEEND)
-
-    @property
-    def Template(self) -> Optional[str]:
-        return self.meta.get(mcdxmlparser.TEMPLATE)
+    slide = sa.orm.relationship("Slide", back_populates="acquisitions")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id})>"

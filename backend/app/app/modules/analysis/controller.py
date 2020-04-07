@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import ORJSONResponse
-from imctools.io.ometiffparser import OmetiffParser
+from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from matplotlib.colors import to_rgba
 from skimage.measure import regionprops
 from sqlalchemy.orm import Session
@@ -27,7 +27,6 @@ from app.core.image import (
 from app.core.utils import stream_bytes
 from app.modules.acquisition import service as acquisition_crud
 from app.modules.analysis.processors import pca, phenograph, tsne, umap
-from app.modules.channel import service as channel_crud
 from app.modules.channel.dto import ChannelSettingsDto
 from app.modules.dataset import service as dataset_crud
 from app.modules.user.models import User
@@ -59,32 +58,32 @@ def get_additive_image(db: Session, channels: List[ChannelSettingsDto]):
     additive_image: Optional[np.ndarray] = None
     legend_labels: List[Tuple[str, str, float]] = list()
 
-    item = channels[0]
-    first = channel_crud.get(db, id=item.id)
-    parser = OmetiffParser(first.acquisition.location)
-    acq = parser.get_imc_acquisition()
-
-    for channel in channels:
-        item = channel_crud.get(db, id=channel.id)
-
-        data = acq.get_img_by_metal(item.metal)
-
-        levels = (
-            (channel.min, channel.max)
-            if channel.min is not None and channel.max is not None
-            else (item.min_intensity, item.max_intensity)
-        )
-        data = scale_image(data, levels)
-
-        color = channel.color if channel.color else "#ffffff"
-        image = colorize(data, color)
-
-        label = channel.customLabel if channel.customLabel else item.label
-        legend_labels.append((label, color, levels[1]))
-
-        if additive_image is None:
-            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
-        additive_image += image
+    # item = channels[0]
+    # first = channel_crud.get(db, id=item.id)
+    # parser = OmetiffParser(first.acquisition.location)
+    # acq = parser.get_imc_acquisition()
+    #
+    # for channel in channels:
+    #     item = channel_crud.get(db, id=channel.id)
+    #
+    #     data = acq.get_img_by_metal(item.metal)
+    #
+    #     levels = (
+    #         (channel.min, channel.max)
+    #         if channel.min is not None and channel.max is not None
+    #         else (item.min_intensity, item.max_intensity)
+    #     )
+    #     data = scale_image(data, levels)
+    #
+    #     color = channel.color if channel.color else "#ffffff"
+    #     image = colorize(data, color)
+    #
+    #     label = channel.customLabel if channel.customLabel else item.label
+    #     legend_labels.append((label, color, levels[1]))
+    #
+    #     if additive_image is None:
+    #         additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
+    #     additive_image += image
     return additive_image, legend_labels
 
 
@@ -387,13 +386,13 @@ async def calculate_region_stats(
     """
 
     acquisition = acquisition_crud.get_by_id(db, params.acquisition_id)
-    parser = OmetiffParser(acquisition.location)
-    acq = parser.get_imc_acquisition()
+    parser = OmeTiffParser(acquisition.location)
+    acq = parser.get_acquisition_data()
     mask = None
     contour = np.array(params.region_polygon).astype(int)
     content = []
-    for metal in acq.channel_metals:
-        channel_img = acq.get_img_by_metal(metal)
+    for metal in acq.channel_names:
+        channel_img = acq.get_image_by_name(metal)
         if mask is None:
             mask = np.zeros(channel_img.shape, np.uint8)
             mask = cv2.drawContours(mask, [contour], 0, 255, -1)

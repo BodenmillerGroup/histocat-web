@@ -451,16 +451,21 @@ itk = ["itk"]
 
 [[package]]
 category = "main"
-description = "Tools to handle IMC data"
+description = ""
 name = "imctools"
 optional = false
-python-versions = "*"
-version = "1.0.7"
+python-versions = ">=3.7"
+version = "2.0.0"
 
 [package.dependencies]
-pandas = "*"
-scikit-image = "*"
-tifffile = ">=2019.7.26"
+pandas = ">=1.0.3"
+xmltodict = ">=0.12.0"
+xtiff = ">=0.6.0"
+
+[package.source]
+reference = "ba34436a54ff43f5e5cd73e107c41362a7742d66"
+type = "git"
+url = "https://github.com/BodenmillerGroup/imctools.git"
 
 [[package]]
 category = "dev"
@@ -785,6 +790,7 @@ setuptools = ">=18.0.1"
 reference = "7f4bc18699adb513a983ba183fdc7c989c219b85"
 type = "git"
 url = "https://github.com/jacoblevine/phenograph.git"
+
 [[package]]
 category = "main"
 description = "Pika Python AMQP Client Library"
@@ -1402,12 +1408,32 @@ optional = false
 python-versions = "*"
 version = "1.11.2"
 
+[[package]]
+category = "main"
+description = "Makes working with XML feel like you are working with JSON"
+name = "xmltodict"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.12.0"
+
+[[package]]
+category = "main"
+description = "A tiny Python 3 library for writing multi-channel TIFF stacks"
+name = "xtiff"
+optional = false
+python-versions = ">=3.7"
+version = "0.6.0"
+
+[package.dependencies]
+numpy = "*"
+tifffile = "*"
+
 [extras]
 backend = ["alembic", "python-multipart", "gunicorn", "uvicorn"]
 worker = []
 
 [metadata]
-content-hash = "cc58c4c1e50f85009ab2380a3b6d7bbc60fc33221d718626eacc31898aa9fdc5"
+content-hash = "0571a48463436a04b8796cd70dd49e4f9676c8c79404063334669527161fa5a5"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1711,10 +1737,7 @@ imageio = [
     {file = "imageio-2.8.0-py3-none-any.whl", hash = "sha256:1e4ab29b3775bb093c7a35854a0412857145450183344678829b30e72263b001"},
     {file = "imageio-2.8.0.tar.gz", hash = "sha256:fb5fd6d3d17126bbaac9af29fe340e2c97a196eb9416d4f28c0e543744a152cf"},
 ]
-imctools = [
-    {file = "imctools-1.0.7-py2.py3-none-any.whl", hash = "sha256:5cff1eccde891ae38b3421b02a6950e87560eaa01f45b6ce41dd825e9b21abb0"},
-    {file = "imctools-1.0.7.tar.gz", hash = "sha256:88e780dfaebe70b63f001a229126d6429c736aea8fcc3914e8f820aeefb0060e"},
-]
+imctools = []
 isort = [
     {file = "isort-4.3.21-py2.py3-none-any.whl", hash = "sha256:6e811fcb295968434526407adb8796944f1988c5b65e8139058f2014cbe100fd"},
     {file = "isort-4.3.21.tar.gz", hash = "sha256:54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1"},
@@ -2580,4 +2603,11 @@ websockets = [
 ]
 wrapt = [
     {file = "wrapt-1.11.2.tar.gz", hash = "sha256:565a021fd19419476b9362b05eeaa094178de64f8361e44468f9e9d7843901e1"},
+]
+xmltodict = [
+    {file = "xmltodict-0.12.0-py2.py3-none-any.whl", hash = "sha256:8bbcb45cc982f48b2ca8fe7e7827c5d792f217ecf1792626f808bf41c3b86051"},
+    {file = "xmltodict-0.12.0.tar.gz", hash = "sha256:50d8c638ed7ecb88d90561beedbf720c9b4e851a9fa6c47ebd64e99d166d8a21"},
+]
+xtiff = [
+    {file = "xtiff-0.6.0-py3-none-any.whl", hash = "sha256:605b5cf540523d26dec6fa4fff090818619eb9563d65c266aff9af85b41bd3d5"},
 ]

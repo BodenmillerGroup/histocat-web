@@ -10,7 +10,7 @@ from .dto import UserCreateDto, UserUpdateDto
 
 
 def get_by_id(session: Session, id: int) -> Optional[User]:
-    return session.query(User).filter(User.id == id).one_or_none()
+    return session.query(User).filter(User.id == id).first()
 
 
 def get_by_email(session: Session, *, email: str) -> Optional[User]:

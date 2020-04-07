@@ -7,7 +7,7 @@ import dramatiq
 import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
-from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING, ZIP_FILENDING
+from imctools.io.utils import MCD_FILENDING, ZIP_FILENDING
 
 import app.db.init_db  # noqa
 from app.core import config

@@ -2,7 +2,7 @@ import logging
 import zipfile
 from pathlib import Path
 
-from imctools.scripts.convertfolder2imcfolder import MCD_FILENDING
+from imctools.io.utils import MCD_FILENDING
 from sqlalchemy.orm import Session
 
 from app.core.utils import timeit

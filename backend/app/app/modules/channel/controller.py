@@ -1,11 +1,11 @@
 import logging
-from typing import List, Optional
+from typing import Optional
 
 import cv2
 import numpy as np
 import ujson
 from fastapi import APIRouter, Depends
-from imctools.io.ometiffparser import OmetiffParser
+from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse, UJSONResponse
@@ -25,36 +25,10 @@ from app.core.utils import stream_bytes
 from app.modules.analysis.controller import get_additive_image
 from app.modules.user.models import User
 
-from . import service
 from .dto import ChannelDto, ChannelStackDto, ChannelStatsDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-@router.get("/", response_model=List[ChannelDto])
-def read_channels(
-    db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 1000,
-    current_user: User = Depends(get_current_active_user),
-):
-    """
-    Retrieve channels
-    """
-    items = service.get_multi(db, skip=skip, limit=limit)
-    return items
-
-
-@router.get("/{id}", response_model=ChannelDto)
-def read_channel_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
-):
-    """
-    Get a specific channel by id
-    """
-    item = service.get(db, id=id)
-    return item
 
 
 @router.get("/{id}/stats", response_model=ChannelStatsDto)
@@ -69,18 +43,18 @@ async def read_channel_stats(
     Get channel stats by id
     """
     content = await redis_manager.cache.get(request.url.path)
-    if content:
-        return UJSONResponse(content=ujson.loads(content))
-
-    item = service.get(db, id=id)
-
-    parser = OmetiffParser(item.acquisition.location)
-    acq = parser.get_imc_acquisition()
-    data = acq.get_img_by_metal(item.metal)
-
-    hist, edges = np.histogram(data.ravel(), bins=bins)
-    content = {"hist": hist.tolist(), "edges": edges.tolist()}
-    await redis_manager.cache.set(request.url.path, ujson.dumps(content))
+    # if content:
+    #     return UJSONResponse(content=ujson.loads(content))
+    #
+    # item = service.get(db, id=id)
+    #
+    # parser = OmeTiffParser(item.acquisition.location)
+    # acq = parser.get_acquisition_data()
+    # data = acq.get_image_by_name(item.metal)
+    #
+    # hist, edges = np.histogram(data.ravel(), bins=bins)
+    # content = {"hist": hist.tolist(), "edges": edges.tolist()}
+    # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
     return UJSONResponse(content=content)
 
 
@@ -96,26 +70,27 @@ async def read_channel_image(
     """
     Get channel image by id
     """
-    item = service.get(db, id=id)
-
-    parser = OmetiffParser(item.acquisition.location)
-    acq = parser.get_imc_acquisition()
-    data = acq.get_img_by_metal(item.metal)
-
-    # lmin = float(data.min())
-    # lmax = float(data.max())
-    # data = np.floor((data - lmin) / (lmax - lmin) * 255.)
-
-    levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
-    data = scale_image(data, levels)
-
-    color = f"#{color}" if color else "#ffffff"
-    image = colorize(data, color)
-
-    image = cv2.cvtColor(image.astype(data.dtype), cv2.COLOR_BGR2RGB)
-
-    status, result = cv2.imencode(".png", image)
-    return StreamingResponse(stream_bytes(result), media_type="image/png")
+    return None
+    # item = service.get(db, id=id)
+    #
+    # parser = OmeTiffParser(item.acquisition.location)
+    # acq = parser.get_acquisition_data()
+    # data = acq.get_image_by_name(item.metal)
+    #
+    # # lmin = float(data.min())
+    # # lmax = float(data.max())
+    # # data = np.floor((data - lmin) / (lmax - lmin) * 255.)
+    #
+    # levels = (min, max) if min is not None and max is not None else (item.min_intensity, item.max_intensity)
+    # data = scale_image(data, levels)
+    #
+    # color = f"#{color}" if color else "#ffffff"
+    # image = colorize(data, color)
+    #
+    # image = cv2.cvtColor(image.astype(data.dtype), cv2.COLOR_BGR2RGB)
+    #
+    # status, result = cv2.imencode(".png", image)
+    # return StreamingResponse(stream_bytes(result), media_type="image/png")
 
 
 @router.post("/stack")

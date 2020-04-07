@@ -5,11 +5,9 @@
 from app.core import config
 from app.db.base import Base  # noqa
 from app.modules.acquisition.models import Acquisition  # noqa
-from app.modules.channel.models import Channel  # noqa
 from app.modules.dataset.models import Dataset  # noqa
 from app.modules.experiment.models import Experiment  # noqa
 from app.modules.panorama.models import Panorama  # noqa
-from app.modules.roi.db import ROI  # noqa
 from app.modules.share.models import Share  # noqa
 from app.modules.slide.models import Slide  # noqa
 from app.modules.user import service

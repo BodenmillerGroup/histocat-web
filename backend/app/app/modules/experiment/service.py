@@ -80,4 +80,5 @@ def remove(session: Session, *, id: int):
 
 
 def get_data(session: Session, *, id: int) -> Optional[Experiment]:
-    return session.query(Experiment).filter(Experiment.id == id).first()
+    result = session.query(Experiment).filter(Experiment.id == id).first()
+    return result
