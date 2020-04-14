@@ -45,7 +45,7 @@ export default class FilterSettingsView extends Vue {
   set apply(value: boolean) {
     this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
-      apply: value
+      apply: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }
@@ -57,7 +57,7 @@ export default class FilterSettingsView extends Vue {
   set filterType(value: string) {
     this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
-      type: value
+      type: value,
     });
     if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();
@@ -74,8 +74,8 @@ export default class FilterSettingsView extends Vue {
     this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
       settings: {
-        sigma: value
-      }
+        sigma: value,
+      },
     });
     if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();
@@ -92,8 +92,8 @@ export default class FilterSettingsView extends Vue {
     this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
       settings: {
-        kernel_size: value
-      }
+        kernel_size: value,
+      },
     });
     if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();

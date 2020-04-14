@@ -16,7 +16,7 @@ from app.core.utils import (
 )
 from app.modules.core.dto import MsgDto
 from app.modules.user import service
-from app.modules.user.models import User as DBUser
+from app.modules.user.models import UserModel as DBUser
 from app.modules.user.dto import UserDto
 
 from .dto import TokenDto

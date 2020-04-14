@@ -22,16 +22,18 @@ def upgrade():
         'slide',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
-        sa.Column('name', sa.String(4096), index=True),
         sa.Column('origin_id', sa.Integer(), index=True),
+        sa.Column('name', sa.String(4096), index=True),
+        sa.Column('width_um', sa.Integer()),
+        sa.Column('height_um', sa.Integer()),
+        sa.Column('has_slide_image', sa.Boolean(), nullable=False, default=False),
         sa.Column('meta', JSONB()),
         sa.Column('session_meta', JSONB()),
-        sa.Column('xml_meta', sa.Text()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
     op.create_unique_constraint(
-        'uq_experiment_slide_name',
+        'uq_slide_experiment_id_and_name',
         'slide',
         ['experiment_id', 'name']
     )
@@ -39,4 +41,4 @@ def upgrade():
 
 def downgrade():
     op.drop_table('slide')
-    op.drop_unique_constraint('uq_experiment_slide_name')
+    op.drop_unique_constraint('uq_slide_experiment_id_and_name')

@@ -90,7 +90,7 @@ export default class CreateUser extends Vue {
   async submit() {
     if ((this.$refs.form as any).validate()) {
       const updatedProfile: IUserProfileCreate = {
-        email: this.email
+        email: this.email,
       };
       if (this.name) {
         updatedProfile.name = this.name;

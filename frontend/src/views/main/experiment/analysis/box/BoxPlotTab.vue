@@ -108,7 +108,7 @@ export default class BoxPlotTab extends Vue {
     await this.analysisContext.actions.getBoxPlotData({
       datasetId: this.activeDataset.id,
       acquisitionId: this.activeAcquisition.id,
-      markers: this.selectedItems
+      markers: this.selectedItems,
     });
   }
 
@@ -118,8 +118,8 @@ export default class BoxPlotTab extends Vue {
 
   @Watch("boxPlotData")
   boxPlotDataChanged(data: IPlotSeries[]) {
-    const boxplotData = (echarts as any).dataTool.prepareBoxplotData(data.map(item => item.data));
-    boxplotData.axisData = data.map(item => item.label);
+    const boxplotData = (echarts as any).dataTool.prepareBoxplotData(data.map((item) => item.data));
+    boxplotData.axisData = data.map((item) => item.label);
 
     this.options = {
       animation: true,
@@ -129,46 +129,46 @@ export default class BoxPlotTab extends Vue {
           borderColor: "#999",
           borderWidth: 1,
           textStyle: {
-            fontSize: 14
+            fontSize: 14,
           },
           left: "12%",
-          top: "10%"
-        }
+          top: "10%",
+        },
       ],
       xAxis: {
         type: "category",
         data: boxplotData.axisData,
         splitLine: {
-          show: false
+          show: false,
         },
         splitArea: {
-          show: false
+          show: false,
         },
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis: {
         type: "value",
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       series: [
         {
           type: "boxplot",
           name: "BoxPlot",
-          data: boxplotData.boxData
+          data: boxplotData.boxData,
         },
         {
           name: "outlier",
           type: "scatter",
           large: true,
-          data: boxplotData.outliers
-        }
+          data: boxplotData.outliers,
+        },
       ],
       tooltip: {
-        show: true
+        show: true,
       },
       toolbox: {
         show: true,
@@ -176,20 +176,20 @@ export default class BoxPlotTab extends Vue {
         feature: {
           restore: {
             show: true,
-            title: "Reset"
+            title: "Reset",
           },
           saveAsImage: {
             show: true,
-            title: "Export"
+            title: "Export",
           },
           dataView: {
             show: true,
             title: "Data",
             readOnly: true,
-            lang: ["Data View", "Hide", "Refresh"]
-          }
-        }
-      }
+            lang: ["Data View", "Hide", "Refresh"],
+          },
+        },
+      },
     };
   }
 }

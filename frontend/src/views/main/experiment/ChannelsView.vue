@@ -57,43 +57,43 @@ export default class ChannelsView extends Vue {
 
   readonly headers = [
     {
+      text: "Name",
+      sortable: true,
+      value: "name",
+      align: "start",
+      width: "30%",
+    },
+    {
       text: "Label",
       sortable: true,
       value: "label",
       align: "start",
-      width: "50%"
+      width: "50%",
     },
-    {
-      text: "Metal",
-      sortable: true,
-      value: "metal",
-      align: "start",
-      width: "30%"
-    },
-    {
-      text: "Mass",
-      sortable: true,
-      value: "mass",
-      align: "end",
-      width: "20%"
-    }
   ];
 
-  max25chars = v => v.length <= 25 || "Input too long!";
+  max25chars = (v) => v.length <= 25 || "Input too long!";
+
+  get activeAcquisitionId() {
+    return this.experimentContext.getters.activeAcquisitionId;
+  }
 
   get channels() {
     const acquisition = this.experimentContext.getters.activeAcquisition;
-    return acquisition && acquisition.channels ? acquisition.channels : [];
+    return acquisition ? Object.values(acquisition.channels).sort((a, b) => a.mass - b.mass) : [];
   }
 
   get items() {
-    return this.channels.map(channel => {
-      const settings = this.settingsModule.getters.getChannelSettings(channel.id);
+    if (!this.activeAcquisitionId) {
+      return [];
+    }
+    return this.channels.map((channel) => {
+      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId, channel.name);
       return {
-        id: channel.id,
+        id: channel.name,
         label: settings && settings.customLabel ? settings.customLabel : channel.label,
-        metal: channel.metal,
-        mass: channel.mass
+        name: channel.name,
+        mass: channel.mass,
       };
     });
   }
@@ -103,33 +103,37 @@ export default class ChannelsView extends Vue {
   }
 
   get selected() {
-    return this.channels.filter(channel => {
-      if (this.selectedMetals.includes(channel.metal)) {
+    return this.items.filter((channel) => {
+      if (this.selectedMetals.includes(channel.name)) {
         return channel;
       }
-    });
+    }) as any;
   }
 
   set selected(items: IChannel[]) {
-    const selectedMetals = items.map(item => item.metal);
+    const selectedMetals = items.map((item) => item.name);
     if (!equals(this.selectedMetals, selectedMetals)) {
       this.experimentContext.mutations.setSelectedMetals(selectedMetals);
     }
   }
 
   save() {
-    this.items.forEach(item => {
-      const settings = this.settingsModule.getters.getChannelSettings(item.id);
+    if (!this.activeAcquisitionId) {
+      return;
+    }
+    this.items.forEach((item) => {
+      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId, item.name);
       if (!settings) {
         this.settingsModule.mutations.setChannelSettings({
-          id: item.id,
-          customLabel: item.label
+          acquisitionId: this.activeAcquisitionId!,
+          name: item.name,
+          customLabel: item.label,
         });
       } else {
         if (settings.customLabel !== item.label) {
           this.settingsModule.mutations.setChannelSettings({
             ...settings,
-            customLabel: item.label
+            customLabel: item.label,
           });
         }
       }

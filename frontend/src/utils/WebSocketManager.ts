@@ -57,7 +57,7 @@ export class WebSocketManager {
             WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "Slide successfully imported",
-              color: "success"
+              color: "success",
             });
             break;
           }
@@ -65,7 +65,7 @@ export class WebSocketManager {
             WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "Dataset successfully imported",
-              color: "success"
+              color: "success",
             });
             break;
           }
@@ -74,7 +74,7 @@ export class WebSocketManager {
             WebSocketManager.datasetContext.mutations.updateDatasetTSNEOutput(message);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "t-SNE result is ready",
-              color: "success"
+              color: "success",
             });
             break;
           }
@@ -83,7 +83,7 @@ export class WebSocketManager {
             WebSocketManager.datasetContext.mutations.updateDatasetUMAPOutput(message);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "UMAP result is ready",
-              color: "success"
+              color: "success",
             });
             break;
           }
@@ -92,7 +92,7 @@ export class WebSocketManager {
             WebSocketManager.datasetContext.mutations.updateDatasetPhenoGraphOutput(message);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "PhenoGraph result is ready",
-              color: "success"
+              color: "success",
             });
             break;
           }

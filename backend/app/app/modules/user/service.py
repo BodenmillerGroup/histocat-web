@@ -5,19 +5,19 @@ from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash, verify_password
 
-from .models import User
+from .models import UserModel
 from .dto import UserCreateDto, UserUpdateDto
 
 
-def get_by_id(session: Session, id: int) -> Optional[User]:
-    return session.query(User).filter(User.id == id).first()
+def get_by_id(session: Session, id: int) -> Optional[UserModel]:
+    return session.query(UserModel).filter(UserModel.id == id).first()
 
 
-def get_by_email(session: Session, *, email: str) -> Optional[User]:
-    return session.query(User).filter(User.email == email).first()
+def get_by_email(session: Session, *, email: str) -> Optional[UserModel]:
+    return session.query(UserModel).filter(UserModel.email == email).first()
 
 
-def authenticate(session: Session, *, email: str, password: str) -> Optional[User]:
+def authenticate(session: Session, *, email: str, password: str) -> Optional[UserModel]:
     user = get_by_email(session, email=email)
     if not user:
         return None
@@ -26,12 +26,12 @@ def authenticate(session: Session, *, email: str, password: str) -> Optional[Use
     return user
 
 
-def get_all(session: Session, skip=0, limit=1000) -> Sequence[User]:
-    return session.query(User).offset(skip).limit(limit).all()
+def get_all(session: Session, skip=0, limit=1000) -> Sequence[UserModel]:
+    return session.query(UserModel).offset(skip).limit(limit).all()
 
 
-def create(session: Session, *, params: UserCreateDto) -> User:
-    entity = User(
+def create(session: Session, *, params: UserCreateDto) -> UserModel:
+    entity = UserModel(
         email=params.email,
         password=get_password_hash(params.password),
         name=params.name,
@@ -44,7 +44,7 @@ def create(session: Session, *, params: UserCreateDto) -> User:
     return entity
 
 
-def update(session: Session, *, item: User, params: UserUpdateDto) -> User:
+def update(session: Session, *, item: UserModel, params: UserUpdateDto) -> UserModel:
     data = jsonable_encoder(item)
     for field in data:
         if field in params.fields:

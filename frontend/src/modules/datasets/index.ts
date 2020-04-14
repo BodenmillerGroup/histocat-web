@@ -15,5 +15,5 @@ export const datasetModule = new Module({
   state: DatasetState,
   getters: DatasetGetters,
   mutations: DatasetMutations,
-  actions: DatasetActions
+  actions: DatasetActions,
 });

@@ -74,7 +74,7 @@ import ChannelHistogramView from "@/views/main/experiment/settings/channel/Chann
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 @Component({
-  components: { ChannelHistogramView }
+  components: { ChannelHistogramView },
 })
 export default class ChannelSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
@@ -88,8 +88,12 @@ export default class ChannelSettingsView extends Vue {
       ? [this.settings.levels.min, this.settings.levels.max]
       : [this.channel.min_intensity, this.channel.max_intensity];
 
+  get activeAcquisitionId() {
+    return this.experimentContext.getters.activeAcquisitionId;
+  }
+
   get settings() {
-    return this.settingsContext.getters.getChannelSettings(this.channel.id);
+    return this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name);
   }
 
   get label() {
@@ -97,19 +101,23 @@ export default class ChannelSettingsView extends Vue {
   }
 
   submitLimit() {
+    if (!this.activeAcquisitionId) {
+      return;
+    }
     let settings = this.settings;
     if (!settings) {
       settings = {
-        id: this.channel.id,
+        acquisitionId: this.activeAcquisitionId,
+        name: this.channel.name,
         customLabel: this.channel.label,
         levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) },
-        suppressBroadcast: false
+        suppressBroadcast: false,
       };
     } else {
       settings = {
         ...settings,
         levels: { min: Math.round(this.levels[0]), max: Math.round(this.levels[1]) },
-        suppressBroadcast: false
+        suppressBroadcast: false,
       };
     }
     this.settingsContext.mutations.setChannelSettings(settings);
@@ -117,7 +125,7 @@ export default class ChannelSettingsView extends Vue {
   }
 
   setSharedChannelLevels() {
-    const metal = this.channel.metal;
+    const metal = this.channel.name;
     const settings = this.settings;
     const levels =
       settings && settings.levels
@@ -128,15 +136,15 @@ export default class ChannelSettingsView extends Vue {
 
   get metalColor() {
     const colorMap = this.settingsContext.getters.metalColorMap;
-    const color = colorMap.get(this.channel.metal);
+    const color = colorMap.get(this.channel.name);
     return color ? color : "#ffffff";
   }
 
   @Watch("color")
   onColorChanged(color: string) {
     this.settingsContext.mutations.setMetalColor({
-      metal: this.channel.metal,
-      color: color
+      metal: this.channel.name,
+      color: color,
     });
   }
 }

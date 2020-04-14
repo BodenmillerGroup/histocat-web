@@ -17,22 +17,22 @@ export default new Router({
           // route level code-splitting
           // this generates a separate chunk (about.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
-          component: () => import(/* webpackChunkName: "login" */ "@/views/Login.vue")
+          component: () => import(/* webpackChunkName: "login" */ "@/views/Login.vue"),
         },
         {
           path: "signup",
           // route level code-splitting
           // this generates a separate chunk (about.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
-          component: () => import(/* webpackChunkName: "login" */ "@/views/SignUp.vue")
+          component: () => import(/* webpackChunkName: "login" */ "@/views/SignUp.vue"),
         },
         {
           path: "recover-password",
-          component: () => import(/* webpackChunkName: "recover-password" */ "@/views/PasswordRecovery.vue")
+          component: () => import(/* webpackChunkName: "recover-password" */ "@/views/PasswordRecovery.vue"),
         },
         {
           path: "reset-password",
-          component: () => import(/* webpackChunkName: "reset-password" */ "@/views/ResetPassword.vue")
+          component: () => import(/* webpackChunkName: "reset-password" */ "@/views/ResetPassword.vue"),
         },
         {
           path: "main",
@@ -40,7 +40,7 @@ export default new Router({
           children: [
             {
               path: "dashboard",
-              component: () => import(/* webpackChunkName: "main-dashboard" */ "@/views/main/Dashboard.vue")
+              component: () => import(/* webpackChunkName: "main-dashboard" */ "@/views/main/Dashboard.vue"),
             },
             {
               path: "experiments/create",
@@ -48,13 +48,13 @@ export default new Router({
               component: () =>
                 import(
                   /* webpackChunkName: "main-admin-experiments-create" */ "@/views/main/admin/experiment/CreateExperiment.vue"
-                )
+                ),
             },
             {
               path: "experiments/:id",
               name: "main-experiment",
               component: () =>
-                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ExperimentView.vue")
+                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ExperimentView.vue"),
             },
             {
               path: "experiments/edit/:id",
@@ -62,13 +62,13 @@ export default new Router({
               component: () =>
                 import(
                   /* webpackChunkName: "main-experiment-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
-                )
+                ),
             },
             {
               path: "experiments/:id/share",
               name: "main-experiment-share",
               component: () =>
-                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ShareExperiment.vue")
+                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ShareExperiment.vue"),
             },
             {
               path: "profile",
@@ -77,21 +77,22 @@ export default new Router({
               children: [
                 {
                   path: "view",
-                  component: () => import(/* webpackChunkName: "main-profile" */ "@/views/main/profile/UserProfile.vue")
+                  component: () =>
+                    import(/* webpackChunkName: "main-profile" */ "@/views/main/profile/UserProfile.vue"),
                 },
                 {
                   path: "edit",
                   component: () =>
-                    import(/* webpackChunkName: "main-profile-edit" */ "@/views/main/profile/UserProfileEdit.vue")
+                    import(/* webpackChunkName: "main-profile-edit" */ "@/views/main/profile/UserProfileEdit.vue"),
                 },
                 {
                   path: "password",
                   component: () =>
                     import(
                       /* webpackChunkName: "main-profile-password" */ "@/views/main/profile/UserProfileEditPassword.vue"
-                    )
-                }
-              ]
+                    ),
+                },
+              ],
             },
             {
               path: "admin",
@@ -100,36 +101,36 @@ export default new Router({
               children: [
                 {
                   path: "users",
-                  redirect: "users/all"
+                  redirect: "users/all",
                 },
                 {
                   path: "users/all",
                   component: () =>
-                    import(/* webpackChunkName: "main-admin-users" */ "@/views/main/admin/user/AdminUsers.vue")
+                    import(/* webpackChunkName: "main-admin-users" */ "@/views/main/admin/user/AdminUsers.vue"),
                 },
                 {
                   path: "users/edit/:id",
                   name: "main-admin-users-edit",
                   component: () =>
-                    import(/* webpackChunkName: "main-admin-users-edit" */ "@/views/main/admin/user/EditUser.vue")
+                    import(/* webpackChunkName: "main-admin-users-edit" */ "@/views/main/admin/user/EditUser.vue"),
                 },
                 {
                   path: "users/create",
                   name: "main-admin-users-create",
                   component: () =>
-                    import(/* webpackChunkName: "main-admin-users-create" */ "@/views/main/admin/user/CreateUser.vue")
+                    import(/* webpackChunkName: "main-admin-users-create" */ "@/views/main/admin/user/CreateUser.vue"),
                 },
 
                 {
                   path: "experiments",
-                  redirect: "experiments/all"
+                  redirect: "experiments/all",
                 },
                 {
                   path: "experiments/all",
                   component: () =>
                     import(
                       /* webpackChunkName: "main-admin-experiments" */ "@/views/main/admin/experiment/AdminExperiments.vue"
-                    )
+                    ),
                 },
                 {
                   path: "experiments/edit/:id",
@@ -137,17 +138,17 @@ export default new Router({
                   component: () =>
                     import(
                       /* webpackChunkName: "main-admin-experiments-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
-                    )
-                }
-              ]
-            }
-          ]
-        }
-      ]
+                    ),
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
     {
       path: "/*",
-      redirect: "/"
-    }
-  ]
+      redirect: "/",
+    },
+  ],
 });

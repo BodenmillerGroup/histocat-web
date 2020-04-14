@@ -19,6 +19,7 @@ if os.environ.get("BACKEND_ENV") == "development":
         # VS Code Debugging
         # Allow other computers to attach to ptvsd at this IP address and port.
         import ptvsd
+
         ptvsd.enable_attach(address=("0.0.0.0", 5678), redirect_output=True)
 
         # PyCharm Debugging

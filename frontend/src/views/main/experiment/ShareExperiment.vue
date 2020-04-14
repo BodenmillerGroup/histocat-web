@@ -43,18 +43,18 @@ export default class ShareExperiment extends Vue {
       text: "Email",
       sortable: true,
       value: "email",
-      align: "left"
+      align: "left",
     },
     {
       text: "Name",
       sortable: true,
       value: "name",
-      align: "left"
-    }
+      align: "left",
+    },
   ];
 
   get users() {
-    return this.userContext.getters.users.filter(user => {
+    return this.userContext.getters.users.filter((user) => {
       if (user.id !== this.mainContext.getters.userProfile!.id) {
         return user;
       }
@@ -72,8 +72,8 @@ export default class ShareExperiment extends Vue {
   }
 
   reset() {
-    const userIds = this.shares.map(share => share.user_id);
-    this.selected = this.users.filter(user => {
+    const userIds = this.shares.map((share) => share.user_id);
+    this.selected = this.users.filter((user) => {
       if (userIds.includes(user.id)) {
         return user;
       }
@@ -85,10 +85,10 @@ export default class ShareExperiment extends Vue {
   }
 
   async submit() {
-    const userIds = this.selected.map(item => item.id);
+    const userIds = this.selected.map((item) => item.id);
     const data: IShareCreate = {
       user_ids: userIds,
-      experiment_id: parseInt(this.$router.currentRoute.params.id, 10)
+      experiment_id: parseInt(this.$router.currentRoute.params.id, 10),
     };
     await this.experimentContext.actions.createShare(data);
   }

@@ -37,7 +37,7 @@ export default class LegendSettingsView extends Vue {
   set apply(value: boolean) {
     this.settingsContext.mutations.setLegend({
       ...this.settingsContext.getters.legend,
-      apply: value
+      apply: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }
@@ -49,7 +49,7 @@ export default class LegendSettingsView extends Vue {
   set legendFontScale(value: number) {
     this.settingsContext.mutations.setLegend({
       ...this.settingsContext.getters.legend,
-      fontScale: value
+      fontScale: value,
     });
     if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();
@@ -63,7 +63,7 @@ export default class LegendSettingsView extends Vue {
   set showIntensity(value: boolean) {
     this.settingsContext.mutations.setLegend({
       ...this.settingsContext.getters.legend,
-      showIntensity: value
+      showIntensity: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }

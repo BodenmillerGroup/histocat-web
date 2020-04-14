@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="overflow-y-auto tiles-view">
     <v-row>
-      <v-col v-for="item in items" :key="item.id" class="d-flex child-flex" :cols="cols">
+      <v-col v-for="item in items" :key="item.name" class="d-flex child-flex" :cols="cols">
         <v-card flat>
           <v-card-title class="subtitle-2 pa-0">{{ item.caption }}</v-card-title>
           <v-img :src="`${item.url}`" aspect-ratio="1" class="grey lighten-2" eager>
@@ -29,21 +29,22 @@ export default class TilesView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
 
   get items() {
-    return this.experimentContext.getters.selectedChannels.map(channel => {
-      let url = `${apiUrl}/channels/${channel.id}/image`;
-      let color = this.metalColorMap.get(channel.metal);
+    const acquisitionId = this.experimentContext.getters.activeAcquisitionId;
+    return this.experimentContext.getters.selectedChannels.map((channel) => {
+      let url = `${apiUrl}/acquisitions/${acquisitionId}/${channel.name}/image?`;
+      let color = this.metalColorMap.get(channel.name);
       if (color) {
         color = color.replace("#", "");
-        url += `?color=${color}`;
+        url += `color=${color}`;
       }
-      const channelSettings = this.settingsContext.getters.getChannelSettings(channel.id);
+      const channelSettings = this.settingsContext.getters.getChannelSettings(acquisitionId, channel.name);
       if (channelSettings && channelSettings.levels) {
         url += `&min=${channelSettings.levels.min}&max=${channelSettings.levels.max}`;
       }
       return {
-        id: channel.id,
+        name: channel.name,
         url: url,
-        caption: channelSettings && channelSettings.customLabel ? channelSettings.customLabel : channel.label
+        caption: channelSettings && channelSettings.customLabel ? channelSettings.customLabel : channel.label,
       };
     });
   }

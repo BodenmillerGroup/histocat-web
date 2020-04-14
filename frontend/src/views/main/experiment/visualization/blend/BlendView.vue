@@ -106,7 +106,7 @@ export default class BlendView extends Vue {
         imageExtent: projection.getExtent(),
         imageLoadFunction: (view, src: string) => {
           (view.getImage() as any).src = image;
-        }
+        },
       });
 
       this.imageLayer.setSource(source);
@@ -128,16 +128,10 @@ export default class BlendView extends Vue {
       this.initMap();
     }
 
-    const existingExtent = this.map
-      .getView()
-      .getProjection()
-      .getExtent();
-    const extent = [0, 0, parseInt(acquisition.meta.MaxX, 10), parseInt(acquisition.meta.MaxY, 10)];
+    const existingExtent = this.map.getView().getProjection().getExtent();
+    const extent = [0, 0, acquisition.max_x, acquisition.max_y];
     if (!equals(existingExtent, extent)) {
-      this.map
-        .getView()
-        .getProjection()
-        .setExtent(extent);
+      this.map.getView().getProjection().setExtent(extent);
     }
   }
 
@@ -178,7 +172,7 @@ export default class BlendView extends Vue {
   }
 
   deleteRegions() {
-    this.select.getFeatures().forEach(feature => {
+    this.select.getFeatures().forEach((feature) => {
       this.vectorSource.removeFeature(feature);
     });
     this.select.getFeatures().clear();
@@ -190,12 +184,7 @@ export default class BlendView extends Vue {
     if (!this.activeAcquisition) {
       return;
     }
-    const extent = [
-      0,
-      0,
-      parseInt(this.activeAcquisition.meta.MaxX, 10),
-      parseInt(this.activeAcquisition.meta.MaxY, 10)
-    ];
+    const extent = [0, 0, this.activeAcquisition.max_x, this.activeAcquisition.max_y];
 
     // Map views always need a projection.  Here we just want to map image
     // coordinates directly to map coordinates, so we create a projection that uses
@@ -211,7 +200,7 @@ export default class BlendView extends Vue {
         const spacing = 0.000001 * scale;
         const res = pixelRes * spacing;
         return res;
-      }
+      },
     });
 
     const view = new View({
@@ -220,28 +209,28 @@ export default class BlendView extends Vue {
       zoom: 4,
       zoomFactor: 1.25,
       maxZoom: 16,
-      enableRotation: false
+      enableRotation: false,
     });
 
     this.vectorSource = new VectorSource({ wrapX: false, useSpatialIndex: false });
 
     this.vectorLayer = new VectorLayer({
-      source: this.vectorSource
+      source: this.vectorSource,
     });
 
     this.select = new Select({
-      multi: false
+      multi: false,
     });
     this.select.on("select", this.selectHandler);
 
     this.draw = new Draw({
       source: this.vectorSource,
       type: GeometryType.POLYGON,
-      freehand: true
+      freehand: true,
     });
 
     this.translate = new Translate({
-      features: this.select.getFeatures()
+      features: this.select.getFeatures(),
     });
 
     this.imageLayer = new ImageLayer();
@@ -253,20 +242,20 @@ export default class BlendView extends Vue {
       layers: [this.imageLayerOverview],
       view: new View({
         projection: projection,
-        center: getCenter(projection.getExtent())
-      })
+        center: getCenter(projection.getExtent()),
+      }),
     });
 
     this.map = new Map({
       controls: defaultControls({
         zoom: false,
         attribution: false,
-        rotate: false
+        rotate: false,
       }).extend([new ScaleLine(), new FullScreen(), this.overviewMap]),
       interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 })],
       view: view,
       target: this.$el as HTMLElement,
-      layers: [this.imageLayer]
+      layers: [this.imageLayer],
     });
   }
 

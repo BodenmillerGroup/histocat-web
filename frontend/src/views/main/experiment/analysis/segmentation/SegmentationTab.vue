@@ -41,7 +41,7 @@ import SegmentationView from "@/views/main/experiment/analysis/segmentation/Segm
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { SegmentationSettingsView, SegmentationView }
+  components: { SegmentationSettingsView, SegmentationView },
 })
 export default class SegmentationTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
@@ -60,7 +60,7 @@ export default class SegmentationTab extends Vue {
     const settings = this.settingsContext.getters.segmentationSettings;
     this.analysisContext.actions.exportSegmentationImage({
       format: format,
-      settings: settings
+      settings: settings,
     });
   }
 }

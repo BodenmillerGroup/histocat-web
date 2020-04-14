@@ -37,8 +37,8 @@ import { Component, Vue } from "vue-property-decorator";
     AnalysisView,
     WorkspaceView,
     VisualizationView,
-    LoadingView
-  }
+    LoadingView,
+  },
 })
 export default class ExperimentView extends Vue {
   readonly mainContext = mainModule.context(this.$store);

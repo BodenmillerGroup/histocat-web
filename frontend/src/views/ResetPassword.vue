@@ -79,7 +79,7 @@ export default class UserProfileEdit extends Vue {
     if (!token) {
       this.mainContext.mutations.addNotification({
         content: "No token provided in the URL, start a new password recovery",
-        color: "error"
+        color: "error",
       });
       this.$router.push("/recover-password");
     } else {

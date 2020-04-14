@@ -27,9 +27,9 @@ from app.core.image import (
 from app.core.utils import stream_bytes
 from app.modules.acquisition import service as acquisition_crud
 from app.modules.analysis.processors import pca, phenograph, tsne, umap
-from app.modules.channel.dto import ChannelSettingsDto
+from app.modules.channel.dto import ChannelSettingsDto, ChannelStackDto
 from app.modules.dataset import service as dataset_crud
-from app.modules.user.models import User
+from app.modules.user.models import UserModel
 
 from .dto import (
     AnalysisDto,
@@ -54,42 +54,41 @@ RESULT_TYPE_ORIGIN = "origin"
 RESULT_TYPE_MASK = "mask"
 
 
-def get_additive_image(db: Session, channels: List[ChannelSettingsDto]):
+def get_additive_image(db: Session, params: ChannelStackDto):
     additive_image: Optional[np.ndarray] = None
     legend_labels: List[Tuple[str, str, float]] = list()
 
-    # item = channels[0]
-    # first = channel_crud.get(db, id=item.id)
-    # parser = OmetiffParser(first.acquisition.location)
-    # acq = parser.get_imc_acquisition()
-    #
-    # for channel in channels:
-    #     item = channel_crud.get(db, id=channel.id)
-    #
-    #     data = acq.get_img_by_metal(item.metal)
-    #
-    #     levels = (
-    #         (channel.min, channel.max)
-    #         if channel.min is not None and channel.max is not None
-    #         else (item.min_intensity, item.max_intensity)
-    #     )
-    #     data = scale_image(data, levels)
-    #
-    #     color = channel.color if channel.color else "#ffffff"
-    #     image = colorize(data, color)
-    #
-    #     label = channel.customLabel if channel.customLabel else item.label
-    #     legend_labels.append((label, color, levels[1]))
-    #
-    #     if additive_image is None:
-    #         additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
-    #     additive_image += image
+    acquisition = acquisition_crud.get_by_id(db, id=params.acquisitionId)
+    if not acquisition:
+        raise HTTPException(status_code=400, detail="Acquisition not found.")
+    parser = OmeTiffParser(acquisition.location)
+    acq = parser.get_acquisition_data()
+
+    for channel in params.channels:
+        data = acq.get_image_by_name(channel.name)
+        item = acquisition.channels.get(channel.name)
+        levels = (
+            (channel.min, channel.max)
+            if channel.min is not None and channel.max is not None
+            else (item.get("min_intensity"), item.get("max_intensity"))
+        )
+        data = scale_image(data, levels)
+
+        color = channel.color if channel.color else "#ffffff"
+        image = colorize(data, color)
+
+        label = channel.customLabel if channel.customLabel else item.label
+        legend_labels.append((label, color, levels[1]))
+
+        if additive_image is None:
+            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
+        additive_image += image
     return additive_image, legend_labels
 
 
 @router.post("/segmentation/image")
 async def produce_segmentation_image(
-    params: AnalysisDto, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    params: AnalysisDto, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Produce segmentation image
@@ -125,7 +124,7 @@ async def produce_segmentation_image(
 async def produce_segmentation_contours(
     params: AnalysisDto,
     request: Request,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -155,7 +154,7 @@ async def read_scatter_plot_data(
     marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -182,8 +181,14 @@ async def read_scatter_plot_data(
     df = df[df["ImageNumber"].isin(image_numbers)]
 
     content = {
-        "x": {"label": marker_x, "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16).tolist(),},
-        "y": {"label": marker_y, "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"] * 2 ** 16).tolist(),},
+        "x": {
+            "label": marker_x,
+            "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16).tolist(),
+        },
+        "y": {
+            "label": marker_y,
+            "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"] * 2 ** 16).tolist(),
+        },
     }
 
     if marker_z:
@@ -216,7 +221,7 @@ async def read_box_plot_data(
     dataset_id: int,
     acquisition_id: int,
     markers: List[str] = Query(None),
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -240,7 +245,10 @@ async def read_box_plot_data(
 
     for marker in markers:
         content.append(
-            {"label": marker, "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"] * 2 ** 16).tolist(),}
+            {
+                "label": marker,
+                "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"] * 2 ** 16).tolist(),
+            }
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
@@ -255,7 +263,7 @@ async def read_pca_data(
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     markers: List[str] = Query(None),
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -268,7 +276,9 @@ async def read_pca_data(
 
 @router.post("/tsne")
 def submit_tsne(
-    params: TsneSubmissionDto, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    params: TsneSubmissionDto,
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Start t-SNE data processing
@@ -293,7 +303,7 @@ async def read_tsne_data(
     name: str,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -306,7 +316,9 @@ async def read_tsne_data(
 
 @router.post("/umap")
 def submit_umap(
-    params: UmapSubmissionDto, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    params: UmapSubmissionDto,
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Start UMAP data processing
@@ -329,7 +341,7 @@ async def read_umap_data(
     name: str,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -343,7 +355,7 @@ async def read_umap_data(
 @router.post("/phenograph")
 def submit_phenograph(
     params: PhenographSubmissionDto,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -364,7 +376,10 @@ def submit_phenograph(
 
 @router.get("/phenograph", response_model=PhenographDto)
 async def read_phenograph_data(
-    dataset_id: int, name: str, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int,
+    name: str,
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Read PhenoGraph result data
@@ -378,7 +393,7 @@ async def read_phenograph_data(
 async def calculate_region_stats(
     params: RegionStatsSubmissionDto,
     request: Request,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """

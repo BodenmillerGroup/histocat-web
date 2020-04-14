@@ -176,7 +176,7 @@ export default class PhenoGraphTab extends Vue {
         jaccard: this.jaccard === "jaccard",
         min_cluster_size: this.minClusterSize,
         nearest_neighbors: this.nearestNeighbors,
-        primary_metric: this.primaryMetric
+        primary_metric: this.primaryMetric,
       });
     }
   }
@@ -196,7 +196,7 @@ export default class PhenoGraphTab extends Vue {
   async display() {
     await this.analysisContext.actions.getPhenoGraphResult({
       datasetId: this.activeDataset!.id,
-      name: this.result ? this.result.name : ""
+      name: this.result ? this.result.name : "",
     });
   }
 
@@ -213,7 +213,7 @@ export default class PhenoGraphTab extends Vue {
 
   private plot(data: any) {
     const communities = data.community;
-    const markers = Object.keys(data).filter(item => item !== "community");
+    const markers = Object.keys(data).filter((item) => item !== "community");
     const points: any[] = [];
     const mins: any[] = [];
     const maxs: any[] = [];
@@ -229,11 +229,11 @@ export default class PhenoGraphTab extends Vue {
       title: {
         text: "PhenoGraph",
         left: "center",
-        top: 0
+        top: 0,
       },
       animation: false,
       tooltip: {
-        show: true
+        show: true,
       },
       toolbox: {
         show: true,
@@ -241,41 +241,41 @@ export default class PhenoGraphTab extends Vue {
         feature: {
           restore: {
             show: true,
-            title: "Reset"
+            title: "Reset",
           },
           saveAsImage: {
             show: true,
-            title: "Export"
+            title: "Export",
           },
           dataView: {
             show: true,
             title: "Data",
             readOnly: true,
-            lang: ["Data View", "Hide", "Refresh"]
-          }
-        }
+            lang: ["Data View", "Hide", "Refresh"],
+          },
+        },
       },
       xAxis: {
         type: "category",
         name: "Community",
         nameTextStyle: {
-          fontWeight: "bold"
+          fontWeight: "bold",
         },
         data: communities,
         splitArea: {
-          show: true
-        }
+          show: true,
+        },
       },
       yAxis: {
         type: "category",
         name: "Marker",
         nameTextStyle: {
-          fontWeight: "bold"
+          fontWeight: "bold",
         },
         data: markers,
         splitArea: {
-          show: true
-        }
+          show: true,
+        },
       },
       series: [
         {
@@ -285,10 +285,10 @@ export default class PhenoGraphTab extends Vue {
           itemStyle: {
             emphasis: {
               shadowBlur: 10,
-              shadowColor: "rgba(0, 0, 0, 0.5)"
-            }
-          }
-        }
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+            },
+          },
+        },
       ],
       visualMap: [
         {
@@ -296,9 +296,9 @@ export default class PhenoGraphTab extends Vue {
           max: Math.max(...maxs),
           calculable: true,
           orient: "horizontal",
-          left: "center"
-        }
-      ]
+          left: "center",
+        },
+      ],
     };
 
     this.options = options;

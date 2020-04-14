@@ -49,7 +49,7 @@ import { mainModule } from "@/modules/main";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { ExperimentCard }
+  components: { ExperimentCard },
 })
 export default class Dashboard extends Vue {
   mainContext = mainModule.context(this.$store);
@@ -60,9 +60,9 @@ export default class Dashboard extends Vue {
 
   get items(): any[] {
     const list = this.experimentContext.getters.tags;
-    return list.map(item => {
+    return list.map((item) => {
       return {
-        text: item
+        text: item,
       };
     });
   }
@@ -73,13 +73,13 @@ export default class Dashboard extends Vue {
 
   get experiments() {
     const items = this.search
-      ? this.experimentContext.getters.experiments.filter(item => item.name.includes(this.search))
+      ? this.experimentContext.getters.experiments.filter((item) => item.name.includes(this.search))
       : this.experimentContext.getters.experiments;
     if (this.tags.length === 0) {
       return items;
     } else {
-      return items.filter(experiment => {
-        if (experiment.tags && this.tags.some(r => experiment.tags.includes(r))) {
+      return items.filter((experiment) => {
+        if (experiment.tags && this.tags.some((r) => experiment.tags.includes(r))) {
           return experiment;
         }
       });

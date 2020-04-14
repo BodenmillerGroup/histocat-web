@@ -31,12 +31,13 @@ class ChannelDto(BaseModel):
 
 class ChannelStatsDto(BaseModel):
     """Channel stats model."""
+
     hist: List[int]
     edges: List[float]
 
 
 class ChannelSettingsDto(BaseModel):
-    id: int
+    name: str
     color: Optional[str]
     customLabel: Optional[str]
     min: Optional[float]
@@ -68,6 +69,7 @@ class MaskSettingsDto(BaseModel):
 
 
 class ChannelStackDto(BaseModel):
+    acquisitionId: int
     datasetId: Optional[int]
     filter: FilterDto
     legend: LegendDto

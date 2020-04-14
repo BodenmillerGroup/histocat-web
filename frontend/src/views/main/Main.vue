@@ -123,7 +123,7 @@ const routeGuardMain = async (to, from, next) => {
   }
 };
 @Component({
-  components: { ToolbarProgressBar }
+  components: { ToolbarProgressBar },
 })
 export default class Main extends Vue {
   readonly mainContext = mainModule.context(this.$store);
@@ -143,7 +143,7 @@ export default class Main extends Vue {
   viewsChanged(views: string[]) {
     this.mainContext.mutations.setLayout({
       showWorkspace: views.includes("workspace"),
-      showOptions: views.includes("options")
+      showOptions: views.includes("options"),
     });
   }
 

@@ -98,9 +98,9 @@ export default class CreateExperiment extends Vue {
 
   get items(): any[] {
     const list = this.experimentContext.getters.tags;
-    return list.map(item => {
+    return list.map((item) => {
       return {
-        text: item
+        text: item,
       };
     });
   }
@@ -126,10 +126,10 @@ export default class CreateExperiment extends Vue {
       return;
     }
 
-    this.tags = val.map(v => {
+    this.tags = val.map((v) => {
       if (typeof v === "string") {
         v = {
-          text: v
+          text: v,
         };
         this.items.push(v);
         this.nonce++;
@@ -149,29 +149,24 @@ export default class CreateExperiment extends Vue {
   }
 
   filter(item, queryText: string, itemText: string) {
-    const hasValue = val => (val != null ? val : "");
+    const hasValue = (val) => (val != null ? val : "");
 
     const text = hasValue(itemText);
     const query = hasValue(queryText);
 
-    return (
-      text
-        .toString()
-        .toLowerCase()
-        .indexOf(query.toString().toLowerCase()) > -1
-    );
+    return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1;
   }
 
   async submit() {
     if ((this.$refs.form as any).validate()) {
       const params: IExperimentCreate = {
-        name: this.name
+        name: this.name,
       };
       if (this.description) {
         params.description = this.description;
       }
       if (this.tags.length > 0) {
-        params.tags = this.tags.map(tag => tag.text);
+        params.tags = this.tags.map((tag) => tag.text);
       }
       await this.experimentContext.actions.createExperiment(params);
       this.$router.back();

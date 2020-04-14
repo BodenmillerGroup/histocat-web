@@ -11,16 +11,6 @@
         </template>
         <span>Refresh slides</span>
       </v-tooltip>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon small v-on="on" @click="toggleShowROI">
-            <v-icon v-if="showROI" color="blue">mdi-blur</v-icon>
-            <v-icon v-else color="grey">mdi-blur</v-icon>
-          </v-btn>
-        </template>
-        <span v-if="showROI">Hide ROI</span>
-        <span v-else>Show ROI</span>
-      </v-tooltip>
     </v-toolbar>
     <v-toolbar dense flat>
       <v-text-field
@@ -40,12 +30,11 @@
       :search="search"
       :filter="filter"
       :active.sync="active"
+      item-disabled="locked"
       item-key="uid"
       activatable
       transition
       return-object
-      open-all
-      selectable
       class="overflow-y-auto scroll-view"
     >
       <template v-slot:prepend="{ item }">
@@ -93,7 +82,7 @@ import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 @Component({
-  components: { UploadButton, InfoCard }
+  components: { UploadButton, InfoCard },
 })
 export default class SlidesTreeView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
@@ -105,18 +94,13 @@ export default class SlidesTreeView extends Vue {
 
   selected: any[] = [];
   search = null;
-  showROI = false;
 
   readonly icons = {
     slide: "mdi-folder-outline",
     panorama: "mdi-apps",
     roi: "mdi-blur",
-    acquisition: "mdi-buffer"
+    acquisition: "mdi-buffer",
   };
-
-  toggleShowROI() {
-    this.showROI = !this.showROI;
-  }
 
   get active() {
     return [this.experimentContext.getters.activeWorkspaceNode];
@@ -136,7 +120,7 @@ export default class SlidesTreeView extends Vue {
   @Watch("selected")
   async selectedChanged(items: any[]) {
     this.mutex = true;
-    const ids = items.filter(item => item.type === "acquisition").map(acquisition => acquisition.id);
+    const ids = items.filter((item) => item.type === "acquisition").map((acquisition) => acquisition.id);
     await this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
     this.mutex = false;
   }
@@ -146,7 +130,7 @@ export default class SlidesTreeView extends Vue {
     if (!this.mutex && !equals(newIds, oldIds)) {
       const items: any[] = [];
       const nodes = {
-        children: this.items
+        children: this.items,
       };
 
       for (const id of newIds) {
@@ -187,45 +171,39 @@ export default class SlidesTreeView extends Vue {
 
   get items() {
     if (this.experiment.slides) {
-      return this.experiment.slides.map(slide => {
-        const panoramas = slide.panoramas.map(panorama => {
-          const rois = panorama.rois.map(roi => {
-            const acquisitions = roi.acquisitions.map(acquisition => {
-              let hasMask = false;
-              if (this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
-                hasMask = !!this.dataset.input.probability_masks[acquisition.id];
-              }
-              return Object.assign({}, acquisition, {
-                type: "acquisition",
-                name: `${acquisition.id}: ${acquisition.meta.Description}`,
-                uid: `acquisition-${acquisition.id}`,
-                hasMask: hasMask
-              });
-            });
-            return Object.assign({}, roi, {
-              type: "roi",
-              name: `ROI ${roi.origin_id}`,
-              uid: `roi-${roi.id}`,
-              children: acquisitions
-            });
-          });
-          const panoramaChildren = this.showROI
-            ? rois
-            : rois.reduce((total, roi) => {
-                return total.concat(roi.children);
-              }, [] as any);
-          return Object.assign({}, panorama, {
-            type: "panorama",
-            name: panorama.meta.Description,
-            uid: `panorama-${panorama.id}`,
-            children: panoramaChildren
+      return this.experiment.slides.map((slide) => {
+        const acquisitions = slide.acquisitions.map((acquisition) => {
+          let hasMask = false;
+          if (this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
+            hasMask = !!this.dataset.input.probability_masks[acquisition.id];
+          }
+          return Object.assign({}, acquisition, {
+            type: "acquisition",
+            name: `${acquisition.id}: ${acquisition.description}`,
+            uid: `acquisition-${acquisition.id}`,
+            locked: !acquisition.is_valid,
+            hasMask: hasMask,
           });
         });
+        const panoramas = slide.panoramas.map((panorama) => {
+          return Object.assign({}, panorama, {
+            type: "panorama",
+            name: `${panorama.id}: ${panorama.description}`,
+            uid: `panorama-${panorama.id}`,
+            locked: panorama.image_type == "Default",
+          });
+        });
+        const panoramasRoot = {
+          name: "Panorama Images",
+          type: "roi",
+          uid: `slide-${slide.id}-panoramas`,
+          children: panoramas,
+        };
         return Object.assign({}, slide, {
           type: "slide",
           name: slide.name,
-          children: panoramas,
-          uid: `slide-${slide.id}`
+          children: [panoramasRoot as any].concat(acquisitions),
+          uid: `slide-${slide.id}`,
         });
       });
     } else {

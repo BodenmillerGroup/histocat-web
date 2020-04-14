@@ -24,8 +24,8 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   components: {
-    NotificationsManager
-  }
+    NotificationsManager,
+  },
 })
 export default class App extends Vue {
   readonly mainContext = mainModule.context(this.$store);

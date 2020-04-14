@@ -61,17 +61,13 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
     const experiment = this.experiment!.getters.activeExperiment;
     if (experiment && experiment.slides) {
       for (const slide of experiment.slides) {
-        for (const panorama of slide.panoramas) {
-          for (const roi of panorama.rois) {
-            for (const acquisition of roi.acquisitions) {
-              if (acquisitionIds.includes(acquisition.id)) {
-                for (const channel of acquisition.channels) {
-                  if (metals.includes(channel.metal)) {
-                    const settings = this.settings!.getters.getChannelSettings(channel.id);
-                    if (settings) {
-                      channelsSettings.push(settings);
-                    }
-                  }
+        for (const acquisition of slide.acquisitions) {
+          if (acquisitionIds.includes(acquisition.id)) {
+            for (const channel of Object.values(acquisition.channels)) {
+              if (metals.includes(channel.name)) {
+                const settings = this.settings!.getters.getChannelSettings(acquisition.id, channel.name);
+                if (settings) {
+                  channelsSettings.push(settings);
                 }
               }
             }
@@ -87,8 +83,8 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
       input: {
         acquisition_ids: acquisitionIds,
         metals: metals,
-        channel_settings: channelsSettings
-      }
+        channel_settings: channelsSettings,
+      },
     };
 
     try {

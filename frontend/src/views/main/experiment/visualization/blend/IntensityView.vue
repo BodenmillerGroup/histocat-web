@@ -15,7 +15,7 @@ import { experimentModule } from "@/modules/experiment";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { IntensityBar }
+  components: { IntensityBar },
 })
 export default class IntensityView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);

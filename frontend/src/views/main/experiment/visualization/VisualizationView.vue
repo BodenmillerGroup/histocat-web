@@ -51,8 +51,8 @@ import { Component, Vue } from "vue-property-decorator";
     SettingsView,
     ChannelsView,
     BlendTab,
-    TilesView
-  }
+    TilesView,
+  },
 })
 export default class VisualizationView extends Vue {
   readonly mainContext = mainModule.context(this.$store);

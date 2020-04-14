@@ -82,7 +82,7 @@ export default class SegmentationSettingsView extends Vue {
       algorithm: this.algorithm,
       iterations: this.iterations,
       kernel_size: this.kernelSize,
-      mask_color: this.color
+      mask_color: this.color,
     };
     this.settingsContext.mutations.setSegmentationSettings(settings);
     this.analysisContext.actions.getSegmentationImage(settings);
@@ -94,7 +94,7 @@ export default class SegmentationSettingsView extends Vue {
       algorithm: this.algorithm,
       iterations: this.iterations,
       kernel_size: this.kernelSize,
-      mask_color: this.color
+      mask_color: this.color,
     };
     this.settingsContext.mutations.setSegmentationSettings(settings);
     this.analysisContext.actions.produceSegmentationContours(settings);

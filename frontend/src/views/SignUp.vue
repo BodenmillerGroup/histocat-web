@@ -110,7 +110,7 @@ export default class SignUp extends Vue {
     if (userExist) {
       this.mainContext.mutations.addNotification({
         content: "User with this email already exists",
-        color: "warning"
+        color: "warning",
       });
     }
     return userExist;

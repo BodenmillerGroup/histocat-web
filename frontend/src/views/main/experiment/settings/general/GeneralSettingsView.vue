@@ -13,7 +13,7 @@ import ScalebarSettingsView from "@/views/main/experiment/settings/general/Scale
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { FilterSettingsView, ScalebarSettingsView, LegendSettingsView }
+  components: { FilterSettingsView, ScalebarSettingsView, LegendSettingsView },
 })
 export default class GeneralSettingsView extends Vue {
   panel = [];

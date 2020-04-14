@@ -39,6 +39,7 @@ class ExperimentDto(BaseModel):
 
 class ExperimentDatasetDto(ExperimentDto):
     """Full experiment dataset."""
+
     slides: Sequence[SlideDatasetDto]
 
     class Config:

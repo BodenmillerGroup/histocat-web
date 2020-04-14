@@ -9,7 +9,7 @@ import {
   IRegionChannelData,
   IScatterPlotData,
   ITSNEData,
-  IUMAPData
+  IUMAPData,
 } from "./models";
 import { AnalysisMutations } from "./mutations";
 
@@ -34,5 +34,5 @@ export const analysisModule = new Module({
   state: AnalysisState,
   getters: AnalysisGetters,
   mutations: AnalysisMutations,
-  actions: AnalysisActions
+  actions: AnalysisActions,
 });

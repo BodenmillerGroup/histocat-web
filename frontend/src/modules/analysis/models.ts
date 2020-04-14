@@ -16,7 +16,7 @@ export interface IImageSegmentationSubmission {
   filter: IImageFilter;
   scalebar: IImageScalebar;
   channels: {
-    id: number;
+    name: string;
     color?: string;
     customLabel?: string;
     min?: number;

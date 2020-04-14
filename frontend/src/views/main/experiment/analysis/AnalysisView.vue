@@ -53,8 +53,8 @@ import { Component, Vue } from "vue-property-decorator";
     BoxPlotTab,
     ScatterPlotTab,
     SegmentationTab,
-    TSNETab
-  }
+    TSNETab,
+  },
 })
 export default class AnalysisView extends Vue {
   tab = 0;

@@ -9,7 +9,7 @@ from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_superuser, get_current_active_user
 from app.core import config
 from app.core.utils import send_new_account_email
-from app.modules.user.models import User
+from app.modules.user.models import UserModel
 
 from . import service
 from .dto import UserCreateDto, UserDto, UserUpdateDto
@@ -18,10 +18,7 @@ router = APIRouter()
 
 
 @router.get("/", response_model=Sequence[UserDto])
-def get_all(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
-):
+def get_all(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get all users."""
     items = service.get_all(db)
     return items
@@ -31,7 +28,7 @@ def get_all(
 def create(
     params: UserCreateDto,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: UserModel = Depends(get_current_active_superuser),
 ):
     """Create new user."""
     item = service.get_by_email(db, email=params.email)
@@ -51,7 +48,7 @@ def update_me(
     name: str = Body(None),
     email: EmailStr = Body(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
 ):
     """Update personal profile."""
     data = jsonable_encoder(current_user)
@@ -67,20 +64,14 @@ def update_me(
 
 
 @router.get("/profile", response_model=UserDto)
-def get_me(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
-):
+def get_me(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get current user."""
     return current_user
 
 
 @router.post("/signup", response_model=UserDto)
 def create_open(
-    password: str = Body(...),
-    email: EmailStr = Body(...),
-    name: str = Body(None),
-    db: Session = Depends(get_db),
+    password: str = Body(...), email: EmailStr = Body(...), name: str = Body(None), db: Session = Depends(get_db),
 ):
     """Create new user without the need to be logged in."""
     if not config.USERS_OPEN_REGISTRATION:
@@ -99,9 +90,7 @@ def create_open(
 
 @router.get("/{id}", response_model=UserDto)
 def get_by_id(
-    id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
     """Get user by id."""
     user = service.get_by_id(db, id)
@@ -117,7 +106,7 @@ def update(
     id: int,
     params: UserUpdateDto,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_superuser),
+    current_user: UserModel = Depends(get_current_active_superuser),
 ):
     """Update user."""
     item = service.get_by_id(db, id)
@@ -130,10 +119,7 @@ def update(
 
 
 @router.get("/check/{email}")
-def check_user_exists(
-    email: str,
-    db: Session = Depends(get_db)
-):
+def check_user_exists(email: str, db: Session = Depends(get_db)):
     """Check if user with the email exists."""
     user = service.get_by_email(db, email=email)
     if user:

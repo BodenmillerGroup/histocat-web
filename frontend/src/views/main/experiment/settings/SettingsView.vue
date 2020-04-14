@@ -22,7 +22,7 @@ import GeneralSettingsView from "@/views/main/experiment/settings/general/Genera
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { GeneralSettingsView, ChannelSettingsView }
+  components: { GeneralSettingsView, ChannelSettingsView },
 })
 export default class SettingsView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);

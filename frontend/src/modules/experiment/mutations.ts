@@ -17,13 +17,13 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   }
 
   setExperiment(experiment: IExperiment) {
-    const items = this.state.experiments.filter(item => item.id !== experiment.id);
+    const items = this.state.experiments.filter((item) => item.id !== experiment.id);
     items.push(experiment);
     this.state.experiments = items;
   }
 
   deleteExperiment(id: number) {
-    this.state.experiments = this.state.experiments.filter(item => item.id !== id);
+    this.state.experiments = this.state.experiments.filter((item) => item.id !== id);
   }
 
   setSelectedMetals(metals: string[]) {

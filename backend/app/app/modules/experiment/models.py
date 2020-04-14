@@ -14,7 +14,7 @@ EXPERIMENT_LOCATION_FORMAT = "experiment_{id}"
 
 
 @remove_location_upon_delete
-class Experiment(Base):
+class ExperimentModel(Base):
     """An *experiment* is the main organizational unit of `HistoCAT`."""
 
     __tablename__ = "experiment"
@@ -29,9 +29,9 @@ class Experiment(Base):
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    user = sa.orm.relationship("User", back_populates="experiments")
-    slides = sa.orm.relationship("Slide", back_populates="experiment", cascade="all, delete, delete-orphan")
-    datasets = sa.orm.relationship("Dataset", back_populates="experiment", cascade="all, delete, delete-orphan")
+    user = sa.orm.relationship("UserModel", back_populates="experiments")
+    slides = sa.orm.relationship("SlideModel", back_populates="experiment", cascade="all, delete, delete-orphan")
+    datasets = sa.orm.relationship("DatasetModel", back_populates="experiment", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
     def slides_location(self) -> str:

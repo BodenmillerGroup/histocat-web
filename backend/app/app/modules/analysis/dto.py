@@ -23,12 +23,14 @@ class AnalysisDto(BaseModel):
 
 class PlotSeriesDto(BaseModel):
     """Scatter plot axis model."""
+
     label: str
     data: Sequence[float]
 
 
 class ScatterPlotDto(BaseModel):
     """Scatter plot model."""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -37,11 +39,13 @@ class ScatterPlotDto(BaseModel):
 
 class BoxPlotDto(BaseModel):
     """Box plot model."""
+
     series: Sequence[PlotSeriesDto]
 
 
 class PcaDto(BaseModel):
     """PCA plot model."""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -51,6 +55,7 @@ class PcaDto(BaseModel):
 
 class TsneSubmissionDto(BaseModel):
     """t-SNE submission model."""
+
     dataset_id: int
     acquisition_ids: Sequence[int]
     n_components: int
@@ -64,6 +69,7 @@ class TsneSubmissionDto(BaseModel):
 
 class TsneDto(BaseModel):
     """t-SNE result model."""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -72,6 +78,7 @@ class TsneDto(BaseModel):
 
 class UmapSubmissionDto(BaseModel):
     """UMAP submission model."""
+
     dataset_id: int
     acquisition_ids: Sequence[int]
     n_components: int
@@ -83,6 +90,7 @@ class UmapSubmissionDto(BaseModel):
 
 class UmapDto(BaseModel):
     """UMAP result model."""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -91,6 +99,7 @@ class UmapDto(BaseModel):
 
 class PhenographSubmissionDto(BaseModel):
     """PhenoGraph submission model."""
+
     dataset_id: int
     acquisition_ids: Sequence[int]
     markers: Sequence[str]
@@ -102,6 +111,7 @@ class PhenographSubmissionDto(BaseModel):
 
 class PhenographDto(BaseModel):
     """PhenoGraph result model."""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -110,6 +120,7 @@ class PhenographDto(BaseModel):
 
 class RegionStatsSubmissionDto(BaseModel):
     """Region's stats submission model."""
+
     experiment_id: int
     acquisition_id: int
     region_polygon: Sequence[Any]
@@ -117,6 +128,7 @@ class RegionStatsSubmissionDto(BaseModel):
 
 class RegionChannelStatsDto(BaseModel):
     """Region's channel stats model."""
+
     metal: str
     min: float
     max: float

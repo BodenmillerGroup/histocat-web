@@ -44,25 +44,25 @@ export default class AdminExperiments extends Vue {
       text: "Name",
       sortable: true,
       value: "name",
-      align: "left"
+      align: "left",
     },
     {
       text: "Description",
       sortable: true,
       value: "description",
-      align: "left"
+      align: "left",
     },
     {
       text: "Location",
       sortable: true,
       value: "location",
-      align: "left"
+      align: "left",
     },
     {
       text: "Actions",
       value: "action",
-      sortable: false
-    }
+      sortable: false,
+    },
   ];
 
   get experiments() {

@@ -100,7 +100,7 @@ export class ExperimentActions extends Actions<
           this.main!.mutations.setProcessingProgress(0);
           this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
         },
-        event => {
+        (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);
           this.main!.mutations.setProcessingProgress(percent);
         },
@@ -122,9 +122,9 @@ export class ExperimentActions extends Actions<
     }
   }
 
-  async getChannelStats(id: number) {
+  async getChannelStats(payload: { acquisitionId: number; channelName: string }) {
     try {
-      return await api.getChannelStats(id);
+      return await api.getChannelStats(payload.acquisitionId, payload.channelName);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -184,40 +184,36 @@ export class ExperimentActions extends Actions<
 
   async setSharedChannelLevels(payload: { metal: string; levels: number[] }) {
     const experiment = this.getters.activeExperiment;
-    if (experiment && experiment.slides) {
-      for (const slide of experiment.slides) {
-        for (const panorama of slide.panoramas) {
-          for (const roi of panorama.rois) {
-            for (const acquisition of roi.acquisitions) {
-              for (const channel of acquisition.channels) {
-                if (channel.metal === payload.metal) {
-                  let settings = this.settings!.getters.getChannelSettings(channel.id);
-                  if (!settings) {
-                    settings = {
-                      id: channel.id,
-                      customLabel: channel.label,
-                      levels: {
-                        min: payload.levels[0],
-                        max: payload.levels[1]
-                      }
-                    };
-                  } else {
-                    settings = {
-                      ...settings,
-                      levels: {
-                        min: payload.levels[0],
-                        max: payload.levels[1]
-                      }
-                    };
-                  }
-                  this.settings!.mutations.setChannelSettings(settings);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    // if (experiment && experiment.slides) {
+    //   for (const slide of experiment.slides) {
+    //     for (const acquisition of slide.acquisitions) {
+    //       for (const channel of acquisition.channels) {
+    //         if (channel.name === payload.metal) {
+    //           let settings = this.settings!.getters.getChannelSettings(`${channel.acquisition_id}_${channel.name}`);
+    //           if (!settings) {
+    //             settings = {
+    //               id: `${channel.acquisition_id}_${channel.name}`,
+    //               customLabel: channel.label,
+    //               levels: {
+    //                 min: payload.levels[0],
+    //                 max: payload.levels[1],
+    //               },
+    //             };
+    //           } else {
+    //             settings = {
+    //               ...settings,
+    //               levels: {
+    //                 min: payload.levels[0],
+    //                 max: payload.levels[1],
+    //               },
+    //             };
+    //           }
+    //           this.settings!.mutations.setChannelSettings(settings);
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   async createShare(payload: IShareCreate) {
@@ -248,18 +244,19 @@ export class ExperimentActions extends Actions<
   }
 
   private prepareStackParams(format: "png" | "tiff" = "png") {
-    const channels = this.getters.selectedChannels.map(channel => {
-      const color = this.settings!.getters.metalColorMap.get(channel.metal);
-      const settings = this.settings!.getters.getChannelSettings(channel.id);
+    const activeAcquisitionId = this.getters.activeAcquisitionId;
+    const channels = this.getters.selectedChannels.map((channel) => {
+      const color = this.settings!.getters.metalColorMap.get(channel.name);
+      const settings = this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name);
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;
       return {
-        id: channel.id,
+        name: channel.name,
         color: color,
         customLabel: customLabel,
         min: min,
-        max: max
+        max: max,
       };
     });
 
@@ -268,11 +265,12 @@ export class ExperimentActions extends Actions<
     const scalebar = this.settings!.getters.scalebar;
 
     const result = {
+      acquisitionId: activeAcquisitionId,
       format: format,
       filter: filter,
       legend: legend,
       scalebar: scalebar,
-      channels: channels
+      channels: channels,
     };
 
     const activeDataset = this.datasets!.getters.activeDataset;
@@ -286,7 +284,7 @@ export class ExperimentActions extends Actions<
           result["mask"] = {
             apply: maskSettings.apply,
             colorize: false,
-            location: mask.location
+            location: mask.location,
           };
         }
       }

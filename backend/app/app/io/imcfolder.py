@@ -13,13 +13,13 @@ from app.core.notifier import Message
 from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.io.utils import copy_dir
 from app.modules.acquisition import service as acquisition_service
-from app.modules.acquisition.models import Acquisition
+from app.modules.acquisition.models import AcquisitionModel
 from app.modules.acquisition.dto import AcquisitionCreateDto
 from app.modules.panorama import service as panorama_service
-from app.modules.panorama.models import Panorama
+from app.modules.panorama.models import PanoramaModel
 from app.modules.panorama.dto import PanoramaCreateDto
 from app.modules.slide import service as slide_service
-from app.modules.slide.models import Slide
+from app.modules.slide.models import SlideModel
 from app.modules.slide.dto import SlideCreateDto
 
 logger = logging.getLogger(__name__)
@@ -33,9 +33,9 @@ def import_imcfolder(db: Session, session_filename: str, experiment_id: int, use
     session_path = Path(session_filename)
     src_folder = session_path.parent
     session = data.Session.load(session_filename)
-    basename = session.name # schema_path.stem.replace("_schema", "")
+    basename = session.name  # schema_path.stem.replace("_schema", "")
 
-    slide_map: Dict[int, Slide] = dict()
+    slide_map: Dict[int, SlideModel] = dict()
     for slide_key, slide_item in session.slides.items():
         if slide_key is None:
             continue
@@ -50,7 +50,7 @@ def import_imcfolder(db: Session, session_filename: str, experiment_id: int, use
         origin_location = os.path.join(slide.location, "origin")
         copy_dir(src_folder, origin_location)
 
-    panorama_map: Dict[int, Panorama] = dict()
+    panorama_map: Dict[int, PanoramaModel] = dict()
     for panorama_key, panorama_item in session.panoramas.items():
         if panorama_key is None:
             continue
@@ -58,7 +58,7 @@ def import_imcfolder(db: Session, session_filename: str, experiment_id: int, use
         panorama = _import_panorama(db, panorama_item, slide)
         panorama_map[panorama.origin_id] = panorama
 
-    acquisition_map: Dict[int, Acquisition] = dict()
+    acquisition_map: Dict[int, AcquisitionModel] = dict()
     for acquisition_key, acquisition_item in session.acquisitions.items():
         if acquisition_key is None:
             continue
@@ -66,48 +66,81 @@ def import_imcfolder(db: Session, session_filename: str, experiment_id: int, use
         acquisition = _import_acquisition(db, acquisition_item, slide, basename)
         acquisition_map[acquisition.origin_id] = acquisition
 
-    # for channel_key, channel_item in channel_data.items():
-    #     if channel_key is None:
-    #         continue
-    #     acquisition = acquisition_map.get(channel_item.get(mcdxmlparser.ACQUISITIONID))
-    #     _import_channel(db, channel_item, acquisition)
-
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
 
 
-def _import_slide(db: Session, slide_item: data.Slide, experiment_id: int, name: str):
+def _import_slide(db: Session, item: data.Slide, experiment_id: int, name: str):
     params = SlideCreateDto(
         experiment_id=experiment_id,
         name=name,
-        origin_id=slide_item.id,
-        meta=slide_item.metadata,
-        xml_meta=None,
+        origin_id=item.id,
+        width_um=item.width_um,
+        height_um=item.height_um,
+        has_slide_image=item.has_slide_image,
+        meta=item.metadata,
+        session_meta=item.session.metadata,
     )
     slide = slide_service.create(db, params=params)
     return slide
 
 
-def _import_panorama(db: Session, panorama_item: data.Panorama, slide: Slide):
+def _import_panorama(db: Session, item: data.Panorama, slide: SlideModel):
+    origin_location = os.path.join(slide.location, "origin")
+    location = os.path.join(origin_location, f"{item.metaname}_pano.png",)
     params = PanoramaCreateDto(
         slide_id=slide.id,
-        origin_id=panorama_item.id,
-        meta=panorama_item.metadata
+        origin_id=item.id,
+        image_type=item.image_type,
+        description=item.description,
+        start_position_x=item.start_position_x,
+        start_position_y=item.start_position_y,
+        width=item.width,
+        height=item.height,
+        rotation_angle=item.rotation_angle,
+        location=location if item.image_type != "Default" else None,
+        meta=item.metadata,
     )
     panorama = panorama_service.create(db, params=params)
     return panorama
 
 
-def _import_acquisition(db: Session, acquisition_item: data.Acquisition, slide: Slide, basename: str):
+def _import_acquisition(db: Session, item: data.Acquisition, slide: SlideModel, basename: str):
     origin_location = os.path.join(slide.location, "origin")
-    location = os.path.join(
-        origin_location,
-        f"{acquisition_item.meta_name}_ac.ome.tiff",
-    )
+    location = os.path.join(origin_location, f"{item.metaname}_ac.ome.tiff",)
+
+    # Import channel data
+    channels = dict()
+    for channel_key, channel_item in item.channels.items():
+        channel_data = channel_item.__getstate__()
+        del channel_data["metadata"]
+        channels[channel_item.name] = channel_data
+
     params = AcquisitionCreateDto(
         slide_id=slide.id,
-        origin_id=acquisition_item.id,
-        location=location,
-        meta=acquisition_item.metadata
+        origin_id=item.id,
+        description=item.description,
+        max_x=item.max_x,
+        max_y=item.max_y,
+        signal_type=item.signal_type,
+        segment_data_format=item.segment_data_format,
+        ablation_frequency=item.ablation_frequency,
+        ablation_power=item.ablation_power,
+        start_timestamp=item.start_timestamp.isoformat() if item.is_valid else None,
+        end_timestamp=item.end_timestamp.isoformat() if item.is_valid else None,
+        movement_type=item.movement_type,
+        ablation_distance_between_shots_x=item.ablation_distance_between_shots_x,
+        ablation_distance_between_shots_y=item.ablation_distance_between_shots_y,
+        template=item.template,
+        roi_start_x_pos_um=item.roi_start_x_pos_um,
+        roi_start_y_pos_um=item.roi_start_y_pos_um,
+        roi_end_x_pos_um=item.roi_end_x_pos_um,
+        roi_end_y_pos_um=item.roi_end_y_pos_um,
+        has_before_ablation_image=item.has_before_ablation_image,
+        has_after_ablation_image=item.has_after_ablation_image,
+        is_valid=item.is_valid,
+        channels=channels,
+        location=location if item.is_valid else None,
+        meta=item.metadata,
     )
     acquisition = acquisition_service.create(db, params)
     return acquisition

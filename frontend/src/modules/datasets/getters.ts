@@ -20,16 +20,16 @@ export class DatasetGetters extends Getters<DatasetState> {
     if (!this.getters.activeDataset || !this.getters.activeDataset.input["neighbors_columns"]) {
       return [];
     }
-    const channelItems = this.getters.channels.map(item => {
+    const channelItems = this.getters.channels.map((item) => {
       return {
         type: "channel",
-        label: item
+        label: item,
       };
     });
-    const neighborItems = this.getters.activeDataset.input["neighbors_columns"].map(item => {
+    const neighborItems = this.getters.activeDataset.input["neighbors_columns"].map((item) => {
       return {
         type: "neighbor",
-        label: item.substring(10, item.length)
+        label: item.substring(10, item.length),
       };
     });
     return channelItems.concat(neighborItems);

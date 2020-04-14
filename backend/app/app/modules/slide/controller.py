@@ -7,7 +7,7 @@ from starlette.responses import FileResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
-from app.modules.user.models import User
+from app.modules.user.models import UserModel
 
 from . import service
 from .dto import SlideDto
@@ -20,7 +20,7 @@ def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Retrieve slides
@@ -31,7 +31,7 @@ def read_all(
 
 @router.get("/{id}", response_model=SlideDto)
 def read_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific slide by id
@@ -57,7 +57,7 @@ async def read_slide_image(
 
 @router.delete("/{id}", response_model=SlideDto)
 def delete_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific slide by id

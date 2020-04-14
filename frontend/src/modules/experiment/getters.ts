@@ -11,7 +11,7 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   }
 
   getExperiment(id?: number) {
-    return this.getters.experiments.find(item => item.id === id);
+    return this.getters.experiments.find((item) => item.id === id);
   }
 
   get activeExperiment() {
@@ -21,13 +21,9 @@ export class ExperimentGetters extends Getters<ExperimentState> {
   get activeAcquisition() {
     if (this.getters.activeExperiment && this.getters.activeExperiment.slides) {
       for (const slide of this.getters.activeExperiment.slides) {
-        for (const panorama of slide.panoramas) {
-          for (const roi of panorama.rois) {
-            const acquisition = roi.acquisitions.find(item => item.id === this.state.activeAcquisitionId);
-            if (acquisition) {
-              return acquisition;
-            }
-          }
+        const acquisition = slide.acquisitions.find((item) => item.id === this.state.activeAcquisitionId);
+        if (acquisition) {
+          return acquisition;
         }
       }
     }
@@ -40,8 +36,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
 
   get selectedChannels() {
     if (this.getters.activeAcquisition) {
-      return this.getters.activeAcquisition.channels.filter(channel => {
-        if (this.getters.selectedMetals.includes(channel.metal)) {
+      return Object.values(this.getters.activeAcquisition.channels).filter((channel) => {
+        if (this.getters.selectedMetals.includes(channel.name)) {
           return channel;
         }
       });
@@ -60,6 +56,10 @@ export class ExperimentGetters extends Getters<ExperimentState> {
 
   get activeExperimentId() {
     return this.state.activeExperimentId;
+  }
+
+  get activeAcquisitionId() {
+    return this.state.activeAcquisitionId;
   }
 
   get activeWorkspaceNode() {

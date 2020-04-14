@@ -23,9 +23,15 @@ def upgrade():
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('slide_id', sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True),
         sa.Column('origin_id', sa.Integer(), index=True),
+        sa.Column('image_type', sa.String()),
+        sa.Column('description', sa.String()),
+        sa.Column('start_position_x', sa.Float()),
+        sa.Column('start_position_y', sa.Float()),
+        sa.Column('width', sa.Float()),
+        sa.Column('height', sa.Float()),
+        sa.Column('rotation_angle', sa.Float()),
         sa.Column('meta', JSONB()),
         sa.Column('location', sa.String(4096)),
-        sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 
 

@@ -13,7 +13,7 @@ from app.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from app.io.utils import copy_file, locate
 from app.modules.acquisition import service as acquisition_service
 from app.modules.dataset import service as dataset_service
-from app.modules.dataset.models import Dataset
+from app.modules.dataset.models import DatasetModel
 from app.modules.dataset.dto import DatasetCreateDto, DatasetUpdateDto
 from app.modules.experiment import service as experiment_service
 from app.modules.panorama import service as panorama_service
@@ -153,7 +153,7 @@ def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path):
     return df, artifact
 
 
-def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, dataset: Dataset):
+def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, dataset: DatasetModel):
     filename = row["FileName_CellImage"]
     image_number = row["ImageNumber"]
     uri = src_folder / filename

@@ -64,7 +64,7 @@ export default class UploadArtifactsDialog extends Vue {
       formData.append("file", file, file.name);
       await this.datasetContext.actions.uploadDataset({
         experimentId: this.experimentContext.getters.activeExperimentId,
-        data: formData
+        data: formData,
       });
       this.dialog = false;
     }

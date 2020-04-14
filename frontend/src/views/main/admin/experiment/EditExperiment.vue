@@ -98,9 +98,9 @@ export default class EditExperiment extends Vue {
 
   get items(): any[] {
     const list = this.experimentContext.getters.tags;
-    return list.map(item => {
+    return list.map((item) => {
       return {
-        text: item
+        text: item,
       };
     });
   }
@@ -126,9 +126,9 @@ export default class EditExperiment extends Vue {
       this.name = this.experiment.name;
       this.description = this.experiment.description;
       this.tags = this.experiment.tags
-        ? this.experiment.tags.map(item => {
+        ? this.experiment.tags.map((item) => {
             return {
-              text: item
+              text: item,
             };
           })
         : [];
@@ -145,10 +145,10 @@ export default class EditExperiment extends Vue {
       return;
     }
 
-    this.tags = val.map(v => {
+    this.tags = val.map((v) => {
       if (typeof v === "string") {
         v = {
-          text: v
+          text: v,
         };
         this.items.push(v);
         this.nonce++;
@@ -168,17 +168,12 @@ export default class EditExperiment extends Vue {
   }
 
   filter(item, queryText: string, itemText: string) {
-    const hasValue = val => (val != null ? val : "");
+    const hasValue = (val) => (val != null ? val : "");
 
     const text = hasValue(itemText);
     const query = hasValue(queryText);
 
-    return (
-      text
-        .toString()
-        .toLowerCase()
-        .indexOf(query.toString().toLowerCase()) > -1
-    );
+    return text.toString().toLowerCase().indexOf(query.toString().toLowerCase()) > -1;
   }
 
   async submit() {
@@ -191,7 +186,7 @@ export default class EditExperiment extends Vue {
         data.description = this.description;
       }
       if (this.tags && this.tags.length > 0) {
-        data.tags = this.tags.map(tag => tag.text);
+        data.tags = this.tags.map((tag) => tag.text);
       }
       await this.experimentContext.actions.updateExperiment({ id: this.experiment!.id, data: data });
       this.$router.push("/main/admin/experiments");

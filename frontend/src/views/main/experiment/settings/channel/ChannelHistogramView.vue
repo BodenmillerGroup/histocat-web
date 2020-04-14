@@ -51,26 +51,15 @@ export default class ChannelHistogramView extends Vue {
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Add X axis
-    const x = d3
-      .scaleLinear()
-      .domain([0, xMax])
-      .range([0, width]);
+    const x = d3.scaleLinear().domain([0, xMax]).range([0, width]);
     const xAxis = svg
       .append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
 
     // Add Y axis
-    const y = d3
-      .scaleLinear()
-      .domain([0, yMax])
-      .range([height, 0]);
-    svg.append("g").call(
-      d3
-        .axisLeft(y)
-        .ticks(6)
-        .tickFormat(d3.format(".0s"))
-    );
+    const y = d3.scaleLinear().domain([0, yMax]).range([height, 0]);
+    svg.append("g").call(d3.axisLeft(y).ticks(6).tickFormat(d3.format(".0s")));
 
     // Add a clipPath: everything out of this area won't be drawn.
     const clip = svg
@@ -105,8 +94,13 @@ export default class ChannelHistogramView extends Vue {
   }
 
   async mounted() {
-    this.stats = await this.experimentContext.actions.getChannelStats(this.channel.id);
-    this.showHistogram();
+    if (this.experimentContext.getters.activeAcquisitionId) {
+      this.stats = await this.experimentContext.actions.getChannelStats({
+        acquisitionId: this.experimentContext.getters.activeAcquisitionId,
+        channelName: this.channel.name,
+      });
+      this.showHistogram();
+    }
   }
 }
 </script>

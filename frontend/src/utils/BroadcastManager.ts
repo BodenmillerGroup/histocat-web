@@ -32,13 +32,13 @@ export class BroadcastManager {
     BroadcastManager.settingsContext = settingsModule.context(store);
 
     BroadcastManager.channel = new BroadcastChannel("HistoCAT");
-    BroadcastManager.channel.onmessage = ev => {
+    BroadcastManager.channel.onmessage = (ev) => {
       const method = ev.data.method;
       const payload = ev.data.payload;
       payload.suppressBroadcast = true; // Suppress broadcasting
       this.settingsContext.mutations[method](payload);
     };
-    BroadcastManager.channel.onmessageerror = ev => {
+    BroadcastManager.channel.onmessageerror = (ev) => {
       console.log(ev);
     };
   }

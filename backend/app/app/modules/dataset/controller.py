@@ -11,7 +11,7 @@ from starlette.responses import StreamingResponse
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core.utils import stream_bytes
-from app.modules.user.models import User
+from app.modules.user.models import UserModel
 
 from . import service
 from .dto import DatasetDto
@@ -22,8 +22,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[DatasetDto])
 def read_all(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Retrieve datasets
@@ -34,7 +33,7 @@ def read_all(
 
 @router.get("/experiment/{experiment_id}", response_model=List[DatasetDto])
 def read_own_by_experiment(
-    experiment_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user),
+    experiment_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Retrieve own datasets for specified experiment
@@ -45,7 +44,7 @@ def read_own_by_experiment(
 
 @router.get("/{id}", response_model=DatasetDto)
 def read_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific dataset by id
@@ -56,7 +55,7 @@ def read_by_id(
 
 @router.delete("/{id}", response_model=DatasetDto)
 def delete_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific dataset by id

@@ -76,7 +76,7 @@ import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
-  components: { IntensityView, BlendView }
+  components: { IntensityView, BlendView },
 })
 export default class BlendTab extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
@@ -95,7 +95,7 @@ export default class BlendTab extends Vue {
   set applyMask(value: boolean) {
     this.settingsContext.mutations.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
-      apply: value
+      apply: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }
@@ -138,13 +138,13 @@ export default class BlendTab extends Vue {
     }
     const polygon = this.selectedRegion.getGeometry()! as Polygon;
     const coords = polygon.getCoordinates()[0];
-    const height = parseFloat(this.activeAcquisition.meta.MaxY);
+    const height = this.activeAcquisition.max_y;
     // TODO: Y axis flip
-    const convertedCoords = coords.map(point => [point[0], Math.abs(point[1] - height)]);
+    const convertedCoords = coords.map((point) => [point[0], Math.abs(point[1] - height)]);
     const params: IRegionStatsSubmission = {
       experiment_id: this.activeExperimentId,
       acquisition_id: this.activeAcquisition.id,
-      region_polygon: convertedCoords
+      region_polygon: convertedCoords,
     };
     return this.analysisContext.actions.calculateRegionStats(params);
   }

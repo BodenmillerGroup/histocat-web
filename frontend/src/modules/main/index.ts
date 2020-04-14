@@ -26,5 +26,5 @@ export const mainModule = new Module({
   state: MainState,
   getters: MainGetters,
   mutations: MainMutations,
-  actions: MainActions
+  actions: MainActions,
 });

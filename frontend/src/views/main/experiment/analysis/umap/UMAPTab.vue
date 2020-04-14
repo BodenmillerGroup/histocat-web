@@ -123,11 +123,11 @@ const commonOptions: echarts.EChartOption = {
   title: {
     text: "Uniform Manifold Approximation and Projection",
     left: "center",
-    top: 0
+    top: 0,
   },
   animation: false,
   tooltip: {
-    show: true
+    show: true,
   },
   toolbox: {
     show: true,
@@ -135,20 +135,20 @@ const commonOptions: echarts.EChartOption = {
     feature: {
       restore: {
         show: true,
-        title: "Reset"
+        title: "Reset",
       },
       saveAsImage: {
         show: true,
-        title: "Export"
+        title: "Export",
       },
       dataView: {
         show: true,
         title: "Data",
         readOnly: true,
-        lang: ["Data View", "Hide", "Refresh"]
-      }
-    }
-  }
+        lang: ["Data View", "Hide", "Refresh"],
+      },
+    },
+  },
 };
 
 @Component
@@ -172,7 +172,7 @@ export default class UMAPTab extends Vue {
     "wminkowski",
     "seuclidean",
     "cosine",
-    "correlation"
+    "correlation",
   ];
 
   valid = false;
@@ -241,7 +241,7 @@ export default class UMAPTab extends Vue {
         markers: this.selectedChannels,
         n_neighbors: this.nNeighbors,
         min_dist: this.minDist,
-        metric: this.metric
+        metric: this.metric,
       });
     }
   }
@@ -278,7 +278,7 @@ export default class UMAPTab extends Vue {
       datasetId: this.activeDataset.id,
       name: this.result ? this.result.name : "",
       heatmapType: this.heatmap ? this.heatmap.type : "",
-      heatmap: heatmap
+      heatmap: heatmap,
     });
   }
 
@@ -312,22 +312,22 @@ export default class UMAPTab extends Vue {
         type: "value",
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis: {
         type: "value",
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       dataset: {
         source: points,
         dimensions: [
           { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" }
-        ]
+          { name: data.y.label, type: "float" },
+        ],
       },
       series: [
         {
@@ -338,10 +338,10 @@ export default class UMAPTab extends Vue {
           encode: {
             x: data.x.label,
             y: data.y.label,
-            tooltip: [data.x.label, data.y.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label],
+          },
+        },
+      ],
     };
 
     if (data.heatmap) {
@@ -360,30 +360,30 @@ export default class UMAPTab extends Vue {
         type: "value",
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis3D: {
         type: "value",
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       zAxis3D: {
         type: "value",
         name: data.z!.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       dataset: {
         source: [data.x.data, data.y.data, data.z!.data],
         dimensions: [
           { name: data.x.label, type: "float" },
           { name: data.y.label, type: "float" },
-          { name: data.z!.label, type: "float" }
-        ]
+          { name: data.z!.label, type: "float" },
+        ],
       },
       series: [
         {
@@ -395,10 +395,10 @@ export default class UMAPTab extends Vue {
             x: data.x.label,
             y: data.y.label,
             z: data.z!.label,
-            tooltip: [data.x.label, data.y.label, data.z!.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label, data.z!.label],
+          },
+        },
+      ],
     } as echarts.EChartOption;
 
     if (data.heatmap) {
@@ -429,7 +429,7 @@ export default class UMAPTab extends Vue {
           60, // up
           20, // right
           5, // down
-          5 // left
+          5, // left
         ],
         inRange: {
           color: [
@@ -453,10 +453,10 @@ export default class UMAPTab extends Vue {
             "#ffd8b1",
             "#000075",
             "#808080",
-            "#000000"
-          ]
-        }
-      }
+            "#000000",
+          ],
+        },
+      },
     ];
   }
 
@@ -474,9 +474,9 @@ export default class UMAPTab extends Vue {
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#ff5200"]
-        }
-      }
+          color: ["#4457cc", "#ff5200"],
+        },
+      },
     ];
   }
 }

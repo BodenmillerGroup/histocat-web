@@ -37,7 +37,7 @@ export default class ScalebarSettingsView extends Vue {
   set apply(value: boolean) {
     this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
-      apply: value
+      apply: value,
     });
     this.experimentContext.actions.getChannelStackImage();
   }
@@ -52,8 +52,8 @@ export default class ScalebarSettingsView extends Vue {
     this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
       settings: {
-        scale: value
-      }
+        scale: value,
+      },
     });
     if (this.apply) {
       this.experimentContext.actions.getChannelStackImage();

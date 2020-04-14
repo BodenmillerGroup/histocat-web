@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from app.db.base import Base
 
 
-class User(Base):
+class UserModel(Base):
     __tablename__ = "user"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
@@ -15,8 +15,8 @@ class User(Base):
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
     updated_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
-    experiments = sa.orm.relationship("Experiment", back_populates="user", cascade="all, delete, delete-orphan")
-    datasets = sa.orm.relationship("Dataset", back_populates="user", cascade="all, delete, delete-orphan")
+    experiments = sa.orm.relationship("ExperimentModel", back_populates="user", cascade="all, delete, delete-orphan")
+    datasets = sa.orm.relationship("DatasetModel", back_populates="user", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, email={self.email}, name={self.name})>"

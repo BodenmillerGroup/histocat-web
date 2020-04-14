@@ -25,5 +25,5 @@ export const experimentModule = new Module({
   state: ExperimentState,
   getters: ExperimentGetters,
   mutations: ExperimentMutations,
-  actions: ExperimentActions
+  actions: ExperimentActions,
 });

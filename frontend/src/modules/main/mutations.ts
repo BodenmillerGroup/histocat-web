@@ -35,7 +35,7 @@ export class MainMutations extends Mutations<MainState> {
   }
 
   removeNotification(payload: AppNotification) {
-    this.state.notifications = this.state.notifications.filter(notification => notification !== payload);
+    this.state.notifications = this.state.notifications.filter((notification) => notification !== payload);
   }
 
   setLayout(payload: { showWorkspace: boolean; showOptions: boolean }) {

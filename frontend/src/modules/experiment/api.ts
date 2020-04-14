@@ -7,7 +7,7 @@ import {
   IExperimentUpdate,
   IShare,
   IShareCreate,
-  ISlide
+  ISlide,
 } from "./models";
 import { ApiManager } from "@/utils/api";
 
@@ -23,14 +23,14 @@ export const api = {
   async updateExperiment(id: number, data: IExperimentUpdate) {
     return ApiManager.api
       .put(`experiments/${id}`, {
-        json: data
+        json: data,
       })
       .json<IExperiment>();
   },
   async createExperiment(data: IExperimentCreate) {
     return ApiManager.api
       .post(`experiments`, {
-        json: data
+        json: data,
       })
       .json<IExperiment>();
   },
@@ -50,7 +50,7 @@ export const api = {
     xhr.upload.onloadstart = onLoadStart;
     xhr.upload.onprogress = onProgress;
     xhr.upload.onload = onLoad;
-    xhr.upload.onerror = function() {
+    xhr.upload.onerror = function () {
       console.log(`Error during file upload: ${xhr.status}.`);
       onError();
     };
@@ -74,8 +74,8 @@ export const api = {
   async getExperimentData(id: number) {
     return ApiManager.api.get(`experiments/${id}/data`).json<IExperiment>();
   },
-  async getChannelStats(id: number) {
-    const url = `channels/${id}/stats?bins=100`;
+  async getChannelStats(acquisitionId: number, channelName: string) {
+    const url = `acquisitions/${acquisitionId}/${channelName}/stats?bins=100`;
     let cache;
     if (cacheAvailable) {
       cache = await self.caches.open("stats");
@@ -93,15 +93,15 @@ export const api = {
     return response.json() as Promise<IChannelStats>;
   },
   async downloadChannelStackImage(params: IChannelStack) {
-    return ApiManager.api.post(`channels/stack`, {
+    return ApiManager.api.post(`acquisitions/stack`, {
       json: params,
-      timeout: false
+      timeout: false,
     });
   },
   async createShare(data: IShareCreate) {
     return ApiManager.api
       .post(`share`, {
-        json: data
+        json: data,
       })
       .json<IShare>();
   },
@@ -110,5 +110,5 @@ export const api = {
   },
   async deleteSlide(id: number) {
     return ApiManager.api.delete(`slides/${id}`).json<ISlide>();
-  }
+  },
 };

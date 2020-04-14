@@ -4,14 +4,14 @@
 
 from app.core import config
 from app.db.base import Base  # noqa
-from app.modules.acquisition.models import Acquisition  # noqa
-from app.modules.dataset.models import Dataset  # noqa
-from app.modules.experiment.models import Experiment  # noqa
-from app.modules.panorama.models import Panorama  # noqa
-from app.modules.share.models import Share  # noqa
-from app.modules.slide.models import Slide  # noqa
+from app.modules.acquisition.models import AcquisitionModel  # noqa
+from app.modules.dataset.models import DatasetModel  # noqa
+from app.modules.experiment.models import ExperimentModel  # noqa
+from app.modules.panorama.models import PanoramaModel  # noqa
+from app.modules.share.models import ShareModel  # noqa
+from app.modules.slide.models import SlideModel  # noqa
 from app.modules.user import service
-from app.modules.user.models import User  # noqa
+from app.modules.user.models import UserModel  # noqa
 from app.modules.user.dto import UserCreateDto
 
 
@@ -23,9 +23,5 @@ def init_db(db_session):
 
     user = service.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
-        user_in = UserCreateDto(
-            email=config.FIRST_SUPERUSER,
-            password=config.FIRST_SUPERUSER_PASSWORD,
-            is_admin=True,
-        )
+        user_in = UserCreateDto(email=config.FIRST_SUPERUSER, password=config.FIRST_SUPERUSER_PASSWORD, is_admin=True,)
         user = service.create(db_session, params=user_in)

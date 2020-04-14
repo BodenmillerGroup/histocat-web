@@ -43,31 +43,31 @@ export default class AdminUsers extends Vue {
       text: "Email",
       sortable: true,
       value: "email",
-      align: "left"
+      align: "left",
     },
     {
       text: "Name",
       sortable: true,
       value: "name",
-      align: "left"
+      align: "left",
     },
     {
       text: "Is Active",
       sortable: true,
       value: "is_active",
-      align: "left"
+      align: "left",
     },
     {
       text: "Is Admin",
       sortable: true,
       value: "is_admin",
-      align: "left"
+      align: "left",
     },
     {
       text: "Actions",
       value: "action",
-      sortable: false
-    }
+      sortable: false,
+    },
   ];
 
   get users() {

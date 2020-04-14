@@ -14,7 +14,7 @@ import {
   IPhenoGraphSubmission,
   IRegionStatsSubmission,
   ITSNESubmission,
-  IUMAPSubmission
+  IUMAPSubmission,
 } from "./models";
 import { AnalysisMutations } from "./mutations";
 
@@ -184,18 +184,19 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   }
 
   private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: "png" | "tiff" = "png") {
-    const channels = this.experiment!.getters.selectedChannels.map(channel => {
-      const color = this.settings!.getters.metalColorMap.get(channel.metal);
-      const settings = this.settings!.getters.getChannelSettings(channel.id);
+    const activeAcquisitionId = this.experiment!.getters.activeAcquisitionId;
+    const channels = this.experiment!.getters.selectedChannels.map((channel) => {
+      const color = this.settings!.getters.metalColorMap.get(channel.name);
+      const settings = this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name);
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;
       return {
-        id: channel.id,
+        name: channel.name,
         color: color,
         customLabel: customLabel,
         min: min,
-        max: max
+        max: max,
       };
     });
 
@@ -207,7 +208,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
       filter: filter,
       scalebar: scalebar,
       channels: channels,
-      settings: segmentationSettings
+      settings: segmentationSettings,
     };
   }
 }

@@ -6,27 +6,27 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
-from .models import DATASET_LOCATION_FORMAT, Dataset
+from .models import DATASET_LOCATION_FORMAT, DatasetModel
 from .dto import DatasetCreateDto, DatasetUpdateDto
 
 logger = logging.getLogger(__name__)
 
 
-def get(session: Session, *, id: int) -> Optional[Dataset]:
-    return session.query(Dataset).filter(Dataset.id == id).first()
+def get(session: Session, *, id: int) -> Optional[DatasetModel]:
+    return session.query(DatasetModel).filter(DatasetModel.id == id).first()
 
 
-def get_own_by_experiment_id(session: Session, *, experiment_id: int) -> List[Dataset]:
-    return session.query(Dataset).filter(Dataset.experiment_id == experiment_id).all()
+def get_own_by_experiment_id(session: Session, *, experiment_id: int) -> List[DatasetModel]:
+    return session.query(DatasetModel).filter(DatasetModel.experiment_id == experiment_id).all()
 
 
-def get_multi(session: Session, *, skip: int = 0, limit: int = 1000) -> List[Dataset]:
-    return session.query(Dataset).offset(skip).limit(limit).all()
+def get_multi(session: Session, *, skip: int = 0, limit: int = 1000) -> List[DatasetModel]:
+    return session.query(DatasetModel).offset(skip).limit(limit).all()
 
 
-def create(session: Session, *, params: DatasetCreateDto) -> Dataset:
+def create(session: Session, *, params: DatasetCreateDto) -> DatasetModel:
     data = jsonable_encoder(params)
-    entity = Dataset(**data)
+    entity = DatasetModel(**data)
     session.add(entity)
     session.commit()
     session.refresh(entity)
@@ -41,7 +41,7 @@ def create(session: Session, *, params: DatasetCreateDto) -> Dataset:
     return entity
 
 
-def update(session: Session, *, item: Dataset, params: DatasetUpdateDto) -> Dataset:
+def update(session: Session, *, item: DatasetModel, params: DatasetUpdateDto) -> DatasetModel:
     data = jsonable_encoder(item)
     update_data = params.dict(skip_defaults=True)
     for field in data:
@@ -53,8 +53,8 @@ def update(session: Session, *, item: Dataset, params: DatasetUpdateDto) -> Data
     return item
 
 
-def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> Dataset:
-    item = session.query(Dataset).filter(Dataset.id == dataset_id).first()
+def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> DatasetModel:
+    item = session.query(DatasetModel).filter(DatasetModel.id == dataset_id).first()
     session.refresh(item, attribute_names=["output"])
 
     output = item.output if item.output else {}
@@ -72,7 +72,7 @@ def update_output(session: Session, *, dataset_id: int, result_type: str, result
 
 
 def remove(session: Session, *, id: int):
-    item = session.query(Dataset).filter(Dataset.id == id).first()
+    item = session.query(DatasetModel).filter(DatasetModel.id == id).first()
     if item:
         session.delete(item)
         session.commit()

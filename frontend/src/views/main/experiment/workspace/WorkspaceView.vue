@@ -20,8 +20,8 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component({
   components: {
     DatasetsView,
-    SlidesTreeView
-  }
+    SlidesTreeView,
+  },
 })
 export default class WorkspaceView extends Vue {
   @Prop(Object) readonly experiment!: IExperiment;

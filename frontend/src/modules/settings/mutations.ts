@@ -6,53 +6,58 @@ import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSett
 
 export class SettingsMutations extends Mutations<SettingsState> {
   resetSettings(payload: { suppressBroadcast?: boolean }) {
-    this.state.channelsSettings = new Map<number, IChannelSettings>();
+    this.state.channelSettings = new Map<number, Map<string, IChannelSettings>>();
     this.state.metalColorMap = new Map<string, string>();
     this.state.filter = {
       apply: false,
       type: "gaussian",
       settings: {
         sigma: 1.0,
-        kernel_size: 3
-      }
+        kernel_size: 3,
+      },
     };
     this.state.legend = {
       apply: false,
       fontScale: 1.0,
-      showIntensity: false
+      showIntensity: false,
     };
     this.state.scalebar = {
       apply: false,
       settings: {
-        scale: 1.0
-      }
+        scale: 1.0,
+      },
     };
     this.state.segmentationSettings = {
       algorithm: "Otsu Hue",
       iterations: 1,
       kernel_size: 3,
       mask_color: "#00AAFF40",
-      result_type: "origin"
+      result_type: "origin",
     };
     this.state.mask = {
       apply: false,
-      location: undefined
+      location: undefined,
     };
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.resetSettings.name,
-        payload: payload
+        payload: payload,
       });
     }
   }
 
-  setChannelSettings(payload: IChannelSettings) {
-    this.state.channelsSettings.set(payload.id, payload);
-    this.state.channelsSettings = new Map(this.state.channelsSettings);
-    if (!payload.suppressBroadcast) {
+  setChannelSettings(channelSettings: IChannelSettings) {
+    let acquisitionChannelSettings = this.state.channelSettings.get(channelSettings.acquisitionId);
+    if (!acquisitionChannelSettings) {
+      acquisitionChannelSettings = new Map<string, IChannelSettings>();
+    }
+    acquisitionChannelSettings.set(channelSettings.name, channelSettings);
+    this.state.channelSettings.set(channelSettings.acquisitionId, acquisitionChannelSettings);
+    this.state.channelSettings = new Map(this.state.channelSettings);
+    if (!channelSettings.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setChannelSettings.name,
-        payload: payload
+        payload: channelSettings,
       });
     }
   }
@@ -63,7 +68,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setMetalColor.name,
-        payload: payload
+        payload: payload,
       });
     }
   }
@@ -73,7 +78,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setFilter.name,
-        payload: payload
+        payload: payload,
       });
     }
   }
@@ -83,7 +88,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setLegend.name,
-        payload: payload
+        payload: payload,
       });
     }
   }
@@ -93,7 +98,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setScalebar.name,
-        payload: payload
+        payload: payload,
       });
     }
   }
@@ -103,7 +108,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setSegmentationSettings.name,
-        payload: payload
+        payload: payload,
       });
     }
   }
@@ -113,7 +118,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     if (!payload.suppressBroadcast) {
       BroadcastManager.postMessage({
         method: this.setMaskSettings.name,
-        payload: payload
+        payload: payload,
       });
     }
   }

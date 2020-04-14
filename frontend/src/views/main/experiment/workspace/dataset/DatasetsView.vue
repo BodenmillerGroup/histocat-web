@@ -75,7 +75,7 @@ export default class DatasetsView extends Vue {
   readonly apiUrl = apiUrl;
   readonly icons = {
     pending: "mdi-progress-clock",
-    ready: "mdi-check-circle-outline"
+    ready: "mdi-check-circle-outline",
   };
 
   selected?: number | null = null;
@@ -95,10 +95,10 @@ export default class DatasetsView extends Vue {
   }
 
   get items() {
-    return this.datasets.map(dataset => {
+    return this.datasets.map((dataset) => {
       return Object.assign({}, dataset, {
         icon: this.icons[dataset.status],
-        createdAt: new Date(dataset.created_at).toUTCString()
+        createdAt: new Date(dataset.created_at).toUTCString(),
       });
     });
   }

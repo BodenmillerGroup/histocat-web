@@ -50,10 +50,10 @@ export default class InfoCard extends Vue {
   get items() {
     if (this.node.item.meta) {
       const items = Object.entries(this.node.item.meta);
-      return items.map(item => {
+      return items.map((item) => {
         return {
           name: item[0],
-          value: item[1]
+          value: item[1],
         };
       });
     } else {

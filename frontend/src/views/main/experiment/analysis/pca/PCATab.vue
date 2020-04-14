@@ -74,11 +74,11 @@ const commonOptions: echarts.EChartOption = {
   title: {
     text: "Principal Component Analysis",
     left: "center",
-    top: 0
+    top: 0,
   },
   animation: false,
   tooltip: {
-    show: true
+    show: true,
   },
   toolbox: {
     show: true,
@@ -86,20 +86,20 @@ const commonOptions: echarts.EChartOption = {
     feature: {
       restore: {
         show: true,
-        title: "Reset"
+        title: "Reset",
       },
       saveAsImage: {
         show: true,
-        title: "Export"
+        title: "Export",
       },
       dataView: {
         show: true,
         title: "Data",
         readOnly: true,
-        lang: ["Data View", "Hide", "Refresh"]
-      }
-    }
-  }
+        lang: ["Data View", "Hide", "Refresh"],
+      },
+    },
+  },
 };
 
 @Component
@@ -167,7 +167,7 @@ export default class PCATab extends Vue {
       n_components: parseInt(this.nComponents, 10),
       heatmapType: this.heatmap ? this.heatmap.type : "",
       heatmap: heatmap,
-      markers: this.selectedChannels
+      markers: this.selectedChannels,
     });
   }
 
@@ -201,22 +201,22 @@ export default class PCATab extends Vue {
         type: "value",
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis: {
         type: "value",
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       dataset: {
         source: points,
         dimensions: [
           { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" }
-        ]
+          { name: data.y.label, type: "float" },
+        ],
       },
       series: [
         {
@@ -227,10 +227,10 @@ export default class PCATab extends Vue {
           encode: {
             x: data.x.label,
             y: data.y.label,
-            tooltip: [data.x.label, data.y.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label],
+          },
+        },
+      ],
     };
 
     if (data.heatmap) {
@@ -249,30 +249,30 @@ export default class PCATab extends Vue {
         type: "value",
         name: data.x.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       yAxis3D: {
         type: "value",
         name: data.y.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       zAxis3D: {
         type: "value",
         name: data.z!.label,
         nameTextStyle: {
-          fontWeight: "bold"
-        }
+          fontWeight: "bold",
+        },
       },
       dataset: {
         source: [data.x.data, data.y.data, data.z!.data],
         dimensions: [
           { name: data.x.label, type: "float" },
           { name: data.y.label, type: "float" },
-          { name: data.z!.label, type: "float" }
-        ]
+          { name: data.z!.label, type: "float" },
+        ],
       },
       series: [
         {
@@ -284,10 +284,10 @@ export default class PCATab extends Vue {
             x: data.x.label,
             y: data.y.label,
             z: data.z!.label,
-            tooltip: [data.x.label, data.y.label, data.z!.label]
-          }
-        }
-      ]
+            tooltip: [data.x.label, data.y.label, data.z!.label],
+          },
+        },
+      ],
     } as echarts.EChartOption;
 
     if (data.heatmap) {
@@ -318,7 +318,7 @@ export default class PCATab extends Vue {
           60, // up
           20, // right
           5, // down
-          5 // left
+          5, // left
         ],
         inRange: {
           color: [
@@ -342,10 +342,10 @@ export default class PCATab extends Vue {
             "#ffd8b1",
             "#000075",
             "#808080",
-            "#000000"
-          ]
-        }
-      }
+            "#000000",
+          ],
+        },
+      },
     ];
   }
 
@@ -363,9 +363,9 @@ export default class PCATab extends Vue {
         min: min,
         max: max,
         inRange: {
-          color: ["#4457cc", "#ff5200"]
-        }
-      }
+          color: ["#4457cc", "#ff5200"],
+        },
+      },
     ];
   }
 }

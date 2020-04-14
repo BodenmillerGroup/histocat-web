@@ -10,7 +10,7 @@ import app.worker as worker
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
 from app.core import config
-from app.modules.user.models import User
+from app.modules.user.models import UserModel
 
 from . import service
 from .dto import (
@@ -26,8 +26,7 @@ router = APIRouter()
 
 @router.get("/", response_model=List[ExperimentDto])
 def read_all(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Retrieve experiments
@@ -37,7 +36,7 @@ def read_all(
 
 
 @router.get("/tags", response_model=Set[str])
-def read_tags(db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+def read_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """
     Retrieve tags
     """
@@ -50,7 +49,7 @@ def create(
     *,
     db: Session = Depends(get_db),
     params: ExperimentCreateDto,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Create new experiment
@@ -69,7 +68,7 @@ def create(
 
 @router.get("/{id}", response_model=ExperimentDto)
 def read_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific experiment by id
@@ -80,7 +79,7 @@ def read_by_id(
 
 @router.delete("/{id}", response_model=ExperimentDto)
 def delete_by_id(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific experiment by id
@@ -95,7 +94,7 @@ def update(
     db: Session = Depends(get_db),
     id: int,
     params: ExperimentUpdateDto,
-    current_user: User = Depends(get_current_active_user),
+    current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Update an experiment
@@ -114,7 +113,7 @@ def update(
 def upload_data(
     id: int,
     file: UploadFile = File(None),
-    user: User = Depends(get_current_active_user),
+    user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
@@ -129,7 +128,7 @@ def upload_data(
 
 @router.get("/{id}/data", response_model=ExperimentDatasetDto)
 async def read_data(
-    id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get all experiment data

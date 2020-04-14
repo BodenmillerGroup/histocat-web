@@ -5,14 +5,14 @@ export const api = {
   async createDataset(data: IDatasetCreate) {
     return ApiManager.api
       .post(`datasets`, {
-        json: data
+        json: data,
       })
       .json<IDataset>();
   },
   async uploadDataset(experimentId: number, data) {
     return ApiManager.api.post(`datasets/experiment/${experimentId}/upload`, {
       body: data,
-      timeout: false
+      timeout: false,
     });
   },
   async getExperimentDatasets(experimentId: number) {
@@ -23,7 +23,7 @@ export const api = {
   },
   async downloadDataset(id: number) {
     return ApiManager.api.get(`datasets/${id}/download`, {
-      timeout: false
+      timeout: false,
     });
-  }
+  },
 };

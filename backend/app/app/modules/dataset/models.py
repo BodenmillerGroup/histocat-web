@@ -14,7 +14,7 @@ DATASET_LOCATION_FORMAT = "dataset_{id}"
 
 
 @remove_location_upon_delete
-class Dataset(Base):
+class DatasetModel(Base):
     """Dataset."""
 
     __tablename__ = "dataset"
@@ -33,8 +33,8 @@ class Dataset(Base):
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
     updated_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
-    experiment = sa.orm.relationship("Experiment", back_populates="datasets")
-    user = sa.orm.relationship("User", back_populates="datasets")
+    experiment = sa.orm.relationship("ExperimentModel", back_populates="datasets")
+    user = sa.orm.relationship("UserModel", back_populates="datasets")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

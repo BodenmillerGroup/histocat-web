@@ -8,7 +8,7 @@ from app.db.base import Base
 logger = logging.getLogger(__name__)
 
 
-class Share(Base):
+class ShareModel(Base):
     """Share."""
 
     __tablename__ = "share"
@@ -20,8 +20,8 @@ class Share(Base):
     permissions = sa.Column(ARRAY(sa.String(64)))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    user = sa.orm.relationship("User")
-    experiment = sa.orm.relationship("Experiment")
+    user = sa.orm.relationship("UserModel")
+    experiment = sa.orm.relationship("ExperimentModel")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, user_id={self.user_id}, experiment_id={self.experiment_id})>"

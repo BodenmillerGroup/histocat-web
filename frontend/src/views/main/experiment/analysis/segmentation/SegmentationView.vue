@@ -73,7 +73,7 @@ export default class SegmentationView extends Vue {
         imageExtent: projection.getExtent(),
         imageLoadFunction: (view, src: string) => {
           (view.getImage() as any).src = image;
-        }
+        },
       });
       this.map.getLayers().clear();
       this.imageLayer.setSource(source);
@@ -91,11 +91,11 @@ export default class SegmentationView extends Vue {
       const projection = this.map.getView().getProjection();
       const source = new VectorSource({});
       const features = contours.map((contour: any) => {
-        const points = contour.map(p => {
+        const points = contour.map((p) => {
           return p[0];
         });
         return new Feature({
-          geometry: new Polygon([points])
+          geometry: new Polygon([points]),
         });
       });
       source.addFeatures(features);
@@ -117,16 +117,10 @@ export default class SegmentationView extends Vue {
       this.initMap();
     }
 
-    const existingExtent = this.map
-      .getView()
-      .getProjection()
-      .getExtent();
-    const extent = [0, 0, parseInt(acquisition.meta.MaxX, 10), parseInt(acquisition.meta.MaxY, 10)];
+    const existingExtent = this.map.getView().getProjection().getExtent();
+    const extent = [0, 0, acquisition.max_x, acquisition.max_y];
     if (!equals(existingExtent, extent)) {
-      this.map
-        .getView()
-        .getProjection()
-        .setExtent(extent);
+      this.map.getView().getProjection().setExtent(extent);
     }
   }
 
@@ -144,7 +138,7 @@ export default class SegmentationView extends Vue {
   }
 
   displayFeatureInfo(pixel) {
-    const feature = this.map.forEachFeatureAtPixel(pixel, f => {
+    const feature = this.map.forEachFeatureAtPixel(pixel, (f) => {
       return f;
     });
 
@@ -163,12 +157,7 @@ export default class SegmentationView extends Vue {
     if (!this.activeAcquisition) {
       return;
     }
-    const extent = [
-      0,
-      0,
-      parseInt(this.activeAcquisition.meta.MaxX, 10),
-      parseInt(this.activeAcquisition.meta.MaxY, 10)
-    ];
+    const extent = [0, 0, this.activeAcquisition.max_x, this.activeAcquisition.max_y];
 
     // Map views always need a projection.  Here we just want to map image
     // coordinates directly to map coordinates, so we create a projection that uses
@@ -184,7 +173,7 @@ export default class SegmentationView extends Vue {
         const spacing = 0.000001 * scale;
         const res = pixelRes * spacing;
         return res;
-      }
+      },
     });
 
     const view = new View({
@@ -193,7 +182,7 @@ export default class SegmentationView extends Vue {
       zoom: 4,
       zoomFactor: 1.25,
       maxZoom: 16,
-      enableRotation: false
+      enableRotation: false,
     });
 
     this.imageLayer = new ImageLayer();
@@ -204,23 +193,23 @@ export default class SegmentationView extends Vue {
       style: new Style({
         stroke: new Stroke({
           color: "#f00000",
-          width: 1
+          width: 1,
         }),
         fill: new Fill({
-          color: "rgba(255, 0, 0, 0.1)"
-        })
-      })
+          color: "rgba(255, 0, 0, 0.1)",
+        }),
+      }),
     });
 
     this.map = new Map({
       controls: defaultControls({
         zoom: false,
         attribution: false,
-        rotate: false
+        rotate: false,
       }).extend([new ScaleLine(), new FullScreen()]),
       interactions: [new DragPan({ kinetic: undefined }), new MouseWheelZoom({ duration: 0 })],
       view: view,
-      target: this.$el as HTMLElement
+      target: this.$el as HTMLElement,
     });
 
     this.map.on("pointermove", this.onPointerMove);

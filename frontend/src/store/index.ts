@@ -22,22 +22,22 @@ const rootModule = new Module({
     experiment: experimentModule,
     dataset: datasetModule,
     analysis: analysisModule,
-    settings: settingsModule
-  }
+    settings: settingsModule,
+  },
 });
 
 const vuexStorage = new VuexPersistence<typeof rootModule>({
   strictMode: debug,
   storage: localforage,
   asyncStorage: true,
-  modules: ["settings"]
+  modules: ["settings"],
 });
 
 export const store = createStore(rootModule, {
   strict: debug,
   plugins: debug ? [vuexStorage.plugin, createLogger()] : [vuexStorage.plugin],
   mutations: {
-    RESTORE_MUTATION: vuexStorage.RESTORE_MUTATION // this mutation **MUST** be named "RESTORE_MUTATION"
-  }
+    RESTORE_MUTATION: vuexStorage.RESTORE_MUTATION, // this mutation **MUST** be named "RESTORE_MUTATION"
+  },
 });
 export default store;

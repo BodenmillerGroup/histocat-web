@@ -1,5 +1,6 @@
 export interface IChannelSettings {
-  id: number;
+  acquisitionId: number;
+  name: string;
   customLabel: string;
   levels?: {
     min: number;

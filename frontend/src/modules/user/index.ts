@@ -14,5 +14,5 @@ export const userModule = new Module({
   state: UserState,
   getters: UserGetters,
   mutations: UserMutations,
-  actions: UserActions
+  actions: UserActions,
 });
