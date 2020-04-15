@@ -510,6 +510,7 @@ xtiff = ">=0.6.0"
 reference = "32cd68900031c61c20218e2535adeb77f206d3e2"
 type = "git"
 url = "https://github.com/BodenmillerGroup/imctools.git"
+
 [[package]]
 category = "dev"
 description = "A Python utility / library to sort Python imports."
@@ -598,6 +599,17 @@ cssselect = ["cssselect (>=0.7)"]
 html5 = ["html5lib"]
 htmlsoup = ["beautifulsoup4"]
 source = ["Cython (>=0.29.7)"]
+
+[[package]]
+category = "main"
+description = "Mahotas: Computer Vision Library"
+name = "mahotas"
+optional = false
+python-versions = "*"
+version = "1.4.9"
+
+[package.dependencies]
+numpy = "*"
 
 [[package]]
 category = "main"
@@ -872,6 +884,7 @@ setuptools = ">=18.0.1"
 reference = "7f4bc18699adb513a983ba183fdc7c989c219b85"
 type = "git"
 url = "https://github.com/jacoblevine/phenograph.git"
+
 [[package]]
 category = "main"
 description = "Pika Python AMQP Client Library"
@@ -1607,7 +1620,7 @@ backend = ["alembic", "python-multipart", "gunicorn", "uvicorn"]
 worker = []
 
 [metadata]
-content-hash = "a70203cdf94f1de83fe3f4955f3182c6af551479db89b9f0e1b496592e2dccce"
+content-hash = "68f455fa5eac13187c412303b7df069ef543263c29ce22986cabd07ccd18ca45"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -2064,6 +2077,9 @@ lxml = [
     {file = "lxml-4.5.0-cp38-cp38-win32.whl", hash = "sha256:4235bc124fdcf611d02047d7034164897ade13046bda967768836629bc62784f"},
     {file = "lxml-4.5.0-cp38-cp38-win_amd64.whl", hash = "sha256:d5b3c4b7edd2e770375a01139be11307f04341ec709cf724e0f26ebb1eef12c3"},
     {file = "lxml-4.5.0.tar.gz", hash = "sha256:8620ce80f50d023d414183bf90cc2576c2837b88e00bea3f33ad2630133bbb60"},
+]
+mahotas = [
+    {file = "mahotas-1.4.9.tar.gz", hash = "sha256:4c65f462a09fe19dea4ac7b630039478e9691126e430ace485e965635e535f71"},
 ]
 mako = [
     {file = "Mako-1.1.2-py2.py3-none-any.whl", hash = "sha256:8e8b53c71c7e59f3de716b6832c4e401d903af574f6962edbbbf6ecc2a5fe6c9"},

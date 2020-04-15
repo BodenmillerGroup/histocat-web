@@ -3,8 +3,6 @@ import os
 import shutil
 from pathlib import Path
 
-SCHEMA_XML_ENDING = "_schema.xml"
-
 
 def locate(root: str, pattern: str):
     """

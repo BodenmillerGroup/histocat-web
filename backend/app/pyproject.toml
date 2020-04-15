@@ -20,6 +20,7 @@ fastapi = "^0.54.1"
 gunicorn = { version = "^20.0.4", optional = true }
 imctools = { git = "https://github.com/BodenmillerGroup/imctools.git", branch="next" }  # "^1.0.7"
 jinja2 = "^2.11.2"
+mahotas = "^1.4.9"
 matplotlib = "^3.2.1"
 opencv-python-headless = "^4.2.0.34"
 opentsne = "^0.3.12"
@@ -30,7 +31,7 @@ passlib = { version = "^1.7.2", extras = ["bcrypt"] }
 phenograph = {git = "https://github.com/jacoblevine/phenograph.git"}
 ptvsd = "^4.3.2"
 pyarrow = "^0.16.0"
-pydevd-pycharm = "^193.*"
+pydevd-pycharm = "^201.*"
 PyJWT = "^1.7.1"
 python-multipart = { version = "^0.0.5", optional = true }
 PyYAML = "^5.3.1"

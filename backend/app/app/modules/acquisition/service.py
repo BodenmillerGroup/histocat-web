@@ -14,10 +14,10 @@ def get_by_id(session: Session, id: int) -> Optional[AcquisitionModel]:
     return session.query(AcquisitionModel).filter(AcquisitionModel.id == id).first()
 
 
-def get_by_origin_id(session: Session, *, roi_id: int, origin_id: int) -> Optional[AcquisitionModel]:
+def get_by_origin_id(session: Session, *, slide_id: int, origin_id: int) -> Optional[AcquisitionModel]:
     return (
         session.query(AcquisitionModel)
-        .filter(AcquisitionModel.roi_id == roi_id, AcquisitionModel.origin_id == origin_id)
+        .filter(AcquisitionModel.slide_id == slide_id, AcquisitionModel.origin_id == origin_id)
         .first()
     )
 

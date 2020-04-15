@@ -16,7 +16,6 @@ from app.modules.dataset import service as dataset_service
 from app.modules.dataset.models import DatasetModel
 from app.modules.dataset.dto import DatasetCreateDto, DatasetUpdateDto
 from app.modules.experiment import service as experiment_service
-from app.modules.panorama import service as panorama_service
 from app.modules.slide import service as slide_service
 
 logger = logging.getLogger(__name__)
@@ -34,12 +33,8 @@ CHANNELS_FULL_CSV_ENDING = "_ac_full.csv"
 PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
-def import_dataset(
-    db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int, user_id: int,
-):
-    """
-    Import dataset from the folder compatible with 'cpout' IMC pipeline folders
-    """
+def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int, user_id: int):
+    """Import dataset from the folder compatible with 'cpout' IMC pipeline folders."""
 
     experiment = experiment_service.get(db, id=experiment_id)
     if not experiment:
@@ -166,9 +161,7 @@ def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, da
     slide = slide_service.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
     if slide is None:
         return None
-    panorama = panorama_service.get_by_origin_id(db, slide_id=slide.id, origin_id=panorama_origin_id)
-    roi = roi_crud.get_by_origin_id(db, panorama_id=panorama.id, origin_id=roi_origin_id)
-    acquisition = acquisition_service.get_by_origin_id(db, roi_id=roi.id, origin_id=acquisition_origin_id)
+    acquisition = acquisition_service.get_by_origin_id(db, slide_id=slide.id, origin_id=acquisition_origin_id)
 
     location = copy_file(uri, dataset.location)
 
@@ -176,8 +169,6 @@ def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, da
         "image_number": image_number,
         "location": location,
         "slide": {"id": slide.id, "origin_id": slide.origin_id},
-        "panorama": {"id": panorama.id, "origin_id": panorama.origin_id},
-        "roi": {"id": roi.id, "origin_id": roi.origin_id},
         "acquisition": {"id": acquisition.id, "origin_id": acquisition.origin_id},
     }
     return meta

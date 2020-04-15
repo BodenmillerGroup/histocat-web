@@ -5,6 +5,7 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 import tifffile
+from mahotas import bwperim
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage.color import label2rgb
@@ -64,7 +65,7 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto):
         return mask_color_img(image, mask)
 
 
-def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), alpha=0.7):
+def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 100), alpha=0.3):
     """
     img: cv2 image
     mask: bool or np.where
@@ -73,9 +74,10 @@ def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 255), a
 
     Ref: http://www.pyimagesearch.com/2016/03/07/transparent-overlays-with-opencv/
     """
-    bit_mask = mask == 0
+    mask = bwperim(mask, n=2)
+    # bit_mask = mask == 0
     mask_layer = image.copy()
-    mask_layer[bit_mask] = color
+    mask_layer[mask] = color
     cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
     # cv2.add(image, mask_layer, image)
     return image
