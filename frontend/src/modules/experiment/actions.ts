@@ -184,36 +184,37 @@ export class ExperimentActions extends Actions<
 
   async setSharedChannelLevels(payload: { metal: string; levels: number[] }) {
     const experiment = this.getters.activeExperiment;
-    // if (experiment && experiment.slides) {
-    //   for (const slide of experiment.slides) {
-    //     for (const acquisition of slide.acquisitions) {
-    //       for (const channel of acquisition.channels) {
-    //         if (channel.name === payload.metal) {
-    //           let settings = this.settings!.getters.getChannelSettings(`${channel.acquisition_id}_${channel.name}`);
-    //           if (!settings) {
-    //             settings = {
-    //               id: `${channel.acquisition_id}_${channel.name}`,
-    //               customLabel: channel.label,
-    //               levels: {
-    //                 min: payload.levels[0],
-    //                 max: payload.levels[1],
-    //               },
-    //             };
-    //           } else {
-    //             settings = {
-    //               ...settings,
-    //               levels: {
-    //                 min: payload.levels[0],
-    //                 max: payload.levels[1],
-    //               },
-    //             };
-    //           }
-    //           this.settings!.mutations.setChannelSettings(settings);
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+    if (experiment && experiment.slides) {
+      for (const slide of experiment.slides) {
+        for (const acquisition of slide.acquisitions) {
+          for (const channel of Object.values(acquisition.channels)) {
+            if (channel.name === payload.metal) {
+              let settings = this.settings!.getters.getChannelSettings(acquisition.id, channel.name);
+              if (!settings) {
+                settings = {
+                  acquisitionId: acquisition.id,
+                  name: channel.name,
+                  customLabel: channel.label,
+                  levels: {
+                    min: payload.levels[0],
+                    max: payload.levels[1],
+                  },
+                };
+              } else {
+                settings = {
+                  ...settings,
+                  levels: {
+                    min: payload.levels[0],
+                    max: payload.levels[1],
+                  },
+                };
+              }
+              this.settings!.mutations.setChannelSettings(settings);
+            }
+          }
+        }
+      }
+    }
   }
 
   async createShare(payload: IShareCreate) {

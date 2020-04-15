@@ -27,7 +27,7 @@ from app.core.image import (
 from app.core.utils import stream_bytes
 from app.modules.acquisition import service as acquisition_crud
 from app.modules.analysis.processors import pca, phenograph, tsne, umap
-from app.modules.channel.dto import ChannelSettingsDto, ChannelStackDto
+from app.modules.acquisition.dto import ChannelStackDto
 from app.modules.dataset import service as dataset_crud
 from app.modules.user.models import UserModel
 

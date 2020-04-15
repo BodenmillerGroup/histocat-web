@@ -1,7 +1,56 @@
 from datetime import datetime
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, Sequence
 
 from pydantic import BaseModel
+
+
+class ChannelStatsDto(BaseModel):
+    """Channel stats model."""
+    hist: Sequence[int]
+    edges: Sequence[float]
+
+
+class ChannelSettingsDto(BaseModel):
+    name: str
+    color: Optional[str]
+    customLabel: Optional[str]
+    min: Optional[float]
+    max: Optional[float]
+
+
+class FilterDto(BaseModel):
+    apply: bool
+    type: str
+    settings: Optional[dict]
+
+
+class LegendDto(BaseModel):
+    apply: bool
+    fontScale: float
+    showIntensity: bool
+
+
+class ScalebarDto(BaseModel):
+    apply: bool
+    settings: Optional[dict]
+
+
+class MaskSettingsDto(BaseModel):
+    apply: bool
+    colorize: Optional[bool]
+    location: str
+    settings: Optional[dict]
+
+
+class ChannelStackDto(BaseModel):
+    acquisitionId: int
+    datasetId: Optional[int]
+    filter: FilterDto
+    legend: LegendDto
+    scalebar: ScalebarDto
+    channels: Sequence[ChannelSettingsDto]
+    mask: Optional[MaskSettingsDto]
+    format: Optional[str] = "png"
 
 
 class AcquisitionCreateDto(BaseModel):

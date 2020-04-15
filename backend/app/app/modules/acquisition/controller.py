@@ -26,7 +26,7 @@ from app.modules.analysis.controller import get_additive_image
 from app.modules.user.models import UserModel
 from app.modules.acquisition import service as acquisition_service
 
-from app.modules.channel.dto import ChannelDto, ChannelStackDto, ChannelStatsDto
+from app.modules.acquisition.dto import ChannelStackDto, ChannelStatsDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -70,9 +70,7 @@ async def read_channel_image(
     # current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Get channel image by name
-    """
+    """Get channel image by name."""
     acquisition = acquisition_service.get_by_id(db, acquisition_id)
 
     parser = OmeTiffParser(acquisition.location)

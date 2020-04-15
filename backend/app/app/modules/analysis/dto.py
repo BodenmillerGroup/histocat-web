@@ -2,7 +2,7 @@ from typing import Any, Optional, Sequence
 
 from pydantic import BaseModel
 
-from app.modules.channel.dto import ChannelSettingsDto, FilterDto, ScalebarDto
+from app.modules.acquisition.dto import ChannelSettingsDto, FilterDto, ScalebarDto
 
 
 class SegmentationSettingsDto(BaseModel):

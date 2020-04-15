@@ -10,7 +10,7 @@ from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage.color import label2rgb
 
 from app.modules.analysis.dto import SegmentationSettingsDto
-from app.modules.channel.dto import (
+from app.modules.acquisition.dto import (
     FilterDto,
     LegendDto,
     MaskSettingsDto,
