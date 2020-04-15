@@ -1,11 +1,11 @@
 {
   "include": [
-    "backend/app"
+    "backend"
   ],
   "executionEnvironments": [
     {
-      "root": "backend/app",
-      "pythonVersion": "3.7",
+      "root": "backend",
+      "pythonVersion": "3.8",
       "pythonPlatform": "Linux"
     }
   ]

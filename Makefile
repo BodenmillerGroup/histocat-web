@@ -2,7 +2,7 @@ PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
 init:
-	cd backend/app && poetry install --extras backend
+	cd backend && poetry install --extras backend
 	cd frontend && yarn install
 
 deploy-development:
@@ -30,22 +30,22 @@ update-frontend:
 	cd frontend && ncu -u && yarn install
 
 update-backend:
-	cd backend/app && poetry update
+	cd backend && poetry update
 
 mypy:
-	cd backend/app && mypy app
+	cd backend && mypy app
 
 pyright:
-	cd backend/app && pyright
+	cd backend && pyright
 
 isort:
-	cd backend/app && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply app
+	cd backend && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply app
 
 vulture:
-	cd backend/app && vulture app --min-confidence 70
+	cd backend && vulture app --min-confidence 70
 
 black:
-	cd backend/app && black app
+	cd backend && black app
 
 autoflake:
-	cd backend/app && autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place app --exclude=__init__.py
+	cd backend && autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place app --exclude=__init__.py

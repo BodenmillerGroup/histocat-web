@@ -11,7 +11,7 @@ services:
     ports:
       - 5678:5678
     volumes:
-      - ../backend/app:/app
+      - ../backend:/app
 
   worker:
     restart: "no"
@@ -23,7 +23,7 @@ services:
     ports:
       - 5688:5688
     volumes:
-      - ../backend/app:/app
+      - ../backend:/app
 
   frontend:
     restart: "no"

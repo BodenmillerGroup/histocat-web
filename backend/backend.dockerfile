@@ -25,11 +25,11 @@ WORKDIR /app
 
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
-COPY /app/poetry.lock /app/pyproject.toml /app/gunicorn_conf.py /app/
+COPY /poetry.lock /pyproject.toml /gunicorn_conf.py /app/
 RUN poetry install --no-dev --no-root --extras backend
 
 # Now copy in our code, and run it
-COPY ./app /app
+COPY ./ /app
 RUN chmod +x /app/bin/start.sh /app/bin/start-reload.sh
 
 EXPOSE 80 5678
