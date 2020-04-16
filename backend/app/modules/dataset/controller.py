@@ -5,7 +5,6 @@ from typing import List
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
@@ -29,7 +28,7 @@ def read_all(
     Retrieve datasets
     """
     items = service.get_multi(db)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.get("/experiment/{experiment_id}", response_model=List[DatasetDto])
@@ -40,7 +39,7 @@ def read_own_by_experiment(
     Retrieve own datasets for specified experiment
     """
     items = service.get_own_by_experiment_id(db, experiment_id=experiment_id)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.get("/{id}", response_model=DatasetDto)
@@ -51,7 +50,7 @@ def read_by_id(
     Get a specific dataset by id
     """
     item = service.get(db, id=id)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.delete("/{id}", response_model=DatasetDto)
@@ -62,7 +61,7 @@ def delete_by_id(
     Delete a specific dataset by id
     """
     item = service.remove(db, id=id)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.get("/{id}/download")

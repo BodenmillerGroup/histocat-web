@@ -1,7 +1,6 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
@@ -22,7 +21,7 @@ def read_all_by_experiment_id(
     Retrieve all experiment shares
     """
     items = service.get_by_experiment_id(db, experiment_id=experiment_id)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.post("/", response_model=List[ShareDto])
@@ -36,7 +35,7 @@ def create(
     Create new share
     """
     items = service.create(db, params=params)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.delete("/{user_id}/{experiment_id}", response_model=ShareDto)
@@ -50,4 +49,4 @@ def delete(
     Delete share
     """
     item = service.remove(db, user_id=user_id, experiment_id=experiment_id)
-    return ORJSONResponse(item)
+    return item

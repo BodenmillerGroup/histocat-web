@@ -4,7 +4,6 @@ import uuid
 from typing import List, Set
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
 import app.worker as worker
@@ -33,7 +32,7 @@ def read_all(
     Retrieve experiments
     """
     items = service.get_multi(db, user=current_user)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.get("/tags", response_model=Set[str])
@@ -42,7 +41,7 @@ def read_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(g
     Retrieve tags
     """
     items = service.get_tags(db)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.post("/", response_model=ExperimentDto)
@@ -64,7 +63,7 @@ def create(
             status_code=400, detail="The experiment with this name already exists in the system.",
         )
     item = service.create(db, user_id=current_user.id, params=params)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.get("/{id}", response_model=ExperimentDto)
@@ -75,7 +74,7 @@ def read_by_id(
     Get a specific experiment by id
     """
     item = service.get(db, id=id)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.delete("/{id}", response_model=ExperimentDto)
@@ -86,7 +85,7 @@ def delete_by_id(
     Delete a specific experiment by id
     """
     item = service.remove(db, id=id)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.put("/{id}", response_model=ExperimentDto)
@@ -107,7 +106,7 @@ def update(
             status_code=404, detail="The experiment with this id does not exist in the system",
         )
     item = service.update(db, item=item, params=params)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.post("/{id}/upload")
@@ -124,7 +123,7 @@ def upload_data(
     with open(uri, "wb") as f:
         f.write(file.file.read())
     worker.import_data.send(uri, id, user.id)
-    return ORJSONResponse({"uri": uri})
+    return {"uri": uri}
 
 
 @router.get("/{id}/data", response_model=ExperimentDatasetDto)
@@ -135,4 +134,4 @@ async def read_data(
     Get all experiment data
     """
     item = service.get_data(db, id=id)
-    return ORJSONResponse(item)
+    return item

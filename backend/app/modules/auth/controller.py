@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Body, Depends, HTTPException
-from fastapi.responses import ORJSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -36,10 +35,10 @@ def login_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordR
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=config.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return ORJSONResponse({
+    return {
         "access_token": create_access_token(data={"user_id": user.id}, expires_delta=access_token_expires),
         "token_type": "bearer",
-    })
+    }
 
 
 @router.post("/test-token", response_model=UserDto)
@@ -47,7 +46,7 @@ def test_token(current_user: DBUser = Depends(get_current_user)):
     """
     Test access token
     """
-    return ORJSONResponse(current_user)
+    return current_user
 
 
 @router.post("/password-recovery/{email}", response_model=MsgDto)
@@ -63,7 +62,7 @@ def recover_password(email: str, db: Session = Depends(get_db)):
         )
     password_reset_token = generate_password_reset_token(email=email)
     send_reset_password_email(email_to=user.email, email=email, token=password_reset_token)
-    return ORJSONResponse({"msg": "Password recovery email sent"})
+    return {"msg": "Password recovery email sent"}
 
 
 @router.post("/reset-password/", response_model=MsgDto)
@@ -85,4 +84,4 @@ def reset_password(token: str = Body(...), new_password: str = Body(...), db: Se
     user.password = hashed_password
     db.add(user)
     db.commit()
-    return ORJSONResponse({"msg": "Password updated successfully"})
+    return {"msg": "Password updated successfully"}

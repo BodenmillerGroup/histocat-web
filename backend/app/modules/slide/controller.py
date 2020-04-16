@@ -1,8 +1,6 @@
 import os
-from typing import List
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import FileResponse
 
@@ -14,31 +12,6 @@ from . import service
 from .dto import SlideDto
 
 router = APIRouter()
-
-
-@router.get("/", response_model=List[SlideDto])
-def read_all(
-    db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 100,
-    current_user: UserModel = Depends(get_current_active_user),
-):
-    """
-    Retrieve slides
-    """
-    items = service.get_multi(db, skip=skip, limit=limit)
-    return ORJSONResponse(items)
-
-
-@router.get("/{id}", response_model=SlideDto)
-def read_by_id(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
-):
-    """
-    Get a specific slide by id
-    """
-    item = service.get(db, id=id)
-    return ORJSONResponse(item)
 
 
 @router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
@@ -64,4 +37,4 @@ def delete_by_id(
     Delete a specific slide by id
     """
     item = service.remove(db, id=id)
-    return ORJSONResponse(item)
+    return item

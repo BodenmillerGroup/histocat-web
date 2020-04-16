@@ -2,7 +2,6 @@ from typing import Sequence
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import ORJSONResponse
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
@@ -22,7 +21,7 @@ router = APIRouter()
 def get_all(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get all users."""
     items = service.get_all(db)
-    return ORJSONResponse(items)
+    return items
 
 
 @router.post("/", response_model=UserDto)
@@ -40,7 +39,7 @@ def create(
     item = service.create(db, params=params)
     if config.EMAILS_ENABLED and params.email:
         send_new_account_email(email_to=params.email, username=params.email, password=params.password)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.patch("/profile", response_model=UserDto)
@@ -61,13 +60,13 @@ def update_me(
     if email is not None:
         params.email = email
     item = service.update(db, item=current_user, params=params)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.get("/profile", response_model=UserDto)
 def get_me(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get current user."""
-    return ORJSONResponse(current_user)
+    return current_user
 
 
 @router.post("/signup", response_model=UserDto)
@@ -86,7 +85,7 @@ def create_open(
         )
     user_in = UserCreateDto(password=password, email=email, name=name)
     item = service.create(db, params=user_in)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.get("/{id}", response_model=UserDto)
@@ -99,7 +98,7 @@ def get_by_id(
         return user
     if not current_user.is_admin:
         raise HTTPException(status_code=400, detail="The user doesn't have enough privileges")
-    return ORJSONResponse(user)
+    return user
 
 
 @router.put("/{id}", response_model=UserDto)
@@ -116,7 +115,7 @@ def update(
             status_code=404, detail="The user with this username does not exist in the system",
         )
     item = service.update(db, item=item, params=params)
-    return ORJSONResponse(item)
+    return item
 
 
 @router.get("/check/{email}")
@@ -124,6 +123,6 @@ def check_user_exists(email: str, db: Session = Depends(get_db)):
     """Check if user with the email exists."""
     user = service.get_by_email(db, email=email)
     if user:
-        return ORJSONResponse({"exists": True})
+        return {"exists": True}
     else:
-        return ORJSONResponse({"exists": False})
+        return {"exists": False}
