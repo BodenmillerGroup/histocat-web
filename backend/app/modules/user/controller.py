@@ -2,6 +2,7 @@ from typing import Sequence
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import ORJSONResponse
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
@@ -17,14 +18,14 @@ from .dto import UserCreateDto, UserDto, UserUpdateDto
 router = APIRouter()
 
 
-@router.get("/", response_model=Sequence[UserDto])
+@router.get("/", response_model=Sequence[UserDto], response_class=ORJSONResponse)
 def get_all(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get all users."""
     items = service.get_all(db)
     return items
 
 
-@router.post("/", response_model=UserDto)
+@router.post("/", response_model=UserDto, response_class=ORJSONResponse)
 def create(
     params: UserCreateDto,
     db: Session = Depends(get_db),
@@ -42,7 +43,7 @@ def create(
     return item
 
 
-@router.patch("/profile", response_model=UserDto)
+@router.patch("/profile", response_model=UserDto, response_class=ORJSONResponse)
 def update_me(
     password: str = Body(None),
     name: str = Body(None),
@@ -63,13 +64,13 @@ def update_me(
     return item
 
 
-@router.get("/profile", response_model=UserDto)
+@router.get("/profile", response_model=UserDto, response_class=ORJSONResponse)
 def get_me(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get current user."""
     return current_user
 
 
-@router.post("/signup", response_model=UserDto)
+@router.post("/signup", response_model=UserDto, response_class=ORJSONResponse)
 def create_open(
     password: str = Body(...), email: EmailStr = Body(...), name: str = Body(None), db: Session = Depends(get_db),
 ):
@@ -88,7 +89,7 @@ def create_open(
     return item
 
 
-@router.get("/{id}", response_model=UserDto)
+@router.get("/{id}", response_model=UserDto, response_class=ORJSONResponse)
 def get_by_id(
     id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -101,7 +102,7 @@ def get_by_id(
     return user
 
 
-@router.put("/{id}", response_model=UserDto)
+@router.put("/{id}", response_model=UserDto, response_class=ORJSONResponse)
 def update(
     id: int,
     params: UserUpdateDto,
@@ -118,7 +119,7 @@ def update(
     return item
 
 
-@router.get("/check/{email}")
+@router.get("/check/{email}", response_class=ORJSONResponse)
 def check_user_exists(email: str, db: Session = Depends(get_db)):
     """Check if user with the email exists."""
     user = service.get_by_email(db, email=email)

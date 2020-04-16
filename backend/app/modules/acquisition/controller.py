@@ -3,12 +3,13 @@ from typing import Optional
 
 import cv2
 import numpy as np
-import ujson
+import orjson
 from fastapi import APIRouter, Depends
+from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, UJSONResponse
+from starlette.responses import StreamingResponse
 
 from app.api.utils.db import get_db
 from app.api.utils.security import get_current_active_user
@@ -31,7 +32,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto)
+@router.get("/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto, response_class=ORJSONResponse)
 async def read_channel_stats(
     acquisition_id: int,
     channel_name: str,
@@ -40,12 +41,10 @@ async def read_channel_stats(
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Get channel stats by name
-    """
+    """Get channel stats by name."""
     content = await redis_manager.cache.get(request.url.path)
     if content:
-        return UJSONResponse(content=ujson.loads(content))
+        return orjson.loads(content)
 
     acquisition = acquisition_service.get_by_id(db, acquisition_id)
 
@@ -55,8 +54,8 @@ async def read_channel_stats(
 
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
-    await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return UJSONResponse(content=content)
+    await redis_manager.cache.set(request.url.path, orjson.dumps(content))
+    return content
 
 
 @router.get("/{acquisition_id}/{channel_name}/image", responses={200: {"content": {"image/png": {}}}})
@@ -102,9 +101,7 @@ async def read_channel_image(
 async def download_channel_stack(
     params: ChannelStackDto, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
-    """
-    Download channel stack (additive) image
-    """
+    """Download channel stack (additive) image."""
     additive_image, legend_labels = get_additive_image(db, params)
 
     # TODO: Bright-field effect

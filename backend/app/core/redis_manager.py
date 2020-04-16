@@ -2,8 +2,8 @@ import asyncio
 import logging
 
 import aioredis
+import orjson
 import redis
-import ujson
 
 from app.core.notifier import Message, notifier
 
@@ -46,7 +46,7 @@ class RedisManager:
 
     def publish(self, channel_name: str, message: Message):
         if self.pub is not None:
-            self.pub.publish(channel_name, ujson.dumps(message.to_json()))
+            self.pub.publish(channel_name, orjson.dumps(message.to_json()))
 
     # async def publish_async(self, channel_name: str, message: Message):
     #     if self.pub is not None:

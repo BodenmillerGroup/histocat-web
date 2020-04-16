@@ -2,6 +2,7 @@ import os
 from typing import List
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import FileResponse
 
@@ -15,7 +16,7 @@ from .dto import SlideDto
 router = APIRouter()
 
 
-@router.get("/", response_model=List[SlideDto])
+@router.get("/", response_model=List[SlideDto], response_class=ORJSONResponse)
 def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -29,7 +30,7 @@ def read_all(
     return items
 
 
-@router.get("/{id}", response_model=SlideDto)
+@router.get("/{id}", response_model=SlideDto, response_class=ORJSONResponse)
 def read_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -55,7 +56,7 @@ async def read_slide_image(
     )
 
 
-@router.delete("/{id}", response_model=SlideDto)
+@router.delete("/{id}", response_model=SlideDto, response_class=ORJSONResponse)
 def delete_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):

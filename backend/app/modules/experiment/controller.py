@@ -4,6 +4,7 @@ import uuid
 from typing import List, Set
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
 import app.worker as worker
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ExperimentDto])
+@router.get("/", response_model=List[ExperimentDto], response_class=ORJSONResponse)
 def read_all(
     db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -35,7 +36,7 @@ def read_all(
     return items
 
 
-@router.get("/tags", response_model=Set[str])
+@router.get("/tags", response_model=Set[str], response_class=ORJSONResponse)
 def read_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """
     Retrieve tags
@@ -44,7 +45,7 @@ def read_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(g
     return items
 
 
-@router.post("/", response_model=ExperimentDto)
+@router.post("/", response_model=ExperimentDto, response_class=ORJSONResponse)
 def create(
     *,
     db: Session = Depends(get_db),
@@ -66,7 +67,7 @@ def create(
     return item
 
 
-@router.get("/{id}", response_model=ExperimentDto)
+@router.get("/{id}", response_model=ExperimentDto, response_class=ORJSONResponse)
 def read_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -77,7 +78,7 @@ def read_by_id(
     return item
 
 
-@router.delete("/{id}", response_model=ExperimentDto)
+@router.delete("/{id}", response_model=ExperimentDto, response_class=ORJSONResponse)
 def delete_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -88,7 +89,7 @@ def delete_by_id(
     return item
 
 
-@router.put("/{id}", response_model=ExperimentDto)
+@router.put("/{id}", response_model=ExperimentDto, response_class=ORJSONResponse)
 def update(
     *,
     db: Session = Depends(get_db),
@@ -109,7 +110,7 @@ def update(
     return item
 
 
-@router.post("/{id}/upload")
+@router.post("/{id}/upload", response_class=ORJSONResponse)
 def upload_data(
     id: int,
     file: UploadFile = File(None),
@@ -126,7 +127,7 @@ def upload_data(
     return {"uri": uri}
 
 
-@router.get("/{id}/data", response_model=ExperimentDatasetDto)
+@router.get("/{id}/data", response_model=ExperimentDatasetDto, response_class=ORJSONResponse)
 async def read_data(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):

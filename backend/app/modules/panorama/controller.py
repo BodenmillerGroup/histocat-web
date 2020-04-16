@@ -2,6 +2,7 @@ import os
 from typing import List
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import FileResponse
 
@@ -15,7 +16,7 @@ from .dto import PanoramaDto
 router = APIRouter()
 
 
-@router.get("/", response_model=List[PanoramaDto])
+@router.get("/", response_model=List[PanoramaDto], response_class=ORJSONResponse)
 def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -29,7 +30,7 @@ def read_all(
     return items
 
 
-@router.get("/{id}", response_model=PanoramaDto)
+@router.get("/{id}", response_model=PanoramaDto, response_class=ORJSONResponse)
 def read_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):

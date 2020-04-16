@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
 from app.api.utils.db import get_db
@@ -13,7 +14,7 @@ from .dto import ShareCreateDto, ShareDto
 router = APIRouter()
 
 
-@router.get("/{experiment_id}", response_model=List[ShareDto])
+@router.get("/{experiment_id}", response_model=List[ShareDto], response_class=ORJSONResponse)
 def read_all_by_experiment_id(
     experiment_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -24,7 +25,7 @@ def read_all_by_experiment_id(
     return items
 
 
-@router.post("/", response_model=List[ShareDto])
+@router.post("/", response_model=List[ShareDto], response_class=ORJSONResponse)
 def create(
     *,
     db: Session = Depends(get_db),
@@ -38,7 +39,7 @@ def create(
     return items
 
 
-@router.delete("/{user_id}/{experiment_id}", response_model=ShareDto)
+@router.delete("/{user_id}/{experiment_id}", response_model=ShareDto, response_class=ORJSONResponse)
 def delete(
     user_id: int,
     experiment_id: int,

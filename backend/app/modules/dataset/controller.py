@@ -5,6 +5,7 @@ from typing import List
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[DatasetDto])
+@router.get("/", response_model=List[DatasetDto], response_class=ORJSONResponse)
 def read_all(
     db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -31,7 +32,7 @@ def read_all(
     return items
 
 
-@router.get("/experiment/{experiment_id}", response_model=List[DatasetDto])
+@router.get("/experiment/{experiment_id}", response_model=List[DatasetDto], response_class=ORJSONResponse)
 def read_own_by_experiment(
     experiment_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -42,7 +43,7 @@ def read_own_by_experiment(
     return items
 
 
-@router.get("/{id}", response_model=DatasetDto)
+@router.get("/{id}", response_model=DatasetDto, response_class=ORJSONResponse)
 def read_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -53,7 +54,7 @@ def read_by_id(
     return item
 
 
-@router.delete("/{id}", response_model=DatasetDto)
+@router.delete("/{id}", response_model=DatasetDto, response_class=ORJSONResponse)
 def delete_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
