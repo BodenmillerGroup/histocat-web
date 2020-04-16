@@ -16,7 +16,7 @@ from .dto import SlideDto
 router = APIRouter()
 
 
-@router.get("/", response_model=List[SlideDto], response_class=ORJSONResponse)
+@router.get("/", response_model=List[SlideDto])
 def read_all(
     db: Session = Depends(get_db),
     skip: int = 0,
@@ -27,10 +27,10 @@ def read_all(
     Retrieve slides
     """
     items = service.get_multi(db, skip=skip, limit=limit)
-    return items
+    return ORJSONResponse(items)
 
 
-@router.get("/{id}", response_model=SlideDto, response_class=ORJSONResponse)
+@router.get("/{id}", response_model=SlideDto)
 def read_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -38,7 +38,7 @@ def read_by_id(
     Get a specific slide by id
     """
     item = service.get(db, id=id)
-    return item
+    return ORJSONResponse(item)
 
 
 @router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
@@ -56,7 +56,7 @@ async def read_slide_image(
     )
 
 
-@router.delete("/{id}", response_model=SlideDto, response_class=ORJSONResponse)
+@router.delete("/{id}", response_model=SlideDto)
 def delete_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -64,4 +64,4 @@ def delete_by_id(
     Delete a specific slide by id
     """
     item = service.remove(db, id=id)
-    return item
+    return ORJSONResponse(item)

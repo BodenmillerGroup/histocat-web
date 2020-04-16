@@ -14,7 +14,7 @@ from .dto import ShareCreateDto, ShareDto
 router = APIRouter()
 
 
-@router.get("/{experiment_id}", response_model=List[ShareDto], response_class=ORJSONResponse)
+@router.get("/{experiment_id}", response_model=List[ShareDto])
 def read_all_by_experiment_id(
     experiment_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -22,10 +22,10 @@ def read_all_by_experiment_id(
     Retrieve all experiment shares
     """
     items = service.get_by_experiment_id(db, experiment_id=experiment_id)
-    return items
+    return ORJSONResponse(items)
 
 
-@router.post("/", response_model=List[ShareDto], response_class=ORJSONResponse)
+@router.post("/", response_model=List[ShareDto])
 def create(
     *,
     db: Session = Depends(get_db),
@@ -36,10 +36,10 @@ def create(
     Create new share
     """
     items = service.create(db, params=params)
-    return items
+    return ORJSONResponse(items)
 
 
-@router.delete("/{user_id}/{experiment_id}", response_model=ShareDto, response_class=ORJSONResponse)
+@router.delete("/{user_id}/{experiment_id}", response_model=ShareDto)
 def delete(
     user_id: int,
     experiment_id: int,
@@ -50,4 +50,4 @@ def delete(
     Delete share
     """
     item = service.remove(db, user_id=user_id, experiment_id=experiment_id)
-    return item
+    return ORJSONResponse(item)

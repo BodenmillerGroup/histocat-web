@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[DatasetDto], response_class=ORJSONResponse)
+@router.get("/", response_model=List[DatasetDto])
 def read_all(
     db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -29,10 +29,10 @@ def read_all(
     Retrieve datasets
     """
     items = service.get_multi(db)
-    return items
+    return ORJSONResponse(items)
 
 
-@router.get("/experiment/{experiment_id}", response_model=List[DatasetDto], response_class=ORJSONResponse)
+@router.get("/experiment/{experiment_id}", response_model=List[DatasetDto])
 def read_own_by_experiment(
     experiment_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -40,10 +40,10 @@ def read_own_by_experiment(
     Retrieve own datasets for specified experiment
     """
     items = service.get_own_by_experiment_id(db, experiment_id=experiment_id)
-    return items
+    return ORJSONResponse(items)
 
 
-@router.get("/{id}", response_model=DatasetDto, response_class=ORJSONResponse)
+@router.get("/{id}", response_model=DatasetDto)
 def read_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -51,10 +51,10 @@ def read_by_id(
     Get a specific dataset by id
     """
     item = service.get(db, id=id)
-    return item
+    return ORJSONResponse(item)
 
 
-@router.delete("/{id}", response_model=DatasetDto, response_class=ORJSONResponse)
+@router.delete("/{id}", response_model=DatasetDto)
 def delete_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -62,7 +62,7 @@ def delete_by_id(
     Delete a specific dataset by id
     """
     item = service.remove(db, id=id)
-    return item
+    return ORJSONResponse(item)
 
 
 @router.get("/{id}/download")

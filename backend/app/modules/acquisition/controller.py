@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto, response_class=ORJSONResponse)
+@router.get("/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto)
 async def read_channel_stats(
     acquisition_id: int,
     channel_name: str,
@@ -55,7 +55,7 @@ async def read_channel_stats(
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
     await redis_manager.cache.set(request.url.path, orjson.dumps(content))
-    return content
+    return ORJSONResponse(content)
 
 
 @router.get("/{acquisition_id}/{channel_name}/image", responses={200: {"content": {"image/png": {}}}})

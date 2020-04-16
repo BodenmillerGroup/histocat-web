@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from fastapi.responses import ORJSONResponse
 from pydantic import EmailStr
 
 import app.worker as worker
@@ -16,7 +17,7 @@ def test_worker(msg: MsgDto, current_user=Depends(get_current_active_superuser))
     Test worker
     """
     worker.test_worker.send(msg.msg)
-    return {"msg": "Word received"}
+    return ORJSONResponse({"msg": "Word received"})
 
 
 @router.post("/test-email/", response_model=MsgDto, status_code=201)
@@ -27,4 +28,4 @@ def test_email(
     Test emails
     """
     send_test_email(email_to=email_to)
-    return {"msg": "Test email submitted"}
+    return ORJSONResponse({"msg": "Test email submitted"})

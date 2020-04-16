@@ -120,7 +120,7 @@ async def produce_segmentation_image(
     return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")
 
 
-@router.post("/segmentation/contours", response_class=ORJSONResponse)
+@router.post("/segmentation/contours")
 async def produce_segmentation_contours(
     params: AnalysisDto,
     request: Request,
@@ -142,10 +142,10 @@ async def produce_segmentation_contours(
 
     contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
     contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
-    return contours
+    return ORJSONResponse(contours)
 
 
-@router.get("/scatterplot", response_model=ScatterPlotDto, response_class=ORJSONResponse)
+@router.get("/scatterplot")
 async def read_scatter_plot_data(
     dataset_id: int,
     marker_x: str,
@@ -213,10 +213,10 @@ async def read_scatter_plot_data(
         }
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return content
+    return ORJSONResponse(content)
 
 
-@router.get("/boxplot", response_model=List[PlotSeriesDto], response_class=ORJSONResponse)
+@router.get("/boxplot", response_model=List[PlotSeriesDto])
 async def read_box_plot_data(
     dataset_id: int,
     acquisition_id: int,
@@ -252,10 +252,10 @@ async def read_box_plot_data(
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return content
+    return ORJSONResponse(content)
 
 
-@router.get("/pca", response_model=PcaDto, response_class=ORJSONResponse)
+@router.get("/pca", response_model=PcaDto)
 async def read_pca_data(
     dataset_id: int,
     n_components: int,
@@ -271,7 +271,7 @@ async def read_pca_data(
     """
 
     content = pca.process_pca(db, dataset_id, acquisition_ids, n_components, markers, heatmap_type, heatmap)
-    return content
+    return ORJSONResponse(content)
 
 
 @router.post("/tsne")
@@ -294,10 +294,10 @@ def submit_tsne(
         params.init,
         params.markers,
     )
-    return {"status": "submitted"}
+    return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/tsne", response_model=TsneDto, response_class=ORJSONResponse)
+@router.get("/tsne", response_model=TsneDto)
 async def read_tsne_data(
     dataset_id: int,
     name: str,
@@ -311,7 +311,7 @@ async def read_tsne_data(
     """
 
     content = tsne.get_tsne_result(db, dataset_id, name, heatmap_type, heatmap)
-    return content
+    return ORJSONResponse(content)
 
 
 @router.post("/umap")
@@ -332,10 +332,10 @@ def submit_umap(
         params.min_dist,
         params.markers,
     )
-    return {"status": "submitted"}
+    return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/umap", response_model=UmapDto, response_class=ORJSONResponse)
+@router.get("/umap", response_model=UmapDto)
 async def read_umap_data(
     dataset_id: int,
     name: str,
@@ -349,10 +349,10 @@ async def read_umap_data(
     """
 
     content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
-    return content
+    return ORJSONResponse(content)
 
 
-@router.post("/phenograph", response_class=ORJSONResponse)
+@router.post("/phenograph")
 def submit_phenograph(
     params: PhenographSubmissionDto,
     current_user: UserModel = Depends(get_current_active_user),
@@ -371,10 +371,10 @@ def submit_phenograph(
         params.primary_metric,
         params.min_cluster_size,
     )
-    return {"status": "submitted"}
+    return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/phenograph", response_model=PhenographDto, response_class=ORJSONResponse)
+@router.get("/phenograph", response_model=PhenographDto)
 async def read_phenograph_data(
     dataset_id: int,
     name: str,
@@ -386,10 +386,10 @@ async def read_phenograph_data(
     """
 
     content = phenograph.get_phenograph_result(db, dataset_id, name)
-    return content
+    return ORJSONResponse(content)
 
 
-@router.post("/region/stats", response_model=List[RegionChannelStatsDto], response_class=ORJSONResponse)
+@router.post("/region/stats", response_model=List[RegionChannelStatsDto])
 async def calculate_region_stats(
     params: RegionStatsSubmissionDto,
     request: Request,
@@ -422,4 +422,4 @@ async def calculate_region_stats(
             }
         )
 
-    return content
+    return ORJSONResponse(content)
