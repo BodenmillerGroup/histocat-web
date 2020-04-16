@@ -507,7 +507,7 @@ xmltodict = ">=0.12.0"
 xtiff = ">=0.6.0"
 
 [package.source]
-reference = "32cd68900031c61c20218e2535adeb77f206d3e2"
+reference = "5a015480d90c2a8b6b33c89d36650a50cb8bd50f"
 type = "git"
 url = "https://github.com/BodenmillerGroup/imctools.git"
 [[package]]

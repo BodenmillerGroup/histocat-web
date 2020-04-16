@@ -35,6 +35,7 @@
       activatable
       transition
       return-object
+      selectable
       class="overflow-y-auto scroll-view"
     >
       <template v-slot:prepend="{ item }">
