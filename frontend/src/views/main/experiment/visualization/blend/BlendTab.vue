@@ -6,7 +6,7 @@
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" small elevation="1">
               <v-icon left small>mdi-download</v-icon>
-              Export image
+              Export
             </v-btn>
           </template>
           <v-list dense>
@@ -18,7 +18,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-switch v-model="regionsEnabled" label="Enable regions" hide-details inset class="ml-8" />
+        <v-switch v-model="regionsEnabled" label="Enable regions" hide-details inset class="ml-8" dense />
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn small elevation="1" v-on="on" @click="deleteRegions" class="ml-2" :disabled="!selectedRegion">
@@ -51,7 +51,7 @@
         <!--          </template>-->
         <!--          <span>Request calculation of colorized cell mask</span>-->
         <!--        </v-tooltip>-->
-        <v-switch v-model="applyMask" label="Mask overlay" hide-details inset class="ml-8" :disabled="!hasMask" />
+        <v-switch v-model="applyMask" label="Mask overlay" hide-details inset class="ml-8" :disabled="!hasMask" dense />
       </v-toolbar>
       <v-row no-gutters>
         <v-col>
