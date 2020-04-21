@@ -4,7 +4,7 @@ import { GraphSelectionGetters } from "./getters";
 import { GraphSelectionMutations } from "./mutations";
 
 export class GraphSelectionState {
-  tool: string = "lasso"; // what selection tool mode (lasso, brush, ...)
+  tool = "lasso"; // what selection tool mode (lasso, brush, ...)
   selection: any = { mode: "all" }; // current selection, which is tool specific
 }
 

@@ -1,4 +1,4 @@
-import rambda from "rambda";
+import * as rambda from "rambda";
 
 const DATA_KEYS = [
   "class",

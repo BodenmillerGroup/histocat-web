@@ -1,5 +1,6 @@
 <template>
   <svg
+    v-if="newChildren != null"
     class="graphSVG"
     :width="responsive.width - graphPaddingRightLeft"
     :height="responsive.height"
@@ -43,9 +44,9 @@ export default class GraphOverlayLayer extends Vue {
    */
   private readonly responsiveContext = responsiveModule.context(this.$store);
 
-  @Prop(Object) cameraTF: any;
-  @Prop(Object) modelTF: any;
-  @Prop(Object) projectionTF: any;
+  @Prop(Float32Array) cameraTF: any;
+  @Prop(Float32Array) modelTF: any;
+  @Prop(Float32Array) projectionTF: any;
   @Prop(Number) graphPaddingRightLeft!: number;
   @Prop(Number) graphPaddingTop!: number;
   @Prop(Object) handleCanvasEvent: any;
@@ -53,9 +54,10 @@ export default class GraphOverlayLayer extends Vue {
   private display = {};
 
   get svgStyle() {
+    const displaying = Object.values(this.display).some((value) => value); // check to see if at least one overlay is currently displayed
     return {
       zIndex: 99,
-      backgroundColor: this.displaying ? "rgba(255, 255, 255, 0.55)" : "",
+      backgroundColor: displaying ? "rgba(255, 255, 255, 0.55)" : "",
     };
   }
 
@@ -63,7 +65,26 @@ export default class GraphOverlayLayer extends Vue {
     return this.responsiveContext.getters.responsive;
   }
 
-  displaying = Object.values(this.display).some((value) => value); // check to see if at least one overlay is currently displayed
+  get newChildren() {
+    if (!this.cameraTF) return null;
+
+    const inverseTransform = `${this.reverseMatrixScaleTransformString(
+      this.modelTF
+    )} ${this.reverseMatrixScaleTransformString(this.cameraTF)} ${this.reverseMatrixScaleTransformString(
+      this.projectionTF
+    )} scale(1 2) scale(1 ${1 / -(this.responsive.height! - this.graphPaddingTop)}) scale(2 1) scale(${
+      1 / (this.responsive.width! - this.graphPaddingRightLeft)
+    } 1)`;
+
+    // Copy the children passed with the overlay and add the inverse transform and onDisplayChange props
+    const newChildren = this.$children.map((child) =>
+      cloneElement(child, {
+        inverseTransform: inverseTransform,
+        overlayToggled: this.overlayToggled,
+      })
+    );
+    return newChildren;
+  }
 
   matrixToTransformString = (m) => {
     /*
@@ -85,20 +106,6 @@ export default class GraphOverlayLayer extends Vue {
   overlayToggled = (overlay, displaying) => {
     this.display = { ...this.display, [overlay]: displaying };
   };
-
-  inverseTransform = `${this.reverseMatrixScaleTransformString(this.modelTF)} ${this.reverseMatrixScaleTransformString(
-    this.cameraTF
-  )} ${this.reverseMatrixScaleTransformString(this.projectionTF)} scale(1 2) scale(1 ${
-    1 / -(this.responsive.height! - this.graphPaddingTop)
-  }) scale(2 1) scale(${1 / (this.responsive.width! - this.graphPaddingRightLeft)} 1)`;
-
-  // Copy the children passed with the overlay and add the inverse transform and onDisplayChange props
-  newChildren = this.$children.map((child) =>
-    cloneElement(child, {
-      inverseTransform: this.inverseTransform,
-      overlayToggled: this.overlayToggled,
-    })
-  );
 }
 </script>
 

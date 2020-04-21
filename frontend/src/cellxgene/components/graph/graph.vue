@@ -29,11 +29,7 @@
           :width="responsive.width - graphPaddingRightLeft"
           :height="responsive.height - graphPaddingTop"
           data-testid="layout-graph"
-          :ref="
-            (canvas) => {
-              this.reglCanvas = canvas;
-            }
-          "
+          ref="canvas"
           @onMouseDown="handleCanvasEvent"
           @onMouseUp="handleCanvasEvent"
           @onMouseMove="handleCanvasEvent"
@@ -70,6 +66,7 @@ import {crossfilterModule} from "@/modules/crossfilter";
 import {controlsModule} from "@/modules/controls";
 import {layoutChoiceModule} from "@/modules/layoutChoice";
 import {graphSelectionModule} from "@/modules/graphSelection";
+import {graphModule} from "@/modules/graph";
 
 /*
 Simple 2D transforms control all point painting.  There are three:
@@ -139,6 +136,7 @@ export default class Graph extends Vue {
   private readonly controlsContext = controlsModule.context(this.$store);
   private readonly layoutChoiceContext = layoutChoiceModule.context(this.$store);
   private readonly graphSelectionContext = graphSelectionModule.context(this.$store);
+  private readonly graphContext = graphModule.context(this.$store);
 
   count = 0;
   graphPaddingTop = 0;
@@ -155,18 +153,26 @@ export default class Graph extends Vue {
   tool: any = null;
   container: any = null;
   cameraRender = 0;
-  reglCanvas: any;
 
   // state
-  regl: any;
-  drawPoints: any;
-  pointBuffer: any;
-  colorBuffer: any;
-  flagBuffer: any;
-  camera: any;
-  modelTF: any;
-  modelInvTF: any;
-  projectionTF: any;
+  regl: any = null;
+  drawPoints: any = null;
+  pointBuffer: any = null;
+  colorBuffer: any = null;
+  flagBuffer: any = null;
+  camera: any = null;
+  modelTF: any = null;
+  modelInvTF: any = null;
+  projectionTF: any = null;
+  updateOverlay = false;
+
+  get reglCanvas() {
+    return this.$refs.canvas as HTMLCanvasElement;
+  }
+
+  get cameraTF() {
+    return this.camera?.view()?.slice();
+  }
 
   get universe() {
     return this.universeContext.getters.universe;
@@ -269,14 +275,11 @@ export default class Graph extends Vue {
   });
 
   handleCanvasEvent = (e) => {
-    // const { camera, projectionTF } = this.state;
-    // if (e.type !== "wheel") e.preventDefault();
-    // if (camera.handleEvent(e, projectionTF)) {
-    //   this.renderCanvas();
-    //   this.setState(state => {
-    //     return { ...state, updateOverlay: !state.updateOverlay };
-    //   });
-    // }
+    if (e.type !== "wheel") e.preventDefault();
+    if (this.camera.handleEvent(e, this.projectionTF)) {
+      this.renderCanvas();
+      this.updateOverlay = !this.updateOverlay;
+    }
   };
 
   createToolSVG = () => {
@@ -461,25 +464,20 @@ export default class Graph extends Vue {
     // ignore programatically generated events
     if (d3.event.sourceEvent === null || !d3.event.selection) return;
 
-    const { dispatch } = this.props;
     const s = d3.event.selection;
     const brushCoords = {
       northwest: this.mapScreenToPoint([s[0][0], s[0][1]]),
       southeast: this.mapScreenToPoint([s[1][0], s[1][1]])
     };
 
-    dispatch({
-      type: "graph brush change",
-      brushCoords
-    });
+    this.graphContext.actions.graphBrushChange(brushCoords);
   }
 
   handleBrushStartAction() {
     // Ignore programatically generated events.
     if (!d3.event.sourceEvent) return;
 
-    const { dispatch } = this.props;
-    dispatch({ type: "graph brush start" });
+    this.graphContext.actions.graphBrushStart();
   }
 
   handleBrushEndAction() {
@@ -490,79 +488,57 @@ export default class Graph extends Vue {
     coordinates will be included if selection made, null
     if selection cleared.
     */
-    const { dispatch } = this.props;
     const s = d3.event.selection;
     if (s) {
       const brushCoords = {
         northwest: this.mapScreenToPoint(s[0]),
         southeast: this.mapScreenToPoint(s[1])
       };
-      dispatch({
-        type: "graph brush end",
-        brushCoords
-      });
+      this.graphContext.actions.graphBrushEnd(brushCoords);
     } else {
-      dispatch({
-        type: "graph brush deselect"
-      });
+      this.graphContext.actions.graphBrushDeselect();
     }
   }
 
   handleBrushDeselectAction() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "graph brush deselect"
-    });
+    this.graphContext.actions.graphBrushDeselect();
   }
 
   handleLassoStart() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "graph lasso start"
-    });
+    this.graphContext.actions.graphLassoStart();
   }
 
   // when a lasso is completed, filter to the points within the lasso polygon
   handleLassoEnd(polygon) {
     const minimumPolygonArea = 10;
-    const { dispatch } = this.props;
 
     if (
       polygon.length < 3 ||
       Math.abs(d3.polygonArea(polygon)) < minimumPolygonArea
     ) {
       // if less than three points, or super small area, treat as a clear selection.
-      dispatch({ type: "graph lasso deselect" });
+      this.graphContext.actions.graphLassoDeselect();
     } else {
-      dispatch({
-        type: "graph lasso end",
-        polygon: polygon.map(xy => this.mapScreenToPoint(xy)) // transform the polygon
-      });
+      this.graphContext.actions.graphLassoEnd(polygon.map(xy => this.mapScreenToPoint(xy)));
     }
   }
 
   handleLassoCancel() {
-    const { dispatch } = this.props;
-    dispatch({ type: "graph lasso cancel" });
+    this.graphContext.actions.graphLassoCancel();
   }
 
   handleLassoDeselectAction() {
-    const { dispatch } = this.props;
-    dispatch({ type: "graph lasso deselect" });
+    this.graphContext.actions.graphLassoDeselect();
   }
 
   handleDeselectAction() {
-    const { selectionTool } = this.props;
+    const selectionTool = this.selectionTool;
     if (selectionTool === "brush") this.handleBrushDeselectAction();
     if (selectionTool === "lasso") this.handleLassoDeselectAction();
   }
 
   handleOpacityRangeChange(e) {
-    const { dispatch } = this.props;
-    dispatch({
-      type: "change opacity deselected cells in 2d graph background",
-      data: e.target.value
-    });
+    this.graphContext.actions.changeOpacityDeselectedCellsIn2dGraphBackground(e.target.value);
   }
 
   renderPoints(regl, drawPoints, colorBuffer, pointBuffer, flagBuffer, camera, projectionTF) {
@@ -627,6 +603,125 @@ export default class Graph extends Vue {
     this.modelTF = modelTF;
     this.modelInvTF = mat3.invert([] as any, modelTF);
     this.projectionTF = projectionTF;
+  }
+
+  updated() {
+    let stateChanges = {};
+    const world = this.worldContext.getters.world;
+    const crossfilter = this.crossfilterContext.getters.crossfilter;
+
+    if (this.regl && world && crossfilter) {
+      /* update the regl and point rendering state */
+      const { obsLayout, nObs } = world;
+      const { drawPoints, pointBuffer, colorBuffer, flagBuffer } = this.state;
+
+      let { projectionTF } = this.state;
+      let needsRepaint = false;
+
+      if (
+        prevProps.responsive.height !== responsive.height ||
+        prevProps.responsive.width !== responsive.width
+      ) {
+        projectionTF = createProjectionTF(
+          this.reglCanvas.width,
+          this.reglCanvas.height
+        );
+        needsRepaint = true;
+        stateChanges = {
+          ...stateChanges,
+          projectionTF
+        };
+      }
+
+      /* coordinates for each point */
+      const X = obsLayout.col(layoutChoice.currentDimNames[0]).asArray();
+      const Y = obsLayout.col(layoutChoice.currentDimNames[1]).asArray();
+      const newPositions = this.computePointPositions(X, Y, modelTF);
+      if (renderCache.positions !== newPositions) {
+        /* update our cache & GL if the buffer changes */
+        renderCache.positions = newPositions;
+        pointBuffer({ data: newPositions, dimension: 2 });
+        needsRepaint = true;
+      }
+
+      /* colors for each point */
+      const newColors = this.computePointColors(colorRGB);
+      if (renderCache.colors !== newColors) {
+        /* update our cache & GL if the buffer changes */
+        renderCache.colors = newColors;
+        colorBuffer({ data: newColors, dimension: 3 });
+        needsRepaint = true;
+      }
+
+      /* flags for each point */
+      const newFlags = this.computePointFlags(
+        world,
+        crossfilter,
+        colorAccessor,
+        pointDilation
+      );
+      if (renderCache.flags !== newFlags) {
+        renderCache.flags = newFlags;
+        needsRepaint = true;
+        flagBuffer({ data: newFlags, dimension: 1 });
+      }
+
+      this.count = nObs;
+
+      if (needsRepaint) {
+        this.renderPoints(
+          regl,
+          drawPoints,
+          colorBuffer,
+          pointBuffer,
+          flagBuffer,
+          camera,
+          projectionTF
+        );
+      }
+    }
+
+    if (
+      prevProps.responsive.height !== responsive.height ||
+      prevProps.responsive.width !== responsive.width
+    ) {
+      // If the window size has changed we want to recreate all SVGs
+      stateChanges = {
+        ...stateChanges,
+        ...this.createToolSVG()
+      };
+    } else if (
+      (responsive.height && responsive.width && !toolSVG) ||
+      selectionTool !== prevProps.selectionTool
+    ) {
+      // first time or change of selection tool
+      stateChanges = { ...stateChanges, ...this.createToolSVG() };
+    } else if (prevProps.graphInteractionMode !== graphInteractionMode) {
+      // If lasso/zoom is switched
+      stateChanges = {
+        ...stateChanges,
+        ...this.createToolSVG()
+      };
+    }
+
+    /*
+    if the selection tool or state has changed, ensure that the selection
+    tool correctly reflects the underlying selection.
+    */
+    if (
+      currentSelection !== prevProps.currentSelection ||
+      graphInteractionMode !== prevProps.graphInteractionMode ||
+      stateChanges.toolSVG
+    ) {
+      const { tool, container } = this.state;
+      this.selectionToolUpdate(
+        stateChanges.tool ? stateChanges.tool : tool,
+        stateChanges.container ? stateChanges.container : container
+      );
+    }
+    if (Object.keys(stateChanges).length > 0) {
+      this.setState(stateChanges);
+    }
   }
 }
 </script>

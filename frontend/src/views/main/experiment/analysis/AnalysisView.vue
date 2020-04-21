@@ -9,6 +9,7 @@
         <v-tab>UMAP</v-tab>
         <v-tab>PhenoGraph</v-tab>
         <v-tab>Segmentation</v-tab>
+        <v-tab>Test</v-tab>
         <v-tab-item>
           <ScatterPlotTab />
         </v-tab-item>
@@ -30,6 +31,9 @@
         <v-tab-item>
           <SegmentationTab />
         </v-tab-item>
+        <v-tab-item>
+          <TestTab />
+        </v-tab-item>
       </v-tabs>
     </v-col>
   </v-row>
@@ -44,9 +48,11 @@ import ScatterPlotTab from "@/views/main/experiment/analysis/scatter/ScatterPlot
 import SegmentationTab from "@/views/main/experiment/analysis/segmentation/SegmentationTab.vue";
 import UMAPTab from "@/views/main/experiment/analysis/umap/UMAPTab.vue";
 import { Component, Vue } from "vue-property-decorator";
+import TestTab from "@/views/main/experiment/analysis/test/TestTab.vue";
 
 @Component({
   components: {
+    TestTab,
     PhenoGraphTab,
     UMAPTab,
     PCATab,

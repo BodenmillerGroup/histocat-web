@@ -30,7 +30,7 @@ pandas = "^1.0.3"
 passlib = { version = "^1.7.2", extras = ["bcrypt"] }
 phenograph = {git = "https://github.com/jacoblevine/phenograph.git"}
 ptvsd = "^4.3.2"
-pyarrow = "^0.16.0"
+pyarrow = "^0.17.0"
 pydevd-pycharm = "^201.*"
 PyJWT = "^1.7.1"
 python-multipart = { version = "^0.0.5", optional = true }

@@ -5,4 +5,8 @@ export class ControlsGetters extends Getters<ControlsState> {
   get graphInteractionMode() {
     return this.state.graphInteractionMode;
   }
+
+  get graphRenderCounter() {
+    return this.state.graphRenderCounter;
+  }
 }
