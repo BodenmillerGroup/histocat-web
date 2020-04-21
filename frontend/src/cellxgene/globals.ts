@@ -1,0 +1,82 @@
+import colors from 'vuetify/lib/util/colors'
+
+/* if a categorical metadata field has more options than this, truncate */
+export const maxCategoricalOptionsToDisplay = 200;
+
+/* default "unassigned" value for user-created categorical metadata */
+export const unassignedCategoryLabel = "unassigned";
+
+/*
+these are default values for configuration  the CLI may supply.
+See the REST API and CLI specs for more info.
+*/
+export const configDefaults = {
+  features: {},
+  displayNames: {},
+  parameters: {
+    "max-category-items": 1000,
+    "disable-diffexp": false,
+    "diffexp-may-be-slow": false
+  },
+  links: {}
+};
+
+/* colors */
+export const blue = colors.blue.accent3;
+export const linkBlue = colors.blue.accent4;
+export const lightestGrey = "rgb(249,249,249)";
+export const lighterGrey = "rgb(245,245,245)";
+export const lightGrey = colors.grey.lighten1;
+export const mediumGrey = "rgb(153,153,153)";
+export const darkGrey = "rgb(102,102,102)";
+export const darkerGrey = "rgb(51,51,51)";
+
+export const brightBlue = "#4a90e2";
+export const brightGreen = "#A2D729";
+export const darkGreen = "#448C4D";
+
+export const nonFiniteCellColor = lightGrey;
+export const defaultCellColor = "rgb(0,0,0,1)";
+export const logoColor = "black"; /* logo pink: "#E9429A" */
+
+/* typography constants */
+
+export const tiniestFontSize = 12;
+export const largestFontSize = 24;
+export const uppercaseLetterSpacing = "0.04em";
+export const bolder = 700;
+export const accentFont = "Georgia,Times,Times New Roman,serif";
+export const maxParagraphWidth = 600;
+
+/* layout styles constants */
+
+export const cellxgeneTitleLeftPadding = 14;
+export const cellxgeneTitleTopPadding = 7;
+
+export const datasetTitleMaxCharacterCount = 25;
+
+export const maxControlsWidth = 800;
+
+export const graphMargin = { top: 20, right: 10, bottom: 30, left: 40 };
+export const graphWidth = 700;
+export const graphHeight = 700;
+export const scatterplotMarginLeft = 25;
+
+export const leftSidebarWidth = 365;
+export const leftSidebarSectionHeading = {
+  fontSize: 18,
+  textTransform: "uppercase",
+  fontWeight: 500,
+  letterSpacing: ".05em"
+};
+export const leftSidebarSectionPadding = 10;
+export const categoryLabelDisplayStringLongLength = 27;
+export const categoryLabelDisplayStringShortLength = 11;
+export const categoryDisplayStringMaxLength = 27;
+
+export const maxUserDefinedGenes = 25;
+export const maxGenes = 100;
+
+/* various timing-related behaviors */
+export const tooltipHoverOpenDelay = 1000; /* ms delay before a tooltip displays */
+export const tooltipHoverOpenDelayQuick = 500;

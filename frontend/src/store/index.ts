@@ -10,6 +10,17 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import { createStore, Module } from "vuex-smart-module";
 import createLogger from "vuex/dist/logger";
+import { graphModule } from "@/modules/graph";
+import { responsiveModule } from "@/modules/responsive";
+import { centroidLabelsModule } from "@/modules/centroidLabels";
+import { colorsModule } from "@/modules/colors";
+import { pointDilationModule } from "@/modules/pointDilation";
+import { worldModule } from "@/modules/world";
+import { universeModule } from "@/modules/universe";
+import { graphSelectionModule } from "@/modules/graphSelection";
+import { layoutChoiceModule } from "@/modules/layoutChoice";
+import { controlsModule } from "@/modules/controls";
+import { crossfilterModule } from "@/modules/crossfilter";
 
 Vue.use(Vuex);
 
@@ -17,12 +28,23 @@ const debug = false; // process.env.NODE_ENV !== "production";
 
 const rootModule = new Module({
   modules: {
-    main: mainModule,
-    user: userModule,
-    experiment: experimentModule,
-    dataset: datasetModule,
     analysis: analysisModule,
+    centroidLabels: centroidLabelsModule,
+    colors: colorsModule,
+    controls: controlsModule,
+    crossfilter: crossfilterModule,
+    dataset: datasetModule,
+    experiment: experimentModule,
+    graph: graphModule,
+    graphSelection: graphSelectionModule,
+    layoutChoice: layoutChoiceModule,
+    main: mainModule,
+    pointDilation: pointDilationModule,
+    responsive: responsiveModule,
     settings: settingsModule,
+    universe: universeModule,
+    user: userModule,
+    world: worldModule,
   },
 });
 
