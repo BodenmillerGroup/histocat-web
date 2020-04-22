@@ -1,9 +1,11 @@
 import { Dataframe } from "@/cellxgene/util/dataframe";
 
 export interface IUniverse {
+  // schema/version related
+  schema: any;
+
   nObs: number;
   nVar: number;
-  schema: any;
 
   // Annotations
   obsAnnotations: Dataframe;

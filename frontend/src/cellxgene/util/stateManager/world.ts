@@ -2,6 +2,8 @@ import clip from "../clip";
 import { layoutDimensionName, obsAnnoDimensionName } from "../nameCreators";
 import { isContinuousAnnotation } from "./annotationsHelpers";
 import { Dataframe, KeyIndex } from "../dataframe";
+import { IWorld } from "@/modules/world/models";
+import { IUniverse } from "@/modules/universe/models";
 
 /*
 
@@ -71,7 +73,7 @@ function templateWorld() {
       obsAnnotations,
       varData,
     },
-  };
+  } as IWorld;
 }
 
 function clipDataframe(
@@ -114,7 +116,7 @@ function clipDataframe(
 /*
 Create World with contents eq entire universe.   Commonly used to initialize World.
 */
-export function createWorldFromEntireUniverse(universe) {
+export function createWorldFromEntireUniverse(universe: IUniverse) {
   const world = templateWorld();
 
   /* Schema related */
@@ -147,7 +149,7 @@ This is an in-place operation on the world object provided as an argument.
 The values in world.unclipped are clipped and assigned to world.obsAnnotations
 and world.varData.
 */
-function setClippedDataframes(world) {
+function setClippedDataframes(world: IWorld) {
   const { schema } = world;
   const isContinuousObsAnnotation = (df, idx, label) => isContinuousAnnotation(schema, label);
   const obsQuantile = (label, q) => world.unclipped.obsAnnotations.col(label).summarize().percentiles[100 * q];
@@ -176,8 +178,8 @@ clip.  Returns new world.  Parameters:
   * world - the current world
   * crossfilter - the selection state
 */
-export function createWorldBySelection(universe, world, crossfilter) {
-  const newWorld = { ...world, obsLayout: null, unclipped: {}, varData: null };
+export function createWorldBySelection(universe: IWorld, world: IWorld, crossfilter) {
+  const newWorld: any = { ...world, obsLayout: null, unclipped: {}, varData: null };
 
   /* subset unclipped dataframes based upon current selection */
   const mask = crossfilter.allSelectedMask();
@@ -193,7 +195,7 @@ export function createWorldBySelection(universe, world, crossfilter) {
 
   /* and now clip */
   setClippedDataframes(newWorld);
-  return newWorld;
+  return newWorld as IWorld;
 }
 
 /*
@@ -203,8 +205,8 @@ Parameters:
   * world - current world
   * clipQuantiles - new clip
 */
-export function createWorldWithNewClip(universe, world, crossfilter, clipQuantiles) {
-  const newWorld = { ...world, obsAnnotation: null, varData: null };
+export function createWorldWithNewClip(universe: IUniverse, world: IWorld, crossfilter, clipQuantiles) {
+  const newWorld: any = { ...world, obsAnnotation: null, varData: null };
   newWorld.clipQuantiles = clipQuantiles;
   newWorld.obsLayout = world.obsLayout.clone();
   newWorld.unclipped = {
@@ -214,7 +216,7 @@ export function createWorldWithNewClip(universe, world, crossfilter, clipQuantil
 
   /* and now clip */
   setClippedDataframes(newWorld);
-  return newWorld;
+  return newWorld as IWorld;
 }
 
 /*
@@ -240,7 +242,7 @@ function deduceDimensionType(attributes, fieldName) {
   return dimensionType;
 }
 
-function addObsDimension(crossfilter, world, anno) {
+function addObsDimension(crossfilter, world: IWorld, anno) {
   /*
   add single dimension to the crosfilter
   */
@@ -259,7 +261,7 @@ function addObsDimension(crossfilter, world, anno) {
   return crossfilter;
 }
 
-export function addObsDimensions(crossfilter, world) {
+export function addObsDimensions(crossfilter, world: IWorld) {
   /*
   Add to crossfilter any dimension present in world.obsAnnotations
   but not yet in the crossfilter
@@ -274,7 +276,7 @@ export function addObsDimensions(crossfilter, world) {
   return crossfilter;
 }
 
-export function createObsDimensions(crossfilter, world, XYdimNames) {
+export function createObsDimensions(crossfilter, world: IWorld, XYdimNames) {
   /*
   create and return a crossfilter with a dimension for every obs annotation
   for which we have a supported type, *except* for the index column, indicated
@@ -295,7 +297,7 @@ export function createObsDimensions(crossfilter, world, XYdimNames) {
   );
 }
 
-export function worldEqUniverse(world, universe) {
+export function worldEqUniverse(world: IWorld, universe: IUniverse) {
   return (
     world.obsAnnotations === universe.obsAnnotations ||
     world.obsAnnotations.rowIndex === universe.obsAnnotations.rowIndex

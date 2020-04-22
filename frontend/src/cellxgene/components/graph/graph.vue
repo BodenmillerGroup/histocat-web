@@ -61,12 +61,12 @@ import GraphOverlayLayer from "@/cellxgene/components/graph/overlays/graphOverla
 import CentroidLabels from "@/cellxgene/components/graph/overlays/centroidLabels.vue";
 import { universeModule } from "@/modules/universe";
 import { worldModule } from "@/modules/world";
-import {responsiveModule} from "@/modules/responsive";
-import {crossfilterModule} from "@/modules/crossfilter";
-import {controlsModule} from "@/modules/controls";
-import {layoutChoiceModule} from "@/modules/layoutChoice";
-import {graphSelectionModule} from "@/modules/graphSelection";
-import {graphModule} from "@/modules/graph";
+import { responsiveModule } from "@/modules/responsive";
+import { crossfilterModule } from "@/modules/crossfilter";
+import { controlsModule } from "@/modules/controls";
+import { layoutChoiceModule } from "@/modules/layoutChoice";
+import { graphSelectionModule } from "@/modules/graphSelection";
+import { graphModule } from "@/modules/graph";
 
 /*
 Simple 2D transforms control all point painting.  There are three:
@@ -122,6 +122,15 @@ function renderThrottle(callback) {
   };
 }
 
+interface IRenderCache {
+  X: null;
+  Y: null;
+  positions: Float32Array | null;
+  colors: Float32Array | null;
+  sizes: null;
+  flags: null;
+}
+
 @Component({
   components: { CentroidLabels, GraphOverlayLayer },
 })
@@ -141,7 +150,7 @@ export default class Graph extends Vue {
   count = 0;
   graphPaddingTop = 0;
   graphPaddingRightLeft = globals.leftSidebarWidth * 2;
-  renderCache = {
+  renderCache: IRenderCache = {
     X: null,
     Y: null,
     positions: null,
@@ -178,8 +187,20 @@ export default class Graph extends Vue {
     return this.universeContext.getters.universe;
   }
 
+  get world() {
+    return this.worldContext.getters.world;
+  }
+
   get responsive() {
     return this.responsiveContext.getters.responsive;
+  }
+
+  get colorRGB() {
+    return this.colorsContext.getters.rgb;
+  }
+
+  get colorAccessor() {
+    return this.colorsContext.getters.colorAccessor;
   }
 
   get currentSelection() {
@@ -290,9 +311,7 @@ export default class Graph extends Vue {
 
     /* clear out whatever was on the div, even if nothing, but usually the brushes etc */
 
-    d3.select("#lasso-layer")
-      .selectAll(".lasso-group")
-      .remove();
+    d3.select("#lasso-layer").selectAll(".lasso-group").remove();
 
     // Don't render or recreate toolSVG if currently in zoom mode
     if (this.graphInteractionMode !== "select") {
@@ -343,7 +362,7 @@ export default class Graph extends Vue {
         */
         const screenCoords = [
           this.mapPointToScreen(currentSelection.brushCoords.northwest),
-          this.mapPointToScreen(currentSelection.brushCoords.southeast)
+          this.mapPointToScreen(currentSelection.brushCoords.southeast),
         ];
         if (!toolCurrentSelection) {
           /* tool is not selected, so just move the brush */
@@ -354,9 +373,7 @@ export default class Graph extends Vue {
           let delta = 0;
           for (let x = 0; x < 2; x += 1) {
             for (let y = 0; y < 2; y += 1) {
-              delta += Math.abs(
-                screenCoords[x][y] - toolCurrentSelection[x][y]
-              );
+              delta += Math.abs(screenCoords[x][y] - toolCurrentSelection[x][y]);
             }
           }
           if (delta > 0) {
@@ -380,9 +397,7 @@ export default class Graph extends Vue {
       /*
       if there is a current selection, make sure the lasso tool matches
       */
-      const polygon = currentSelection.polygon.map(p =>
-        this.mapPointToScreen(p)
-      );
+      const polygon = currentSelection.polygon.map((p) => this.mapPointToScreen(p));
       tool.move(polygon);
     } else {
       tool.reset();
@@ -417,8 +432,7 @@ export default class Graph extends Vue {
     const cameraInvTF = this.camera.invView();
 
     /* screen -> gl */
-    const x =
-      (2 * pin[0]) / (responsive.width! - this.graphPaddingRightLeft) - 1;
+    const x = (2 * pin[0]) / (responsive.width! - this.graphPaddingRightLeft) - 1;
     const y = 2 * (1 - pin[1] / (responsive.height! - this.graphPaddingTop)) - 1;
 
     const xy = vec2.fromValues(x, y);
@@ -443,12 +457,8 @@ export default class Graph extends Vue {
     vec2.transformMat3(xy, xy, this.projectionTF);
 
     const pin = [
-      Math.round(
-        ((xy[0] + 1) * (responsive.width! - this.graphPaddingRightLeft)) / 2
-      ),
-      Math.round(
-        -((xy[1] + 1) / 2 - 1) * (responsive.height! - this.graphPaddingTop)
-      )
+      Math.round(((xy[0] + 1) * (responsive.width! - this.graphPaddingRightLeft)) / 2),
+      Math.round(-((xy[1] + 1) / 2 - 1) * (responsive.height! - this.graphPaddingTop)),
     ];
     return pin;
   }
@@ -467,7 +477,7 @@ export default class Graph extends Vue {
     const s = d3.event.selection;
     const brushCoords = {
       northwest: this.mapScreenToPoint([s[0][0], s[0][1]]),
-      southeast: this.mapScreenToPoint([s[1][0], s[1][1]])
+      southeast: this.mapScreenToPoint([s[1][0], s[1][1]]),
     };
 
     this.graphContext.actions.graphBrushChange(brushCoords);
@@ -492,7 +502,7 @@ export default class Graph extends Vue {
     if (s) {
       const brushCoords = {
         northwest: this.mapScreenToPoint(s[0]),
-        southeast: this.mapScreenToPoint(s[1])
+        southeast: this.mapScreenToPoint(s[1]),
       };
       this.graphContext.actions.graphBrushEnd(brushCoords);
     } else {
@@ -512,14 +522,11 @@ export default class Graph extends Vue {
   handleLassoEnd(polygon) {
     const minimumPolygonArea = 10;
 
-    if (
-      polygon.length < 3 ||
-      Math.abs(d3.polygonArea(polygon)) < minimumPolygonArea
-    ) {
+    if (polygon.length < 3 || Math.abs(d3.polygonArea(polygon)) < minimumPolygonArea) {
       // if less than three points, or super small area, treat as a clear selection.
       this.graphContext.actions.graphLassoDeselect();
     } else {
-      this.graphContext.actions.graphLassoEnd(polygon.map(xy => this.mapScreenToPoint(xy)));
+      this.graphContext.actions.graphLassoEnd(polygon.map((xy) => this.mapScreenToPoint(xy)));
     }
   }
 
@@ -605,124 +612,98 @@ export default class Graph extends Vue {
     this.projectionTF = projectionTF;
   }
 
-  updated() {
-    let stateChanges = {};
-    const world = this.worldContext.getters.world;
-    const crossfilter = this.crossfilterContext.getters.crossfilter;
-
-    if (this.regl && world && crossfilter) {
-      /* update the regl and point rendering state */
-      const { obsLayout, nObs } = world;
-      const { drawPoints, pointBuffer, colorBuffer, flagBuffer } = this.state;
-
-      let { projectionTF } = this.state;
-      let needsRepaint = false;
-
-      if (
-        prevProps.responsive.height !== responsive.height ||
-        prevProps.responsive.width !== responsive.width
-      ) {
-        projectionTF = createProjectionTF(
-          this.reglCanvas.width,
-          this.reglCanvas.height
-        );
-        needsRepaint = true;
-        stateChanges = {
-          ...stateChanges,
-          projectionTF
-        };
-      }
-
-      /* coordinates for each point */
-      const X = obsLayout.col(layoutChoice.currentDimNames[0]).asArray();
-      const Y = obsLayout.col(layoutChoice.currentDimNames[1]).asArray();
-      const newPositions = this.computePointPositions(X, Y, modelTF);
-      if (renderCache.positions !== newPositions) {
-        /* update our cache & GL if the buffer changes */
-        renderCache.positions = newPositions;
-        pointBuffer({ data: newPositions, dimension: 2 });
-        needsRepaint = true;
-      }
-
-      /* colors for each point */
-      const newColors = this.computePointColors(colorRGB);
-      if (renderCache.colors !== newColors) {
-        /* update our cache & GL if the buffer changes */
-        renderCache.colors = newColors;
-        colorBuffer({ data: newColors, dimension: 3 });
-        needsRepaint = true;
-      }
-
-      /* flags for each point */
-      const newFlags = this.computePointFlags(
-        world,
-        crossfilter,
-        colorAccessor,
-        pointDilation
-      );
-      if (renderCache.flags !== newFlags) {
-        renderCache.flags = newFlags;
-        needsRepaint = true;
-        flagBuffer({ data: newFlags, dimension: 1 });
-      }
-
-      this.count = nObs;
-
-      if (needsRepaint) {
-        this.renderPoints(
-          regl,
-          drawPoints,
-          colorBuffer,
-          pointBuffer,
-          flagBuffer,
-          camera,
-          projectionTF
-        );
-      }
-    }
-
-    if (
-      prevProps.responsive.height !== responsive.height ||
-      prevProps.responsive.width !== responsive.width
-    ) {
-      // If the window size has changed we want to recreate all SVGs
-      stateChanges = {
-        ...stateChanges,
-        ...this.createToolSVG()
-      };
-    } else if (
-      (responsive.height && responsive.width && !toolSVG) ||
-      selectionTool !== prevProps.selectionTool
-    ) {
-      // first time or change of selection tool
-      stateChanges = { ...stateChanges, ...this.createToolSVG() };
-    } else if (prevProps.graphInteractionMode !== graphInteractionMode) {
-      // If lasso/zoom is switched
-      stateChanges = {
-        ...stateChanges,
-        ...this.createToolSVG()
-      };
-    }
-
-    /*
-    if the selection tool or state has changed, ensure that the selection
-    tool correctly reflects the underlying selection.
-    */
-    if (
-      currentSelection !== prevProps.currentSelection ||
-      graphInteractionMode !== prevProps.graphInteractionMode ||
-      stateChanges.toolSVG
-    ) {
-      const { tool, container } = this.state;
-      this.selectionToolUpdate(
-        stateChanges.tool ? stateChanges.tool : tool,
-        stateChanges.container ? stateChanges.container : container
-      );
-    }
-    if (Object.keys(stateChanges).length > 0) {
-      this.setState(stateChanges);
-    }
-  }
+  // updated() {
+  //   let stateChanges = {};
+  //   const world = this.worldContext.getters.world;
+  //   const crossfilter = this.crossfilterContext.getters.crossfilter;
+  //
+  //   if (this.regl && world && crossfilter) {
+  //     /* update the regl and point rendering state */
+  //     const { obsLayout, nObs } = world;
+  //
+  //     let needsRepaint = false;
+  //
+  //     if (prevProps.responsive.height !== responsive.height || prevProps.responsive.width !== responsive.width) {
+  //       const projectionTF = createProjectionTF(this.reglCanvas.width, this.reglCanvas.height);
+  //       needsRepaint = true;
+  //       stateChanges = {
+  //         ...stateChanges,
+  //         projectionTF,
+  //       };
+  //     }
+  //
+  //     /* coordinates for each point */
+  //     const currentDimNames = this.layoutChoiceContext.getters.currentDimNames;
+  //     const X = obsLayout.col(currentDimNames[0]).asArray();
+  //     const Y = obsLayout.col(currentDimNames[1]).asArray();
+  //     const newPositions = this.computePointPositions(X, Y, this.modelTF);
+  //     if (this.renderCache.positions !== newPositions) {
+  //       /* update our cache & GL if the buffer changes */
+  //       this.renderCache.positions = newPositions;
+  //       this.pointBuffer({ data: newPositions, dimension: 2 });
+  //       needsRepaint = true;
+  //     }
+  //
+  //     /* colors for each point */
+  //     const newColors = this.computePointColors(this.colorRGB);
+  //     if (this.renderCache.colors !== newColors) {
+  //       /* update our cache & GL if the buffer changes */
+  //       this.renderCache.colors = newColors;
+  //       this.colorBuffer({ data: newColors, dimension: 3 });
+  //       needsRepaint = true;
+  //     }
+  //
+  //     /* flags for each point */
+  //     const newFlags = this.computePointFlags(world, crossfilter, this.colorAccessor, pointDilation);
+  //     if (this.renderCache.flags !== newFlags) {
+  //       this.renderCache.flags = newFlags;
+  //       needsRepaint = true;
+  //       this.flagBuffer({ data: newFlags, dimension: 1 });
+  //     }
+  //
+  //     this.count = nObs;
+  //
+  //     if (needsRepaint) {
+  //       this.renderPoints(this.regl, this.drawPoints, this.colorBuffer, this.pointBuffer, this.flagBuffer, this.camera, this.projectionTF);
+  //     }
+  //   }
+  //
+  //   if (prevProps.responsive.height !== responsive.height || prevProps.responsive.width !== responsive.width) {
+  //     // If the window size has changed we want to recreate all SVGs
+  //     stateChanges = {
+  //       ...stateChanges,
+  //       ...this.createToolSVG(),
+  //     };
+  //   } else if ((responsive.height && responsive.width && !toolSVG) || selectionTool !== prevProps.selectionTool) {
+  //     // first time or change of selection tool
+  //     stateChanges = { ...stateChanges, ...this.createToolSVG() };
+  //   } else if (prevProps.graphInteractionMode !== graphInteractionMode) {
+  //     // If lasso/zoom is switched
+  //     stateChanges = {
+  //       ...stateChanges,
+  //       ...this.createToolSVG(),
+  //     };
+  //   }
+  //
+  //   /*
+  //   if the selection tool or state has changed, ensure that the selection
+  //   tool correctly reflects the underlying selection.
+  //   */
+  //   if (
+  //     currentSelection !== prevProps.currentSelection ||
+  //     graphInteractionMode !== prevProps.graphInteractionMode ||
+  //     stateChanges.toolSVG
+  //   ) {
+  //     const { tool, container } = this.state;
+  //     this.selectionToolUpdate(
+  //       stateChanges.tool ? stateChanges.tool : tool,
+  //       stateChanges.container ? stateChanges.container : container
+  //     );
+  //   }
+  //   if (Object.keys(stateChanges).length > 0) {
+  //     this.setState(stateChanges);
+  //   }
+  // }
 }
 </script>
 

@@ -10,6 +10,7 @@ from app.modules.panorama import controller as panorama_controller
 from app.modules.share import controller as share_controller
 from app.modules.slide import controller as slide_controller
 from app.modules.user import controller as user_controller
+from app.modules.cellxgene import controller as cellxgene_controller
 
 api_router = APIRouter()
 api_router.include_router(auth_controller.router, prefix="/auth", tags=["auth"])
@@ -22,3 +23,4 @@ api_router.include_router(user_controller.router, prefix="/users", tags=["users"
 api_router.include_router(dataset_controller.router, prefix="/datasets", tags=["datasets"])
 api_router.include_router(share_controller.router, prefix="/share", tags=["share"])
 api_router.include_router(analysis_controller.router, prefix="/analysis", tags=["analysis"])
+api_router.include_router(cellxgene_controller.router, tags=["cellxgene"])

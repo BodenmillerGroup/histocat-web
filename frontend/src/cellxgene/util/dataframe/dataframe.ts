@@ -331,7 +331,7 @@ class Dataframe {
     return new Dataframe(dims, columns, rowIndex, colIndex, columnsAccessor);
   }
 
-  withColsFrom(dataframe, labels?) {
+  withColsFrom(dataframe: Dataframe, labels?) {
     /*
     return a new dataframe containing all columns from both `this` and the
     provided dataframe argument.
@@ -412,7 +412,7 @@ class Dataframe {
     return new Dataframe(dims, columns, rowIndex, colIndex, columnsAccessor);
   }
 
-  withColsFromAll(dataframes = []) {
+  withColsFromAll(dataframes: Dataframe | Dataframe[] = []) {
     dataframes = Array.isArray(dataframes) ? dataframes : [dataframes];
     return dataframes.reduce((acc, df) => acc.withColsFrom(df), this);
   }

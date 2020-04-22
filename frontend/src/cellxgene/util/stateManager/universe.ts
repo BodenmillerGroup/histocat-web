@@ -4,6 +4,7 @@ import { isFpTypedArray } from "../typeHelpers";
 import { indexEntireSchema } from "./schemaHelpers";
 import catLabelSort from "../catLabelSort";
 import { Dataframe, KeyIndex } from "../dataframe";
+import { IUniverse } from "@/modules/universe/models";
 
 /*
 Private helper function - create and return a template Universe
@@ -29,7 +30,7 @@ export function templateUniverse() {
     Var data columns - subset of all
     */
     varData: Dataframe.empty(null, new KeyIndex()),
-  };
+  } as IUniverse;
 }
 
 /*
@@ -130,7 +131,7 @@ export function createUniverseFromResponse(configResponse, schemaResponse) {
   indexEntireSchema(universe.schema);
   normalizeEntireSchema(universe.schema);
 
-  return universe;
+  return universe as IUniverse;
 }
 
 function normalizeSchemaCategory(colSchema, col: any = undefined) {
@@ -155,7 +156,7 @@ function normalizeEntireSchema(schema) {
   schema.annotations.obs.columns.forEach((colSchema) => normalizeSchemaCategory(colSchema));
 }
 
-export function addObsAnnotations(universe, df) {
+export function addObsAnnotations(universe: IUniverse, df: Dataframe | Dataframe[]) {
   const obsAnnotations = universe.obsAnnotations.withColsFromAll(df);
   if (universe.nObs !== obsAnnotations.length) {
     throw new Error("Universe dimensionality mismatch - failed to load");
@@ -174,7 +175,7 @@ export function addObsAnnotations(universe, df) {
   return { obsAnnotations, schema };
 }
 
-export function addVarAnnotations(universe, df) {
+export function addVarAnnotations(universe: IUniverse, df: Dataframe | Dataframe[]) {
   const varAnnotations = universe.varAnnotations.withColsFromAll(df);
   if (universe.nVar !== varAnnotations.length) {
     throw new Error("Universe dimensionality mismatch - failed to load");
@@ -182,7 +183,7 @@ export function addVarAnnotations(universe, df) {
   return { varAnnotations };
 }
 
-export function addObsLayout(universe, df) {
+export function addObsLayout(universe: IUniverse, df: Dataframe | Dataframe[]) {
   const obsLayout = universe.obsLayout.withColsFromAll(df);
   if (universe.nObs !== obsLayout.length) {
     throw new Error("Universe dimensionality mismatch - failed to load");
@@ -190,7 +191,7 @@ export function addObsLayout(universe, df) {
   return { obsLayout };
 }
 
-export function convertDataFBStoObject(universe, arrayBuffer) {
+export function convertDataFBStoObject(universe: IUniverse, arrayBuffer) {
   /*
   /data/var returns a flatbuffer (FBS) as described by cellxgene/fbs/matrix.fbs
 
