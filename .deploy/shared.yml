@@ -108,7 +108,7 @@ services:
 
   redis:
     restart: always
-    image: redis:5.0.8-alpine3.11
+    image: redis:5.0.9-alpine3.11
     environment:
       - REDIS_HOST
       - REDIS_PORT
