@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from histocat.api.utils.db import get_db
 from histocat.api.utils.security import get_current_user
-from histocat.core import config
+from histocat.config import config
 from histocat.core.jwt import create_access_token
 from histocat.core.security import get_password_hash
 from histocat.core.utils import (

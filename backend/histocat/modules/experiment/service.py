@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from histocat.core.config import ROOT_DATA_DIRECTORY
+from histocat.config import config
 from histocat.modules.share.service import get_by_user_id
 from histocat.modules.user.models import UserModel
 
@@ -53,7 +53,7 @@ def create(session: Session, *, user_id: int, params: ExperimentCreateDto) -> Ex
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(ROOT_DATA_DIRECTORY, EXPERIMENT_LOCATION_FORMAT.format(id=entity.id))
+    entity.location = os.path.join(config.ROOT_DATA_DIRECTORY, EXPERIMENT_LOCATION_FORMAT.format(id=entity.id))
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for experiment {entity.id}: {entity.location}")
         os.makedirs(entity.location)

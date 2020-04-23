@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 import histocat.worker as worker
 from histocat.api.utils.db import get_db
 from histocat.api.utils.security import get_current_active_user
-from histocat.core import config
+from histocat.config import config
 from histocat.modules.user.models import UserModel
 
 from . import service

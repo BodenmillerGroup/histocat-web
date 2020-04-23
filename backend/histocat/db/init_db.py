@@ -2,7 +2,7 @@
 # otherwise, SQL Alchemy might fail to initialize properly relationships
 # for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
-from histocat.core import config
+from histocat.config import config
 from histocat.db.base import Base  # noqa
 from histocat.modules.acquisition.models import AcquisitionModel  # noqa
 from histocat.modules.dataset.models import DatasetModel  # noqa
@@ -23,5 +23,5 @@ def init_db(db_session):
 
     user = service.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
-        user_in = UserCreateDto(email=config.FIRST_SUPERUSER, password=config.FIRST_SUPERUSER_PASSWORD, is_admin=True,)
+        user_in = UserCreateDto(email=config.FIRST_SUPERUSER, password=config.FIRST_SUPERUSER_PASSWORD, is_admin=True, )
         user = service.create(db_session, params=user_in)

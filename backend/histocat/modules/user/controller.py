@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from histocat.api.utils.db import get_db
 from histocat.api.utils.security import get_current_active_superuser, get_current_active_user
-from histocat.core import config
+from histocat.config import config
 from histocat.core.utils import send_new_account_email
 from histocat.modules.user.models import UserModel
 

@@ -11,7 +11,7 @@ import jwt
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
 
-from histocat.core import config
+from histocat.config import config
 
 password_reset_jwt_subject = "preset"
 

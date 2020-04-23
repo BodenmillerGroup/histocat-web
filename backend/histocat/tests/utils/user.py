@@ -1,6 +1,6 @@
 import requests
 
-from histocat.core import config
+from histocat.config import config
 from histocat.db.session import db_session
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto

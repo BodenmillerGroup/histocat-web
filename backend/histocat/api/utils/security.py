@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_403_FORBIDDEN
 
 from histocat.api.utils.db import get_db
-from histocat.core import config
+from histocat.config import config
 from histocat.core.jwt import ALGORITHM
 from histocat.modules.auth.dto import TokenPayloadDto
 from histocat.modules.user import service

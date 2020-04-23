@@ -1,24 +1,26 @@
 <template>
-  <g
-    v-for="item in items"
-    :key="item.label"
-    class="centroid-label"
-    :transform="`translate(${item.coords[0]}, ${item.coords[1]})`"
-    data-testclass="centroid-label"
-    :data-testid="`${item.label}-centroid-label`"
-  >
-    <text
-      :transform="inverseTransform"
-      text-anchor="middle"
-      :data-label="item.label"
-      :style="item.style"
-      @onMouseEnter="onMouseEnter"
-      @onMouseOut="onMouseOut"
-      pointer-events="visiblePainted"
+  <div>
+    <g
+      v-for="item in items"
+      :key="item.label"
+      class="centroid-label"
+      :transform="`translate(${item.coords[0]}, ${item.coords[1]})`"
+      data-testclass="centroid-label"
+      :data-testid="`${item.label}-centroid-label`"
     >
-      {{ item.displayLabel }}
-    </text>
-  </g>
+      <text
+        :transform="inverseTransform"
+        text-anchor="middle"
+        :data-label="item.label"
+        :style="item.style"
+        @onMouseEnter="onMouseEnter"
+        @onMouseOut="onMouseOut"
+        pointer-events="visiblePainted"
+      >
+        {{ item.displayLabel }}
+      </text>
+    </g>
+  </div>
 </template>
 
 <script lang="ts">

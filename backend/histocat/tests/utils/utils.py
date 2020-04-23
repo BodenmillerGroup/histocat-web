@@ -3,7 +3,7 @@ import string
 
 import requests
 
-from histocat.core import config
+from histocat.config import config
 
 
 def random_lower_string():
@@ -11,7 +11,7 @@ def random_lower_string():
 
 
 def get_server_api():
-    server_name = f"http://{config.SERVER_NAME}"
+    server_name = f"http://{config.SERVER_HOST}"
     return server_name
 
 

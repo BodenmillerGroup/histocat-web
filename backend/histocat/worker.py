@@ -10,7 +10,7 @@ from emails.template import JinjaTemplate
 from imctools.io.utils import MCD_FILENDING, ZIP_FILENDING
 
 import histocat.db.init_db  # noqa
-from histocat.core import config
+from histocat.config import config
 from histocat.core.errors import SlideImportError
 from histocat.db.session import db_session
 from histocat.io import mcd, zip

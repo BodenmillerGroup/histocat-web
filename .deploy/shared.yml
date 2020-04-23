@@ -58,6 +58,7 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+      - SERVER_NAME=${DOMAIN}
       - SERVER_HOST=${PROTOCOL}://${DOMAIN}
     depends_on:
       - db

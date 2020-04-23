@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from histocat.api.api_v1.api import api_router
-from histocat.core import config
+from histocat.config import config
 from histocat.core.notifier import notifier
 from histocat.core.redis_manager import redis_manager
 

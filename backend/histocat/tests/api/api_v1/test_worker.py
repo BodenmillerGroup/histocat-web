@@ -1,6 +1,6 @@
 import requests
 
-from histocat.core import config
+from histocat.config import config
 from histocat.tests.utils.utils import get_server_api
 
 
