@@ -7,7 +7,7 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <v-chart :options="options" autoresize />
+      <v-chart :options="options" autoresize @brushselected="brushselected" />
     </v-col>
     <v-col v-if="showOptions" cols="3">
       <v-card tile>
@@ -78,7 +78,7 @@ const commonOptions: echarts.EChartOption = {
   },
   animation: false,
   tooltip: {
-    show: true,
+    show: false,
   },
   toolbox: {
     show: true,
@@ -99,6 +99,19 @@ const commonOptions: echarts.EChartOption = {
         lang: ["Data View", "Hide", "Refresh"],
       },
     },
+  },
+  brush: {
+    outOfBrush: {
+      color: "#abc",
+    },
+    brushStyle: {
+      borderWidth: 2,
+      color: "rgba(0,0,0,0.2)",
+      borderColor: "rgba(0,0,0,0.5)",
+    },
+    seriesIndex: [0, 1],
+    throttleType: "debounce",
+    throttleDelay: 1000,
   },
 };
 
@@ -222,13 +235,13 @@ export default class PCATab extends Vue {
         {
           type: "scatter",
           name: "Scatter2D",
-          symbolSize: 4,
-          large: !data.heatmap,
+          symbolSize: 2,
+          large: false,
           encode: {
-            x: data.x.label,
-            y: data.y.label,
-            tooltip: [data.x.label, data.y.label],
+            x: 0,
+            y: 1,
           },
+          progressive: 0,
         },
       ],
     };
@@ -279,7 +292,7 @@ export default class PCATab extends Vue {
           type: "scatter3D",
           name: "Scatter3D",
           seriesLayoutBy: "row",
-          symbolSize: 4,
+          symbolSize: 2,
           encode: {
             x: data.x.label,
             y: data.y.label,
@@ -367,6 +380,11 @@ export default class PCATab extends Vue {
         },
       },
     ];
+  }
+
+  brushselected(params) {
+    const mainSeries = params.batch[0].selected[0];
+    console.log(mainSeries);
   }
 }
 </script>

@@ -12,10 +12,20 @@ This is all VERY tightly integrated with reducers and actions, and
 exists to support those concepts.
 */
 
-export * as ColorHelpers from "./colorHelpers";
-export * as Universe from "./universe";
-export * as World from "./world";
-export * as ControlsHelpers from "./controlsHelpers";
-export * as AnnotationsHelpers from "./annotationsHelpers";
-export * as SchemaHelpers from "./schemaHelpers";
-export * as MatrixFBS from "./matrix";
+import * as ColorHelpers from "./colorHelpers";
+import * as Universe from "./universe";
+import * as World from "./world";
+import * as ControlsHelpers from "./controlsHelpers";
+import * as AnnotationsHelpers from "./annotationsHelpers";
+import * as SchemaHelpers from "./schemaHelpers";
+import * as MatrixFBS from "./matrix";
+
+export {
+  ColorHelpers,
+  Universe,
+  World,
+  ControlsHelpers,
+  AnnotationsHelpers,
+  SchemaHelpers,
+  MatrixFBS,
+};

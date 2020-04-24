@@ -1,17 +1,18 @@
-import flatbuffers
-import numpy as np
-from scipy import sparse
-import pandas as pd
 import json
 
+import flatbuffers
+import numpy as np
+import pandas as pd
+from scipy import sparse
+
 import histocat.cellxgene.data_common.fbs.NetEncoding.Column as Column
-import histocat.cellxgene.data_common.fbs.NetEncoding.TypedArray as TypedArray
-import histocat.cellxgene.data_common.fbs.NetEncoding.Matrix as Matrix
-import histocat.cellxgene.data_common.fbs.NetEncoding.Int32Array as Int32Array
-import histocat.cellxgene.data_common.fbs.NetEncoding.Uint32Array as Uint32Array
 import histocat.cellxgene.data_common.fbs.NetEncoding.Float32Array as Float32Array
 import histocat.cellxgene.data_common.fbs.NetEncoding.Float64Array as Float64Array
+import histocat.cellxgene.data_common.fbs.NetEncoding.Int32Array as Int32Array
 import histocat.cellxgene.data_common.fbs.NetEncoding.JSONEncodedArray as JSONEncodedArray
+import histocat.cellxgene.data_common.fbs.NetEncoding.Matrix as Matrix
+import histocat.cellxgene.data_common.fbs.NetEncoding.TypedArray as TypedArray
+import histocat.cellxgene.data_common.fbs.NetEncoding.Uint32Array as Uint32Array
 
 
 # Placeholder until recent enhancements to flatbuffers Python

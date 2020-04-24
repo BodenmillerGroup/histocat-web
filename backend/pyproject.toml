@@ -28,7 +28,7 @@ mahotas = "^1.4.9"
 matplotlib = "^3.2.1"
 opencv-python-headless = "^4.2.0.34"
 opentsne = "^0.3.12"
-orjson = "^2.6.5"
+orjson = "^2.6.6"
 pandas = "^1.0.3"
 passlib = { version = "^1.7.2", extras = ["bcrypt"] }
 phenograph = {git = "https://github.com/jacoblevine/phenograph.git"}

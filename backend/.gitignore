@@ -6,3 +6,6 @@ dist/
 
 # Virtualenv
 venv/
+
+# Data
+histocat/data

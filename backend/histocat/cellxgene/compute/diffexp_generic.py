@@ -1,8 +1,10 @@
 import numpy as np
 from scipy import sparse, stats
 
+from histocat.cellxgene.data_common.data_adaptor import DataAdaptor
 
-def diffexp_ttest(adaptor, maskA, maskB, top_n=8, diffexp_lfc_cutoff=0.01):
+
+def diffexp_ttest(adaptor: DataAdaptor, maskA, maskB, top_n=8, diffexp_lfc_cutoff=0.01):
     """
     Return differential expression statistics for top N variables.
 

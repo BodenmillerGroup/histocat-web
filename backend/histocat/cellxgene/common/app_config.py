@@ -1,19 +1,31 @@
-from histocat import __version__ as cellxgene_version
-from flatten_dict import flatten
-import os
-from os.path import splitext, basename, isdir
-import sys
-from urllib.parse import urlparse
-import yaml
 import copy
-
-from histocat.cellxgene.common.default_config import get_default_config
-from histocat.cellxgene.common.errors import ConfigurationError, DatasetAccessError, OntologyLoadFailure
-from histocat.cellxgene.data_common.matrix_loader import MatrixDataLoader, MatrixDataCacheManager, MatrixDataType
-from histocat.cellxgene.common.utils import find_available_port, is_port_available
+import os
+import sys
 import warnings
+from os.path import basename, isdir, splitext
+from urllib.parse import urlparse
+
+import yaml
+from flatten_dict import flatten
+
+from histocat import __version__ as cellxgene_version
 from histocat.cellxgene.common.annotations import AnnotationsLocalFile
-from histocat.cellxgene.common.utils import custom_format_warning
+from histocat.cellxgene.common.default_config import get_default_config
+from histocat.cellxgene.common.errors import (
+    ConfigurationError,
+    DatasetAccessError,
+    OntologyLoadFailure,
+)
+from histocat.cellxgene.common.utils import (
+    custom_format_warning,
+    find_available_port,
+    is_port_available,
+)
+from histocat.cellxgene.data_common.matrix_loader import (
+    MatrixDataCacheManager,
+    MatrixDataLoader,
+    MatrixDataType,
+)
 
 DEFAULT_SERVER_PORT = int(os.environ.get("CXG_SERVER_PORT", "5005"))
 # anything bigger than this will generate a special message

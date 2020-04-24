@@ -1,21 +1,4 @@
-import importlib
-
-"""
-Wrapper for various scanpy modules.  Will raise NotImplementedError if the scanpy
-module is not installed/available
-"""
-
-
-def get_scanpy_module():
-    try:
-        sc = importlib.import_module("scanpy")
-        # Future: we could enforce versions here, eg, lookat sc.__version__
-        return sc
-    except ModuleNotFoundError:
-        raise NotImplementedError("Please install scanpy to enable UMAP re-embedding")
-    except Exception as e:
-        # will capture other ImportError corner cases
-        raise NotImplementedError() from e
+import scanpy as sc
 
 
 def scanpy_umap(adata, obs_mask=None, pca_options={}, neighbors_options={}, umap_options={}):
@@ -29,9 +12,6 @@ def scanpy_umap(adata, obs_mask=None, pca_options={}, neighbors_options={}, umap
     # backed mode is incompatible with the current implementation
     if adata.isbacked:
         raise NotImplementedError("Backed mode is incompatible with re-embedding")
-
-    # safely get scanpy module, which may not be present.
-    sc = get_scanpy_module()
 
     # https://github.com/theislab/anndata/issues/311
     obs_mask = slice(None) if obs_mask is None else obs_mask

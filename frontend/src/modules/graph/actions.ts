@@ -6,6 +6,8 @@ import { GraphGetters } from "./getters";
 import { GraphMutations } from "./mutations";
 import { graphSelectionModule } from "@/modules/graphSelection";
 import { crossfilterModule } from "@/modules/crossfilter";
+import {api} from "./api";
+import { Universe } from '@/cellxgene/util/stateManager';
 
 export class GraphActions extends Actions<GraphState, GraphGetters, GraphMutations, GraphActions> {
   main?: Context<typeof mainModule>;
@@ -17,6 +19,35 @@ export class GraphActions extends Actions<GraphState, GraphGetters, GraphMutatio
     this.main = mainModule.context(store);
     this.graphSelection = graphSelectionModule.context(store);
     this.crossfilter = crossfilterModule.context(store);
+  }
+
+  async getSchema() {
+    try {
+      const data = await api.getSchema();
+      this.mutations.setSchema(data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getObsAnnotation(name: string) {
+    try {
+      const buffer = await api.getObsAnnotation(name);
+      const df = Universe.matrixFBSToDataframe(buffer);
+      this.mutations.setObsAnnotations(df);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getVarAnnotation(name: string) {
+    try {
+      const buffer = await api.getVarAnnotation(name);
+      const df = Universe.matrixFBSToDataframe(buffer);
+      this.mutations.setVarAnnotations(df);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
   }
 
   graphBrushStart() {

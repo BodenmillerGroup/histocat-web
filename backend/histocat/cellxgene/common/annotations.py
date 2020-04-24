@@ -1,18 +1,21 @@
-from datetime import datetime
-import re
-from uuid import uuid4
-import os
-import pandas as pd
-from hashlib import blake2b
 import base64
-from histocat import __version__ as cellxgene_version
+import os
+import re
 import threading
-from histocat.cellxgene.common.errors import AnnotationsError, OntologyLoadFailure
-from histocat.cellxgene.common.utils import series_to_schema
-import fsspec
-import fastobo
+
 # from flask import session
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
+from hashlib import blake2b
+from uuid import uuid4
+
+import fastobo
+import fsspec
+import pandas as pd
+
+from histocat import __version__ as cellxgene_version
+from histocat.cellxgene.common.errors import AnnotationsError, OntologyLoadFailure
+from histocat.cellxgene.common.utils import series_to_schema
 
 
 class Annotations(metaclass=ABCMeta):

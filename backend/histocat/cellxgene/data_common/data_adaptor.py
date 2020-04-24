@@ -1,19 +1,25 @@
 from abc import ABCMeta, abstractmethod
-import numpy as np
-import pandas as pd
 from os.path import basename, splitext
 
-from histocat.cellxgene.data_common.fbs.matrix import encode_matrix_fbs
+import numpy as np
+import pandas as pd
+
+from histocat.cellxgene.common.app_config import AppConfig, AppFeature
 from histocat.cellxgene.common.constants import Axis
-from histocat.cellxgene.common.errors import FilterError, JSONEncodingValueError, ExceedsLimitError
+from histocat.cellxgene.common.data_locator import DataLocator
+from histocat.cellxgene.common.errors import (
+    ExceedsLimitError,
+    FilterError,
+    JSONEncodingValueError,
+)
 from histocat.cellxgene.common.utils import jsonify_numpy
-from histocat.cellxgene.common.app_config import AppFeature, AppConfig
+from histocat.cellxgene.data_common.fbs.matrix import encode_matrix_fbs
 
 
 class DataAdaptor(metaclass=ABCMeta):
     """Base class for loading and accessing matrix data"""
 
-    def __init__(self, config):
+    def __init__(self, config: AppConfig):
         if type(config) != AppConfig:
             raise TypeError("config expected to be of type AppConfig")
 
@@ -30,12 +36,12 @@ class DataAdaptor(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def open(data_locator, config):
+    def open(data_locator: DataLocator, config: AppConfig):
         pass
 
     @staticmethod
     @abstractmethod
-    def file_size(data_locator):
+    def file_size(data_locator: DataLocator):
         pass
 
     @abstractmethod

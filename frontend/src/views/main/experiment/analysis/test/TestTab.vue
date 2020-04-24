@@ -15,6 +15,7 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import Graph from "@/cellxgene/components/graph/graph.vue";
 import {controlsModule} from "@/modules/controls";
+import {graphModule} from "@/modules/graph";
 
 @Component({
   components: { Graph },
@@ -26,6 +27,7 @@ export default class TestTab extends Vue {
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly controlsContext = controlsModule.context(this.$store);
+  readonly graphContext = graphModule.context(this.$store);
 
   get graphRenderCounter() {
     return this.controlsContext.getters.graphRenderCounter;
@@ -43,36 +45,21 @@ export default class TestTab extends Vue {
     return this.experimentContext.getters.activeAcquisition;
   }
 
-  get selectedAcquisitionIds() {
-    return this.experimentContext.getters.selectedAcquisitionIds;
-  }
-
-  get activeDataset() {
-    return this.datasetContext.getters.activeDataset;
+  get schema() {
+    return this.graphContext.getters.schema;
   }
 
   get channels() {
     return this.datasetContext.getters.channels;
   }
 
-  async submit() {
-    const acquisitionIds =
-      this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
-
-    // await this.analysisContext.actions.getPCAData({
-    //   dataset_id: this.activeDataset!.id,
-    //   acquisition_ids: acquisitionIds,
-    //   n_components: parseInt(this.nComponents, 10),
-    //   heatmapType: this.heatmap ? this.heatmap.type : "",
-    //   heatmap: heatmap,
-    //   markers: this.selectedChannels,
-    // });
+  submit() {
+    this.graphContext.actions.getSchema();
+    this.graphContext.actions.getVarAnnotation("name_0");
   }
 
-  @Watch("data")
-  pcaDataChanged(data) {
-    if (data) {
-    }
+  mounted() {
+    this.submit();
   }
 }
 </script>

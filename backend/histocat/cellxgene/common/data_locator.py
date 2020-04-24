@@ -1,7 +1,8 @@
 import os
 import tempfile
-import fsspec
 from datetime import datetime
+
+import fsspec
 
 
 class DataLocator:

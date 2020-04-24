@@ -1,10 +1,13 @@
-from enum import Enum
+from __future__ import annotations
+
 import threading
 import time
-from histocat.cellxgene.data_common.rwlock import RWLock
-from histocat.cellxgene.common.errors import DatasetAccessError
-from histocat.cellxgene.common.data_locator import DataLocator
 from contextlib import contextmanager
+from enum import Enum
+
+from histocat.cellxgene.common.data_locator import DataLocator
+from histocat.cellxgene.common.errors import DatasetAccessError
+from histocat.cellxgene.data_common.rwlock import RWLock
 
 
 class MatrixDataCacheItem(object):
@@ -14,7 +17,7 @@ class MatrixDataCacheItem(object):
     (during the lifetime of a api request), a reader lock is locked.  During that time, the dataset cannot
     be removed."""
 
-    def __init__(self, loader):
+    def __init__(self, loader: MatrixDataLoader):
         self.loader = loader
         self.data_adaptor = None
         self.data_lock = RWLock()
@@ -82,7 +85,7 @@ class MatrixDataCacheItem(object):
 
 
 class MatrixDataCacheInfo(object):
-    def __init__(self, cache_item, timestamp):
+    def __init__(self, cache_item: MatrixDataCacheItem, timestamp):
         # The MatrixDataCacheItem in the cache
         self.cache_item = cache_item
         # The last time the cache_item was accessed
