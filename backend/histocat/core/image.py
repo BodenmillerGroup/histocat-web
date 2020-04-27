@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import List, Tuple
+from typing import List, Tuple, Sequence
 
 import cv2
 import numpy as np
@@ -62,7 +62,30 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto):
     if mask_settings.colorize:
         return label2rgb(mask, image=image, alpha=0.3, bg_label=0, image_alpha=1, kind="avg")
     else:
-        return mask_color_img(image, mask)
+        if mask_settings.gated:
+            return mask_gated_img(image, mask, mask_settings.cell_ids)
+        else:
+            return mask_color_img(image, mask)
+
+
+def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(255, 255, 100), alpha=0.3):
+    """
+    img: cv2 image
+    mask: bool or np.where
+    color: BGR triplet [_, _, _]. Default: [0, 255, 255] is yellow.
+    alpha: float [0, 1].
+
+    Ref: http://www.pyimagesearch.com/2016/03/07/transparent-overlays-with-opencv/
+    """
+    m = np.isin(mask, cell_ids)
+    mask[~m] = 0
+    mask = bwperim(mask, n=2)
+    # bit_mask = mask == 0
+    mask_layer = image.copy()
+    mask_layer[mask] = color
+    cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
+    # cv2.add(image, mask_layer, image)
+    return image
 
 
 def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 100), alpha=0.3):

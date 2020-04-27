@@ -31,6 +31,7 @@ export interface IImageScalebar {
 
 export interface IMaskSettings {
   apply: boolean;
+  cell_ids?: number[];
   location?: string;
   settings?: any;
   suppressBroadcast?: boolean;

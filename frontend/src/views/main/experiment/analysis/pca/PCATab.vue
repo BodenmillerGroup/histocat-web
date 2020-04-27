@@ -98,6 +98,9 @@ const commonOptions: echarts.EChartOption = {
         readOnly: true,
         lang: ["Data View", "Hide", "Refresh"],
       },
+      brush: {
+        title: ["Rect", "Polygon", "Clear"],
+      },
     },
   },
   brush: {
@@ -112,6 +115,7 @@ const commonOptions: echarts.EChartOption = {
     seriesIndex: [0, 1],
     throttleType: "debounce",
     throttleDelay: 1000,
+    toolbox: ["rect", "polygon", "clear"],
   },
 };
 
@@ -128,6 +132,8 @@ export default class PCATab extends Vue {
   selectedChannels: any[] = [];
   nComponents = "2";
   heatmap: { type: string; label: string } | null = null;
+
+  points: any[] = [];
 
   get showOptions() {
     return this.mainContext.getters.showOptions;
@@ -155,6 +161,10 @@ export default class PCATab extends Vue {
 
   get heatmaps() {
     return this.datasetContext.getters.heatmaps;
+  }
+
+  get applyMask() {
+    return this.settingsContext.getters.maskSettings.apply;
   }
 
   selectAll() {
@@ -200,12 +210,12 @@ export default class PCATab extends Vue {
   }
 
   private plot2D(data: IPCAData) {
-    const points = data.heatmap
+    this.points = data.heatmap
       ? data.x.data.map((x, i) => {
           return [x, data.y.data[i], data.heatmap!.data[i]];
         })
       : data.x.data.map((x, i) => {
-          return [x, data.y.data[i]];
+          return [x, data.y.data[i], data.cell_ids[i]];
         });
 
     const options: echarts.EChartOption = {
@@ -225,7 +235,7 @@ export default class PCATab extends Vue {
         },
       },
       dataset: {
-        source: points,
+        source: this.points,
         dimensions: [
           { name: data.x.label, type: "float" },
           { name: data.y.label, type: "float" },
@@ -382,9 +392,23 @@ export default class PCATab extends Vue {
     ];
   }
 
-  brushselected(params) {
-    const mainSeries = params.batch[0].selected[0];
-    console.log(mainSeries);
+  async brushselected(params) {
+    const dataIndex = params.batch[0].selected[0].dataIndex;
+    if (dataIndex.length > 0) {
+      const cell_ids: number[] = [];
+      for (const i of dataIndex) {
+        const cell_id = Number(this.points[i][2].split("_")[1])
+        cell_ids.push(cell_id);
+      }
+      if (this.applyMask) {
+        // this.settingsContext.mutations.setMaskSettings({
+        //   ...this.settingsContext.getters.maskSettings,
+        //   cell_ids: value,
+        // });
+        this.experimentContext.actions.getGatedMaskImage(cell_ids);
+        // this.experimentContext.actions.getChannelStackImage();
+      }
+    }
   }
 }
 </script>

@@ -54,7 +54,9 @@ def process_pca(
     # Run PCA
     result = pca.fit_transform(feature_values_scaled)
 
+    cell_ids = df["ImageNumber"].astype(str) + "_" + df["ObjectNumber"].astype(str)
     output = {
+        "cell_ids": cell_ids.tolist(),
         "x": {"label": "PC1", "data": result[:, 0].tolist()},
         "y": {"label": "PC2", "data": result[:, 1].tolist()},
     }

@@ -39,6 +39,8 @@ class ScalebarDto(BaseModel):
 class MaskSettingsDto(BaseModel):
     apply: bool
     colorize: Optional[bool]
+    gated: Optional[bool]
+    cell_ids: Optional[Sequence[int]]
     location: str
     settings: Optional[dict]
 

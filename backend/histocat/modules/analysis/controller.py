@@ -39,7 +39,6 @@ from .dto import (
     PlotSeriesDto,
     RegionChannelStatsDto,
     RegionStatsSubmissionDto,
-    ScatterPlotDto,
     TsneDto,
     TsneSubmissionDto,
     UmapDto,

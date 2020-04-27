@@ -171,6 +171,30 @@ export class ExperimentActions extends Actions<
     }
   }
 
+  async getGatedMaskImage(cell_ids: number[]) {
+    const params = await this.actions.prepareStackParams();
+    if (params.channels.length === 0 || !params.hasOwnProperty("mask")) {
+      return;
+    }
+    params["mask"]["apply"] = true;
+    params["mask"]["gated"] = true;
+    params["mask"]["cell_ids"] = cell_ids;
+    try {
+      // this.mutations.setColorizeMaskInProgress(true);
+      const response = await api.downloadChannelStackImage(params);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        this.mutations.setChannelStackImage(reader.result);
+      };
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    } finally {
+      // this.mutations.setColorizeMaskInProgress(false);
+    }
+  }
+
   async exportChannelStackImage(format: ExportFormat = "png") {
     const params = await this.actions.prepareStackParams(format);
     try {
