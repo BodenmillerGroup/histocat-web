@@ -47,7 +47,7 @@ export interface IPCASubmission {
 }
 
 export interface IPCAData {
-  cell_ids: number[];
+  cell_ids: any[];
   x: IPlotSeries;
   y: IPlotSeries;
   z?: IPlotSeries;

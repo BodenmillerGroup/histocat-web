@@ -5,6 +5,7 @@
         <v-tab>Scatter Plot</v-tab>
         <v-tab>Box Plot</v-tab>
         <v-tab>PCA</v-tab>
+        <v-tab>PCA2</v-tab>
         <v-tab>t-SNE</v-tab>
         <v-tab>UMAP</v-tab>
         <v-tab>PhenoGraph</v-tab>
@@ -18,6 +19,9 @@
         </v-tab-item>
         <v-tab-item>
           <PCATab />
+        </v-tab-item>
+        <v-tab-item>
+          <PCATab2 />
         </v-tab-item>
         <v-tab-item>
           <TSNETab />
@@ -49,9 +53,11 @@ import SegmentationTab from "@/views/main/experiment/analysis/segmentation/Segme
 import UMAPTab from "@/views/main/experiment/analysis/umap/UMAPTab.vue";
 import { Component, Vue } from "vue-property-decorator";
 import TestTab from "@/views/main/experiment/analysis/test/TestTab.vue";
+import PCATab2 from "@/views/main/experiment/analysis/pca2/PCATab2.vue";
 
 @Component({
   components: {
+    PCATab2,
     TestTab,
     PhenoGraphTab,
     UMAPTab,

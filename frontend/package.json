@@ -42,6 +42,7 @@
     "rambda": "5.1.1",
     "register-service-worker": "1.7.1",
     "regl": "1.4.2",
+    "regl-scatterplot": "0.7.6",
     "vue": "2.6.11",
     "vue-class-component": "7.2.3",
     "vue-echarts": "4.1.0",
