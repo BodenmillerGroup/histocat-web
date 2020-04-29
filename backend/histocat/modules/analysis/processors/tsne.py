@@ -74,6 +74,9 @@ def process_tsne(
     )
     tsne_result = tsne.fit_transform(feature_values_scaled)
 
+    cell_ids = df["ImageNumber"].astype(str) + "_" + df["ObjectNumber"].astype(str)
+    tsne_result["cell_ids"] = cell_ids
+
     # openTSNE implementation
     # tsne = TSNE(
     #     n_components=n_components,

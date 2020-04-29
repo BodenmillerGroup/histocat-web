@@ -7,7 +7,8 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <v-chart :options="options" autoresize />
+      <Scatter2D v-if="nComponents === '2'" :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" :width="responsive.width - 400" :height="responsive.height - 100" />
+      <Scatter3D v-else :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" />
     </v-col>
     <v-col v-if="showOptions" cols="3">
       <v-card tile>
@@ -152,6 +153,9 @@ import "echarts/lib/component/tooltip";
 import "echarts/lib/component/visualMap";
 import { uniq } from "rambda";
 import { Component, Vue, Watch } from "vue-property-decorator";
+import Scatter2D from "@/components/charts/Scatter2D.vue";
+import Scatter3D from "@/components/charts/Scatter3D.vue";
+import {responsiveModule} from "@/modules/responsive";
 
 const commonOptions: echarts.EChartOption = {
   title: {
@@ -184,14 +188,16 @@ const commonOptions: echarts.EChartOption = {
     },
   },
 };
-
-@Component
+@Component({
+  components: {Scatter3D, Scatter2D}
+})
 export default class TSNETab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
+  readonly responsiveContext = responsiveModule.context(this.$store);
 
   readonly required = required;
 
@@ -210,6 +216,10 @@ export default class TSNETab extends Vue {
   heatmap: { type: string; label: string } | null = null;
 
   result: any = null;
+
+  get responsive() {
+    return this.responsiveContext.getters.responsive;
+  }
 
   get showOptions() {
     return this.mainContext.getters.showOptions;
@@ -310,17 +320,6 @@ export default class TSNETab extends Vue {
 
   get tsneData() {
     return this.analysisContext.getters.tsneData;
-  }
-
-  @Watch("tsneData")
-  tsneDataChanged(data: ITSNEData) {
-    if (data) {
-      if (data.z) {
-        this.plot3D(data);
-      } else {
-        this.plot2D(data);
-      }
-    }
   }
 
   private plot2D(data: ITSNEData) {

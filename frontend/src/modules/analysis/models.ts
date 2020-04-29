@@ -46,6 +46,21 @@ export interface IPCASubmission {
   heatmap: string;
 }
 
+export interface IChart3DData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
+export interface IChart2DData {
+  cell_ids: string[];
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
 export interface IPCAData {
   cell_ids: any[];
   x: IPlotSeries;
