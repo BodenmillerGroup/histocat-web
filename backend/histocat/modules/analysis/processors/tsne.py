@@ -1,4 +1,5 @@
 import os
+import pickle
 from datetime import datetime
 from typing import List, Optional
 
@@ -12,6 +13,7 @@ from sklearn.manifold import TSNE
 # from openTSNE.callbacks import ErrorLogger
 from sqlalchemy.orm import Session
 
+from histocat.core.image import normalize_embedding
 from histocat.core.notifier import Message
 from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
@@ -73,9 +75,7 @@ def process_tsne(
         init=init,
     )
     tsne_result = tsne.fit_transform(feature_values_scaled)
-
     cell_ids = df["ImageNumber"].astype(str) + "_" + df["ObjectNumber"].astype(str)
-    tsne_result["cell_ids"] = cell_ids
 
     # openTSNE implementation
     # tsne = TSNE(
@@ -91,8 +91,13 @@ def process_tsne(
     timestamp = str(datetime.utcnow())
 
     os.makedirs(os.path.join(dataset.location, "tsne"), exist_ok=True)
-    location = os.path.join(dataset.location, "tsne", f"{timestamp}.npy")
-    np.save(location, tsne_result)
+    location = os.path.join(dataset.location, "tsne", f"{timestamp}.pickle")
+
+    with open(location, 'wb') as f:
+        pickle.dump({
+            "cell_ids": cell_ids,
+            "tsne_result": tsne_result
+        }, f, pickle.HIGHEST_PROTOCOL)
 
     result = {
         "name": timestamp,
@@ -129,9 +134,17 @@ def get_tsne_result(
         raise HTTPException(status_code=400, detail="The dataset does not have a proper t-SNE output.")
 
     tsne_result = tsne_output.get(name)
-    result = np.load(tsne_result.get("location"), allow_pickle=True)
+
+    with open(tsne_result.get("location"), 'rb') as f:
+        r = pickle.load(f)
+
+    cell_ids = r.get("cell_ids")
+    result = r.get("tsne_result")
+
+    result = normalize_embedding(result)
 
     output = {
+        "cell_ids": cell_ids.tolist(),
         "x": {"label": "C1", "data": result[:, 0].tolist()},
         "y": {"label": "C2", "data": result[:, 1].tolist()},
     }

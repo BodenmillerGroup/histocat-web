@@ -6,6 +6,7 @@ from sklearn import preprocessing
 from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 
+from histocat.core.image import normalize_embedding
 from histocat.modules.dataset import service as dataset_crud
 
 
@@ -53,6 +54,7 @@ def process_pca(
 
     # Run PCA
     result = pca.fit_transform(feature_values_scaled)
+    result = normalize_embedding(result)
 
     cell_ids = df["ImageNumber"].astype(str) + "_" + df["ObjectNumber"].astype(str)
     output = {

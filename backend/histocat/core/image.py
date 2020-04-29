@@ -221,3 +221,24 @@ def get_heatmap_colors(values: np.ndarray, categorical_values: bool):
     for v in values:
         result.append(rgb2hex(color_dict[v]))
     return result
+
+
+def normalize_embedding(embedding):
+    """Normalize embedding layout to meet client assumptions.
+    Embedding is an ndarray, shape (n_obs, n)., where n is normally 2.
+    """
+
+    # scale isotropically
+    min = embedding.min(axis=0)
+    max = embedding.max(axis=0)
+    scale = np.amax(max - min)
+    normalized_layout = (embedding - min) / scale
+
+    # translate to center on both axis
+    # translate = 0.5 - ((max - min) / scale / 2)
+    # TODO: improve translation
+    translate = -1 + ((max - min) / scale / 2)
+    normalized_layout = normalized_layout + translate
+
+    normalized_layout = normalized_layout.astype(dtype=np.float32)
+    return normalized_layout

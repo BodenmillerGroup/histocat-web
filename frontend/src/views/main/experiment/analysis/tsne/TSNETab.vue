@@ -7,7 +7,7 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <Scatter2D v-if="nComponents === '2'" :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" :width="responsive.width - 400" :height="responsive.height - 100" />
+      <Scatter2D v-if="nComponents === '2'" :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" :width="responsive.width - 500" :height="responsive.height - 150" />
       <Scatter3D v-else :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" />
     </v-col>
     <v-col v-if="showOptions" cols="3">
@@ -138,56 +138,17 @@
 
 <script lang="ts">
 import { analysisModule } from "@/modules/analysis";
-import { ITSNEData } from "@/modules/analysis/models";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { required } from "@/utils/validators";
-import * as echarts from "echarts";
-import "echarts-gl";
-import "echarts/lib/chart/line";
-import "echarts/lib/chart/scatter";
-import "echarts/lib/component/toolbox";
-import "echarts/lib/component/tooltip";
-import "echarts/lib/component/visualMap";
-import { uniq } from "rambda";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
 import {responsiveModule} from "@/modules/responsive";
 
-const commonOptions: echarts.EChartOption = {
-  title: {
-    text: "t-Distributed Stochastic Neighbor Embedding",
-    left: "center",
-    top: 0,
-  },
-  animation: false,
-  tooltip: {
-    show: true,
-  },
-  toolbox: {
-    show: true,
-    right: "9%",
-    feature: {
-      restore: {
-        show: true,
-        title: "Reset",
-      },
-      saveAsImage: {
-        show: true,
-        title: "Export",
-      },
-      dataView: {
-        show: true,
-        title: "Data",
-        readOnly: true,
-        lang: ["Data View", "Hide", "Refresh"],
-      },
-    },
-  },
-};
+
 @Component({
   components: {Scatter3D, Scatter2D}
 })
@@ -203,8 +164,6 @@ export default class TSNETab extends Vue {
 
   valid = false;
 
-  options: echarts.EChartOption = {};
-
   selectedChannels: any[] = [];
   nComponents = "2";
   perplexity = 30;
@@ -216,6 +175,10 @@ export default class TSNETab extends Vue {
   heatmap: { type: string; label: string } | null = null;
 
   result: any = null;
+
+  get tsneData() {
+    return this.analysisContext.getters.tsneData;
+  }
 
   get responsive() {
     return this.responsiveContext.getters.responsive;
@@ -316,193 +279,6 @@ export default class TSNETab extends Vue {
       heatmapType: this.heatmap ? this.heatmap.type : "",
       heatmap: heatmap,
     });
-  }
-
-  get tsneData() {
-    return this.analysisContext.getters.tsneData;
-  }
-
-  private plot2D(data: ITSNEData) {
-    const points = data.heatmap
-      ? data.x.data.map((x, i) => {
-          return [x, data.y.data[i], data.heatmap!.data[i]];
-        })
-      : data.x.data.map((x, i) => {
-          return [x, data.y.data[i]];
-        });
-
-    const options: echarts.EChartOption = {
-      ...commonOptions,
-      xAxis: {
-        type: "value",
-        name: data.x.label,
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-      },
-      yAxis: {
-        type: "value",
-        name: data.y.label,
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-      },
-      dataset: {
-        source: points,
-        dimensions: [
-          { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" },
-        ],
-      },
-      series: [
-        {
-          type: "scatter",
-          name: "Scatter2D",
-          symbolSize: 4,
-          large: !data.heatmap,
-          encode: {
-            x: data.x.label,
-            y: data.y.label,
-            tooltip: [data.x.label, data.y.label],
-          },
-        },
-      ],
-    };
-
-    if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
-      options.visualMap = this.getVisualMap(data);
-    }
-
-    this.options = options;
-  }
-
-  private plot3D(data: ITSNEData) {
-    const options = {
-      ...commonOptions,
-      grid3D: {},
-      xAxis3D: {
-        type: "value",
-        name: data.x.label,
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-      },
-      yAxis3D: {
-        type: "value",
-        name: data.y.label,
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-      },
-      zAxis3D: {
-        type: "value",
-        name: data.z!.label,
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-      },
-      dataset: {
-        source: [data.x.data, data.y.data, data.z!.data],
-        dimensions: [
-          { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" },
-          { name: data.z!.label, type: "float" },
-        ],
-      },
-      series: [
-        {
-          type: "scatter3D",
-          name: "Scatter3D",
-          seriesLayoutBy: "row",
-          symbolSize: 4,
-          encode: {
-            x: data.x.label,
-            y: data.y.label,
-            z: data.z!.label,
-            tooltip: [data.x.label, data.y.label, data.z!.label],
-          },
-        },
-      ],
-    } as echarts.EChartOption;
-
-    if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label });
-      (options.dataset as any).source.push(data.heatmap.data);
-      options.visualMap = this.getVisualMap(data);
-    }
-
-    this.options = options;
-  }
-
-  private getVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
-    return data.heatmap!.label === "Acquisition"
-      ? this.getCategoricalVisualMap(data)
-      : this.getContinuousVisualMap(data);
-  }
-
-  private getCategoricalVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
-    const categories = uniq(data.heatmap!.data);
-    return [
-      {
-        type: "piecewise",
-        orient: "vertical",
-        top: "top",
-        left: "right",
-        categories: categories as any,
-        padding: [
-          60, // up
-          20, // right
-          5, // down
-          5, // left
-        ],
-        inRange: {
-          color: [
-            "#e6194b",
-            "#3cb44b",
-            "#ffe119",
-            "#4363d8",
-            "#f58231",
-            "#911eb4",
-            "#46f0f0",
-            "#f032e6",
-            "#bcf60c",
-            "#fabebe",
-            "#008080",
-            "#e6beff",
-            "#9a6324",
-            "#fffac8",
-            "#800000",
-            "#aaffc3",
-            "#808000",
-            "#ffd8b1",
-            "#000075",
-            "#808080",
-            "#000000",
-          ],
-        },
-      },
-    ];
-  }
-
-  private getContinuousVisualMap(data: ITSNEData): echarts.EChartOption.VisualMap[] {
-    const min = Math.min(...data.heatmap!.data);
-    const max = Math.max(...data.heatmap!.data);
-    return [
-      {
-        type: "continuous",
-        orient: "horizontal",
-        left: "center",
-        text: ["Max", "Min"],
-        calculable: true,
-        realtime: false,
-        min: min,
-        max: max,
-        inRange: {
-          color: ["#4457cc", "#ff5200"],
-        },
-      },
-    ];
   }
 }
 </script>

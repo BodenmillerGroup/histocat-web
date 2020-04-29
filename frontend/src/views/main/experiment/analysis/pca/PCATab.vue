@@ -7,7 +7,7 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <Scatter2D v-if="nComponents === '2'" :data="pcaData" title="Principal Component Analysis" :width="responsive.width - 400" :height="responsive.height - 100" />
+      <Scatter2D v-if="nComponents === '2'" :data="pcaData" title="Principal Component Analysis" :width="responsive.width - 500" :height="responsive.height - 150" />
       <Scatter3D v-else :data="pcaData" title="Principal Component Analysis" />
     </v-col>
     <v-col v-if="showOptions" cols="3">
