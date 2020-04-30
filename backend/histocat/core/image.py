@@ -68,7 +68,7 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto):
             return mask_color_img(image, mask)
 
 
-def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(255, 255, 100), alpha=0.3):
+def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(255, 255, 100), alpha=0.8):
     """
     img: cv2 image
     mask: bool or np.where

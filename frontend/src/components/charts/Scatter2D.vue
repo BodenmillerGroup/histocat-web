@@ -32,7 +32,7 @@ export default class Scatter2D extends Vue {
   dataChanged(data: IChart2DData) {
     if (data) {
       this.scatterplot.deselect();
-      this.scatterplot.reset();
+      // this.scatterplot.reset();
 
       this.points = data.heatmap
         ? data.x.data.map((x, i) => {
@@ -73,8 +73,8 @@ export default class Scatter2D extends Vue {
     if (this.selection.length > 0) {
       const cell_ids: number[] = [];
       for (const i of this.selection) {
-        const cell_id = Number(this.points[i][3].split("_")[1]);
-        cell_ids.push(cell_id);
+        const [image_number, cell_id] = this.points[i][3].split("_");
+        cell_ids.push(Number(cell_id));
       }
       if (this.applyMask) {
         // this.settingsContext.mutations.setMaskSettings({

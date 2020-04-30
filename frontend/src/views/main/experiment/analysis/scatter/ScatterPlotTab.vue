@@ -257,19 +257,20 @@ export default class ScatterPlotTab extends Vue {
           fontWeight: "bold",
         },
       },
-      dataset: {
-        source: points,
-        dimensions: [
-          { name: data.x.label, type: "float" },
-          { name: data.y.label, type: "float" },
-        ],
-      },
+      // dataset: {
+      //   source: points,
+      //   dimensions: [
+      //     { name: data.x.label, type: "float" },
+      //     { name: data.y.label, type: "float" },
+      //   ],
+      // },
       series: [
         {
-          type: "scatter",
+          type: "scatterGL",
           name: "Scatter2D",
-          symbolSize: 4,
-          large: !data.heatmap,
+          symbolSize: 2,
+          data: points,
+          large: false,
           encode: {
             x: data.x.label,
             y: data.y.label,
@@ -280,7 +281,7 @@ export default class ScatterPlotTab extends Vue {
     };
 
     if (data.heatmap) {
-      (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
+      // (options.dataset as any).dimensions.push({ name: data.heatmap.label, type: "float" });
 
       options.visualMap = this.getVisualMap(data);
     }
