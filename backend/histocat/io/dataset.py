@@ -4,6 +4,7 @@ import logging
 import os
 import re
 from pathlib import Path
+from typing import Dict
 
 import pandas as pd
 from sqlalchemy.orm import Session
@@ -55,12 +56,15 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
 
     probability_masks = {}
     image_map = {}
+    image_number_to_acquisition_id = {}
     for index, row in image_df.iterrows():
         mask_meta = _import_probabilities_mask(db, src_folder, row, dataset)
         if mask_meta is not None:
             acquisition_id = mask_meta.get("acquisition").get("id")
             probability_masks[acquisition_id] = mask_meta
-            image_map[acquisition_id] = mask_meta.get("image_number")
+            image_number = mask_meta.get("image_number")
+            image_map[acquisition_id] = image_number
+            image_number_to_acquisition_id[image_number] = acquisition_id
     input["probability_masks"] = probability_masks
     # Map acquisition database ID to ImageNumber column
     input["image_map"] = image_map
@@ -74,7 +78,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
     if object_relationships_input:
         input["object_relationships"] = object_relationships_input
 
-    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder)
+    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id)
     if cell_input:
         input["cell"] = cell_input
 
@@ -135,7 +139,7 @@ def _import_object_relationships(db: Session, src_folder: Path, dst_folder: Path
     return df, artifact
 
 
-def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path):
+def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path, image_number_to_acquisition_id: Dict[int, int]):
     src_uri = src_folder / f"{CELL_FILENAME}{CSV_FILE_EXTENSION}"
 
     if not src_uri.exists():
@@ -143,6 +147,10 @@ def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path):
 
     dst_uri = dst_folder / f"{CELL_FILENAME}{FEATHER_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
+
+    df['acquisition_id'] = df['ImageNumber']
+    df["acquisition_id"].replace(image_number_to_acquisition_id, inplace=True)
+
     df.to_feather(dst_uri)
     artifact = {"location": str(dst_uri)}
     return df, artifact
