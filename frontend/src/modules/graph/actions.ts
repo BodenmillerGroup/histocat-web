@@ -6,8 +6,8 @@ import { GraphGetters } from "./getters";
 import { GraphMutations } from "./mutations";
 import { graphSelectionModule } from "@/modules/graphSelection";
 import { crossfilterModule } from "@/modules/crossfilter";
-import {api} from "./api";
-import { Universe } from '@/cellxgene/util/stateManager';
+import { api } from "./api";
+import { Universe } from "@/cellxgene/util/stateManager";
 
 export class GraphActions extends Actions<GraphState, GraphGetters, GraphMutations, GraphActions> {
   main?: Context<typeof mainModule>;

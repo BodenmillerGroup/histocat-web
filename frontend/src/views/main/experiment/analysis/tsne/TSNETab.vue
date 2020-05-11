@@ -7,7 +7,13 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <Scatter2D v-if="nComponents === '2'" :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" :width="responsive.width - 500" :height="responsive.height - 150" />
+      <Scatter2D
+        v-if="nComponents === '2'"
+        :data="tsneData"
+        title="t-Distributed Stochastic Neighbor Embedding"
+        :width="responsive.width - 500"
+        :height="responsive.height - 150"
+      />
       <Scatter3D v-else :data="tsneData" title="t-Distributed Stochastic Neighbor Embedding" />
     </v-col>
     <v-col v-if="showOptions" cols="3">
@@ -146,11 +152,10 @@ import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
-import {responsiveModule} from "@/modules/responsive";
-
+import { responsiveModule } from "@/modules/responsive";
 
 @Component({
-  components: {Scatter3D, Scatter2D}
+  components: { Scatter3D, Scatter2D },
 })
 export default class TSNETab extends Vue {
   readonly mainContext = mainModule.context(this.$store);

@@ -14,14 +14,14 @@ about commonly used names.  Preferentially, pick in the following order:
 */
 function bestDefaultLayout(layouts) {
   const preferredNames = ["umap", "tsne", "pca"];
-  const idx = preferredNames.findIndex(name => layouts.indexOf(name) !== -1);
+  const idx = preferredNames.findIndex((name) => layouts.indexOf(name) !== -1);
   if (idx !== -1) return preferredNames[idx];
   return layouts[0];
 }
 
 function setToDefaultLayout(world) {
   const { schema } = world;
-  const available = schema.layout.obs.map(v => v.name).sort();
+  const available = schema.layout.obs.map((v) => v.name).sort();
   const current = bestDefaultLayout(available);
   const currentDimNames = schema.layout.obsByName[current].dims;
   return { available, current, currentDimNames };

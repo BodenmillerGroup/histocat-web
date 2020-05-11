@@ -14,7 +14,6 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 @Component
 export default class Scatter3D extends Vue {
-
   @Prop(Object) data;
   @Prop(String) title;
 

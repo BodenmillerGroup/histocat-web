@@ -1,4 +1,4 @@
-import colors from 'vuetify/lib/util/colors'
+import colors from "vuetify/lib/util/colors";
 
 /* if a categorical metadata field has more options than this, truncate */
 export const maxCategoricalOptionsToDisplay = 200;
@@ -16,9 +16,9 @@ export const configDefaults = {
   parameters: {
     "max-category-items": 1000,
     "disable-diffexp": false,
-    "diffexp-may-be-slow": false
+    "diffexp-may-be-slow": false,
   },
-  links: {}
+  links: {},
 };
 
 /* colors */
@@ -67,7 +67,7 @@ export const leftSidebarSectionHeading = {
   fontSize: 18,
   textTransform: "uppercase",
   fontWeight: 500,
-  letterSpacing: ".05em"
+  letterSpacing: ".05em",
 };
 export const leftSidebarSectionPadding = 10;
 export const categoryLabelDisplayStringLongLength = 27;

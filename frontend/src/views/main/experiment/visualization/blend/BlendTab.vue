@@ -55,7 +55,8 @@
       </v-toolbar>
       <v-row no-gutters>
         <v-col>
-          <BlendView ref="blendView" class="blend-view" />
+<!--          <BlendView ref="blendView" class="blend-view" />-->
+          <ImageViewer :width="800" :height="800"/>
         </v-col>
         <IntensityView />
       </v-row>
@@ -74,9 +75,10 @@ import BlendView from "@/views/main/experiment/visualization/blend/BlendView.vue
 import IntensityView from "@/views/main/experiment/visualization/blend/IntensityView.vue";
 import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
+import ImageViewer from "@/components/ImageViewer.vue";
 
 @Component({
-  components: { IntensityView, BlendView },
+  components: {ImageViewer, IntensityView, BlendView },
 })
 export default class BlendTab extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);

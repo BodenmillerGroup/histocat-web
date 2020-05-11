@@ -5,10 +5,10 @@
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot";
+import createScatterplot, { createTextureFromUrl, createRegl } from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { interpolateCool, scaleSequential, rgb } from "d3";
-import {experimentModule} from "@/modules/experiment";
+import { experimentModule } from "@/modules/experiment";
 
 @Component
 export default class Scatter2D extends Vue {
@@ -26,6 +26,10 @@ export default class Scatter2D extends Vue {
 
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
+  }
+
+  get activeAcquisitionId() {
+    return this.experimentContext.getters.activeAcquisitionId;
   }
 
   @Watch("data")
@@ -73,8 +77,10 @@ export default class Scatter2D extends Vue {
     if (this.selection.length > 0) {
       const cell_ids: number[] = [];
       for (const i of this.selection) {
-        const [image_number, cell_id] = this.points[i][3].split("_");
-        cell_ids.push(Number(cell_id));
+        const [acquisition_id, cell_id] = this.points[i][3].split("_");
+        if (this.activeAcquisitionId === Number(acquisition_id)) {
+          cell_ids.push(Number(cell_id));
+        }
       }
       if (this.applyMask) {
         // this.settingsContext.mutations.setMaskSettings({
@@ -102,12 +108,20 @@ export default class Scatter2D extends Vue {
     }
   }
 
-  mounted() {
+  async mounted() {
     const canvas = this.$refs.canvas as any;
 
     const { width, height } = canvas.getBoundingClientRect();
 
+    // const regl = createRegl(canvas);
+    // const backgroundImage = await createTextureFromUrl(
+    //   regl,
+    //   `https://picsum.photos/${Math.min(640, width)}/${Math.min(640, height)}/?random`, // `http://localhost/api/v1/acquisitions/4/Gd155/image?color=00ff5a&min=0&max=321`,
+    //   true
+    // );
+
     this.scatterplot = createScatterplot({
+      // regl,
       canvas,
       width,
       height,
@@ -116,7 +130,16 @@ export default class Scatter2D extends Vue {
       pointSizeSelected: 1,
       pointOutlineWidth: 1,
       lassoMinDelay: 15,
+      // backgroundImage: backgroundImage,
     });
+
+    // const img = new Image();
+    // img.crossOrigin = "";
+    // img.src = "http://localhost/api/v1/acquisitions/4/Eu153/image?color=ff0000&min=0&max=159";
+    // img.onload = () => {
+    //   const regl = createRegl(canvas)
+    //   this.scatterplot.set({ backgroundImage: regl.texture(img) })
+    // };
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
     this.scatterplot.subscribe("pointout", this.pointoutHandler);

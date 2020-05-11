@@ -14,8 +14,8 @@ import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import Graph from "@/cellxgene/components/graph/graph.vue";
-import {controlsModule} from "@/modules/controls";
-import {graphModule} from "@/modules/graph";
+import { controlsModule } from "@/modules/controls";
+import { graphModule } from "@/modules/graph";
 
 @Component({
   components: { Graph },

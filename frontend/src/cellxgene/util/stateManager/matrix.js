@@ -59,18 +59,14 @@ export function decodeMatrixFBS(arrayBuffer, inplace = false) {
   }
 
   /* decode col_idx */
-  const colIdx = decodeTypedArray(
-    matrix.colIndexType(),
-    matrix.colIndex.bind(matrix),
-    inplace
-  );
+  const colIdx = decodeTypedArray(matrix.colIndexType(), matrix.colIndex.bind(matrix), inplace);
 
   return {
     nRows,
     nCols,
     columns,
     colIdx,
-    rowIdx: null
+    rowIdx: null,
   };
 }
 
@@ -102,9 +98,9 @@ export function encodeMatrixFBS(df) {
   let encColumns;
 
   if (shape[0] > 0 && shape[1] > 0) {
-    const columns = df.columns().map(col => col.asArray());
+    const columns = df.columns().map((col) => col.asArray());
 
-    const cols = columns.map(carr => {
+    const cols = columns.map((carr) => {
       let uType;
       let tarr;
       if (isTypedArray(carr)) {
@@ -130,11 +126,7 @@ export function encodeMatrixFBS(df) {
         encColIndex = undefined;
       } else if (colIndexType === DenseInt32Index) {
         encColIndexUType = NetEncoding.TypedArray.Int32Array;
-        encColIndex = encodeTypedArray(
-          builder,
-          encColIndexUType,
-          df.colIndex.keys()
-        );
+        encColIndex = encodeTypedArray(builder, encColIndexUType, df.colIndex.keys());
       } else if (colIndexType === KeyIndex) {
         encColIndexUType = NetEncoding.TypedArray.JSONEncodedArray;
         encColIndex = encodeTypedArray(

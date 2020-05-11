@@ -3,7 +3,6 @@ import { PointDilationActions } from "./actions";
 import { PointDilationGetters } from "./getters";
 import { PointDilationMutations } from "./mutations";
 
-
 export class PointDilationState {
   metadataField: string = "";
   categoryField: string = "";

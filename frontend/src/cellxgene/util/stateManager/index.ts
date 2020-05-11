@@ -20,12 +20,4 @@ import * as AnnotationsHelpers from "./annotationsHelpers";
 import * as SchemaHelpers from "./schemaHelpers";
 import * as MatrixFBS from "./matrix";
 
-export {
-  ColorHelpers,
-  Universe,
-  World,
-  ControlsHelpers,
-  AnnotationsHelpers,
-  SchemaHelpers,
-  MatrixFBS,
-};
+export { ColorHelpers, Universe, World, ControlsHelpers, AnnotationsHelpers, SchemaHelpers, MatrixFBS };

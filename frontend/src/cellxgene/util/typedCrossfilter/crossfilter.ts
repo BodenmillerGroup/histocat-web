@@ -1,12 +1,6 @@
 import PositiveIntervals from "./positiveIntervals";
 import BitArray from "./bitArray";
-import {
-  sortArray,
-  lowerBound,
-  binarySearch,
-  lowerBoundIndirect,
-  upperBoundIndirect,
-} from "./sort";
+import { sortArray, lowerBound, binarySearch, lowerBoundIndirect, upperBoundIndirect } from "./sort";
 import { makeSortIndex } from "./util";
 
 class NotImplementedError extends Error {
@@ -211,17 +205,13 @@ export default class ImmutableTypedCrossfilter {
       If sort index exists in the dimension, assume sort ordered ranges.
       */
     if (oldSeln.index) {
-      dels.forEach((interval) =>
-        bitArray.deselectIndirectFromRange(id, oldSeln.index, interval)
-      );
+      dels.forEach((interval) => bitArray.deselectIndirectFromRange(id, oldSeln.index, interval));
     } else {
       dels.forEach((interval) => bitArray.deselectFromRange(id, interval));
     }
 
     if (newSeln.index) {
-      adds.forEach((interval) =>
-        bitArray.selectIndirectFromRange(id, newSeln.index, interval)
-      );
+      adds.forEach((interval) => bitArray.selectIndirectFromRange(id, newSeln.index, interval));
     } else {
       adds.forEach((interval) => bitArray.selectFromRange(id, interval));
     }
@@ -292,11 +282,7 @@ export default class ImmutableTypedCrossfilter {
 
     if (allSelectedMask !== undefined) return allSelectedMask;
 
-    allSelectedMask = selectionCache.bitArray.fillBySelection(
-      new Uint8Array(this.data.length),
-      1,
-      0
-    );
+    allSelectedMask = selectionCache.bitArray.fillBySelection(new Uint8Array(this.data.length), 1, 0);
     this._setSelectionCache({ allSelectedMask });
     return allSelectedMask;
   }
@@ -328,11 +314,7 @@ export default class ImmutableTypedCrossfilter {
     fill array with one of two values, based upon selection state.
     */
     const selectionCache = this._getSelectionCache();
-    return selectionCache.bitArray.fillBySelection(
-      array,
-      selectedValue,
-      deselectedValue
-    );
+    return selectionCache.bitArray.fillBySelection(array, selectedValue, deselectedValue);
   }
 }
 
@@ -369,9 +351,7 @@ class _ImmutableBaseDimension {
     if (mode === undefined) {
       throw new Error("select spec does not contain 'mode'");
     }
-    throw new Error(
-      `select mode ${mode} not implemented by dimension ${this.name}`
-    );
+    throw new Error(`select mode ${mode} not implemented by dimension ${this.name}`);
   }
 }
 
@@ -390,30 +370,18 @@ class ImmutableScalarDimension extends _ImmutableBaseDimension {
     if (value instanceof ValueArrayType) {
       // user has provided the final typed array - just use it
       if (value.length !== data.length) {
-        throw new RangeError(
-          "ScalarDimension values length must equal crossfilter data record count"
-        );
+        throw new RangeError("ScalarDimension values length must equal crossfilter data record count");
       }
       array = value;
     } else if (value instanceof Function) {
       // Create value array from user-provided map function.
-      array = this._createValueArray(
-        data,
-        value,
-        new ValueArrayType(data.length)
-      );
+      array = this._createValueArray(data, value, new ValueArrayType(data.length));
     } else if (isArrayOrTypedArray(value)) {
       // Create value array from user-provided array.  Typically used
       // only by enumerated dimensions
-      array = this._createValueArray(
-        data,
-        (i) => value[i],
-        new ValueArrayType(data.length)
-      );
+      array = this._createValueArray(data, (i) => value[i], new ValueArrayType(data.length));
     } else {
-      throw new NotImplementedError(
-        "dimension value must be function or value array type"
-      );
+      throw new NotImplementedError("dimension value must be function or value array type");
     }
     this.value = array;
 
@@ -522,9 +490,7 @@ class ImmutableEnumDimension extends ImmutableScalarDimension {
     const { values } = spec;
     return super.selectExact({
       mode: spec.mode,
-      values: values.map((v) =>
-        binarySearch(enumIndex, v, 0, enumIndex.length)
-      ),
+      values: values.map((v) => binarySearch(enumIndex, v, 0, enumIndex.length)),
     });
   }
 
@@ -544,9 +510,7 @@ class ImmutableSpatialDimension extends _ImmutableBaseDimension {
     super(name);
 
     if (X.length !== Y.length && X.length !== data.length) {
-      throw new RangeError(
-        "SpatialDimension values must have same dimensionality as crossfilter"
-      );
+      throw new RangeError("SpatialDimension values must have same dimensionality as crossfilter");
     }
     this.X = X;
     this.Y = Y;
@@ -615,16 +579,10 @@ class ImmutableSpatialDimension extends _ImmutableBaseDimension {
     let slice;
     let index;
     if (maxY - minY > maxX - minX) {
-      slice = [
-        lowerBoundIndirect(X, Xindex, minX, 0, length),
-        lowerBoundIndirect(X, Xindex, maxX, 0, length),
-      ];
+      slice = [lowerBoundIndirect(X, Xindex, minX, 0, length), lowerBoundIndirect(X, Xindex, maxX, 0, length)];
       index = Xindex;
     } else {
-      slice = [
-        lowerBoundIndirect(Y, Yindex, minY, 0, length),
-        lowerBoundIndirect(Y, Yindex, maxY, 0, length),
-      ];
+      slice = [lowerBoundIndirect(Y, Yindex, minY, 0, length), lowerBoundIndirect(Y, Yindex, maxY, 0, length)];
       index = Yindex;
     }
 
@@ -634,12 +592,7 @@ class ImmutableSpatialDimension extends _ImmutableBaseDimension {
       const rid = index[i];
       const x = X[rid];
       const y = Y[rid];
-      const inside =
-        minX <= x &&
-        x < maxX &&
-        minY <= y &&
-        y < maxY &&
-        withinPolygon(polygon, x, y);
+      const inside = minX <= x && x < maxX && minY <= y && y < maxY && withinPolygon(polygon, x, y);
 
       if (inside && start === -1) start = i;
       if (!inside && start !== -1) {
@@ -660,11 +613,7 @@ export const DimTypes = {
 };
 
 function isArrayOrTypedArray(x) {
-  return (
-    Array.isArray(x) ||
-    (ArrayBuffer.isView(x) &&
-      Object.prototype.toString.call(x) !== "[object DataView]")
-  );
+  return Array.isArray(x) || (ArrayBuffer.isView(x) && Object.prototype.toString.call(x) !== "[object DataView]");
 }
 
 /* return bounding box of the polygon */
@@ -706,8 +655,7 @@ function withinPolygon(polygon, x, y) {
     x1 = p[0];
     y1 = p[1];
 
-    if (y1 > y !== y0 > y && x < ((x0 - x1) * (y - y1)) / (y0 - y1) + x1)
-      inside = !inside;
+    if (y1 > y !== y0 > y && x < ((x0 - x1) * (y - y1)) / (y0 - y1) + x1) inside = !inside;
     x0 = x1;
     y0 = y1;
   }

@@ -9,8 +9,6 @@ from fastapi import HTTPException
 from sklearn import preprocessing
 from sklearn.manifold import TSNE
 
-# from openTSNE import TSNE
-# from openTSNE.callbacks import ErrorLogger
 from sqlalchemy.orm import Session
 
 from histocat.core.image import normalize_embedding
@@ -40,18 +38,12 @@ def process_tsne(
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
-    image_map = dataset.input.get("image_map")
 
-    image_numbers = []
-    for acquisition_id in acquisition_ids:
-        image_number = image_map.get(str(acquisition_id))
-        image_numbers.append(image_number)
-
-    if not cell_input or not channel_map or len(image_numbers) == 0:
+    if not cell_input or not channel_map or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"].isin(image_numbers)]
+    df = df[df["acquisition_id"].isin(acquisition_ids)]
 
     features = []
     for marker in markers:
@@ -61,6 +53,8 @@ def process_tsne(
     feature_values = df[features].values
 
     # Normalize data
+    feature_values = np.arcsinh(feature_values / 5, out=feature_values)
+
     min_max_scaler = preprocessing.MinMaxScaler()
     feature_values_scaled = min_max_scaler.fit_transform(feature_values)
 
@@ -75,29 +69,15 @@ def process_tsne(
         init=init,
     )
     tsne_result = tsne.fit_transform(feature_values_scaled)
-    cell_ids = df["ImageNumber"].astype(str) + "_" + df["ObjectNumber"].astype(str)
-
-    # openTSNE implementation
-    # tsne = TSNE(
-    #     n_components=n_components,
-    #     perplexity=perplexity,
-    #     learning_rate=learning_rate,
-    #     n_iter=iterations,
-    #     callbacks=ErrorLogger(),
-    #     random_state=42,
-    # )
-    # tsne_result = tsne.fit(df[features].values * 2 ** 16)
+    cell_ids = df["acquisition_id"].astype(str) + "_" + df["ObjectNumber"].astype(str)
 
     timestamp = str(datetime.utcnow())
 
     os.makedirs(os.path.join(dataset.location, "tsne"), exist_ok=True)
     location = os.path.join(dataset.location, "tsne", f"{timestamp}.pickle")
 
-    with open(location, 'wb') as f:
-        pickle.dump({
-            "cell_ids": cell_ids,
-            "tsne_result": tsne_result
-        }, f, pickle.HIGHEST_PROTOCOL)
+    with open(location, "wb") as f:
+        pickle.dump({"cell_ids": cell_ids, "tsne_result": tsne_result}, f, pickle.HIGHEST_PROTOCOL)
 
     result = {
         "name": timestamp,
@@ -135,7 +115,7 @@ def get_tsne_result(
 
     tsne_result = tsne_output.get(name)
 
-    with open(tsne_result.get("location"), 'rb') as f:
+    with open(tsne_result.get("location"), "rb") as f:
         r = pickle.load(f)
 
     cell_ids = r.get("cell_ids")

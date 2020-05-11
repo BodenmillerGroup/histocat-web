@@ -1,5 +1,5 @@
 import { Mutations } from "vuex-smart-module";
-import {ColorsState} from ".";
+import { ColorsState } from ".";
 
 export class ColorsMutations extends Mutations<ColorsState> {
   setColorMode(value) {

@@ -148,7 +148,7 @@ def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path, image_numb
     dst_uri = dst_folder / f"{CELL_FILENAME}{FEATHER_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
 
-    df['acquisition_id'] = df['ImageNumber']
+    df["acquisition_id"] = df["ImageNumber"]
     df["acquisition_id"].replace(image_number_to_acquisition_id, inplace=True)
 
     df.to_feather(dst_uri)

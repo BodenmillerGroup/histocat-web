@@ -7,7 +7,13 @@
   </v-banner>
   <v-row v-else no-gutters class="chart-container">
     <v-col :cols="columns">
-      <Scatter2D v-if="nComponents === '2'" :data="pcaData" title="Principal Component Analysis" :width="responsive.width - 500" :height="responsive.height - 150" />
+      <Scatter2D
+        v-if="nComponents === '2'"
+        :data="pcaData"
+        title="Principal Component Analysis"
+        :width="responsive.width - 500"
+        :height="responsive.height - 150"
+      />
       <Scatter3D v-else :data="pcaData" title="Principal Component Analysis" />
     </v-col>
     <v-col v-if="showOptions" cols="3">
@@ -63,7 +69,7 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
-import {responsiveModule} from "@/modules/responsive";
+import { responsiveModule } from "@/modules/responsive";
 
 @Component({
   components: { Scatter2D, Scatter3D },

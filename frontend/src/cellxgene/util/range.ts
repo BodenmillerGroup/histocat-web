@@ -45,7 +45,7 @@ export function range(start, stop, step) {
 }
 
 export function linspace(start, stop, nsteps) {
-	// TODO: is it a bug?
+  // TODO: is it a bug?
   // const delta = (stop - start) / (nsteps - 1).toFixed();
   const delta = (stop - start) / (nsteps - 1);
   return range(0, nsteps, 1).map((i) => start + i * delta);

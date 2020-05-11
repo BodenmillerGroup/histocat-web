@@ -26,18 +26,12 @@ def process_pca(
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
-    image_map = dataset.input.get("image_map")
 
-    image_numbers = []
-    for acquisition_id in acquisition_ids:
-        image_number = image_map.get(str(acquisition_id))
-        image_numbers.append(image_number)
-
-    if not cell_input or not channel_map or len(image_numbers) == 0:
+    if not cell_input or not channel_map or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"].isin(image_numbers)]
+    df = df[df["acquisition_id"].isin(acquisition_ids)]
 
     features = []
     for marker in markers:
@@ -56,7 +50,7 @@ def process_pca(
     result = pca.fit_transform(feature_values_scaled)
     result = normalize_embedding(result)
 
-    cell_ids = df["ImageNumber"].astype(str) + "_" + df["ObjectNumber"].astype(str)
+    cell_ids = df["acquisition_id"].astype(str) + "_" + df["ObjectNumber"].astype(str)
     output = {
         "cell_ids": cell_ids.tolist(),
         "x": {"label": "PC1", "data": result[:, 0].tolist()},
@@ -75,10 +69,9 @@ def process_pca(
 
         output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
     elif len(acquisition_ids) > 1:
-        image_map_inv = {v: k for k, v in image_map.items()}
         output["heatmap"] = {
             "label": "Acquisition",
-            "data": [image_map_inv.get(item) for item in df["ImageNumber"].tolist()],
+            "data": df["acquisition_id"].tolist(),
         }
 
     return output
