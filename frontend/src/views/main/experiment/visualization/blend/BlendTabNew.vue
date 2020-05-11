@@ -55,7 +55,7 @@
       </v-toolbar>
       <v-row no-gutters>
         <v-col>
-          <BlendView ref="blendView" class="blend-view" />
+          <ImageViewer ref="imageViewer" :canvas-width="canvasWidth" :canvas-height="canvasHeight" />
         </v-col>
         <IntensityView />
       </v-row>
@@ -70,19 +70,37 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { ExportFormat } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
-import BlendView from "@/views/main/experiment/visualization/blend/BlendView.vue";
 import IntensityView from "@/views/main/experiment/visualization/blend/IntensityView.vue";
 import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
+import ImageViewer from "@/components/ImageViewer.vue";
+import { responsiveModule } from "@/modules/responsive";
+import { mainModule } from "@/modules/main";
 
 @Component({
-  components: { IntensityView, BlendView },
+  components: { ImageViewer, IntensityView },
 })
-export default class BlendTab extends Vue {
+export default class BlendTabNew extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
+  readonly responsiveContext = responsiveModule.context(this.$store);
+
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
+
+  get canvasWidth() {
+    return this.showOptions
+      ? this.responsiveContext.getters.responsive.width! - 840
+      : this.responsiveContext.getters.responsive.width! - 460;
+  }
+
+  get canvasHeight() {
+    return this.responsiveContext.getters.responsive.height! - 174;
+  }
 
   get colorizeMaskInProgress() {
     return this.experimentContext.getters.colorizeMaskInProgress;
@@ -162,9 +180,3 @@ export default class BlendTab extends Vue {
   }
 }
 </script>
-
-<style scoped>
-.blend-view {
-  height: calc(100vh - 174px);
-}
-</style>

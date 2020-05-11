@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvas" :width="width" :height="height" />
+  <canvas ref="canvas" :width="canvasWidth" :height="canvasHeight" />
 </template>
 
 <script lang="ts">
@@ -16,8 +16,8 @@ export default class ImageViewer extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
-  @Prop(Number) width;
-  @Prop(Number) height;
+  @Prop(Number) canvasWidth;
+  @Prop(Number) canvasHeight;
 
   points: any[] = [];
   scatterplot: any;
@@ -59,84 +59,24 @@ export default class ImageViewer extends Vue {
   @Watch("channelStackImage")
   async onChannelStackImageChanged(image) {
     if (image) {
-      if (this.scatterplot != null) {
-        window.removeEventListener("resize", this.resizeHandler);
-        this.scatterplot.destroy();
-        this.scatterplot = null;
-      }
-
-      const canvas = this.$refs.canvas as any;
-
-      const { width, height } = canvas.getBoundingClientRect();
-
-      const regl = createRegl(canvas);
-      // const backgroundImage = await createTextureFromUrl(
-      //   regl,
-      //   `https://picsum.photos/${Math.min(640, width)}/${Math.min(640, height)}/?random`, // `http://localhost/api/v1/acquisitions/4/Gd155/image?color=00ff5a&min=0&max=321`,
-      //   true
-      // );
+      const regl = this.scatterplot.get("regl");
 
       const img = new Image();
       img.crossOrigin = "";
       img.src = image;
       img.onload = () => {
-        this.scatterplot = createScatterplot({
-        regl,
-        canvas,
-        width,
-        height,
-        opacity: 1,
-        pointSize: 2,
-        pointSizeSelected: 1,
-        pointOutlineWidth: 1,
-        lassoMinDelay: 15,
-        backgroundImage: regl.texture(img),
-      });
+        this.scatterplot.set({
+          backgroundImage: regl.texture(img),
+        });
 
-      // const img = new Image();
-      // img.crossOrigin = "";
-      // img.src = "http://localhost/api/v1/acquisitions/4/Eu153/image?color=ff0000&min=0&max=159";
-      // img.onload = () => {
-      //   const regl = createRegl(canvas)
-      //   this.scatterplot.set({ backgroundImage: regl.texture(img) })
-      // };
-
-      this.scatterplot.subscribe("pointover", this.pointoverHandler);
-      this.scatterplot.subscribe("pointout", this.pointoutHandler);
-      this.scatterplot.subscribe("select", this.selectHandler);
-      this.scatterplot.subscribe("deselect", this.deselectHandler);
-
-      window.addEventListener("resize", this.resizeHandler);
-
-      // this.points = data.heatmap
-      //   ? data.x.data.map((x, i) => {
-      //       return [x, data.y.data[i], data.heatmap!.data[i], data.cell_ids[i]];
-      //     })
-      //   : data.x.data.map((x, i) => {
-      //       return [x, data.y.data[i], 0, data.cell_ids[i]];
-      //     });
-      //
-      // const categories = data.heatmap ? data.heatmap!.data : [0];
-      // const min = Math.min(...categories);
-      // const max = Math.max(...categories);
-      // const colorScale = scaleSequential(interpolateCool).domain([min, max]);
-      // const colors = [...Array(categories.length).keys()].map((item) => rgb(colorScale(item)).hex());
-      // this.scatterplot.set({
-      //   colorBy: "category",
-      //   colors: colors,
-      // });
-      //
-      // const p = this.points.map((item) => [item[0], item[1], item[2]]);
-      // this.scatterplot.draw(p);
-
-      const p = new Array(1000).fill(0).map(() => [
-        -1 + Math.random() * 2, // x
-        -1 + Math.random() * 2, // y
-        "1_111", // category
-        Math.random(), // value
-      ]);
-      this.scatterplot.draw(p);
-    };
+        this.points = new Array(1000).fill(0).map(() => [
+          -1 + Math.random() * 2, // x
+          -1 + Math.random() * 2, // y
+          Math.random(), // category
+          "1_111", // value
+        ]);
+        this.scatterplot.draw(this.points);
+      };
     }
   }
 
@@ -182,20 +122,28 @@ export default class ImageViewer extends Vue {
     if (canvas) {
       const rect = canvas.getBoundingClientRect();
       if (rect) {
-        this.scatterplot.set({ width: rect.width, height: rect.height });
+        this.scatterplot.set({ width: this.canvasWidth, height: this.canvasHeight });
       }
     }
   }
 
-  async mounted() {
-    const canvas = this.$refs.canvas as any;
+  refresh() {
+    this.scatterplot.set({ width: this.canvasWidth, height: this.canvasHeight });
+    this.scatterplot.refresh();
+  }
 
-    const { width, height } = canvas.getBoundingClientRect();
+  @Watch("canvasWidth")
+  onCanvasWidthUpdate(value: number) {
+    this.refresh();
+  }
+
+  private initViewer() {
+    const canvas = this.$refs.canvas as any;
 
     this.scatterplot = createScatterplot({
       canvas,
-      width,
-      height,
+      width: this.canvasWidth,
+      height: this.canvasHeight,
       opacity: 1,
       pointSize: 2,
       pointSizeSelected: 1,
@@ -211,7 +159,12 @@ export default class ImageViewer extends Vue {
     window.addEventListener("resize", this.resizeHandler);
   }
 
+  async mounted() {
+    this.initViewer();
+  }
+
   beforeDestroy() {
+    window.removeEventListener("resize", this.resizeHandler);
     if (this.scatterplot) {
       this.scatterplot.destroy();
     }

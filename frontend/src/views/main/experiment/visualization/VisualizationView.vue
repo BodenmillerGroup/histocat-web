@@ -3,9 +3,13 @@
     <v-col :cols="columns">
       <v-tabs v-model="mainTab">
         <v-tab>Blend</v-tab>
+        <v-tab>Blend New</v-tab>
         <v-tab>Tiles</v-tab>
         <v-tab-item>
           <BlendTab />
+        </v-tab-item>
+        <v-tab-item>
+          <BlendTabNew />
         </v-tab-item>
         <v-tab-item>
           <TilesView />
@@ -44,9 +48,11 @@ import SettingsView from "@/views/main/experiment/settings/SettingsView.vue";
 import BlendTab from "@/views/main/experiment/visualization/blend/BlendTab.vue";
 import TilesView from "@/views/main/experiment/visualization/tiles/TilesView.vue";
 import { Component, Vue } from "vue-property-decorator";
+import BlendTabNew from "@/views/main/experiment/visualization/blend/BlendTabNew.vue";
 
 @Component({
   components: {
+    BlendTabNew,
     RegionView,
     SettingsView,
     ChannelsView,
