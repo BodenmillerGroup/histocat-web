@@ -1,4 +1,6 @@
 import {
+  ICentroidsData,
+  ICentroidsSubmission,
   IImageSegmentationSubmission,
   IPCAData,
   IPCASubmission,
@@ -109,5 +111,12 @@ export const api = {
         json: params,
       })
       .json<IRegionChannelData[]>();
+  },
+  async getCentroids(params: ICentroidsSubmission) {
+    return ApiManager.api
+      .get(
+        `analysis/centroids?dataset_id=${params.dataset_id}&acquisition_id=${params.acquisition_id}`
+      )
+      .json<ICentroidsData>();
   },
 };

@@ -9,6 +9,7 @@ import { AnalysisState } from ".";
 import { api } from "./api";
 import { AnalysisGetters } from "./getters";
 import {
+  ICentroidsSubmission,
   IImageSegmentationSettings,
   IPCASubmission,
   IPhenoGraphSubmission,
@@ -178,6 +179,15 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     try {
       const response = await api.calculateRegionStats(payload);
       this.mutations.setSelectedRegionStats(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getCentroidsData(payload: ICentroidsSubmission) {
+    try {
+      const response = await api.getCentroids(payload);
+      this.mutations.setCentroidsData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

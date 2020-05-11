@@ -3,16 +3,19 @@
 </template>
 
 <script lang="ts">
-import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
 import createScatterplot, { createTextureFromUrl, createRegl } from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { interpolateCool, scaleSequential, rgb } from "d3";
 import { experimentModule } from "@/modules/experiment";
 import { IChannel } from "@/modules/experiment/models";
+import { analysisModule } from "@/modules/analysis";
+import { datasetModule } from "@/modules/datasets";
 
 @Component
 export default class ImageViewer extends Vue {
+  readonly analysisContext = analysisModule.context(this.$store);
+  readonly datasetContext = datasetModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
@@ -39,6 +42,10 @@ export default class ImageViewer extends Vue {
     return this.experimentContext.getters.activeAcquisitionId;
   }
 
+  get activeDataset() {
+    return this.datasetContext.getters.activeDataset;
+  }
+
   get activeAcquisition() {
     return this.experimentContext.getters.activeAcquisition;
   }
@@ -47,35 +54,62 @@ export default class ImageViewer extends Vue {
     return this.experimentContext.getters.channelStackImage;
   }
 
+  get centroidsData() {
+    return this.analysisContext.getters.centroidsData;
+  }
+
   @Watch("selectedChannels")
   onSelectedChannelsChanged(channels: IChannel[]) {
     if (channels && channels.length > 0) {
       this.experimentContext.actions.getChannelStackImage();
+      if (this.activeDataset && this.activeAcquisitionId) {
+        this.analysisContext.actions.getCentroidsData({
+          dataset_id: this.activeDataset.id,
+          acquisition_id: this.activeAcquisitionId,
+        });
+      }
     } else {
       this.experimentContext.mutations.setChannelStackImage(null);
     }
   }
 
   @Watch("channelStackImage")
-  async onChannelStackImageChanged(image) {
-    if (image) {
+  onChannelStackImageChanged(value) {
+    if (value) {
+      this.update();
+    }
+  }
+
+  @Watch("centroidsData")
+  onCentroidsDataChanged(value) {
+    if (value) {
+      this.update();
+    }
+  }
+
+  private update() {
+    if (this.channelStackImage) {
       const regl = this.scatterplot.get("regl");
 
       const img = new Image();
       img.crossOrigin = "";
-      img.src = image;
+      img.src = this.channelStackImage as any;
       img.onload = () => {
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
         });
 
-        this.points = new Array(1000).fill(0).map(() => [
-          -1 + Math.random() * 2, // x
-          -1 + Math.random() * 2, // y
-          Math.random(), // category
-          "1_111", // value
-        ]);
-        this.scatterplot.draw(this.points);
+        if (this.centroidsData) {
+          this.points = new Array(1000).fill(0).map(() => [
+            -1 + Math.random() * 2, // x
+            -1 + Math.random() * 2, // y
+            Math.random(), // category
+            "1_111", // value
+          ]);
+          this.scatterplot.draw(this.points);
+        } else {
+         this.scatterplot.draw([]);
+        }
       };
     }
   }

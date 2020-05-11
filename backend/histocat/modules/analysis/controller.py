@@ -422,3 +422,21 @@ async def calculate_region_stats(
         )
 
     return ORJSONResponse(content)
+
+
+@router.get("/centroids")
+async def get_centroids(
+    dataset_id: int,
+    acquisition_id: int,
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get cell centroids for the mask
+    """
+
+    content = {
+        "cell_ids": ["1_1", "1_2"],
+        "coords": [[100, 200], [300, 350]]
+    }
+    return ORJSONResponse(content)

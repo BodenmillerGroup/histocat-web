@@ -2,6 +2,7 @@ import Feature from "ol/Feature";
 import { Mutations } from "vuex-smart-module";
 import { AnalysisState } from ".";
 import {
+  ICentroidsData,
   IPCAData,
   IPhenoGraphData,
   IPlotSeries,
@@ -12,6 +13,10 @@ import {
 } from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
+  setCentroidsData(data: ICentroidsData | null) {
+    this.state.centroidsData = data;
+  }
+
   setSegmentationImage(base64Image: string | ArrayBuffer | null) {
     this.state.segmentationImage = base64Image;
   }
