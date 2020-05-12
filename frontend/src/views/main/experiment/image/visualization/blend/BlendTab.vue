@@ -70,8 +70,8 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { ExportFormat } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
-import BlendView from "@/views/main/experiment/visualization/blend/BlendView.vue";
-import IntensityView from "@/views/main/experiment/visualization/blend/IntensityView.vue";
+import BlendView from "@/views/main/experiment/image/visualization/blend/BlendView.vue";
+import IntensityView from "@/views/main/experiment/image/visualization/blend/IntensityView.vue";
 import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
 

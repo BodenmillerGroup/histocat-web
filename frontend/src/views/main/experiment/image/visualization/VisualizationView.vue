@@ -42,13 +42,13 @@
 
 <script lang="ts">
 import { mainModule } from "@/modules/main";
-import ChannelsView from "@/views/main/experiment/ChannelsView.vue";
-import RegionView from "@/views/main/experiment/RegionView.vue";
-import SettingsView from "@/views/main/experiment/settings/SettingsView.vue";
-import BlendTab from "@/views/main/experiment/visualization/blend/BlendTab.vue";
-import TilesView from "@/views/main/experiment/visualization/tiles/TilesView.vue";
+import ChannelsView from "@/views/main/experiment/image/ChannelsView.vue";
+import RegionView from "@/views/main/experiment/image/RegionView.vue";
+import SettingsView from "@/views/main/experiment/image/settings/SettingsView.vue";
+import BlendTab from "@/views/main/experiment/image/visualization/blend/BlendTab.vue";
+import TilesView from "@/views/main/experiment/image//visualization/tiles/TilesView.vue";
 import { Component, Vue } from "vue-property-decorator";
-import BlendTabNew from "@/views/main/experiment/visualization/blend/BlendTabNew.vue";
+import BlendTabNew from "@/views/main/experiment/image/visualization/blend/BlendTabNew.vue";
 
 @Component({
   components: {

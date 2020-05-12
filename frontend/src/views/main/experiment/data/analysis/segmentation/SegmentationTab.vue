@@ -36,8 +36,8 @@ import { analysisModule } from "@/modules/analysis";
 import { ExportFormat } from "@/modules/experiment/models";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import SegmentationSettingsView from "@/views/main/experiment/analysis/segmentation/SegmentationSettingsView.vue";
-import SegmentationView from "@/views/main/experiment/analysis/segmentation/SegmentationView.vue";
+import SegmentationSettingsView from "@/views/main/experiment/data/analysis/segmentation/SegmentationSettingsView.vue";
+import SegmentationView from "@/views/main/experiment/data/analysis/segmentation/SegmentationView.vue";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({

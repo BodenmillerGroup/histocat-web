@@ -70,7 +70,7 @@
 import { experimentModule } from "@/modules/experiment";
 import { IChannel } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
-import ChannelHistogramView from "@/views/main/experiment/settings/channel/ChannelHistogramView.vue";
+import ChannelHistogramView from "@/views/main/experiment/image/settings/channel/ChannelHistogramView.vue";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
 @Component({

@@ -7,41 +7,66 @@
       v-model="showDrawer"
       fixed
       app
-      width="250"
+      width="180"
     >
       <v-row no-gutters>
         <v-col>
-          <v-list>
+          <v-list nav dense>
             <v-list-item to="/main/dashboard">
-              <v-list-item-action>
+              <v-list-item-icon>
                 <v-icon>mdi-view-dashboard-outline</v-icon>
-              </v-list-item-action>
-              <v-list-item-title>Dashboard</v-list-item-title>
-            </v-list-item>
-          </v-list>
-          <v-divider v-if="hasAdminAccess" />
-          <v-list subheader v-if="hasAdminAccess">
-            <v-subheader class="subheader">Admin</v-subheader>
-            <v-list-item to="/main/admin/users/all">
-              <v-list-item-action>
-                <v-icon>mdi-account-multiple-outline</v-icon>
-              </v-list-item-action>
-              <v-list-item-title>Manage Users</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/main/admin/experiments/all">
-              <v-list-item-action>
-                <v-icon>mdi-folder-multiple-outline</v-icon>
-              </v-list-item-action>
-              <v-list-item-title>Manage Experiments</v-list-item-title>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Dashboard</v-list-item-title>
+              </v-list-item-content>
             </v-list-item>
           </v-list>
           <v-divider />
-          <v-list>
+          <v-list nav dense v-if="activeExperimentId">
+            <v-list-item :to="`/main/experiments/${activeExperimentId}/image`">
+              <v-list-item-icon>
+                <v-icon>mdi-magnify-scan</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Image</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item :to="`/main/experiments/${activeExperimentId}/data`">
+              <v-list-item-icon>
+                <v-icon>mdi-scatter-plot-outline</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Data</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <v-divider v-if="isAdmin && activeExperimentId" />
+          <v-list nav dense v-if="isAdmin">
+            <v-list-item to="/main/admin/users/all">
+              <v-list-item-icon>
+                <v-icon>mdi-account-multiple-outline</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Users</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/main/admin/experiments/all">
+              <v-list-item-icon>
+                <v-icon>mdi-folder-multiple-outline</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Experiments</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <v-list nav dense flat>
             <v-list-item @click="switchMiniDrawer">
-              <v-list-item-action>
+              <v-list-item-icon>
                 <v-icon v-html="miniDrawer ? 'mdi-chevron-right' : 'mdi-chevron-left'" />
-              </v-list-item-action>
-              <v-list-item-title>Collapse</v-list-item-title>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Collapse</v-list-item-title>
+              </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-col>
@@ -77,7 +102,6 @@
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
-
         <v-list>
           <v-list-item to="/main/profile">
             <v-list-item-title>Profile</v-list-item-title>
@@ -114,18 +138,21 @@ import { mainModule } from "@/modules/main";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue, Watch } from "vue-property-decorator";
+import { experimentModule } from "@/modules/experiment";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === "/main") {
-    next("/main/dashboard");
+    next("/main/experiments");
   } else {
     next();
   }
 };
+
 @Component({
   components: { ToolbarProgressBar },
 })
 export default class Main extends Vue {
+  readonly experimentContext = experimentModule.context(this.$store);
   readonly mainContext = mainModule.context(this.$store);
 
   appName = appName;
@@ -145,6 +172,10 @@ export default class Main extends Vue {
       showWorkspace: views.includes("workspace"),
       showOptions: views.includes("options"),
     });
+  }
+
+  get activeExperimentId() {
+    return this.experimentContext.getters.activeExperimentId;
   }
 
   get showWorkspace() {
@@ -175,7 +206,7 @@ export default class Main extends Vue {
     this.mainContext.mutations.setDashboardMiniDrawer(!this.mainContext.getters.dashboardMiniDrawer);
   }
 
-  get hasAdminAccess() {
+  get isAdmin() {
     return this.mainContext.getters.hasAdminAccess;
   }
 

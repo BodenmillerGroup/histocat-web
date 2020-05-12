@@ -12,8 +12,8 @@
         class="mt-1"
       />
       <v-select
-        v-model="tags"
-        :items="items"
+        v-model="selectedTags"
+        :items="tags"
         chips
         deletable-chips
         clearable
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import ExperimentCard from "@/components/ExperimentCard.vue";
+import ExperimentCard from "@/views/main/ExperimentCard.vue";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { Component, Vue } from "vue-property-decorator";
@@ -56,9 +56,9 @@ export default class Dashboard extends Vue {
   experimentContext = experimentModule.context(this.$store);
 
   search = "";
-  tags: string[] = [];
+  selectedTags: string[] = [];
 
-  get items(): any[] {
+  get tags(): any[] {
     const list = this.experimentContext.getters.tags;
     return list.map((item) => {
       return {
@@ -75,11 +75,11 @@ export default class Dashboard extends Vue {
     const items = this.search
       ? this.experimentContext.getters.experiments.filter((item) => item.name.includes(this.search))
       : this.experimentContext.getters.experiments;
-    if (this.tags.length === 0) {
+    if (this.selectedTags.length === 0) {
       return items;
     } else {
       return items.filter((experiment) => {
-        if (experiment.tags && this.tags.some((r) => experiment.tags.includes(r))) {
+        if (experiment.tags && this.selectedTags.some((r) => experiment.tags.includes(r))) {
           return experiment;
         }
       });
@@ -87,8 +87,7 @@ export default class Dashboard extends Vue {
   }
 
   async mounted() {
-    await this.experimentContext.actions.getExperiments();
-    await this.experimentContext.actions.getTags();
+    await Promise.all([this.experimentContext.actions.getExperiments(), this.experimentContext.actions.getTags()]);
   }
 }
 </script>

@@ -1,7 +1,14 @@
 <template>
   <LoadingView v-if="!experimentData" text="Loading..." />
   <v-container v-else fluid class="px-1 py-0">
-    <router-view />
+    <v-row no-gutters>
+      <v-col v-show="showWorkspace" class="pr-1" xs="3" sm="3" md="3" lg="3" xl="2">
+        <WorkspaceView :experiment="experimentData" />
+      </v-col>
+      <v-col :cols="viewerColumns">
+        <VisualizationView />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -10,15 +17,18 @@ import LoadingView from "@/components/LoadingView.vue";
 import { analysisModule } from "@/modules/analysis";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
-import { WebSocketManager } from "@/utils/WebSocketManager";
+import VisualizationView from "@/views/main/experiment/image/visualization/VisualizationView.vue";
+import WorkspaceView from "@/views/main/experiment/image/workspace/WorkspaceView.vue";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   components: {
+    WorkspaceView,
+    VisualizationView,
     LoadingView,
   },
 })
-export default class ExperimentView extends Vue {
+export default class ImageView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
@@ -31,21 +41,13 @@ export default class ExperimentView extends Vue {
     return this.experiment && this.experiment.slides ? this.experiment : undefined;
   }
 
-  async mounted() {
-    const experimentId = parseInt(this.$router.currentRoute.params.experimentId, 10);
-    this.experimentContext.mutations.setActiveExperimentId(experimentId);
-    await this.experimentContext.actions.getExperimentData(experimentId);
-    WebSocketManager.connect(experimentId);
+  get showWorkspace() {
+    return this.mainContext.getters.showWorkspace;
   }
 
-  beforeDestroy() {
-    WebSocketManager.close();
-    // if (process.env.VUE_APP_ENV !== "development") {
-    //   this.experimentContext.mutations.reset();
-    //   this.analysisContext.mutations.reset();
-    // }
-    this.experimentContext.mutations.reset();
-    this.analysisContext.mutations.reset();
+  get viewerColumns() {
+    const cols = this.$vuetify.breakpoint.name === "xl" ? 10 : 9;
+    return this.showWorkspace ? cols : 12;
   }
 }
 </script>

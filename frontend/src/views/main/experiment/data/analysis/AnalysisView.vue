@@ -36,13 +36,13 @@
 </template>
 
 <script lang="ts">
-import BoxPlotTab from "@/views/main/experiment/analysis/box/BoxPlotTab.vue";
-import PCATab from "@/views/main/experiment/analysis/pca/PCATab.vue";
-import PhenoGraphTab from "@/views/main/experiment/analysis/phenograph/PhenoGraphTab.vue";
-import TSNETab from "@/views/main/experiment/analysis/tsne/TSNETab.vue";
-import ScatterPlotTab from "@/views/main/experiment/analysis/scatter/ScatterPlotTab.vue";
-import SegmentationTab from "@/views/main/experiment/analysis/segmentation/SegmentationTab.vue";
-import UMAPTab from "@/views/main/experiment/analysis/umap/UMAPTab.vue";
+import BoxPlotTab from "@/views/main/experiment/data/analysis/box/BoxPlotTab.vue";
+import PCATab from "@/views/main/experiment/data/analysis/pca/PCATab.vue";
+import PhenoGraphTab from "@/views/main/experiment/data/analysis/phenograph/PhenoGraphTab.vue";
+import TSNETab from "@/views/main/experiment/data/analysis/tsne/TSNETab.vue";
+import ScatterPlotTab from "@/views/main/experiment/data/analysis/scatter/ScatterPlotTab.vue";
+import SegmentationTab from "@/views/main/experiment/data/analysis/segmentation/SegmentationTab.vue";
+import UMAPTab from "@/views/main/experiment/data/analysis/umap/UMAPTab.vue";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({

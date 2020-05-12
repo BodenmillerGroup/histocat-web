@@ -18,13 +18,13 @@
       </v-chip>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" :to="{ name: 'main-experiment', params: { id: experiment.id } }">
+      <v-btn color="primary" :to="{ name: 'main-experiment', params: { experimentId: experiment.id } }">
         Open
       </v-btn>
       <v-spacer></v-spacer>
       <v-tooltip bottom v-if="isOwner || hasAdminAccess">
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" :to="{ name: 'main-experiment-edit', params: { id: experiment.id } }">
+          <v-btn icon v-on="on" :to="{ name: 'main-experiment-edit', params: { experimentId: experiment.id } }">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </template>
@@ -32,7 +32,7 @@
       </v-tooltip>
       <v-tooltip bottom v-if="isOwner">
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" :to="{ name: 'main-experiment-share', params: { id: experiment.id } }">
+          <v-btn icon v-on="on" :to="{ name: 'main-experiment-share', params: { experimentId: experiment.id } }">
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
         </template>
