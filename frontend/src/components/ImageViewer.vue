@@ -11,6 +11,7 @@ import { experimentModule } from "@/modules/experiment";
 import { IChannel } from "@/modules/experiment/models";
 import { analysisModule } from "@/modules/analysis";
 import { datasetModule } from "@/modules/datasets";
+import {transformCoords} from "@/utils/webglUtils";
 
 @Component
 export default class ImageViewer extends Vue {
@@ -76,18 +77,18 @@ export default class ImageViewer extends Vue {
   @Watch("channelStackImage")
   onChannelStackImageChanged(value) {
     if (value) {
-      this.update();
+      this.update("channelStackImage");
     }
   }
 
   @Watch("centroidsData")
   onCentroidsDataChanged(value) {
     if (value) {
-      this.update();
+      this.update("centroidsData");
     }
   }
 
-  private update() {
+  private update(source) {
     if (this.channelStackImage) {
       const regl = this.scatterplot.get("regl");
 
@@ -100,6 +101,9 @@ export default class ImageViewer extends Vue {
         });
 
         if (this.centroidsData) {
+          const x = transformCoords(this.centroidsData, 800, 800);
+          console.log(x)
+
           this.points = new Array(1000).fill(0).map(() => [
             -1 + Math.random() * 2, // x
             -1 + Math.random() * 2, // y

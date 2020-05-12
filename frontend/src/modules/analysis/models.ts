@@ -140,6 +140,5 @@ export interface ICentroidsSubmission {
 
 export interface ICentroidsData {
   cell_ids: any[];
-  x: IPlotSeries;
-  y: IPlotSeries;
+  coords: any[];
 }
