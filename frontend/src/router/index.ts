@@ -133,23 +133,6 @@ export default new Router({
               name: "main-experiment",
               component: () =>
                 import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ExperimentView.vue"),
-              redirect: "experiments/:experimentId/image",
-              children: [
-                {
-                  path: "image",
-                  name: "main-experiment-image",
-                  component: () =>
-                    import(
-                      /* webpackChunkName: "main-experiment-image" */ "@/views/main/experiment/image/ImageView.vue"
-                    ),
-                },
-                {
-                  path: "data",
-                  name: "main-experiment-data",
-                  component: () =>
-                    import(/* webpackChunkName: "main-experiment-data" */ "@/views/main/experiment/data/DataView.vue"),
-                },
-              ],
             },
           ],
         },

@@ -23,7 +23,7 @@
           </v-list>
           <v-divider />
           <v-list nav dense v-if="activeExperimentId">
-            <v-list-item :to="`/main/experiments/${activeExperimentId}/image`">
+            <v-list-item @click="showData(false)">
               <v-list-item-icon>
                 <v-icon>mdi-magnify-scan</v-icon>
               </v-list-item-icon>
@@ -31,7 +31,7 @@
                 <v-list-item-title>Image</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item :to="`/main/experiments/${activeExperimentId}/data`">
+            <v-list-item @click="showData(true)">
               <v-list-item-icon>
                 <v-icon>mdi-scatter-plot-outline</v-icon>
               </v-list-item-icon>
@@ -196,6 +196,10 @@ export default class Main extends Vue {
 
   set showDrawer(value: boolean) {
     this.mainContext.mutations.setDashboardShowDrawer(value);
+  }
+
+  showData(value: boolean) {
+    this.mainContext.mutations.setShowData(value);
   }
 
   switchShowDrawer() {

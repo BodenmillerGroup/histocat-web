@@ -50,4 +50,8 @@ export class MainMutations extends Mutations<MainState> {
   setProcessingProgress(payload: number) {
     this.state.processingProgress = payload;
   }
+
+  setShowData(value: boolean) {
+    this.state.showData = value;
+  }
 }

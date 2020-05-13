@@ -1,7 +1,8 @@
 <template>
   <LoadingView v-if="!experimentData" text="Loading..." />
   <v-container v-else fluid class="px-1 py-0">
-    <router-view />
+    <DataView v-show="showData" />
+    <ImageView v-show="!showData" />
   </v-container>
 </template>
 
@@ -12,9 +13,13 @@ import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue } from "vue-property-decorator";
+import ImageView from "@/views/main/experiment/image/ImageView.vue";
+import DataView from "@/views/main/experiment/data/DataView.vue";
 
 @Component({
   components: {
+    DataView,
+    ImageView,
     LoadingView,
   },
 })
@@ -29,6 +34,10 @@ export default class ExperimentView extends Vue {
 
   get experimentData() {
     return this.experiment && this.experiment.slides ? this.experiment : undefined;
+  }
+
+  get showData() {
+    return this.mainContext.getters.showData;
   }
 
   async mounted() {
