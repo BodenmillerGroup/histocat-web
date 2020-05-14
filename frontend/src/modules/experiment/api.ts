@@ -75,7 +75,7 @@ export const api = {
     return ApiManager.api.get(`experiments/${id}/data`).json<IExperiment>();
   },
   async getChannelStats(acquisitionId: number, channelName: string) {
-    const url = `acquisitions/${acquisitionId}/${channelName}/stats?bins=100`;
+    const url = `acquisitions/${acquisitionId}/${channelName}/stats?bins=40`;
     let cache;
     if (cacheAvailable) {
       cache = await self.caches.open("stats");

@@ -61,7 +61,8 @@
       </v-container>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <ChannelHistogramView :channel="channel" />
+      <BrushableHistogram :channel="channel" />
+<!--      <ChannelHistogramView :channel="channel" />-->
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -72,9 +73,10 @@ import { IChannel } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
 import ChannelHistogramView from "@/views/main/experiment/image/settings/channel/ChannelHistogramView.vue";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import BrushableHistogram from "@/components/BrushableHistogram.vue";
 
 @Component({
-  components: { ChannelHistogramView },
+  components: {BrushableHistogram, ChannelHistogramView },
 })
 export default class ChannelSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);

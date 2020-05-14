@@ -1,6 +1,6 @@
 <template>
-  <v-row no-gutters>
-    <v-col :cols="columns">
+  <div :class="showOptions ? 'grid-with-options' : null">
+    <div>
       <v-tabs v-model="mainTab">
         <v-tab>Blend</v-tab>
         <v-tab>Blend New</v-tab>
@@ -15,8 +15,8 @@
           <TilesView />
         </v-tab-item>
       </v-tabs>
-    </v-col>
-    <v-col v-show="showOptions" cols="3">
+    </div>
+    <div v-show="showOptions">
       <v-row no-gutters>
         <v-col>
           <v-tabs v-model="secondaryTab">
@@ -36,8 +36,8 @@
           <SettingsView />
         </v-col>
       </v-row>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -69,12 +69,13 @@ export default class VisualizationView extends Vue {
   get showOptions() {
     return this.mainContext.getters.showOptions;
   }
-
-  get columns() {
-    if (this.showOptions) {
-      return 9;
-    }
-    return 12;
-  }
 }
 </script>
+
+<style scoped>
+.grid-with-options {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto;
+}
+</style>

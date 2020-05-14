@@ -37,7 +37,7 @@ async def read_channel_stats(
     acquisition_id: int,
     channel_name: str,
     request: Request,
-    bins: int = 100,
+    bins: int = 40,
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -51,6 +51,9 @@ async def read_channel_stats(
     parser = OmeTiffParser(acquisition.location)
     acq = parser.get_acquisition_data()
     data = acq.get_image_by_name(channel_name)
+
+    # TODO: check if the transformation is really needed
+    # data = np.arcsinh(data / 5, out=data)
 
     hist, edges = np.histogram(data.ravel(), bins=bins)
     content = {"hist": hist.tolist(), "edges": edges.tolist()}
