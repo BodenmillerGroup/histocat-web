@@ -233,7 +233,7 @@ export default class Main extends Vue {
 
   beforeDestroy() {
     WebSocketManager.close();
-    BroadcastManager.close();
+    BroadcastManager.clear();
   }
 }
 </script>

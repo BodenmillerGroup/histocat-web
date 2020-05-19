@@ -31,13 +31,9 @@ export default class ImageViewer extends Vue {
     return this.settingsContext.getters.maskSettings.apply;
   }
 
-  get selectedChannels() {
-    return this.experimentContext.getters.selectedChannels;
-  }
-
-  get metalColorMap() {
-    return this.settingsContext.getters.metalColorMap;
-  }
+  // get selectedChannels() {
+  //   return this.experimentContext.getters.selectedChannels;
+  // }
 
   get activeAcquisitionId() {
     return this.experimentContext.getters.activeAcquisitionId;
@@ -59,20 +55,20 @@ export default class ImageViewer extends Vue {
     return this.analysisContext.getters.centroidsData;
   }
 
-  @Watch("selectedChannels")
-  onSelectedChannelsChanged(channels: IChannel[]) {
-    if (channels && channels.length > 0) {
-      this.experimentContext.actions.getChannelStackImage();
-      if (this.activeDataset && this.activeAcquisitionId) {
-        this.analysisContext.actions.getCentroidsData({
-          dataset_id: this.activeDataset.id,
-          acquisition_id: this.activeAcquisitionId,
-        });
-      }
-    } else {
-      this.experimentContext.mutations.setChannelStackImage(null);
-    }
-  }
+  // @Watch("selectedChannels")
+  // onSelectedChannelsChanged(channels: IChannel[]) {
+  //   if (channels && channels.length > 0) {
+  //     this.experimentContext.actions.getChannelStackImage();
+  //     if (this.activeDataset && this.activeAcquisitionId) {
+  //       this.analysisContext.actions.getCentroidsData({
+  //         dataset_id: this.activeDataset.id,
+  //         acquisition_id: this.activeAcquisitionId,
+  //       });
+  //     }
+  //   } else {
+  //     this.experimentContext.mutations.setChannelStackImage(null);
+  //   }
+  // }
 
   @Watch("channelStackImage")
   onChannelStackImageChanged(value) {

@@ -24,6 +24,9 @@ import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_FILTER } from "@/modules/settings/events";
+import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 
 @Component
 export default class FilterSettingsView extends Vue {
@@ -43,11 +46,11 @@ export default class FilterSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    this.settingsContext.mutations.setFilter({
+    BroadcastManager.publish(SET_FILTER, {
       ...this.settingsContext.getters.filter,
       apply: value,
     });
-    this.experimentContext.actions.getChannelStackImage();
+    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
   }
 
   get filterType() {
@@ -55,12 +58,12 @@ export default class FilterSettingsView extends Vue {
   }
 
   set filterType(value: string) {
-    this.settingsContext.mutations.setFilter({
+    BroadcastManager.publish(SET_FILTER, {
       ...this.settingsContext.getters.filter,
       type: value,
     });
     if (this.apply) {
-      this.experimentContext.actions.getChannelStackImage();
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 
@@ -71,14 +74,14 @@ export default class FilterSettingsView extends Vue {
   }
 
   set sigma(value: number) {
-    this.settingsContext.mutations.setFilter({
+    BroadcastManager.publish(SET_FILTER, {
       ...this.settingsContext.getters.filter,
       settings: {
         sigma: value,
       },
     });
     if (this.apply) {
-      this.experimentContext.actions.getChannelStackImage();
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 
@@ -89,14 +92,14 @@ export default class FilterSettingsView extends Vue {
   }
 
   set kernelSize(value: string) {
-    this.settingsContext.mutations.setFilter({
+    BroadcastManager.publish(SET_FILTER, {
       ...this.settingsContext.getters.filter,
       settings: {
         kernel_size: value,
       },
     });
     if (this.apply) {
-      this.experimentContext.actions.getChannelStackImage();
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 }

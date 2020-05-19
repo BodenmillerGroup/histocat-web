@@ -25,31 +25,17 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import * as d3 from "d3";
-import significantDigits from "@/cellxgene/util/significantDigits";
 import memoize from "memoize-one";
 import { settingsModule } from "@/modules/settings";
 import { experimentModule } from "@/modules/experiment";
 import { IChannel, IChannelStats } from "@/modules/experiment/models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_CHANNEL_SETTINGS, SET_METAL_COLOR } from "@/modules/settings/events";
+import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 
 function clamp(val, rng) {
   return Math.max(Math.min(val, rng[1]), rng[0]);
 }
-
-const maybeScientific = (x) => {
-  let format = ",";
-  const _ticks = x.ticks(4);
-
-  if (x.domain().some((n) => Math.abs(n) >= 10000)) {
-    /*
-        heuristic: if the last tick d3 wants to render has one significant
-        digit ie., 2000, render 2e+3, but if it's anything else ie., 42000000 render
-        4.20e+n
-      */
-    format = significantDigits(_ticks[_ticks.length - 1]) === 1 ? ".0e" : ".2e";
-  }
-
-  return format;
-};
 
 @Component
 export default class BrushableHistogram extends Vue {
@@ -99,10 +85,11 @@ export default class BrushableHistogram extends Vue {
 
   @Watch("color")
   onColorChanged(color: string) {
-    this.settingsContext.mutations.setMetalColor({
+    BroadcastManager.publish(SET_METAL_COLOR, {
       metal: this.channel.name,
       color: color,
     });
+    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
   }
 
   calcHistogramCache = memoize((stats: IChannelStats) => {
@@ -120,7 +107,7 @@ export default class BrushableHistogram extends Vue {
       .domain([domainMin, domainMax])
       .range([this.marginLeft, this.marginLeft + this.width]);
 
-    histogramCache.bins = stats.hist;
+    histogramCache.bins = stats.bins;
     histogramCache.binWidth = (domainMax - domainMin) / numBins;
 
     histogramCache.binStart = (i) => domainMin + i * histogramCache.binWidth;
@@ -244,8 +231,8 @@ export default class BrushableHistogram extends Vue {
         suppressBroadcast: false,
       };
     }
-    this.settingsContext.mutations.setChannelSettings(settings);
-    this.experimentContext.actions.getChannelStackImage();
+    BroadcastManager.publish(SET_CHANNEL_SETTINGS, settings);
+    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
   }
 
   setSharedChannelLevels() {
@@ -315,7 +302,7 @@ export default class BrushableHistogram extends Vue {
         d3
           .axisBottom(x)
           .ticks(4)
-          .tickFormat(d3.format(maybeScientific(x)) as any)
+          .tickFormat(d3.format(".0s") as any)
       );
 
     /* Y AXIS */

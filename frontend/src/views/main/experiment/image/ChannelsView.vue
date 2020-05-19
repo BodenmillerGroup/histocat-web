@@ -47,6 +47,10 @@ import { IChannel } from "@/modules/experiment/models";
 import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
 import { Component, Vue } from "vue-property-decorator";
+import { IChannelSettings } from "@/modules/settings/models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
+import { GET_CHANNEL_STACK_IMAGE, SET_SELECTED_METALS } from "@/modules/experiment/events";
 
 @Component
 export default class ChannelsView extends Vue {
@@ -113,7 +117,8 @@ export default class ChannelsView extends Vue {
   set selected(items: IChannel[]) {
     const selectedMetals = items.map((item) => item.name);
     if (!equals(this.selectedMetals, selectedMetals)) {
-      this.experimentContext.mutations.setSelectedMetals(selectedMetals);
+      BroadcastManager.publish(SET_SELECTED_METALS, selectedMetals);
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 
@@ -121,25 +126,27 @@ export default class ChannelsView extends Vue {
     if (!this.activeAcquisitionId) {
       return;
     }
+    let allSettings: IChannelSettings[] = [];
     this.items.forEach((item) => {
       const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId, item.name);
       if (!settings) {
-        this.settingsModule.mutations.setChannelSettings({
+        allSettings.push({
           acquisitionId: this.activeAcquisitionId!,
           name: item.name,
           customLabel: item.label,
         });
       } else {
         if (settings.customLabel !== item.label) {
-          this.settingsModule.mutations.setChannelSettings({
+          allSettings.push({
             ...settings,
             customLabel: item.label,
           });
         }
       }
     });
-    if (this.items.length > 0) {
-      this.experimentContext.actions.getChannelStackImage();
+    if (allSettings.length > 0) {
+      BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, allSettings);
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 }

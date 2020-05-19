@@ -22,6 +22,9 @@ import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_LEGEND } from "@/modules/settings/events";
+import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 
 @Component
 export default class LegendSettingsView extends Vue {
@@ -35,11 +38,11 @@ export default class LegendSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    this.settingsContext.mutations.setLegend({
+    BroadcastManager.publish(SET_LEGEND, {
       ...this.settingsContext.getters.legend,
       apply: value,
     });
-    this.experimentContext.actions.getChannelStackImage();
+    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
   }
 
   get legendFontScale() {
@@ -47,12 +50,12 @@ export default class LegendSettingsView extends Vue {
   }
 
   set legendFontScale(value: number) {
-    this.settingsContext.mutations.setLegend({
+    BroadcastManager.publish(SET_LEGEND, {
       ...this.settingsContext.getters.legend,
       fontScale: value,
     });
     if (this.apply) {
-      this.experimentContext.actions.getChannelStackImage();
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 
@@ -61,11 +64,11 @@ export default class LegendSettingsView extends Vue {
   }
 
   set showIntensity(value: boolean) {
-    this.settingsContext.mutations.setLegend({
+    BroadcastManager.publish(SET_LEGEND, {
       ...this.settingsContext.getters.legend,
       showIntensity: value,
     });
-    this.experimentContext.actions.getChannelStackImage();
+    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
   }
 }
 </script>

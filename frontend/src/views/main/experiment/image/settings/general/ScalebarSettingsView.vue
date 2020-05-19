@@ -22,6 +22,9 @@ import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
+import { SET_SCALEBAR } from "@/modules/settings/events";
 
 @Component
 export default class ScalebarSettingsView extends Vue {
@@ -35,11 +38,11 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    this.settingsContext.mutations.setScalebar({
+    BroadcastManager.publish(SET_SCALEBAR, {
       ...this.settingsContext.getters.scalebar,
       apply: value,
     });
-    this.experimentContext.actions.getChannelStackImage();
+    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
   }
 
   get scale() {
@@ -49,14 +52,14 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set scale(value: number) {
-    this.settingsContext.mutations.setScalebar({
+    BroadcastManager.publish(SET_SCALEBAR, {
       ...this.settingsContext.getters.scalebar,
       settings: {
         scale: value,
       },
     });
     if (this.apply) {
-      this.experimentContext.actions.getChannelStackImage();
+      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
     }
   }
 }

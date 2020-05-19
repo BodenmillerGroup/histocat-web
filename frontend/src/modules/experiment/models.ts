@@ -95,8 +95,7 @@ export interface IChannel {
 }
 
 export interface IChannelStats {
-  hist: number[];
-  edges: number[];
+  bins: number[];
 }
 
 export interface IChannelStack {

@@ -5,7 +5,7 @@
 <script lang="ts">
 import { analysisModule } from "@/modules/analysis";
 import { experimentModule } from "@/modules/experiment";
-import { IAcquisition, IChannel } from "@/modules/experiment/models";
+import { IAcquisition } from "@/modules/experiment/models";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { defaults as defaultControls, FullScreen, OverviewMap, ScaleLine } from "ol/control";
@@ -40,14 +40,6 @@ export default class BlendView extends Vue {
   select!: Select;
   draw!: Draw;
   translate!: Translate;
-
-  get selectedChannels() {
-    return this.experimentContext.getters.selectedChannels;
-  }
-
-  get metalColorMap() {
-    return this.settingsContext.getters.metalColorMap;
-  }
 
   get activeAcquisition() {
     return this.experimentContext.getters.activeAcquisition;
@@ -132,27 +124,6 @@ export default class BlendView extends Vue {
     const extent = [0, 0, acquisition.max_x, acquisition.max_y];
     if (!equals(existingExtent, extent)) {
       this.map.getView().getProjection().setExtent(extent);
-    }
-  }
-
-  @Watch("metalColorMap")
-  onMetalColorMapChanged(colorMap: { [metal: string]: string }) {
-    this.experimentContext.actions.getChannelStackImage();
-  }
-
-  @Watch("selectedChannels")
-  onSelectedChannelsChanged(channels: IChannel[]) {
-    if (!this.map) {
-      this.initMap();
-    }
-
-    if (channels && channels.length > 0) {
-      this.experimentContext.actions.getChannelStackImage();
-    } else {
-      this.experimentContext.mutations.setChannelStackImage(null);
-      if (this.map) {
-        this.map.getLayers().clear();
-      }
     }
   }
 

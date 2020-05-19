@@ -55,8 +55,8 @@ async def read_channel_stats(
     # TODO: check if the transformation is really needed
     # data = np.arcsinh(data / 5, out=data)
 
-    hist, edges = np.histogram(data.ravel(), bins=bins)
-    content = {"hist": hist.tolist(), "edges": edges.tolist()}
+    hist, _ = np.histogram(data.ravel(), bins=bins)
+    content = {"bins": hist.tolist()}
     await redis_manager.cache.set(request.url.path, orjson.dumps(content))
     return ORJSONResponse(content)
 

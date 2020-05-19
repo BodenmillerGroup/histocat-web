@@ -2,8 +2,17 @@ import { equals } from "rambda";
 import { Mutations } from "vuex-smart-module";
 import { ExperimentState } from ".";
 import { IExperiment, IShare } from "./models";
+import {BroadcastManager} from "@/utils/BroadcastManager";
+import {SET_ACTIVE_ACQUISITION_ID, SET_ACTIVE_WORKSPACE_NODE, SET_SELECTED_METALS} from "@/modules/experiment/events";
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
+  constructor() {
+    super();
+    BroadcastManager.subscribe(SET_ACTIVE_ACQUISITION_ID, (payload) => this.setActiveAcquisitionId(payload));
+    BroadcastManager.subscribe(SET_ACTIVE_WORKSPACE_NODE, (payload) => this.setActiveWorkspaceNode(payload));
+    BroadcastManager.subscribe(SET_SELECTED_METALS, (payload) => this.setSelectedMetals(payload));
+  }
+
   setExperiments(experiments: IExperiment[]) {
     this.state.experiments = experiments;
   }
@@ -46,11 +55,6 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
 
   setActiveWorkspaceNode(node?: { id: number; type: string }) {
     this.state.activeWorkspaceNode = node;
-    if (node) {
-      if (node.type === "acquisition") {
-        this.state.activeAcquisitionId = node.id;
-      }
-    }
   }
 
   setChannelStackImage(base64Image: string | ArrayBuffer | null) {

@@ -5,7 +5,7 @@
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
-import createScatterplot, { createTextureFromUrl, createRegl } from "regl-scatterplot";
+import createScatterplot from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { interpolateCool, scaleSequential, rgb } from "d3";
 import { experimentModule } from "@/modules/experiment";

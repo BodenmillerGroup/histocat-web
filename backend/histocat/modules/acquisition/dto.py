@@ -7,8 +7,7 @@ from pydantic import BaseModel
 class ChannelStatsDto(BaseModel):
     """Channel stats model."""
 
-    hist: Sequence[int]
-    edges: Sequence[float]
+    bins: Sequence[int]
 
 
 class ChannelSettingsDto(BaseModel):

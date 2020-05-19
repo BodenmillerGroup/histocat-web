@@ -9,6 +9,10 @@ import { api } from "./api";
 import { ExperimentGetters } from "./getters";
 import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from "./models";
 import { ExperimentMutations } from "./mutations";
+import {BroadcastManager} from "@/utils/BroadcastManager";
+import {GET_CHANNEL_STACK_IMAGE} from "@/modules/experiment/events";
+import {IChannelSettings} from "@/modules/settings/models";
+import {SET_SHARED_CHANNEL_SETTINGS} from "@/modules/settings/events";
 
 export class ExperimentActions extends Actions<
   ExperimentState,
@@ -27,6 +31,8 @@ export class ExperimentActions extends Actions<
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetModule.context(store);
+
+    BroadcastManager.subscribe(GET_CHANNEL_STACK_IMAGE, (payload) => this.getChannelStackImage());
   }
 
   async getExperiments() {
@@ -209,6 +215,7 @@ export class ExperimentActions extends Actions<
   async setSharedChannelLevels(payload: { metal: string; levels: number[] }) {
     const experiment = this.getters.activeExperiment;
     if (experiment && experiment.slides) {
+      let allSettings: IChannelSettings[] = [];
       for (const slide of experiment.slides) {
         for (const acquisition of slide.acquisitions) {
           for (const channel of Object.values(acquisition.channels)) {
@@ -233,11 +240,12 @@ export class ExperimentActions extends Actions<
                   },
                 };
               }
-              this.settings!.mutations.setChannelSettings(settings);
+              allSettings.push(settings);
             }
           }
         }
       }
+      BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, allSettings);
     }
   }
 
