@@ -75,7 +75,7 @@ services:
 
   db:
     restart: always
-    image: postgres:12.2-alpine
+    image: postgres:12.3-alpine
     environment:
       - POSTGRES_SERVER
       - POSTGRES_USER
@@ -118,7 +118,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.4.0
+    image: redislabs/redisinsight:1.5.0
     depends_on:
       - redis
     ports:

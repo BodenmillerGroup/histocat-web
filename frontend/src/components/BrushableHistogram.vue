@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-  import {Component, Prop, Vue, Watch} from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import * as d3 from "d3";
 import significantDigits from "@/cellxgene/util/significantDigits";
 import memoize from "memoize-one";
@@ -172,40 +172,6 @@ export default class BrushableHistogram extends Vue {
     };
   }
 
-  submitRange(range: number[]) {
-    if (!this.activeAcquisitionId) {
-      return;
-    }
-    let settings = this.settings;
-    if (!settings) {
-      settings = {
-        acquisitionId: this.activeAcquisitionId,
-        name: this.channel.name,
-        customLabel: this.channel.label,
-        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-        suppressBroadcast: false,
-      };
-    } else {
-      settings = {
-        ...settings,
-        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-        suppressBroadcast: false,
-      };
-    }
-    this.settingsContext.mutations.setChannelSettings(settings);
-    this.experimentContext.actions.getChannelStackImage();
-  }
-
-  setSharedChannelLevels() {
-    const metal = this.channel.name;
-    const settings = this.settings;
-    const levels =
-      settings && settings.levels
-        ? [settings.levels.min, settings.levels.max]
-        : [this.channel.min_intensity, this.channel.max_intensity];
-    this.experimentContext.actions.setSharedChannelLevels({ metal: metal, levels: levels });
-  }
-
   onBrushEnd(x) {
     return () => {
       const minAllowedBrushSize = 10;
@@ -244,6 +210,7 @@ export default class BrushableHistogram extends Vue {
         //   range: _range,
         // });
       } else {
+        this.submitRange([this.channel.min_intensity, this.channel.max_intensity]);
         // dispatch({
         //   type: "continuous metadata histogram cancel",
         //   selection: field,
@@ -255,6 +222,40 @@ export default class BrushableHistogram extends Vue {
         // });
       }
     };
+  }
+
+  submitRange(range: number[]) {
+    if (!this.activeAcquisitionId) {
+      return;
+    }
+    let settings = this.settings;
+    if (!settings) {
+      settings = {
+        acquisitionId: this.activeAcquisitionId,
+        name: this.channel.name,
+        customLabel: this.channel.label,
+        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+        suppressBroadcast: false,
+      };
+    } else {
+      settings = {
+        ...settings,
+        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+        suppressBroadcast: false,
+      };
+    }
+    this.settingsContext.mutations.setChannelSettings(settings);
+    this.experimentContext.actions.getChannelStackImage();
+  }
+
+  setSharedChannelLevels() {
+    const metal = this.channel.name;
+    const settings = this.settings;
+    const levels =
+      settings && settings.levels
+        ? [settings.levels.min, settings.levels.max]
+        : [this.channel.min_intensity, this.channel.max_intensity];
+    this.experimentContext.actions.setSharedChannelLevels({ metal: metal, levels: levels });
   }
 
   renderHistogram(histogram) {
