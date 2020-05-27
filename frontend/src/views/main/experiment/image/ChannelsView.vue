@@ -50,7 +50,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { IChannelSettings } from "@/modules/settings/models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
-import { GET_CHANNEL_STACK_IMAGE, SET_SELECTED_METALS } from "@/modules/experiment/events";
+import { SET_SELECTED_METALS } from "@/modules/experiment/events";
 
 @Component
 export default class ChannelsView extends Vue {
@@ -118,7 +118,7 @@ export default class ChannelsView extends Vue {
     const selectedMetals = items.map((item) => item.name);
     if (!equals(this.selectedMetals, selectedMetals)) {
       BroadcastManager.publish(SET_SELECTED_METALS, selectedMetals);
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 
@@ -146,7 +146,7 @@ export default class ChannelsView extends Vue {
     });
     if (allSettings.length > 0) {
       BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, allSettings);
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 }

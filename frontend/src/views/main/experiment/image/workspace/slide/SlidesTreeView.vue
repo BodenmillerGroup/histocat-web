@@ -82,11 +82,7 @@ import { IExperiment } from "@/modules/experiment/models";
 import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import {
-  GET_CHANNEL_STACK_IMAGE,
-  SET_ACTIVE_ACQUISITION_ID,
-  SET_ACTIVE_WORKSPACE_NODE
-} from "@/modules/experiment/events";
+import { SET_ACTIVE_ACQUISITION_ID, SET_ACTIVE_WORKSPACE_NODE } from "@/modules/experiment/events";
 
 @Component({
   components: { UploadButton, InfoCard },
@@ -121,7 +117,7 @@ export default class SlidesTreeView extends Vue {
     BroadcastManager.publish(SET_ACTIVE_WORKSPACE_NODE, node);
     if (node.type === "acquisition") {
       BroadcastManager.publish(SET_ACTIVE_ACQUISITION_ID, node.id);
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 

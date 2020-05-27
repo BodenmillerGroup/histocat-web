@@ -50,9 +50,9 @@ def process_pca(
     result = pca.fit_transform(feature_values_scaled)
     result = normalize_embedding(result)
 
-    cell_ids = df["acquisition_id"].astype(str) + "_" + df["ObjectNumber"].astype(str)
     output = {
-        "cell_ids": cell_ids.tolist(),
+        "acquisitionIds": df["acquisition_id"].tolist(),
+        "cellIds": df["ObjectNumber"].tolist(),
         "x": {"label": "PC1", "data": result[:, 0].tolist()},
         "y": {"label": "PC2", "data": result[:, 1].tolist()},
     }
@@ -68,10 +68,5 @@ def process_pca(
             heatmap_data = df[heatmap]
 
         output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
-    elif len(acquisition_ids) > 1:
-        output["heatmap"] = {
-            "label": "Acquisition",
-            "data": df["acquisition_id"].tolist(),
-        }
 
     return output

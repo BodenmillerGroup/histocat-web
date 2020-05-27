@@ -7,13 +7,24 @@ import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
 import createScatterplot from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { interpolateCool, scaleSequential, rgb } from "d3";
+import {
+  interpolateCool,
+  scaleSequential,
+  scaleLinear,
+  rgb,
+  interpolateRainbow,
+  interpolateSpectral,
+  schemeCategory10, schemeTableau10
+} from "d3";
 import { experimentModule } from "@/modules/experiment";
+import { selectionModule } from "@/modules/selection";
+import { uniq } from "rambda";
 
 @Component
 export default class Scatter2D extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
+  readonly selectionContext = selectionModule.context(this.$store);
 
   @Prop(Object) data;
   @Prop(String) title;
@@ -40,20 +51,27 @@ export default class Scatter2D extends Vue {
 
       this.points = data.heatmap
         ? data.x.data.map((x, i) => {
-            return [x, data.y.data[i], data.heatmap!.data[i], data.cell_ids[i]];
+            return [x, data.y.data[i], data.heatmap!.data[i], data.acquisitionIds[i], data.cellIds[i]];
           })
         : data.x.data.map((x, i) => {
-            return [x, data.y.data[i], 0, data.cell_ids[i]];
+            return [x, data.y.data[i], data.acquisitionIds[i], data.acquisitionIds[i], data.cellIds[i]];
           });
 
-      const categories = data.heatmap ? data.heatmap!.data : [0];
+      const categories = data.heatmap ? data.heatmap!.data : data.acquisitionIds;
       const min = Math.min(...categories);
       const max = Math.max(...categories);
-      const colorScale = scaleSequential(interpolateCool).domain([min, max]);
-      const colors = [...Array(categories.length).keys()].map((item) => rgb(colorScale(item)).hex());
+      const colorScale = scaleSequential(interpolateRainbow).domain([min, max]);
+      const colors: string[] = [];
+      for (let i = 0; i < categories.length; i++) {
+        colors.push(rgb(colorScale(i)).hex());
+      }
+      console.log(min, max);
+      console.log(categories);
+      console.log(uniq(colors));
+
       this.scatterplot.set({
         colorBy: "category",
-        colors: colors,
+        pointColor: schemeTableau10,
       });
 
       const p = this.points.map((item) => [item[0], item[1], item[2]]);
@@ -75,20 +93,20 @@ export default class Scatter2D extends Vue {
     console.log("Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const cell_ids: number[] = [];
+      const cell_ids = new Map<number, number[]>();
       for (const i of this.selection) {
-        const [acquisition_id, cell_id] = this.points[i][3].split("_");
-        if (this.activeAcquisitionId === Number(acquisition_id)) {
-          cell_ids.push(Number(cell_id));
+        const point = this.points[i];
+        const acquisitionId = point[3];
+        const cellId = point[4];
+        if (!cell_ids.has(acquisitionId)) {
+          cell_ids.set(acquisitionId, []);
         }
+        const ids = cell_ids.get(acquisitionId);
+        ids!.push(cellId);
       }
+      this.selectionContext.mutations.setCellIds(cell_ids);
       if (this.applyMask) {
-        // this.settingsContext.mutations.setMaskSettings({
-        //   ...this.settingsContext.getters.maskSettings,
-        //   cell_ids: value,
-        // });
-        this.experimentContext.actions.getGatedMaskImage(cell_ids);
-        // this.experimentContext.actions.getChannelStackImage();
+        this.experimentContext.actions.getChannelStackImage();
       }
     }
   }

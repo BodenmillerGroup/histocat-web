@@ -2,8 +2,16 @@ import { WebSocketMessage } from "@/utils/WebSocketMessage";
 import { Mutations } from "vuex-smart-module";
 import { DatasetState } from ".";
 import { IDataset } from "./models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_ACTIVE_DATASET, SET_DATASETS } from "@/modules/datasets/events";
 
 export class DatasetMutations extends Mutations<DatasetState> {
+  constructor() {
+    super();
+    BroadcastManager.subscribe(SET_DATASETS, (payload) => this.setDatasets(payload));
+    BroadcastManager.subscribe(SET_ACTIVE_DATASET, (payload) => this.setActiveDataset(payload));
+  }
+
   setDatasets(datasets: IDataset[]) {
     this.state.datasets = datasets;
   }
@@ -77,7 +85,10 @@ export class DatasetMutations extends Mutations<DatasetState> {
   }
 
   reset() {
-    this.state.datasets = [];
-    this.state.activeDataset = undefined;
+    // acquire initial state
+    const s = new DatasetState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
   }
 }

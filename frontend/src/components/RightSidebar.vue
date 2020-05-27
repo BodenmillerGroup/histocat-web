@@ -12,7 +12,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class RightSidebar extends Vue {
   get items() {
-    return new Array(100).fill(0).map((v, i) => i)
+    return new Array(100).fill(0).map((v, i) => i);
   }
 }
 </script>

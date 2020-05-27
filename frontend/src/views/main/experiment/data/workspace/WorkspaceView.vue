@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import DatasetsView from "@/views/main/experiment/data/workspace/dataset/DatasetsView.vue";
-import {Component, Prop, Vue} from "vue-property-decorator";
-import {IExperiment} from "@/modules/experiment/models";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { IExperiment } from "@/modules/experiment/models";
 
 @Component({
   components: {

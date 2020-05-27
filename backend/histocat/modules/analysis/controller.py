@@ -145,7 +145,7 @@ async def produce_segmentation_contours(
 
 
 @router.get("/scatterplot")
-async def read_scatter_plot_data(
+async def get_scatter_plot_data(
     dataset_id: int,
     marker_x: str,
     marker_y: str,
@@ -216,7 +216,7 @@ async def read_scatter_plot_data(
 
 
 @router.get("/boxplot", response_model=List[PlotSeriesDto])
-async def read_box_plot_data(
+async def get_box_plot_data(
     dataset_id: int,
     acquisition_id: int,
     markers: List[str] = Query(None),
@@ -255,7 +255,7 @@ async def read_box_plot_data(
 
 
 @router.get("/pca", response_model=PcaDto)
-async def read_pca_data(
+async def get_pca_data(
     dataset_id: int,
     n_components: int,
     acquisition_ids: List[int] = Query(None),

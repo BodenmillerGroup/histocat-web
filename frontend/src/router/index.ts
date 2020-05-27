@@ -29,30 +29,32 @@ export default new Router({
           component: () => import(/* webpackChunkName: "reset-password" */ "@/views/ResetPassword.vue"),
         },
         {
-          path: "profile",
-          component: RouterComponent,
-          redirect: "profile/view",
-          children: [
-            {
-              path: "view",
-              component: () => import(/* webpackChunkName: "profile" */ "@/views/main/profile/UserProfile.vue"),
-            },
-            {
-              path: "edit",
-              component: () =>
-                import(/* webpackChunkName: "profile-edit" */ "@/views/main/profile/UserProfileEdit.vue"),
-            },
-            {
-              path: "password",
-              component: () =>
-                import(/* webpackChunkName: "profile-password" */ "@/views/main/profile/UserProfileEditPassword.vue"),
-            },
-          ],
-        },
-        {
           path: "main",
           component: () => import(/* webpackChunkName: "main" */ "@/views/main/Main.vue"),
           children: [
+            {
+              path: "profile",
+              component: RouterComponent,
+              redirect: "profile/view",
+              children: [
+                {
+                  path: "view",
+                  component: () => import(/* webpackChunkName: "profile" */ "@/views/main/profile/UserProfile.vue"),
+                },
+                {
+                  path: "edit",
+                  component: () =>
+                    import(/* webpackChunkName: "profile-edit" */ "@/views/main/profile/UserProfileEdit.vue"),
+                },
+                {
+                  path: "password",
+                  component: () =>
+                    import(
+                      /* webpackChunkName: "profile-password" */ "@/views/main/profile/UserProfileEditPassword.vue"
+                    ),
+                },
+              ],
+            },
             {
               path: "admin",
               component: () => import(/* webpackChunkName: "main-admin" */ "@/views/main/admin/Admin.vue"),

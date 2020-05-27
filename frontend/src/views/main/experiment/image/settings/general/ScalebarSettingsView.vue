@@ -23,7 +23,6 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 import { SET_SCALEBAR } from "@/modules/settings/events";
 
 @Component
@@ -42,7 +41,7 @@ export default class ScalebarSettingsView extends Vue {
       ...this.settingsContext.getters.scalebar,
       apply: value,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   get scale() {
@@ -59,7 +58,7 @@ export default class ScalebarSettingsView extends Vue {
       },
     });
     if (this.apply) {
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 }

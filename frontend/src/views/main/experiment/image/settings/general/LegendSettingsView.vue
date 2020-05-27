@@ -24,7 +24,6 @@ import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_LEGEND } from "@/modules/settings/events";
-import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 
 @Component
 export default class LegendSettingsView extends Vue {
@@ -42,7 +41,7 @@ export default class LegendSettingsView extends Vue {
       ...this.settingsContext.getters.legend,
       apply: value,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   get legendFontScale() {
@@ -55,7 +54,7 @@ export default class LegendSettingsView extends Vue {
       fontScale: value,
     });
     if (this.apply) {
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 
@@ -68,7 +67,7 @@ export default class LegendSettingsView extends Vue {
       ...this.settingsContext.getters.legend,
       showIntensity: value,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 }
 </script>

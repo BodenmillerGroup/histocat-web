@@ -9,10 +9,11 @@ import { api } from "./api";
 import { ExperimentGetters } from "./getters";
 import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from "./models";
 import { ExperimentMutations } from "./mutations";
-import {BroadcastManager} from "@/utils/BroadcastManager";
-import {GET_CHANNEL_STACK_IMAGE} from "@/modules/experiment/events";
-import {IChannelSettings} from "@/modules/settings/models";
-import {SET_SHARED_CHANNEL_SETTINGS} from "@/modules/settings/events";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { IChannelSettings } from "@/modules/settings/models";
+import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
+import { SET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
+import {selectionModule} from "@/modules/selection";
 
 export class ExperimentActions extends Actions<
   ExperimentState,
@@ -24,15 +25,14 @@ export class ExperimentActions extends Actions<
   main?: Context<typeof mainModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetModule>;
+  selection?: Context<typeof selectionModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
-    // Create and retain main module context
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetModule.context(store);
-
-    BroadcastManager.subscribe(GET_CHANNEL_STACK_IMAGE, (payload) => this.getChannelStackImage());
+    this.selection = selectionModule.context(store);
   }
 
   async getExperiments() {
@@ -147,7 +147,7 @@ export class ExperimentActions extends Actions<
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
+        BroadcastManager.publish(SET_CHANNEL_STACK_IMAGE, reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -168,36 +168,12 @@ export class ExperimentActions extends Actions<
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
+        BroadcastManager.publish(SET_CHANNEL_STACK_IMAGE, reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     } finally {
       this.mutations.setColorizeMaskInProgress(false);
-    }
-  }
-
-  async getGatedMaskImage(cell_ids: number[]) {
-    const params = await this.actions.prepareStackParams();
-    if (params.channels.length === 0 || !params.hasOwnProperty("mask")) {
-      return;
-    }
-    params["mask"]["apply"] = true;
-    params["mask"]["gated"] = true;
-    params["mask"]["cell_ids"] = cell_ids;
-    try {
-      // this.mutations.setColorizeMaskInProgress(true);
-      const response = await api.downloadChannelStackImage(params);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
-      };
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    } finally {
-      // this.mutations.setColorizeMaskInProgress(false);
     }
   }
 
@@ -276,6 +252,9 @@ export class ExperimentActions extends Actions<
     }
   }
 
+  /**
+   * Prepare stack image call parameters
+   */
   private prepareStackParams(format: "png" | "tiff" = "png") {
     const activeAcquisitionId = this.getters.activeAcquisitionId;
     const channels = this.getters.selectedChannels.map((channel) => {
@@ -319,6 +298,12 @@ export class ExperimentActions extends Actions<
             colorize: false,
             location: mask.location,
           };
+          // Prepare selected cell ids visualisation
+          const cellIds = this.selection?.getters.cellIds?.get(acquisition.id);
+          if (cellIds && cellIds.length > 0) {
+            result["mask"]["gated"] = true;
+            result["mask"]["cell_ids"] = cellIds;
+          }
         }
       }
     }

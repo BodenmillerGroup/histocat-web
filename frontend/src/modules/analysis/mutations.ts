@@ -62,16 +62,10 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
   }
 
   reset() {
-    this.state.segmentationImage = null;
-    this.state.segmentationContours = [];
-    this.state.scatterPlotData = null;
-    this.state.boxPlotData = [];
-    this.state.pcaData = null;
-    this.state.tsneData = null;
-    this.state.umapData = null;
-    this.state.phenographData = null;
-    this.state.regionsEnabled = false;
-    this.state.selectedRegion = null;
-    this.state.selectedRegionStats = [];
+    // acquire initial state
+    const s = new AnalysisState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
   }
 }

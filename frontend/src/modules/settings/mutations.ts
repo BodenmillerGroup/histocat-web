@@ -11,7 +11,8 @@ import {
   SET_MASK_SETTINGS,
   SET_METAL_COLOR,
   SET_SCALEBAR,
-  SET_SEGMENTATION_SETTINGS, SET_SHARED_CHANNEL_SETTINGS,
+  SET_SEGMENTATION_SETTINGS,
+  SET_SHARED_CHANNEL_SETTINGS,
 } from "@/modules/settings/events";
 
 export class SettingsMutations extends Mutations<SettingsState> {
@@ -25,7 +26,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
     BroadcastManager.subscribe(SET_SCALEBAR, (payload) => this.setScalebar(payload));
     BroadcastManager.subscribe(SET_SEGMENTATION_SETTINGS, (payload) => this.setSegmentationSettings(payload));
     BroadcastManager.subscribe(SET_MASK_SETTINGS, (payload) => this.setMaskSettings(payload));
-    BroadcastManager.subscribe(RESET_SETTINGS, (payload) => this.resetSettings());
+    BroadcastManager.subscribe(RESET_SETTINGS, (payload) => this.reset());
   }
 
   setSharedChannelSettings(payload: IChannelSettings[]) {
@@ -75,38 +76,11 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.mask = payload;
   }
 
-  resetSettings() {
-    this.state.channelSettings = new Map<number, Map<string, IChannelSettings>>();
-    this.state.metalColorMap = new Map<string, string>();
-    this.state.filter = {
-      apply: false,
-      type: "gaussian",
-      settings: {
-        sigma: 1.0,
-        kernel_size: 3,
-      },
-    };
-    this.state.legend = {
-      apply: false,
-      fontScale: 1.0,
-      showIntensity: false,
-    };
-    this.state.scalebar = {
-      apply: false,
-      settings: {
-        scale: 1.0,
-      },
-    };
-    this.state.segmentationSettings = {
-      algorithm: "Otsu Hue",
-      iterations: 1,
-      kernel_size: 3,
-      mask_color: "#00AAFF40",
-      result_type: "origin",
-    };
-    this.state.mask = {
-      apply: false,
-      location: undefined,
-    };
+  reset() {
+    // acquire initial state
+    const s = new SettingsState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
   }
 }

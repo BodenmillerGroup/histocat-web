@@ -2,8 +2,8 @@ import { Actions } from "vuex-smart-module";
 import { SettingsState } from ".";
 import { SettingsGetters } from "./getters";
 import { SettingsMutations } from "./mutations";
-import {BroadcastManager} from "@/utils/BroadcastManager";
-import {RESET_SETTINGS} from "@/modules/settings/events";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { RESET_SETTINGS } from "@/modules/settings/events";
 
 export class SettingsActions extends Actions<SettingsState, SettingsGetters, SettingsMutations, SettingsActions> {
   async resetSettings() {

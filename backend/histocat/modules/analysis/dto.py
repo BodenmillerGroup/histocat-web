@@ -45,7 +45,6 @@ class BoxPlotDto(BaseModel):
 
 class PcaDto(BaseModel):
     """PCA plot model."""
-
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]

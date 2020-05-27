@@ -12,7 +12,7 @@
       <v-row no-gutters>
         <v-col>
           <v-list nav dense>
-            <v-list-item to="/main/dashboard">
+            <v-list-item to="/main/experiments">
               <v-list-item-icon>
                 <v-icon>mdi-view-dashboard-outline</v-icon>
               </v-list-item-icon>
@@ -74,7 +74,7 @@
     </v-navigation-drawer>
     <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
       <v-app-bar-nav-icon @click.stop="switchShowDrawer" />
-      <v-toolbar-title @click="$router.push('/')" class="toolbar-title">{{ appName }}</v-toolbar-title>
+      <v-toolbar-title @click="$router.push('/main/experiments')" class="toolbar-title">{{ appName }}</v-toolbar-title>
       <v-spacer />
       <v-btn-toggle v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>

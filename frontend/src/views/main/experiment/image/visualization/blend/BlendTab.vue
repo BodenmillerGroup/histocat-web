@@ -75,7 +75,6 @@ import IntensityView from "@/views/main/experiment/image/visualization/blend/Int
 import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 import { SET_MASK_SETTINGS } from "@/modules/settings/events";
 
 @Component({
@@ -100,7 +99,7 @@ export default class BlendTab extends Vue {
       ...this.settingsContext.getters.maskSettings,
       apply: value,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   get regionsEnabled() {

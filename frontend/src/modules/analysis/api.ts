@@ -114,9 +114,7 @@ export const api = {
   },
   async getCentroids(params: ICentroidsSubmission) {
     return ApiManager.api
-      .get(
-        `analysis/centroids?dataset_id=${params.dataset_id}&acquisition_id=${params.acquisition_id}`
-      )
+      .get(`analysis/centroids?dataset_id=${params.dataset_id}&acquisition_id=${params.acquisition_id}`)
       .json<ICentroidsData>();
   },
 };

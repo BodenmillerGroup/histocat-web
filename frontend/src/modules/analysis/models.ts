@@ -54,7 +54,8 @@ export interface IChart3DData {
 }
 
 export interface IChart2DData {
-  cell_ids: string[];
+  acquisitionIds: number[];
+  cellIds: number[];
   x: IPlotSeries;
   y: IPlotSeries;
   z?: IPlotSeries;

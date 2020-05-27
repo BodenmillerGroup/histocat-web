@@ -11,6 +11,8 @@ import VuexPersistence from "vuex-persist";
 import { createStore, Module } from "vuex-smart-module";
 import createLogger from "vuex/dist/logger";
 import { responsiveModule } from "@/modules/responsive";
+import { RootActions } from "@/store/actions";
+import {selectionModule} from "@/modules/selection";
 
 Vue.use(Vuex);
 
@@ -25,7 +27,9 @@ const rootModule = new Module({
     responsive: responsiveModule,
     settings: settingsModule,
     user: userModule,
+    selection: selectionModule,
   },
+  actions: RootActions,
 });
 
 const vuexStorage = new VuexPersistence<typeof rootModule>({

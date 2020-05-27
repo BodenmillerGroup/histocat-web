@@ -12,4 +12,12 @@ export class UserMutations extends Mutations<UserState> {
     users.push(payload);
     this.state.users = users;
   }
+
+  reset() {
+    // acquire initial state
+    const s = new UserState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
+  }
 }

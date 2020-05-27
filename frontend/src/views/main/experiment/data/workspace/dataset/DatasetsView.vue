@@ -66,6 +66,8 @@ import { apiUrl } from "@/env";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_ACTIVE_DATASET } from "@/modules/datasets/events";
 
 @Component
 export default class DatasetsView extends Vue {
@@ -84,9 +86,9 @@ export default class DatasetsView extends Vue {
   datasetChanged(index: number | null) {
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
-      this.datasetContext.mutations.setActiveDataset(dataset);
+      BroadcastManager.publish(SET_ACTIVE_DATASET, dataset);
     } else {
-      this.datasetContext.mutations.setActiveDataset(undefined);
+      BroadcastManager.publish(SET_ACTIVE_DATASET, undefined);
     }
   }
 

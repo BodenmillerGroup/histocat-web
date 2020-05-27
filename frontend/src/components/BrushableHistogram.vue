@@ -31,7 +31,6 @@ import { experimentModule } from "@/modules/experiment";
 import { IChannel, IChannelStats } from "@/modules/experiment/models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_CHANNEL_SETTINGS, SET_METAL_COLOR } from "@/modules/settings/events";
-import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 
 function clamp(val, rng) {
   return Math.max(Math.min(val, rng[1]), rng[0]);
@@ -89,7 +88,7 @@ export default class BrushableHistogram extends Vue {
       metal: this.channel.name,
       color: color,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   calcHistogramCache = memoize((stats: IChannelStats) => {
@@ -232,7 +231,7 @@ export default class BrushableHistogram extends Vue {
       };
     }
     BroadcastManager.publish(SET_CHANNEL_SETTINGS, settings);
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   setSharedChannelLevels() {

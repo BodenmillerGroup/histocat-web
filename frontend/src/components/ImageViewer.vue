@@ -11,7 +11,7 @@ import { experimentModule } from "@/modules/experiment";
 import { IChannel } from "@/modules/experiment/models";
 import { analysisModule } from "@/modules/analysis";
 import { datasetModule } from "@/modules/datasets";
-import {transformCoords} from "@/utils/webglUtils";
+import { transformCoords } from "@/utils/webglUtils";
 
 @Component
 export default class ImageViewer extends Vue {
@@ -98,7 +98,7 @@ export default class ImageViewer extends Vue {
 
         if (this.centroidsData) {
           const x = transformCoords(this.centroidsData, 800, 800);
-          console.log(x)
+          console.log(x);
 
           this.points = new Array(1000).fill(0).map(() => [
             -1 + Math.random() * 2, // x
@@ -108,7 +108,7 @@ export default class ImageViewer extends Vue {
           ]);
           this.scatterplot.draw(this.points);
         } else {
-         this.scatterplot.draw([]);
+          this.scatterplot.draw([]);
         }
       };
     }

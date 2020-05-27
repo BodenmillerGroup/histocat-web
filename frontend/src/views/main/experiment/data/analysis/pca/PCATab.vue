@@ -86,7 +86,9 @@ export default class PCATab extends Vue {
   nComponents = "2";
   heatmap: { type: string; label: string } | null = null;
 
-  points: any[] = [];
+  get pcaData() {
+    return this.analysisContext.getters.pcaData;
+  }
 
   get responsive() {
     return this.responsiveContext.getters.responsive;
@@ -145,10 +147,6 @@ export default class PCATab extends Vue {
       heatmap: heatmap,
       markers: this.selectedChannels,
     });
-  }
-
-  get pcaData() {
-    return this.analysisContext.getters.pcaData;
   }
 }
 </script>

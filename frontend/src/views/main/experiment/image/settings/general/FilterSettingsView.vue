@@ -26,7 +26,6 @@ import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_FILTER } from "@/modules/settings/events";
-import { GET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
 
 @Component
 export default class FilterSettingsView extends Vue {
@@ -50,7 +49,7 @@ export default class FilterSettingsView extends Vue {
       ...this.settingsContext.getters.filter,
       apply: value,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   get filterType() {
@@ -63,7 +62,7 @@ export default class FilterSettingsView extends Vue {
       type: value,
     });
     if (this.apply) {
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 
@@ -81,7 +80,7 @@ export default class FilterSettingsView extends Vue {
       },
     });
     if (this.apply) {
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 
@@ -99,7 +98,7 @@ export default class FilterSettingsView extends Vue {
       },
     });
     if (this.apply) {
-      BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+      this.experimentContext.actions.getChannelStackImage();
     }
   }
 }

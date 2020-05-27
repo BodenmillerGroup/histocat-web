@@ -54,4 +54,12 @@ export class MainMutations extends Mutations<MainState> {
   setShowData(value: boolean) {
     this.state.showData = value;
   }
+
+  reset() {
+    // acquire initial state
+    const s = new MainState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
+  }
 }

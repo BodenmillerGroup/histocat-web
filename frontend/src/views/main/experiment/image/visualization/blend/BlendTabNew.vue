@@ -76,9 +76,8 @@ import { Component, Vue } from "vue-property-decorator";
 import ImageViewer from "@/components/ImageViewer.vue";
 import { responsiveModule } from "@/modules/responsive";
 import { mainModule } from "@/modules/main";
-import {BroadcastManager} from "@/utils/BroadcastManager";
-import {GET_CHANNEL_STACK_IMAGE} from "@/modules/experiment/events";
-import {SET_MASK_SETTINGS} from "@/modules/settings/events";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_MASK_SETTINGS } from "@/modules/settings/events";
 
 @Component({
   components: { ImageViewer, IntensityView },
@@ -118,7 +117,7 @@ export default class BlendTabNew extends Vue {
       ...this.settingsContext.getters.maskSettings,
       apply: value,
     });
-    BroadcastManager.publish(GET_CHANNEL_STACK_IMAGE);
+    this.experimentContext.actions.getChannelStackImage();
   }
 
   get regionsEnabled() {

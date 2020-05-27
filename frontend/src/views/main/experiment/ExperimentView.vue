@@ -53,8 +53,7 @@ export default class ExperimentView extends Vue {
     //   this.experimentContext.mutations.reset();
     //   this.analysisContext.mutations.reset();
     // }
-    this.experimentContext.mutations.reset();
-    this.analysisContext.mutations.reset();
+    this.$store.dispatch("reset");
   }
 }
 </script>
