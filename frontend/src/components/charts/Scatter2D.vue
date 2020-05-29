@@ -1,5 +1,5 @@
 <template>
-  <canvas ref="canvas" :width="width" :height="height" />
+  <canvas ref="canvas" :width="canvasWidth" :height="canvasHeight" />
 </template>
 
 <script lang="ts">
@@ -14,11 +14,14 @@ import {
   rgb,
   interpolateRainbow,
   interpolateSpectral,
-  schemeCategory10, schemeTableau10
+  schemeCategory10,
+  schemeTableau10,
+  interpolateReds,
 } from "d3";
 import { experimentModule } from "@/modules/experiment";
 import { selectionModule } from "@/modules/selection";
-import { uniq } from "rambda";
+import { forEach, uniq } from "rambda";
+import { CellPoint } from "@/components/charts/CellPoint";
 
 @Component
 export default class Scatter2D extends Vue {
@@ -28,10 +31,10 @@ export default class Scatter2D extends Vue {
 
   @Prop(Object) data;
   @Prop(String) title;
-  @Prop(Number) width;
-  @Prop(Number) height;
+  @Prop(Number) canvasWidth;
+  @Prop(Number) canvasHeight;
 
-  points: any[] = [];
+  points: CellPoint[] = [];
   scatterplot: any;
   selection: any[] = [];
 
@@ -49,44 +52,73 @@ export default class Scatter2D extends Vue {
       this.scatterplot.deselect();
       // this.scatterplot.reset();
 
-      this.points = data.heatmap
-        ? data.x.data.map((x, i) => {
-            return [x, data.y.data[i], data.heatmap!.data[i], data.acquisitionIds[i], data.cellIds[i]];
-          })
-        : data.x.data.map((x, i) => {
-            return [x, data.y.data[i], data.acquisitionIds[i], data.acquisitionIds[i], data.cellIds[i]];
-          });
+      if (data.heatmap) {
+        // Use heatmap value
 
-      const categories = data.heatmap ? data.heatmap!.data : data.acquisitionIds;
-      const min = Math.min(...categories);
-      const max = Math.max(...categories);
-      const colorScale = scaleSequential(interpolateRainbow).domain([min, max]);
-      const colors: string[] = [];
-      for (let i = 0; i < categories.length; i++) {
-        colors.push(rgb(colorScale(i)).hex());
+        const values = data.heatmap!.data;
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+
+        const normalizedValues = values.map(v => v / max);
+
+        this.points = data.x.data.map(
+          (x, i) => new CellPoint(
+            data.acquisitionIds[i],
+            data.cellIds[i],
+            x,
+            data.y.data[i],
+            normalizedValues[i])
+        );
+
+        // Use continuous color scale
+        const colorScale = scaleSequential(interpolateReds).domain([0, values.length]);
+        const colors: string[] = [];
+        for (let i = 0; i < values.length; i++) {
+          colors.push(rgb(colorScale(i)).hex());
+        }
+
+        this.scatterplot.set({
+          colorBy: "value",
+          pointColor: colors,
+        });
+      } else {
+        // Use acquisitionId as category
+        const colorMap = new Map<number, number>();
+        const uniqueAcquisitionIds = uniq(data.acquisitionIds);
+        uniqueAcquisitionIds.forEach((v, i) => {
+          colorMap.set(v, i);
+        });
+        this.points = data.x.data.map(
+          (x, i) =>
+            new CellPoint(
+              data.acquisitionIds[i],
+              data.cellIds[i],
+              x,
+              data.y.data[i],
+              colorMap.get(data.acquisitionIds[i])!
+            )
+        );
+
+        // Use discrete categorical color scale
+        this.scatterplot.set({
+          colorBy: "category",
+          pointColor: schemeCategory10,
+        });
       }
-      console.log(min, max);
-      console.log(categories);
-      console.log(uniq(colors));
 
-      this.scatterplot.set({
-        colorBy: "category",
-        pointColor: schemeTableau10,
-      });
-
-      const p = this.points.map((item) => [item[0], item[1], item[2]]);
+      const p = this.points.map((item) => [item.x, item.y, item.value, item.value]);
       this.scatterplot.draw(p);
     }
   }
 
-  pointoverHandler(pointId) {
-    const [x, y, category, value] = this.points[pointId];
-    // console.log(`X: ${x}\nY: ${y}\nCategory: ${category}\nValue: ${value}`);
+  pointoverHandler(pointId: number) {
+    const point = this.points[pointId];
+    console.log(`X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`);
   }
 
-  pointoutHandler(pointId) {
-    const [x, y, category, value] = this.points[pointId];
-    // console.log(`X: ${x}\nY: ${y}\nCategory: ${category}\nValue: ${value}`);
+  pointoutHandler(pointId: number) {
+    const point = this.points[pointId];
+    console.log(`X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`);
   }
 
   selectHandler({ points: selectedPoints }) {
@@ -96,13 +128,12 @@ export default class Scatter2D extends Vue {
       const cell_ids = new Map<number, number[]>();
       for (const i of this.selection) {
         const point = this.points[i];
-        const acquisitionId = point[3];
-        const cellId = point[4];
+        const acquisitionId = point.acquisitionId;
         if (!cell_ids.has(acquisitionId)) {
           cell_ids.set(acquisitionId, []);
         }
         const ids = cell_ids.get(acquisitionId);
-        ids!.push(cellId);
+        ids!.push(point.cellId);
       }
       this.selectionContext.mutations.setCellIds(cell_ids);
       if (this.applyMask) {
@@ -130,6 +161,7 @@ export default class Scatter2D extends Vue {
     const canvas = this.$refs.canvas as any;
 
     const { width, height } = canvas.getBoundingClientRect();
+    console.log(width, height)
 
     // const regl = createRegl(canvas);
     // const backgroundImage = await createTextureFromUrl(
@@ -160,7 +192,7 @@ export default class Scatter2D extends Vue {
     // };
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
-    this.scatterplot.subscribe("pointout", this.pointoutHandler);
+    // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
 

@@ -3,7 +3,7 @@
   <v-container v-else fluid class="px-1 py-0">
     <v-row no-gutters>
       <v-col v-show="showWorkspace" class="pr-1" xs="3" sm="3" md="3" lg="3" xl="2">
-        <WorkspaceView :experiment="experimentData" />
+        <DataWorkspaceView :experiment="experimentData" />
       </v-col>
       <v-col :cols="viewerColumns">
         <AnalysisView />
@@ -18,13 +18,13 @@ import { analysisModule } from "@/modules/analysis";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import AnalysisView from "@/views/main/experiment/data/analysis/AnalysisView.vue";
-import WorkspaceView from "@/views/main/experiment/data/workspace/WorkspaceView.vue";
+import DataWorkspaceView from "@/views/main/experiment/data/workspace/DataWorkspaceView.vue";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   components: {
     AnalysisView,
-    WorkspaceView,
+    DataWorkspaceView,
     LoadingView,
   },
 })

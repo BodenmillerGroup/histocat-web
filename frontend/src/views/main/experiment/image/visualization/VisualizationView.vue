@@ -1,21 +1,19 @@
 <template>
-  <div :class="showOptions ? 'grid-with-options' : null">
-    <div>
-      <v-tabs v-model="mainTab">
-        <v-tab>Blend</v-tab>
-        <v-tab>Blend New</v-tab>
-        <v-tab>Tiles</v-tab>
-        <v-tab-item>
-          <BlendTab />
-        </v-tab-item>
-        <v-tab-item>
-          <BlendTabNew />
-        </v-tab-item>
-        <v-tab-item>
-          <TilesView />
-        </v-tab-item>
-      </v-tabs>
-    </div>
+  <div :class="layoutClass">
+    <v-tabs v-model="mainTab">
+      <v-tab>Blend</v-tab>
+      <v-tab>Blend New</v-tab>
+      <v-tab>Tiles</v-tab>
+      <v-tab-item>
+        <BlendTab />
+      </v-tab-item>
+      <v-tab-item>
+        <BlendTabNew />
+      </v-tab-item>
+      <v-tab-item>
+        <TilesView />
+      </v-tab-item>
+    </v-tabs>
     <div v-show="showOptions">
       <v-row no-gutters>
         <v-col>
@@ -69,11 +67,15 @@ export default class VisualizationView extends Vue {
   get showOptions() {
     return this.mainContext.getters.showOptions;
   }
+
+  get layoutClass() {
+    return this.showOptions ? "layout-options" : null;
+  }
 }
 </script>
 
 <style scoped>
-.grid-with-options {
+.layout-options {
   display: grid;
   grid-template-columns: 1fr 380px;
   grid-template-rows: auto;

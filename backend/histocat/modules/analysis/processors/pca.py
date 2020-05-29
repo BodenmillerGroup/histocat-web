@@ -63,7 +63,7 @@ def process_pca(
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
+            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"]
         else:
             heatmap_data = df[heatmap]
 

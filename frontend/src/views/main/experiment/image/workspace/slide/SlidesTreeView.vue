@@ -82,7 +82,11 @@ import { IExperiment } from "@/modules/experiment/models";
 import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_ACTIVE_ACQUISITION_ID, SET_ACTIVE_WORKSPACE_NODE } from "@/modules/experiment/events";
+import {
+  SET_ACTIVE_ACQUISITION_ID,
+  SET_ACTIVE_WORKSPACE_NODE,
+  SET_SELECTED_ACQUISITION_IDS
+} from "@/modules/experiment/events";
 
 @Component({
   components: { UploadButton, InfoCard },
@@ -129,7 +133,7 @@ export default class SlidesTreeView extends Vue {
   async selectedChanged(items: any[]) {
     this.mutex = true;
     const ids = items.filter((item) => item.type === "acquisition").map((acquisition) => acquisition.id);
-    await this.experimentContext.mutations.setSelectedAcquisitionIds(ids);
+    BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, ids);
     this.mutex = false;
   }
 
@@ -230,6 +234,6 @@ export default class SlidesTreeView extends Vue {
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 184px);
+  height: calc(100vh - 144px);
 }
 </style>

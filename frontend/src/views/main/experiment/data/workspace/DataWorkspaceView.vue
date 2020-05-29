@@ -12,7 +12,7 @@ import { IExperiment } from "@/modules/experiment/models";
     DatasetsView,
   },
 })
-export default class WorkspaceView extends Vue {
+export default class DataWorkspaceView extends Vue {
   @Prop(Object) readonly experiment!: IExperiment;
 }
 </script>

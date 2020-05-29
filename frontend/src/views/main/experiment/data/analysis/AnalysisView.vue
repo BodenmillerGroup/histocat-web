@@ -1,38 +1,34 @@
 <template>
-  <v-row no-gutters>
-    <v-col>
-      <v-tabs v-model="tab">
-        <v-tab>Scatter Plot</v-tab>
-        <v-tab>Box Plot</v-tab>
-        <v-tab>PCA</v-tab>
-        <v-tab>t-SNE</v-tab>
-        <v-tab>UMAP</v-tab>
-        <v-tab>PhenoGraph</v-tab>
-        <v-tab>Segmentation</v-tab>
-        <v-tab-item>
-          <ScatterPlotTab />
-        </v-tab-item>
-        <v-tab-item>
-          <BoxPlotTab />
-        </v-tab-item>
-        <v-tab-item>
-          <PCATab />
-        </v-tab-item>
-        <v-tab-item>
-          <TSNETab />
-        </v-tab-item>
-        <v-tab-item>
-          <UMAPTab />
-        </v-tab-item>
-        <v-tab-item>
-          <PhenoGraphTab />
-        </v-tab-item>
-        <v-tab-item>
-          <SegmentationTab />
-        </v-tab-item>
-      </v-tabs>
-    </v-col>
-  </v-row>
+  <v-tabs v-model="tab">
+    <v-tab>Scatter Plot</v-tab>
+    <v-tab>Box Plot</v-tab>
+    <v-tab>PCA</v-tab>
+    <v-tab>t-SNE</v-tab>
+    <v-tab>UMAP</v-tab>
+    <v-tab>PhenoGraph</v-tab>
+    <v-tab>Segmentation</v-tab>
+    <v-tab-item>
+      <ScatterPlotTab />
+    </v-tab-item>
+    <v-tab-item>
+      <BoxPlotTab />
+    </v-tab-item>
+    <v-tab-item>
+      <PCATab />
+    </v-tab-item>
+    <v-tab-item>
+      <TSNETab />
+    </v-tab-item>
+    <v-tab-item>
+      <UMAPTab />
+    </v-tab-item>
+    <v-tab-item>
+      <PhenoGraphTab />
+    </v-tab-item>
+    <v-tab-item>
+      <SegmentationTab />
+    </v-tab-item>
+  </v-tabs>
 </template>
 
 <script lang="ts">

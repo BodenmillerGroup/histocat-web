@@ -12,7 +12,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
     SlidesTreeView,
   },
 })
-export default class WorkspaceView extends Vue {
+export default class ImageWorkspaceView extends Vue {
   @Prop(Object) readonly experiment!: IExperiment;
 }
 </script>

@@ -6,7 +6,7 @@ import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
   SET_ACTIVE_ACQUISITION_ID,
   SET_ACTIVE_WORKSPACE_NODE,
-  SET_CHANNEL_STACK_IMAGE,
+  SET_CHANNEL_STACK_IMAGE, SET_SELECTED_ACQUISITION_IDS,
   SET_SELECTED_METALS,
 } from "@/modules/experiment/events";
 
@@ -17,6 +17,8 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     BroadcastManager.subscribe(SET_ACTIVE_WORKSPACE_NODE, (payload) => this.setActiveWorkspaceNode(payload));
     BroadcastManager.subscribe(SET_SELECTED_METALS, (payload) => this.setSelectedMetals(payload));
     BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
+    BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
+    BroadcastManager.subscribe(SET_SELECTED_ACQUISITION_IDS, (payload) => this.setSelectedAcquisitionIds(payload));
   }
 
   setExperiments(experiments: IExperiment[]) {
@@ -28,7 +30,9 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
   }
 
   setTags(tags: string[]) {
-    this.state.tags = tags;
+    if (!equals(tags, this.state.tags)) {
+      this.state.tags = tags;
+    }
   }
 
   setExperiment(experiment: IExperiment) {

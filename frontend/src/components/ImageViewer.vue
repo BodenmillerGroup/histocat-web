@@ -195,6 +195,10 @@ export default class ImageViewer extends Vue {
 
   async mounted() {
     this.initViewer();
+    this.analysisContext.actions.getCentroidsData({
+      dataset_id: this.activeDataset!.id,
+      acquisition_id: this.activeAcquisitionId!,
+    });
   }
 
   beforeDestroy() {

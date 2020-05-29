@@ -5,16 +5,18 @@
   <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
-  <v-row v-else no-gutters class="chart-container">
+  <v-row v-else no-gutters>
     <v-col :cols="columns">
       <Scatter2D
         v-if="nComponents === '2'"
         :data="pcaData"
         title="Principal Component Analysis"
-        :width="responsive.width - 500"
-        :height="responsive.height - 150"
+        :width="responsive.width"
+        :height="responsive.height"
       />
-      <Scatter3D v-else :data="pcaData" title="Principal Component Analysis" />
+      <div v-else class="chart-container">
+        <Scatter3D :data="pcaData" title="Principal Component Analysis" />
+      </div>
     </v-col>
     <v-col v-if="showOptions" cols="3">
       <v-card tile>
@@ -153,6 +155,6 @@ export default class PCATab extends Vue {
 
 <style scoped>
 .chart-container {
-  height: calc(100vh - 154px);
+  height: calc(100vh - 94px);
 }
 </style>
