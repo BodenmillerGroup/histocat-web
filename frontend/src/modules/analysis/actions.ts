@@ -9,7 +9,6 @@ import { AnalysisState } from ".";
 import { api } from "./api";
 import { AnalysisGetters } from "./getters";
 import {
-  ICentroidsSubmission,
   IImageSegmentationSettings,
   IPCASubmission,
   IPhenoGraphSubmission,
@@ -27,7 +26,6 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
-    // Create and retain main module context
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
     this.experiment = experimentModule.context(store);
@@ -179,15 +177,6 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     try {
       const response = await api.calculateRegionStats(payload);
       this.mutations.setSelectedRegionStats(response);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getCentroidsData(payload: ICentroidsSubmission) {
-    try {
-      const response = await api.getCentroids(payload);
-      this.mutations.setCentroidsData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

@@ -68,11 +68,13 @@ import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_ACTIVE_DATASET } from "@/modules/datasets/events";
+import {centroidsModule} from "@/modules/centroids";
 
 @Component
 export default class DatasetsView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
+  readonly centroidsContext = centroidsModule.context(this.$store);
 
   readonly apiUrl = apiUrl;
   readonly icons = {
@@ -87,6 +89,7 @@ export default class DatasetsView extends Vue {
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
       BroadcastManager.publish(SET_ACTIVE_DATASET, dataset);
+      this.centroidsContext.actions.getCentroids({ datasetId: dataset.id });
     } else {
       BroadcastManager.publish(SET_ACTIVE_DATASET, undefined);
     }

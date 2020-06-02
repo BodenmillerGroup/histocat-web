@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.21
+    image: dpage/pgadmin4:4.22
     depends_on:
       - db
     environment:
@@ -109,7 +109,7 @@ services:
 
   redis:
     restart: always
-    image: redis:6.0.3-alpine3.11
+    image: redis:6.0.4-alpine3.11
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -128,7 +128,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer:1.23.2
+    image: portainer/portainer:1.24.0-alpine
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

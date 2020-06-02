@@ -13,6 +13,7 @@ import createLogger from "vuex/dist/logger";
 import { responsiveModule } from "@/modules/responsive";
 import { RootActions } from "@/store/actions";
 import {selectionModule} from "@/modules/selection";
+import {centroidsModule} from "@/modules/centroids";
 
 Vue.use(Vuex);
 
@@ -28,6 +29,7 @@ const rootModule = new Module({
     settings: settingsModule,
     user: userModule,
     selection: selectionModule,
+    centroids: centroidsModule,
   },
   actions: RootActions,
 });

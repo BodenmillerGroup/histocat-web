@@ -34,10 +34,6 @@ export class AnalysisGetters extends Getters<AnalysisState> {
     return this.state.phenographData;
   }
 
-  get centroidsData() {
-    return this.state.centroidsData;
-  }
-
   get regionsEnabled() {
     return this.state.regionsEnabled;
   }

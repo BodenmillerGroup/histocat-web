@@ -21,7 +21,7 @@ import {
 import { experimentModule } from "@/modules/experiment";
 import { selectionModule } from "@/modules/selection";
 import { forEach, uniq } from "rambda";
-import { CellPoint } from "@/components/charts/CellPoint";
+import {CellPoint} from "@/data/CellPoint";
 
 @Component
 export default class Scatter2D extends Vue {
@@ -122,7 +122,7 @@ export default class Scatter2D extends Vue {
   }
 
   selectHandler({ points: selectedPoints }) {
-    console.log("Selected:", selectedPoints);
+    // console.log("Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
       const cell_ids = new Map<number, number[]>();

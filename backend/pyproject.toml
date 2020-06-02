@@ -27,8 +27,8 @@ jinja2 = "^2.11.2"
 mahotas = "^1.4.9"
 matplotlib = "^3.2.1"
 opencv-python-headless = "^4.2.0.34"
-orjson = "^3.0.1"
-pandas = "^1.0.3"
+orjson = "^3.0.2"
+pandas = "^1.0.4"
 passlib = { version = "^1.7.2", extras = ["bcrypt"] }
 phenograph = { git = "https://github.com/jacoblevine/phenograph.git" }  # "^1.5.5"
 psycopg2-binary = "^2.8.4"
@@ -38,7 +38,7 @@ pydevd-pycharm = "^201.*"
 PyJWT = "^1.7.1"
 python-multipart = { version = "^0.0.5", optional = true }
 PyYAML = "^5.3.1"
-redis = { version = "^3.5.2", extras = ["hiredis"] }
+redis = { version = "^3.5.3", extras = ["hiredis"] }
 requests = "^2.23.0"
 scanpy = "^1.5.1"
 scikit-image = "^0.17.2"

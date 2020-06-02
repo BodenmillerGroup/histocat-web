@@ -133,13 +133,3 @@ export interface IRegionStatsSubmission {
   acquisition_id: number;
   region_polygon: any[];
 }
-
-export interface ICentroidsSubmission {
-  dataset_id: number;
-  acquisition_id: number;
-}
-
-export interface ICentroidsData {
-  cell_ids: any[];
-  coords: any[];
-}

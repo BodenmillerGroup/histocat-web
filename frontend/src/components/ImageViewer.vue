@@ -12,6 +12,9 @@ import { IChannel } from "@/modules/experiment/models";
 import { analysisModule } from "@/modules/analysis";
 import { datasetModule } from "@/modules/datasets";
 import { transformCoords } from "@/utils/webglUtils";
+import {centroidsModule} from "@/modules/centroids";
+import {CellPoint} from "@/data/CellPoint";
+import {selectionModule} from "@/modules/selection";
 
 @Component
 export default class ImageViewer extends Vue {
@@ -19,11 +22,13 @@ export default class ImageViewer extends Vue {
   readonly datasetContext = datasetModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
+  readonly centroidsContext = centroidsModule.context(this.$store);
+  readonly selectionContext = selectionModule.context(this.$store);
 
   @Prop(Number) canvasWidth;
   @Prop(Number) canvasHeight;
 
-  points: any[] = [];
+  points: CellPoint[] = [];
   scatterplot: any;
   selection: any[] = [];
 
@@ -51,8 +56,8 @@ export default class ImageViewer extends Vue {
     return this.experimentContext.getters.channelStackImage;
   }
 
-  get centroidsData() {
-    return this.analysisContext.getters.centroidsData;
+  get centroids() {
+    return this.centroidsContext.getters.centroids;
   }
 
   // @Watch("selectedChannels")
@@ -85,7 +90,7 @@ export default class ImageViewer extends Vue {
   }
 
   private update(source) {
-    if (this.channelStackImage) {
+    if (this.channelStackImage && this.activeAcquisitionId) {
       const regl = this.scatterplot.get("regl");
 
       const img = new Image();
@@ -96,17 +101,10 @@ export default class ImageViewer extends Vue {
           backgroundImage: regl.texture(img),
         });
 
-        if (this.centroidsData) {
-          const x = transformCoords(this.centroidsData, 800, 800);
-          console.log(x);
-
-          this.points = new Array(1000).fill(0).map(() => [
-            -1 + Math.random() * 2, // x
-            -1 + Math.random() * 2, // y
-            Math.random(), // category
-            "1_111", // value
-          ]);
-          this.scatterplot.draw(this.points);
+        if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
+          this.points = this.centroids.get(this.activeAcquisitionId!)!;
+          const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
+          this.scatterplot.draw(x);
         } else {
           this.scatterplot.draw([]);
         }
@@ -115,33 +113,37 @@ export default class ImageViewer extends Vue {
   }
 
   pointoverHandler(pointId) {
-    const [x, y, category, value] = this.points[pointId];
+    const point = this.points[pointId];
     // console.log(`X: ${x}\nY: ${y}\nCategory: ${category}\nValue: ${value}`);
   }
 
   pointoutHandler(pointId) {
-    const [x, y, category, value] = this.points[pointId];
+    const point = this.points[pointId];
     // console.log(`X: ${x}\nY: ${y}\nCategory: ${category}\nValue: ${value}`);
   }
 
   selectHandler({ points: selectedPoints }) {
-    console.log("Selected:", selectedPoints);
+    // console.log("Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const cell_ids: number[] = [];
+      const cell_ids = new Map<number, number[]>();
       for (const i of this.selection) {
-        const [acquisition_id, cell_id] = this.points[i][3].split("_");
-        if (this.activeAcquisitionId === Number(acquisition_id)) {
-          cell_ids.push(Number(cell_id));
+        const point = this.points[i];
+        const acquisitionId = point.acquisitionId;
+        if (!cell_ids.has(acquisitionId)) {
+          cell_ids.set(acquisitionId, []);
         }
+        const ids = cell_ids.get(acquisitionId);
+        ids!.push(point.cellId);
       }
+      this.selectionContext.mutations.setCellIds(cell_ids);
       if (this.applyMask) {
-        // this.settingsContext.mutations.setMaskSettings({
-        //   ...this.settingsContext.getters.maskSettings,
-        //   cell_ids: value,
-        // });
-        // this.experimentContext.actions.getGatedMaskImage(cell_ids);
-        // this.experimentContext.actions.getChannelStackImage();
+        this.experimentContext.actions.getChannelStackImage();
+      }
+    } else {
+      this.selectionContext.mutations.setCellIds(null);
+      if (this.applyMask) {
+        this.experimentContext.actions.getChannelStackImage();
       }
     }
   }
@@ -186,7 +188,7 @@ export default class ImageViewer extends Vue {
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
-    this.scatterplot.subscribe("pointout", this.pointoutHandler);
+    // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
 
@@ -195,10 +197,6 @@ export default class ImageViewer extends Vue {
 
   async mounted() {
     this.initViewer();
-    this.analysisContext.actions.getCentroidsData({
-      dataset_id: this.activeDataset!.id,
-      acquisition_id: this.activeAcquisitionId!,
-    });
   }
 
   beforeDestroy() {

@@ -2,6 +2,8 @@ import logging
 import os
 from typing import List, Optional
 
+import pandas as pd
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
@@ -77,3 +79,20 @@ def remove(session: Session, *, id: int):
         session.delete(item)
         session.commit()
         return item
+
+
+def get_centroids(dataset: DatasetModel):
+    cell_input = dataset.input.get("cell")
+    channel_map = dataset.input.get("channel_map")
+
+    if not cell_input or not channel_map:
+        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
+
+    df = pd.read_feather(cell_input.get("location"))
+    output = {
+        "acquisitionIds": df["acquisition_id"].tolist(),
+        "cellIds": df["ObjectNumber"].tolist(),
+        "x": df["Location_Center_X"].round(2).tolist(),
+        "y": df["Location_Center_Y"].round(2).tolist(),
+    }
+    return output

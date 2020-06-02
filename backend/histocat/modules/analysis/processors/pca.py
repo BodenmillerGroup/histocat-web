@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 
 from histocat.core.image import normalize_embedding
-from histocat.modules.dataset import service as dataset_crud
+from histocat.modules.dataset import service
 
 
 def process_pca(
@@ -23,7 +23,7 @@ def process_pca(
     Calculate Principal Component Analysis data
     """
 
-    dataset = dataset_crud.get(db, id=dataset_id)
+    dataset = service.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
 

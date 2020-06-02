@@ -5,6 +5,7 @@ from typing import List
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
@@ -40,6 +41,22 @@ def read_own_by_experiment(
     """
     items = service.get_own_by_experiment_id(db, experiment_id=experiment_id)
     return items
+
+
+@router.get("/{id}/centroids")
+def get_centroids(
+    id: int,
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Get dataset cell centroids
+    """
+    dataset = service.get(db, id=id)
+    if dataset is None:
+        raise HTTPException(status_code=400, detail=f"Cannot find dataset [{id}]")
+    content = service.get_centroids(dataset)
+    return ORJSONResponse(content)
 
 
 @router.get("/{id}", response_model=DatasetDto)
