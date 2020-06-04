@@ -65,7 +65,8 @@ def process_umap(
         random_state=42,
     )
     umap_result = umap.fit_transform(feature_values_scaled)
-    cell_ids = df["acquisition_id"].astype(str) + "_" + df["ObjectNumber"].astype(str)
+    acquisitionIds = df["acquisition_id"]
+    cellIds = df["ObjectNumber"]
 
     timestamp = str(datetime.utcnow())
 
@@ -73,7 +74,7 @@ def process_umap(
     location = os.path.join(dataset.location, "umap", f"{timestamp}.pickle")
 
     with open(location, "wb") as f:
-        pickle.dump({"cell_ids": cell_ids, "umap_result": umap_result}, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump({"acquisitionIds": acquisitionIds, "cellIds": cellIds, "umap_result": umap_result}, f, pickle.HIGHEST_PROTOCOL)
 
     result = {
         "name": timestamp,
@@ -112,13 +113,15 @@ def get_umap_result(
     with open(umap_result.get("location"), "rb") as f:
         r = pickle.load(f)
 
-    cell_ids = r.get("cell_ids")
+    acquisitionIds = r.get("acquisitionIds")
+    cellIds = r.get("cellIds")
     result = r.get("umap_result")
 
     result = normalize_embedding(result)
 
     output = {
-        "cell_ids": cell_ids.tolist(),
+        "acquisitionIds": acquisitionIds.tolist(),
+        "cellIds": cellIds.tolist(),
         "x": {"label": "C1", "data": result[:, 0].tolist()},
         "y": {"label": "C2", "data": result[:, 1].tolist()},
     }
@@ -148,11 +151,5 @@ def get_umap_result(
             heatmap_data = df[heatmap]
 
         output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
-    elif len(acquisition_ids) > 1:
-        image_map_inv = {v: k for k, v in image_map.items()}
-        output["heatmap"] = {
-            "label": "Acquisition",
-            "data": [image_map_inv.get(item) for item in df["ImageNumber"]],
-        }
 
     return output

@@ -13,7 +13,7 @@ import { BroadcastManager } from "@/utils/BroadcastManager";
 import { IChannelSettings } from "@/modules/settings/models";
 import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
 import { SET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
-import {selectionModule} from "@/modules/selection";
+import { selectionModule } from "@/modules/selection";
 
 export class ExperimentActions extends Actions<
   ExperimentState,
@@ -299,10 +299,10 @@ export class ExperimentActions extends Actions<
             location: mask.location,
           };
           // Prepare selected cell ids visualisation
-          const cellIds = this.selection?.getters.cellIds?.get(acquisition.id);
-          if (cellIds && cellIds.length > 0) {
+          const selectedCells = this.selection?.getters.selectedCells?.get(acquisition.id);
+          if (selectedCells && selectedCells.length > 0) {
             result["mask"]["gated"] = true;
-            result["mask"]["cell_ids"] = cellIds;
+            result["mask"]["cell_ids"] = selectedCells.map((item) => item.cellId);
           }
         }
       }

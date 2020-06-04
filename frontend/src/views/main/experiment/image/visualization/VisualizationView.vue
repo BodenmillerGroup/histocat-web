@@ -1,14 +1,14 @@
 <template>
   <div :class="layoutClass">
     <v-tabs v-model="mainTab">
-      <v-tab>Blend</v-tab>
       <v-tab>Blend New</v-tab>
+      <v-tab>Blend</v-tab>
       <v-tab>Tiles</v-tab>
       <v-tab-item>
-        <BlendTab />
+        <BlendTabNew />
       </v-tab-item>
       <v-tab-item>
-        <BlendTabNew />
+        <BlendTab />
       </v-tab-item>
       <v-tab-item>
         <TilesView />

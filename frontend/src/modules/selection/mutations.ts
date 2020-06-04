@@ -1,9 +1,10 @@
 import { Mutations } from "vuex-smart-module";
 import { SelectionState } from ".";
+import { SelectedCell } from "./models";
 
 export class SelectionMutations extends Mutations<SelectionState> {
-  setCellIds(payload: Map<number, number[]> | null) {
-    this.state.cellIds = payload;
+  setSelectedCells(payload: Map<number, SelectedCell[]> | null) {
+    this.state.selectedCells = payload;
   }
 
   reset() {

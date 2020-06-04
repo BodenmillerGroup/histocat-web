@@ -69,7 +69,8 @@ def process_tsne(
         init=init,
     )
     tsne_result = tsne.fit_transform(feature_values_scaled)
-    cell_ids = df["acquisition_id"].astype(str) + "_" + df["ObjectNumber"].astype(str)
+    acquisitionIds = df["acquisition_id"]
+    cellIds = df["ObjectNumber"]
 
     timestamp = str(datetime.utcnow())
 
@@ -77,7 +78,7 @@ def process_tsne(
     location = os.path.join(dataset.location, "tsne", f"{timestamp}.pickle")
 
     with open(location, "wb") as f:
-        pickle.dump({"cell_ids": cell_ids, "tsne_result": tsne_result}, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump({"acquisitionIds": acquisitionIds, "cellIds": cellIds, "tsne_result": tsne_result}, f, pickle.HIGHEST_PROTOCOL)
 
     result = {
         "name": timestamp,
@@ -118,13 +119,15 @@ def get_tsne_result(
     with open(tsne_result.get("location"), "rb") as f:
         r = pickle.load(f)
 
-    cell_ids = r.get("cell_ids")
+    acquisitionIds = r.get("acquisitionIds")
+    cellIds = r.get("cellIds")
     result = r.get("tsne_result")
 
     result = normalize_embedding(result)
 
     output = {
-        "cell_ids": cell_ids.tolist(),
+        "acquisitionIds": acquisitionIds.tolist(),
+        "cellIds": cellIds.tolist(),
         "x": {"label": "C1", "data": result[:, 0].tolist()},
         "y": {"label": "C2", "data": result[:, 1].tolist()},
     }
@@ -149,16 +152,10 @@ def get_tsne_result(
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16).tolist()
+            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"]
         else:
             heatmap_data = df[heatmap].tolist()
 
         output["heatmap"] = {"label": heatmap, "data": heatmap_data}
-    elif len(acquisition_ids) > 1:
-        image_map_inv = {v: k for k, v in image_map.items()}
-        output["heatmap"] = {
-            "label": "Acquisition",
-            "data": [image_map_inv.get(item) for item in df["ImageNumber"]],
-        }
 
     return output

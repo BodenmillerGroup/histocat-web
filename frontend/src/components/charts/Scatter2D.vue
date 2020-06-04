@@ -5,7 +5,7 @@
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot";
+import createScatterplot from "regl-scatterplot/src";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import {
   interpolateCool,
@@ -20,8 +20,9 @@ import {
 } from "d3";
 import { experimentModule } from "@/modules/experiment";
 import { selectionModule } from "@/modules/selection";
-import { forEach, uniq } from "rambda";
+import {equals, uniq} from "rambda";
 import {CellPoint} from "@/data/CellPoint";
+import {SelectedCell} from "@/modules/selection/models";
 
 @Component
 export default class Scatter2D extends Vue {
@@ -46,8 +47,30 @@ export default class Scatter2D extends Vue {
     return this.experimentContext.getters.activeAcquisitionId;
   }
 
+  get selectedCells() {
+    return this.selectionContext.getters.selectedCells;
+  }
+
+  @Watch("selectedCells")
+  selectedCellsChanged(data: Map<number, SelectedCell[]> | null) {
+    if (data !== null) {
+      let allCells: SelectedCell[] = [];
+      data.forEach( (val, key) => {
+        allCells = allCells.concat(val)
+      });
+      console.log("allCells: ", allCells)
+      const indices = allCells.map(i => i.index);
+      console.log("Indices: ", indices)
+      if (!equals(indices, this.selection)) {
+        this.scatterplot.select(indices)
+        this.selection = indices;
+      }
+    }
+  }
+
   @Watch("data")
   dataChanged(data: IChart2DData) {
+    console.log("dataChanged")
     if (data) {
       this.scatterplot.deselect();
       // this.scatterplot.reset();
@@ -111,32 +134,39 @@ export default class Scatter2D extends Vue {
     }
   }
 
-  pointoverHandler(pointId: number) {
-    const point = this.points[pointId];
+  pointoverHandler(idx: number) {
+    const point = this.points[idx];
     console.log(`X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`);
   }
 
-  pointoutHandler(pointId: number) {
-    const point = this.points[pointId];
+  pointoutHandler(idx: number) {
+    const point = this.points[idx];
     console.log(`X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`);
   }
 
   selectHandler({ points: selectedPoints }) {
-    // console.log("Selected:", selectedPoints);
+    console.log("Scatter2D Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const cell_ids = new Map<number, number[]>();
+      const newSelectedCells = new Map<number, SelectedCell[]>();
       for (const i of this.selection) {
         const point = this.points[i];
         const acquisitionId = point.acquisitionId;
-        if (!cell_ids.has(acquisitionId)) {
-          cell_ids.set(acquisitionId, []);
+        if (!newSelectedCells.has(acquisitionId)) {
+          newSelectedCells.set(acquisitionId, []);
         }
-        const ids = cell_ids.get(acquisitionId);
-        ids!.push(point.cellId);
+        const ids = newSelectedCells.get(acquisitionId);
+        ids!.push(Object.freeze(new SelectedCell(i, point.cellId)));
       }
-      this.selectionContext.mutations.setCellIds(cell_ids);
+      this.selectionContext.mutations.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
+        console.log("Scatter2D getChannelStackImage")
+        this.experimentContext.actions.getChannelStackImage();
+      }
+    } else {
+      this.selectionContext.mutations.setSelectedCells(null);
+      if (this.applyMask) {
+        console.log("Scatter2D getChannelStackImage")
         this.experimentContext.actions.getChannelStackImage();
       }
     }
@@ -159,19 +189,9 @@ export default class Scatter2D extends Vue {
 
   async mounted() {
     const canvas = this.$refs.canvas as any;
-
     const { width, height } = canvas.getBoundingClientRect();
-    console.log(width, height)
-
-    // const regl = createRegl(canvas);
-    // const backgroundImage = await createTextureFromUrl(
-    //   regl,
-    //   `https://picsum.photos/${Math.min(640, width)}/${Math.min(640, height)}/?random`, // `http://localhost/api/v1/acquisitions/4/Gd155/image?color=00ff5a&min=0&max=321`,
-    //   true
-    // );
 
     this.scatterplot = createScatterplot({
-      // regl,
       canvas,
       width,
       height,
@@ -180,27 +200,21 @@ export default class Scatter2D extends Vue {
       pointSizeSelected: 1,
       pointOutlineWidth: 1,
       lassoMinDelay: 15,
-      // backgroundImage: backgroundImage,
     });
 
-    // const img = new Image();
-    // img.crossOrigin = "";
-    // img.src = "http://localhost/api/v1/acquisitions/4/Eu153/image?color=ff0000&min=0&max=159";
-    // img.onload = () => {
-    //   const regl = createRegl(canvas)
-    //   this.scatterplot.set({ backgroundImage: regl.texture(img) })
-    // };
-
-    this.scatterplot.subscribe("pointover", this.pointoverHandler);
+    // this.scatterplot.subscribe("pointover", this.pointoverHandler);
     // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
 
-    window.addEventListener("resize", this.resizeHandler);
+    // window.addEventListener("resize", this.resizeHandler);
   }
 
   beforeDestroy() {
-    this.scatterplot.destroy();
+    // window.removeEventListener("resize", this.resizeHandler);
+    if (this.scatterplot) {
+      this.scatterplot.destroy();
+    }
   }
 }
 </script>

@@ -4,17 +4,16 @@
 
 <script lang="ts">
 import { settingsModule } from "@/modules/settings";
-import createScatterplot, { createTextureFromUrl, createRegl } from "regl-scatterplot";
+import createScatterplot, { createTextureFromUrl, createRegl } from "regl-scatterplot/src";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { interpolateCool, scaleSequential, rgb } from "d3";
 import { experimentModule } from "@/modules/experiment";
-import { IChannel } from "@/modules/experiment/models";
 import { analysisModule } from "@/modules/analysis";
 import { datasetModule } from "@/modules/datasets";
 import { transformCoords } from "@/utils/webglUtils";
-import {centroidsModule} from "@/modules/centroids";
-import {CellPoint} from "@/data/CellPoint";
-import {selectionModule} from "@/modules/selection";
+import { centroidsModule } from "@/modules/centroids";
+import { CellPoint } from "@/data/CellPoint";
+import { selectionModule } from "@/modules/selection";
+import { SelectedCell } from "@/modules/selection/models";
 
 @Component
 export default class ImageViewer extends Vue {
@@ -60,89 +59,75 @@ export default class ImageViewer extends Vue {
     return this.centroidsContext.getters.centroids;
   }
 
-  // @Watch("selectedChannels")
-  // onSelectedChannelsChanged(channels: IChannel[]) {
-  //   if (channels && channels.length > 0) {
-  //     this.experimentContext.actions.getChannelStackImage();
-  //     if (this.activeDataset && this.activeAcquisitionId) {
-  //       this.analysisContext.actions.getCentroidsData({
-  //         dataset_id: this.activeDataset.id,
-  //         acquisition_id: this.activeAcquisitionId,
-  //       });
-  //     }
-  //   } else {
-  //     this.experimentContext.mutations.setChannelStackImage(null);
-  //   }
-  // }
-
   @Watch("channelStackImage")
-  onChannelStackImageChanged(value) {
-    if (value) {
-      this.update("channelStackImage");
-    }
-  }
-
-  @Watch("centroidsData")
-  onCentroidsDataChanged(value) {
-    if (value) {
-      this.update("centroidsData");
-    }
-  }
-
-  private update(source) {
-    if (this.channelStackImage && this.activeAcquisitionId) {
-      const regl = this.scatterplot.get("regl");
+  async onChannelStackImageChanged(value) {
+    console.log("ImageViewer update");
+    if (value && this.activeAcquisitionId) {
+      const canvas = this.$refs.canvas as any;
+      const { width, height } = canvas.getBoundingClientRect();
+      console.log(width, height)
+      // const backgroundImage = await this.scatterplot.createTextureFromUrl(
+      //   `https://picsum.photos/${Math.min(640, width)}/${Math.min(640, height)}/?random`
+      // );
+      // this.scatterplot.set({ backgroundImage });
 
       const img = new Image();
       img.crossOrigin = "";
-      img.src = this.channelStackImage as any;
       img.onload = () => {
+        const regl = this.scatterplot.get("regl");
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
         });
-
-        if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
-          this.points = this.centroids.get(this.activeAcquisitionId!)!;
-          const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
-          this.scatterplot.draw(x);
-        } else {
-          this.scatterplot.draw([]);
-        }
       };
+      img.src = this.channelStackImage as any;
+
+      if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
+        this.points = this.centroids.get(this.activeAcquisitionId!)!;
+        const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
+        this.scatterplot.draw(x);
+      } else {
+        this.scatterplot.draw([]);
+      }
     }
   }
 
-  pointoverHandler(pointId) {
-    const point = this.points[pointId];
-    // console.log(`X: ${x}\nY: ${y}\nCategory: ${category}\nValue: ${value}`);
+  pointoverHandler(idx: number) {
+    const point = this.points[idx];
+    console.log(
+      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
+    );
   }
 
-  pointoutHandler(pointId) {
-    const point = this.points[pointId];
-    // console.log(`X: ${x}\nY: ${y}\nCategory: ${category}\nValue: ${value}`);
+  pointoutHandler(idx: number) {
+    const point = this.points[idx];
+    console.log(
+      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
+    );
   }
 
   selectHandler({ points: selectedPoints }) {
-    // console.log("Selected:", selectedPoints);
+    console.log("ImageViewer Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const cell_ids = new Map<number, number[]>();
+      const newSelectedCells = new Map<number, SelectedCell[]>();
       for (const i of this.selection) {
         const point = this.points[i];
         const acquisitionId = point.acquisitionId;
-        if (!cell_ids.has(acquisitionId)) {
-          cell_ids.set(acquisitionId, []);
+        if (!newSelectedCells.has(acquisitionId)) {
+          newSelectedCells.set(acquisitionId, []);
         }
-        const ids = cell_ids.get(acquisitionId);
-        ids!.push(point.cellId);
+        const ids = newSelectedCells.get(acquisitionId);
+        ids!.push(Object.freeze(new SelectedCell(i, point.cellId)));
       }
-      this.selectionContext.mutations.setCellIds(cell_ids);
+      this.selectionContext.mutations.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
+        console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     } else {
-      this.selectionContext.mutations.setCellIds(null);
+      this.selectionContext.mutations.setSelectedCells(null);
       if (this.applyMask) {
+        console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     }
@@ -187,12 +172,12 @@ export default class ImageViewer extends Vue {
       lassoMinDelay: 15,
     });
 
-    this.scatterplot.subscribe("pointover", this.pointoverHandler);
+    // this.scatterplot.subscribe("pointover", this.pointoverHandler);
     // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
 
-    window.addEventListener("resize", this.resizeHandler);
+    // window.addEventListener("resize", this.resizeHandler);
   }
 
   async mounted() {
@@ -200,7 +185,7 @@ export default class ImageViewer extends Vue {
   }
 
   beforeDestroy() {
-    window.removeEventListener("resize", this.resizeHandler);
+    // window.removeEventListener("resize", this.resizeHandler);
     if (this.scatterplot) {
       this.scatterplot.destroy();
     }
