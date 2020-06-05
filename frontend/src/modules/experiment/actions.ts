@@ -273,14 +273,12 @@ export class ExperimentActions extends Actions<
     });
 
     const filter = this.settings!.getters.filter;
-    const legend = this.settings!.getters.legend;
     const scalebar = this.settings!.getters.scalebar;
 
     const result = {
       acquisitionId: activeAcquisitionId,
       format: format,
       filter: filter,
-      legend: legend,
       scalebar: scalebar,
       channels: channels,
     };

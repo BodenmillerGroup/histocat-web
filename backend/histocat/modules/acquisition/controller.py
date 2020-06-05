@@ -16,7 +16,6 @@ from histocat.api.utils.security import get_current_active_user
 from histocat.core.image import (
     apply_filter,
     colorize,
-    draw_legend,
     draw_mask,
     draw_scalebar,
     scale_image,
@@ -117,9 +116,6 @@ async def download_channel_stack(
 
     if params.datasetId and params.mask and params.mask.apply:
         additive_image = draw_mask(additive_image, params.mask)
-
-    if params.legend.apply:
-        additive_image = draw_legend(additive_image, legend_labels, params.legend)
 
     if params.scalebar.apply:
         additive_image = draw_scalebar(additive_image, params.scalebar)

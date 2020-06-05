@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import List, Tuple, Sequence
+from typing import Tuple, Sequence
 
 import cv2
 import numpy as np
@@ -12,7 +12,6 @@ from skimage.color import label2rgb
 
 from histocat.modules.acquisition.dto import (
     FilterDto,
-    LegendDto,
     MaskSettingsDto,
     ScalebarDto,
 )
@@ -131,32 +130,32 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
     return image
 
 
-def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendDto):
-    for i, label in enumerate(legend_labels):
-        text = f"{label[0]} - {int(label[2])}" if legend.showIntensity else f"{label[0]}"
-        (label_width, label_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1)
-        cv2.rectangle(
-            image,
-            (5, (label_height + 20) * (i + 1) + 5),
-            (15 + label_width, (label_height + 20) * (i + 1) - label_height - 5),
-            (0, 0, 0),
-            cv2.FILLED,
-            cv2.LINE_AA,
-        )
-
-        b, g, r = tuple([255 * x for x in to_rgb(label[1])])
-        color = (r, g, b)
-        cv2.putText(
-            image,
-            text,
-            (10, (label_height + 20) * (i + 1)),
-            cv2.FONT_HERSHEY_DUPLEX,
-            legend.fontScale,
-            color,
-            1,
-            cv2.LINE_AA,
-        )
-    return image
+# def draw_legend(image: np.ndarray, legend_labels: List[Tuple[str, str, float]], legend: LegendDto):
+#     for i, label in enumerate(legend_labels):
+#         text = f"{label[0]} - {int(label[2])}" if legend.showIntensity else f"{label[0]}"
+#         (label_width, label_height), baseline = cv2.getTextSize(text, cv2.FONT_HERSHEY_DUPLEX, legend.fontScale, 1)
+#         cv2.rectangle(
+#             image,
+#             (5, (label_height + 20) * (i + 1) + 5),
+#             (15 + label_width, (label_height + 20) * (i + 1) - label_height - 5),
+#             (0, 0, 0),
+#             cv2.FILLED,
+#             cv2.LINE_AA,
+#         )
+#
+#         b, g, r = tuple([255 * x for x in to_rgb(label[1])])
+#         color = (r, g, b)
+#         cv2.putText(
+#             image,
+#             text,
+#             (10, (label_height + 20) * (i + 1)),
+#             cv2.FONT_HERSHEY_DUPLEX,
+#             legend.fontScale,
+#             color,
+#             1,
+#             cv2.LINE_AA,
+#         )
+#     return image
 
 
 def otsu_grayscale(image_rgb):

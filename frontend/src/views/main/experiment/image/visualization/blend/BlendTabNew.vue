@@ -55,9 +55,9 @@
       </v-toolbar>
       <v-row no-gutters>
         <v-col>
-          <ImageViewer ref="imageViewer" :canvas-width="canvasWidth" :canvas-height="canvasHeight" />
+          <ImageViewer :canvas-width="canvasWidth" :canvas-height="canvasHeight" />
         </v-col>
-        <IntensityView />
+<!--        <IntensityView />-->
       </v-row>
     </v-col>
   </v-row>

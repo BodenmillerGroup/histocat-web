@@ -24,12 +24,6 @@ class FilterDto(BaseModel):
     settings: Optional[dict]
 
 
-class LegendDto(BaseModel):
-    apply: bool
-    fontScale: float
-    showIntensity: bool
-
-
 class ScalebarDto(BaseModel):
     apply: bool
     settings: Optional[dict]
@@ -48,7 +42,6 @@ class ChannelStackDto(BaseModel):
     acquisitionId: int
     datasetId: Optional[int]
     filter: FilterDto
-    legend: LegendDto
     scalebar: ScalebarDto
     channels: Sequence[ChannelSettingsDto]
     mask: Optional[MaskSettingsDto]

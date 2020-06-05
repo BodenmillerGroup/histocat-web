@@ -1,10 +1,13 @@
 <template>
-  <canvas ref="canvas" :width="canvasWidth" :height="canvasHeight" />
+  <div>
+    <canvas id="canvas2d" ref="canvas2d" :width="canvasWidth" :height="canvasHeight"></canvas>
+    <canvas id="canvasWebGl" ref="canvasWebGl" :width="canvasWidth" :height="canvasHeight" v-intersect="onIntersect" />
+  </div>
 </template>
 
 <script lang="ts">
 import { settingsModule } from "@/modules/settings";
-import createScatterplot, { createTextureFromUrl, createRegl } from "regl-scatterplot/src";
+import createScatterplot from "regl-scatterplot/src";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { experimentModule } from "@/modules/experiment";
 import { analysisModule } from "@/modules/analysis";
@@ -35,9 +38,9 @@ export default class ImageViewer extends Vue {
     return this.settingsContext.getters.maskSettings.apply;
   }
 
-  // get selectedChannels() {
-  //   return this.experimentContext.getters.selectedChannels;
-  // }
+  get showLegend() {
+    return this.settingsContext.getters.legend.apply;
+  }
 
   get activeAcquisitionId() {
     return this.experimentContext.getters.activeAcquisitionId;
@@ -59,18 +62,27 @@ export default class ImageViewer extends Vue {
     return this.centroidsContext.getters.centroids;
   }
 
+  get selectedChannels() {
+    return this.experimentContext.getters.selectedChannels;
+  }
+
+  onIntersect(entries, observer, isIntersecting) {
+    if (isIntersecting) {
+      const canvas = this.$refs.canvasWebGl as Element;
+      const { width, height } = canvas.getBoundingClientRect();
+      this.scatterplot.set({ width, height });
+    }
+  }
+
+  @Watch("selectedChannels")
+  onSelectedChannelsChanged(value) {
+    this.drawLegend()
+  }
+
   @Watch("channelStackImage")
   async onChannelStackImageChanged(value) {
     console.log("ImageViewer update");
     if (value && this.activeAcquisitionId) {
-      const canvas = this.$refs.canvas as any;
-      const { width, height } = canvas.getBoundingClientRect();
-      console.log(width, height)
-      // const backgroundImage = await this.scatterplot.createTextureFromUrl(
-      //   `https://picsum.photos/${Math.min(640, width)}/${Math.min(640, height)}/?random`
-      // );
-      // this.scatterplot.set({ backgroundImage });
-
       const img = new Image();
       img.crossOrigin = "";
       img.onload = () => {
@@ -139,7 +151,7 @@ export default class ImageViewer extends Vue {
   }
 
   resizeHandler() {
-    const canvas = this.$refs.canvas as any;
+    const canvas = this.$refs.canvasWebGl as any;
     if (canvas) {
       const rect = canvas.getBoundingClientRect();
       if (rect) {
@@ -158,8 +170,80 @@ export default class ImageViewer extends Vue {
     this.refresh();
   }
 
+  @Watch("showLegend")
+  showLegendChanged(value: boolean) {
+    this.drawLegend();
+  }
+
+  private drawLegend() {
+    const canvas = this.$refs.canvas2d as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!this.showLegend) {
+      return;
+    }
+    const showIntensity = this.settingsContext.getters.legend.showIntensity;
+    const textHeight = this.settingsContext.getters.legend.fontScale;
+    ctx.font = `${textHeight}pt sans-serif`;
+    let maxTextWidth = 0;
+    this.selectedChannels.forEach((v, i) => {
+      const channelSettings = this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name);
+      const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
+      const textWidth = ctx.measureText(text).width;
+      if (textWidth > maxTextWidth) {
+        maxTextWidth = textWidth;
+      }
+    });
+
+    // Draw legend rectangle
+    if (this.selectedChannels.length > 0) {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+      ctx.fillRect(5, 5, maxTextWidth + 10, ((textHeight + 10) * this.selectedChannels.length) + 10);
+    }
+
+    this.selectedChannels.forEach((v, i) => {
+      const color = this.settingsContext.getters.metalColorMap.get(v.name) ? this.settingsContext.getters.metalColorMap.get(v.name) : "#ffffff";
+      const channelSettings = this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name);
+      const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
+      ctx.fillStyle = color!;
+      ctx.fillText(text, 10, (textHeight + 10) * (i + 1) + 5);
+    });
+  }
+
+  private drawScalebar() {
+    const canvas = this.$refs.canvas2d as HTMLCanvasElement;
+    const { width, height } = canvas.getBoundingClientRect();
+    const ctx = canvas.getContext("2d")!;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.fillRect(5, height - 100, 200, 3);
+
+    // def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
+    //   height, width, _ = image.shape
+    //   length = 64
+    //   cv2.line(
+    //       image, (width - 60, height - 60), (width - 60 - length, height - 60), (255, 255, 255), 2, cv2.LINE_4,
+    //   )
+    //
+    //   scale_text = length
+    //   if scalebar.settings is not None and "scale" in scalebar.settings:
+    //       scale = scalebar.settings.get("scale")
+    //       if scale is not None and scale != "":
+    //           scale_text = int(length * float(scale))
+    //   cv2.putText(
+    //       image,
+    //       f"{scale_text} um",
+    //       (width - 60 - length, height - 30),
+    //       cv2.FONT_HERSHEY_PLAIN,
+    //       1,
+    //       (255, 255, 255),
+    //       1,
+    //       cv2.LINE_4,
+    //   )
+    //   return image
+  }
+
   private initViewer() {
-    const canvas = this.$refs.canvas as any;
+    const canvas = this.$refs.canvasWebGl as any;
 
     this.scatterplot = createScatterplot({
       canvas,
@@ -178,6 +262,17 @@ export default class ImageViewer extends Vue {
     this.scatterplot.subscribe("deselect", this.deselectHandler);
 
     // window.addEventListener("resize", this.resizeHandler);
+
+    // const ctx = (this.$refs.canvas2d as any).getContext("2d");
+    // ctx.fillStyle = "#65ff33";
+    // ctx.font = "28px san-serif";
+    // ctx.textAlign = "center";
+    // ctx.fillText("layer 1", 50, 50);
+    //
+    // ctx.fillStyle = "#ff6644";
+    // ctx.font = "28px san-serif";
+    // ctx.textAlign = "center";
+    // ctx.fillText("layer 2", 50, 150);
   }
 
   async mounted() {
@@ -192,3 +287,14 @@ export default class ImageViewer extends Vue {
   }
 }
 </script>
+
+<style scoped>
+#canvasWebGl,
+#canvas2d {
+  position: absolute;
+}
+#canvas2d {
+  z-index: 2;
+  pointer-events: none;
+}
+</style>

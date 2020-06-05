@@ -5,11 +5,11 @@
       <v-switch v-model="apply" label="Show Legend" hide-details inset class="ma-0 pa-0"></v-switch>
       <v-text-field
         type="number"
-        label="Font Scale"
+        label="Font Size (pt)"
         v-model.number="legendFontScale"
         :rules="[required]"
         min="0"
-        step="0.05"
+        step="1"
         hide-details
       ></v-text-field>
       <v-switch v-model="showIntensity" label="Show Intensity" hide-details inset></v-switch>
@@ -18,7 +18,6 @@
 </template>
 
 <script lang="ts">
-import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
@@ -28,7 +27,6 @@ import { SET_LEGEND } from "@/modules/settings/events";
 @Component
 export default class LegendSettingsView extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly experimentContext = experimentModule.context(this.$store);
 
   readonly required = required;
 
@@ -41,7 +39,6 @@ export default class LegendSettingsView extends Vue {
       ...this.settingsContext.getters.legend,
       apply: value,
     });
-    this.experimentContext.actions.getChannelStackImage();
   }
 
   get legendFontScale() {
@@ -53,9 +50,6 @@ export default class LegendSettingsView extends Vue {
       ...this.settingsContext.getters.legend,
       fontScale: value,
     });
-    if (this.apply) {
-      this.experimentContext.actions.getChannelStackImage();
-    }
   }
 
   get showIntensity() {
@@ -67,7 +61,6 @@ export default class LegendSettingsView extends Vue {
       ...this.settingsContext.getters.legend,
       showIntensity: value,
     });
-    this.experimentContext.actions.getChannelStackImage();
   }
 }
 </script>

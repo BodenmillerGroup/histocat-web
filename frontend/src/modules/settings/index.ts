@@ -18,7 +18,7 @@ export class SettingsState {
   };
   legend: IImageLegend = {
     apply: false,
-    fontScale: 1.0,
+    fontScale: 12,
     showIntensity: false,
   };
   scalebar: IImageScalebar = {
