@@ -4,7 +4,6 @@ export class CellPoint {
     public readonly cellId: number,
     public readonly x: number,
     public readonly y: number,
-    public readonly value: number,
-  ) {
-  }
+    public readonly value: number
+  ) {}
 }

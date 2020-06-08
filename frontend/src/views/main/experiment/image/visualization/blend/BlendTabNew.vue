@@ -57,7 +57,7 @@
         <v-col>
           <ImageViewer :canvas-width="canvasWidth" :canvas-height="canvasHeight" />
         </v-col>
-<!--        <IntensityView />-->
+        <!--        <IntensityView />-->
       </v-row>
     </v-col>
   </v-row>

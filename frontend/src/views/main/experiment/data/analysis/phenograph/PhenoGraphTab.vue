@@ -104,8 +104,8 @@ import "echarts/lib/component/toolbox";
 import "echarts/lib/component/tooltip";
 import "echarts/lib/component/visualMap";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import {BroadcastManager} from "@/utils/BroadcastManager";
-import {SET_SELECTED_ACQUISITION_IDS} from "@/modules/experiment/events";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
 
 @Component
 export default class PhenoGraphTab extends Vue {

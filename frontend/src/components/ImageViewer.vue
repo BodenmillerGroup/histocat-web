@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot/src";
+import createScatterplot from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { experimentModule } from "@/modules/experiment";
 import { analysisModule } from "@/modules/analysis";
@@ -76,7 +76,7 @@ export default class ImageViewer extends Vue {
 
   @Watch("selectedChannels")
   onSelectedChannelsChanged(value) {
-    this.drawLegend()
+    this.drawLegend();
   }
 
   @Watch("channelStackImage")
@@ -198,11 +198,13 @@ export default class ImageViewer extends Vue {
     // Draw legend rectangle
     if (this.selectedChannels.length > 0) {
       ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-      ctx.fillRect(5, 5, maxTextWidth + 10, ((textHeight + 10) * this.selectedChannels.length) + 10);
+      ctx.fillRect(5, 5, maxTextWidth + 10, (textHeight + 10) * this.selectedChannels.length + 10);
     }
 
     this.selectedChannels.forEach((v, i) => {
-      const color = this.settingsContext.getters.metalColorMap.get(v.name) ? this.settingsContext.getters.metalColorMap.get(v.name) : "#ffffff";
+      const color = this.settingsContext.getters.metalColorMap.get(v.name)
+        ? this.settingsContext.getters.metalColorMap.get(v.name)
+        : "#ffffff";
       const channelSettings = this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name);
       const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
       ctx.fillStyle = color!;
@@ -262,17 +264,6 @@ export default class ImageViewer extends Vue {
     this.scatterplot.subscribe("deselect", this.deselectHandler);
 
     // window.addEventListener("resize", this.resizeHandler);
-
-    // const ctx = (this.$refs.canvas2d as any).getContext("2d");
-    // ctx.fillStyle = "#65ff33";
-    // ctx.font = "28px san-serif";
-    // ctx.textAlign = "center";
-    // ctx.fillText("layer 1", 50, 50);
-    //
-    // ctx.fillStyle = "#ff6644";
-    // ctx.font = "28px san-serif";
-    // ctx.textAlign = "center";
-    // ctx.fillText("layer 2", 50, 150);
   }
 
   async mounted() {

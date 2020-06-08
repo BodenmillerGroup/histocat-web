@@ -85,7 +85,7 @@ import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
   SET_ACTIVE_ACQUISITION_ID,
   SET_ACTIVE_WORKSPACE_NODE,
-  SET_SELECTED_ACQUISITION_IDS
+  SET_SELECTED_ACQUISITION_IDS,
 } from "@/modules/experiment/events";
 
 @Component({

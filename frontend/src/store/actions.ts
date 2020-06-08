@@ -3,8 +3,8 @@ import { Store } from "vuex";
 import { analysisModule } from "@/modules/analysis";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
-import {selectionModule} from "@/modules/selection";
-import {centroidsModule} from "@/modules/centroids";
+import { selectionModule } from "@/modules/selection";
+import { centroidsModule } from "@/modules/centroids";
 
 export class RootActions extends Actions {
   analysis?: Context<typeof analysisModule>;

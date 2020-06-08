@@ -1,4 +1,4 @@
-import {CellPoint} from "@/data/CellPoint";
+import { CellPoint } from "@/data/CellPoint";
 
 export function transformCoords(data: CellPoint[], width: number, height: number) {
   return data.map((c, i) => {

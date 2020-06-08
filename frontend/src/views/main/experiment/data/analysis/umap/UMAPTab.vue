@@ -119,8 +119,8 @@ import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
 import { responsiveModule } from "@/modules/responsive";
-import {BroadcastManager} from "@/utils/BroadcastManager";
-import {SET_SELECTED_ACQUISITION_IDS} from "@/modules/experiment/events";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
 
 @Component({
   components: { Scatter3D, Scatter2D },

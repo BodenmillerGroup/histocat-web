@@ -5,7 +5,7 @@
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot/src";
+import createScatterplot from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import {
   interpolateCool,
@@ -20,9 +20,9 @@ import {
 } from "d3";
 import { experimentModule } from "@/modules/experiment";
 import { selectionModule } from "@/modules/selection";
-import {equals, uniq} from "rambda";
-import {CellPoint} from "@/data/CellPoint";
-import {SelectedCell} from "@/modules/selection/models";
+import { equals, uniq } from "rambda";
+import { CellPoint } from "@/data/CellPoint";
+import { SelectedCell } from "@/modules/selection/models";
 
 @Component
 export default class Scatter2D extends Vue {
@@ -55,14 +55,12 @@ export default class Scatter2D extends Vue {
   selectedCellsChanged(data: Map<number, SelectedCell[]> | null) {
     if (data !== null) {
       let allCells: SelectedCell[] = [];
-      data.forEach( (val, key) => {
-        allCells = allCells.concat(val)
+      data.forEach((val, key) => {
+        allCells = allCells.concat(val);
       });
-      console.log("allCells: ", allCells)
-      const indices = allCells.map(i => i.index);
-      console.log("Indices: ", indices)
+      const indices = allCells.map((i) => i.index);
       if (!equals(indices, this.selection)) {
-        this.scatterplot.select(indices)
+        this.scatterplot.select(indices, { preventEvent: true });
         this.selection = indices;
       }
     }
@@ -70,27 +68,19 @@ export default class Scatter2D extends Vue {
 
   @Watch("data")
   dataChanged(data: IChart2DData) {
-    console.log("dataChanged")
+    console.log("dataChanged");
     if (data) {
       this.scatterplot.deselect();
-      // this.scatterplot.reset();
 
       if (data.heatmap) {
         // Use heatmap value
-
         const values = data.heatmap!.data;
-        const min = Math.min(...values);
         const max = Math.max(...values);
 
-        const normalizedValues = values.map(v => v / max);
+        const normalizedValues = values.map((v) => v / max);
 
         this.points = data.x.data.map(
-          (x, i) => new CellPoint(
-            data.acquisitionIds[i],
-            data.cellIds[i],
-            x,
-            data.y.data[i],
-            normalizedValues[i])
+          (x, i) => new CellPoint(data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], normalizedValues[i])
         );
 
         // Use continuous color scale
@@ -136,12 +126,16 @@ export default class Scatter2D extends Vue {
 
   pointoverHandler(idx: number) {
     const point = this.points[idx];
-    console.log(`X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`);
+    console.log(
+      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
+    );
   }
 
   pointoutHandler(idx: number) {
     const point = this.points[idx];
-    console.log(`X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`);
+    console.log(
+      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
+    );
   }
 
   selectHandler({ points: selectedPoints }) {
@@ -160,13 +154,13 @@ export default class Scatter2D extends Vue {
       }
       this.selectionContext.mutations.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
-        console.log("Scatter2D getChannelStackImage")
+        console.log("Scatter2D getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     } else {
       this.selectionContext.mutations.setSelectedCells(null);
       if (this.applyMask) {
-        console.log("Scatter2D getChannelStackImage")
+        console.log("Scatter2D getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     }

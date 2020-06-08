@@ -68,7 +68,7 @@ import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_ACTIVE_DATASET } from "@/modules/datasets/events";
-import {centroidsModule} from "@/modules/centroids";
+import { centroidsModule } from "@/modules/centroids";
 
 @Component
 export default class DatasetsView extends Vue {

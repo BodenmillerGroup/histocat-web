@@ -1,11 +1,11 @@
 import { Store } from "vuex";
-import {Actions, Context} from "vuex-smart-module";
+import { Actions, Context } from "vuex-smart-module";
 import { CentroidsState } from ".";
 import { CentroidsGetters } from "./getters";
 import { CentroidsMutations } from "./mutations";
 import { api } from "./api";
 import { ICentroidsSubmission } from "./models";
-import {mainModule} from "@/modules/main";
+import { mainModule } from "@/modules/main";
 
 export class CentroidsActions extends Actions<CentroidsState, CentroidsGetters, CentroidsMutations, CentroidsActions> {
   // Declare context type

@@ -2,8 +2,8 @@
 FROM node:12.18.0-alpine3.11 as build-stage
 
 # Comment out the next line to disable git
-RUN apk update && apk upgrade && \
-    apk add --no-cache git
+#RUN apk update && apk upgrade && \
+#    apk add --no-cache git
 
 WORKDIR /app
 
