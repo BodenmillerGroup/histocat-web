@@ -5,11 +5,9 @@
   <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
-  <v-row v-else no-gutters class="chart-container">
-    <v-col :cols="columns">
-      <v-chart :options="options" autoresize />
-    </v-col>
-    <v-col v-if="showOptions" cols="3">
+  <div v-else :class="layoutClass">
+    <v-chart :options="options" autoresize class="chart-container" />
+    <div v-if="showOptions">
       <v-card tile>
         <v-card-title>Scatter Plot Settings</v-card-title>
         <v-card-text>
@@ -84,8 +82,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -173,8 +171,11 @@ export default class ScatterPlotTab extends Vue {
     return this.mainContext.getters.showOptions;
   }
 
-  get columns() {
-    return this.showOptions ? 9 : 12;
+  get layoutClass() {
+    if (!this.showOptions) {
+      return "layout-without-options";
+    }
+    return "layout-full";
   }
 
   get activeAcquisition() {
@@ -466,6 +467,16 @@ export default class ScatterPlotTab extends Vue {
 </script>
 
 <style scoped>
+.layout-full {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto;
+}
+.layout-without-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+}
 .chart-container {
   height: calc(100vh - 154px);
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-chart :options="options" autoresize />
+  <v-chart :options="options" autoresize class="chart" />
 </template>
 
 <script lang="ts">
@@ -179,3 +179,10 @@ export default class Scatter3D extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.chart {
+  height: calc(100vh - 88px);
+  width: 100%;
+}
+</style>

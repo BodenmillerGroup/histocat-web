@@ -5,18 +5,10 @@
   <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
-  <v-row v-else no-gutters class="chart-container">
-    <v-col :cols="columns">
-      <Scatter2D
-        v-if="nComponents === '2'"
-        :data="umapData"
-        title="Uniform Manifold Approximation and Projection"
-        :width="responsive.width - 500"
-        :height="responsive.height - 150"
-      />
-      <Scatter3D v-else :data="umapData" title="Uniform Manifold Approximation and Projection" />
-    </v-col>
-    <v-col v-if="showOptions" cols="3">
+  <div v-else :class="layoutClass">
+    <Scatter2D v-if="nComponents === '2'" :data="umapData" title="2D UMAP" />
+    <Scatter3D v-else :data="umapData" title="3D UMAP" />
+    <div v-if="showOptions">
       <v-card tile>
         <v-card-title>UMAP Settings</v-card-title>
         <v-card-text>
@@ -104,8 +96,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -118,7 +110,6 @@ import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
-import { responsiveModule } from "@/modules/responsive";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
 
@@ -131,7 +122,6 @@ export default class UMAPTab extends Vue {
   readonly datasetContext = datasetModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly responsiveContext = responsiveModule.context(this.$store);
 
   readonly required = required;
   readonly metrics = [
@@ -165,16 +155,15 @@ export default class UMAPTab extends Vue {
     return this.analysisContext.getters.umapData;
   }
 
-  get responsive() {
-    return this.responsiveContext.getters.responsive;
-  }
-
   get showOptions() {
     return this.mainContext.getters.showOptions;
   }
 
-  get columns() {
-    return this.showOptions ? 9 : 12;
+  get layoutClass() {
+    if (!this.showOptions) {
+      return "layout-without-options";
+    }
+    return "layout-full";
   }
 
   get activeAcquisition() {
@@ -265,7 +254,14 @@ export default class UMAPTab extends Vue {
 </script>
 
 <style scoped>
-.chart-container {
-  height: calc(100vh - 154px);
+.layout-full {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto;
+}
+.layout-without-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
 }
 </style>

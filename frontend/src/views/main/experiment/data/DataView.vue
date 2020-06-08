@@ -1,15 +1,11 @@
 <template>
   <LoadingView v-if="!experimentData" text="Loading..." />
-  <v-container v-else fluid class="px-1 py-0">
-    <v-row no-gutters>
-      <v-col v-show="showWorkspace" class="pr-1" xs="3" sm="3" md="3" lg="3" xl="2">
-        <DataWorkspaceView :experiment="experimentData" />
-      </v-col>
-      <v-col :cols="viewerColumns">
-        <AnalysisView />
-      </v-col>
-    </v-row>
-  </v-container>
+  <div v-else :class="layoutClass">
+    <div v-show="showWorkspace" class="pr-1">
+      <DataWorkspaceView :experiment="experimentData" />
+    </div>
+    <AnalysisView />
+  </div>
 </template>
 
 <script lang="ts">
@@ -45,9 +41,28 @@ export default class ExperimentView extends Vue {
     return this.mainContext.getters.showWorkspace;
   }
 
-  get viewerColumns() {
-    const cols = this.$vuetify.breakpoint.name === "xl" ? 10 : 9;
-    return this.showWorkspace ? cols : 12;
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
+
+  get layoutClass() {
+    if (!this.showWorkspace) {
+      return "layout-without-workspace py-0";
+    }
+    return "layout-full py-0";
   }
 }
 </script>
+
+<style scoped>
+.layout-full {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  grid-template-rows: auto;
+}
+.layout-without-workspace {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+}
+</style>

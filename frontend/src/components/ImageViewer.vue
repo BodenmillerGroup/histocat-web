@@ -95,6 +95,16 @@ export default class ImageViewer extends Vue {
     this.refresh();
   }
 
+  refresh() {
+    if (!this.scatterplot) {
+      return;
+    }
+    const canvas = this.$refs.canvasWebGl as Element;
+    const { width, height } = canvas.getBoundingClientRect();
+    this.scatterplot.set({ width, height });
+    this.scatterplot.refresh();
+  }
+
   @Watch("selectedChannels")
   onSelectedChannelsChanged(value) {
     this.drawLegend();
@@ -169,16 +179,6 @@ export default class ImageViewer extends Vue {
   deselectHandler() {
     console.log("Deselected:", this.selection);
     this.selection = [];
-  }
-
-  refresh() {
-    if (!this.scatterplot) {
-      return;
-    }
-    const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
-    this.scatterplot.set({ width, height });
-    this.scatterplot.refresh();
   }
 
   @Watch("showLegend")

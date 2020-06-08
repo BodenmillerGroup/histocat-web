@@ -5,26 +5,16 @@
   <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
-  <v-row v-else no-gutters>
-    <v-col :cols="columns">
-      <Scatter2D
-        v-if="nComponents === '2'"
-        :data="pcaData"
-        title="Principal Component Analysis"
-        :width="responsive.width"
-        :height="responsive.height"
-      />
-      <div v-else class="chart-container">
-        <Scatter3D :data="pcaData" title="Principal Component Analysis" />
-      </div>
-    </v-col>
-    <v-col v-if="showOptions" cols="3">
+  <div v-else :class="layoutClass">
+    <Scatter2D v-if="nComponents === '2'" :data="pcaData" title="2D PCA" />
+    <Scatter3D v-else :data="pcaData" title="3D PCA" />
+    <div v-if="showOptions">
       <v-card tile>
         <v-card-title>PCA Settings</v-card-title>
         <v-card-text>
           <v-chip-group v-model="selectedChannels" multiple column active-class="primary--text">
-            <v-chip v-for="item in channels" :key="item" :value="item" small>
-              {{ item }}
+            <v-chip v-for="channel in channels" :key="channel" :value="channel" small>
+              {{ channel }}
             </v-chip>
           </v-chip-group>
           <v-card-actions>
@@ -35,22 +25,30 @@
               Clear all
             </v-btn>
           </v-card-actions>
-          <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
-            <v-radio label="2D" value="2" />
-            <v-radio label="3D" value="3" />
-          </v-radio-group>
-          <v-select
-            :items="heatmaps"
-            v-model="heatmap"
-            label="Heatmap"
-            hint="Heatmap marker"
-            item-text="label"
-            return-object
-            persistent-hint
-            clearable
-            dense
-            class="mt-5"
-          />
+          <v-row>
+            <v-col>
+              <v-radio-group v-model="nComponents" mandatory hide-details label="Dimensions">
+                <v-radio label="2D" value="2" />
+                <v-radio label="3D" value="3" />
+              </v-radio-group>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-select
+                :items="heatmaps"
+                v-model="heatmap"
+                label="Heatmap"
+                hint="Heatmap marker"
+                item-text="label"
+                return-object
+                persistent-hint
+                clearable
+                dense
+                class="mt-5"
+              />
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
@@ -58,8 +56,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -71,14 +69,12 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
-import { responsiveModule } from "@/modules/responsive";
 
 @Component({
   components: { Scatter2D, Scatter3D },
 })
 export default class PCATab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
-  readonly responsiveContext = responsiveModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
@@ -92,16 +88,15 @@ export default class PCATab extends Vue {
     return this.analysisContext.getters.pcaData;
   }
 
-  get responsive() {
-    return this.responsiveContext.getters.responsive;
-  }
-
   get showOptions() {
     return this.mainContext.getters.showOptions;
   }
 
-  get columns() {
-    return this.showOptions ? 9 : 12;
+  get layoutClass() {
+    if (!this.showOptions) {
+      return "layout-without-options";
+    }
+    return "layout-full";
   }
 
   get activeAcquisition() {
@@ -154,7 +149,14 @@ export default class PCATab extends Vue {
 </script>
 
 <style scoped>
-.chart-container {
-  height: calc(100vh - 94px);
+.layout-full {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto;
+}
+.layout-without-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
 }
 </style>

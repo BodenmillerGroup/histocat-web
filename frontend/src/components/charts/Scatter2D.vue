@@ -1,5 +1,7 @@
 <template>
-  <canvas ref="canvas" :width="canvasWidth" :height="canvasHeight" />
+  <div id="canvasContainer">
+    <canvas id="canvasWebGl" ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -8,14 +10,9 @@ import { settingsModule } from "@/modules/settings";
 import createScatterplot from "regl-scatterplot";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import {
-  interpolateCool,
   scaleSequential,
-  scaleLinear,
   rgb,
-  interpolateRainbow,
-  interpolateSpectral,
   schemeCategory10,
-  schemeTableau10,
   interpolateReds,
 } from "d3";
 import { experimentModule } from "@/modules/experiment";
@@ -32,8 +29,6 @@ export default class Scatter2D extends Vue {
 
   @Prop(Object) data;
   @Prop(String) title;
-  @Prop(Number) canvasWidth;
-  @Prop(Number) canvasHeight;
 
   points: CellPoint[] = [];
   scatterplot: any;
@@ -49,6 +44,38 @@ export default class Scatter2D extends Vue {
 
   get selectedCells() {
     return this.selectionContext.getters.selectedCells;
+  }
+
+  onIntersect(entries, observer, isIntersecting) {
+    if (isIntersecting) {
+      const canvas = this.$refs.canvasWebGl as Element;
+      const { width, height } = canvas.getBoundingClientRect();
+      this.scatterplot.set({ width, height });
+    }
+  }
+
+  onResize() {
+    this.refresh();
+  }
+
+  @Watch("showWorkspace")
+  showWorkspaceChanged(value) {
+    this.refresh();
+  }
+
+  @Watch("showOptions")
+  showOptionsChanged(value) {
+    this.refresh();
+  }
+
+  refresh() {
+    if (!this.scatterplot) {
+      return;
+    }
+    const canvas = this.$refs.canvasWebGl as Element;
+    const { width, height } = canvas.getBoundingClientRect();
+    this.scatterplot.set({ width, height });
+    this.scatterplot.refresh();
   }
 
   @Watch("selectedCells")
@@ -171,18 +198,8 @@ export default class Scatter2D extends Vue {
     this.selection = [];
   }
 
-  resizeHandler() {
-    const canvas = this.$refs.canvas as any;
-    if (canvas) {
-      const rect = canvas.getBoundingClientRect();
-      if (rect) {
-        this.scatterplot.set({ width: rect.width, height: rect.height });
-      }
-    }
-  }
-
-  async mounted() {
-    const canvas = this.$refs.canvas as any;
+  private initViewer() {
+    const canvas = this.$refs.canvasWebGl as Element;
     const { width, height } = canvas.getBoundingClientRect();
 
     this.scatterplot = createScatterplot({
@@ -200,15 +217,29 @@ export default class Scatter2D extends Vue {
     // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
+  }
 
-    // window.addEventListener("resize", this.resizeHandler);
+  mounted() {
+    this.initViewer();
   }
 
   beforeDestroy() {
-    // window.removeEventListener("resize", this.resizeHandler);
     if (this.scatterplot) {
       this.scatterplot.destroy();
     }
   }
 }
 </script>
+
+<style scoped>
+#canvasContainer {
+  height: calc(100vh - 134px);
+  position: relative;
+  width: 100%;
+}
+#canvasWebGl {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+</style>
