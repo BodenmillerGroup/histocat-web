@@ -50,8 +50,7 @@ export default class ExperimentView extends Vue {
   beforeDestroy() {
     WebSocketManager.close();
     // if (process.env.VUE_APP_ENV !== "development") {
-    //   this.experimentContext.mutations.reset();
-    //   this.analysisContext.mutations.reset();
+    //   this.$store.dispatch("reset");
     // }
     this.$store.dispatch("reset");
   }

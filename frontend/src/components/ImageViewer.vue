@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <canvas id="canvas2d" ref="canvas2d" :width="canvasWidth" :height="canvasHeight"></canvas>
-    <canvas id="canvasWebGl" ref="canvasWebGl" :width="canvasWidth" :height="canvasHeight" v-intersect="onIntersect" />
+  <div id="canvasContainer">
+    <canvas id="canvas2d" ref="canvas2d"></canvas>
+    <canvas id="canvasWebGl" ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
   </div>
 </template>
 
 <script lang="ts">
 import { settingsModule } from "@/modules/settings";
 import createScatterplot from "regl-scatterplot";
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { experimentModule } from "@/modules/experiment";
 import { analysisModule } from "@/modules/analysis";
 import { datasetModule } from "@/modules/datasets";
@@ -17,9 +17,11 @@ import { centroidsModule } from "@/modules/centroids";
 import { CellPoint } from "@/data/CellPoint";
 import { selectionModule } from "@/modules/selection";
 import { SelectedCell } from "@/modules/selection/models";
+import { mainModule } from "@/modules/main";
 
 @Component
 export default class ImageViewer extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
@@ -27,12 +29,17 @@ export default class ImageViewer extends Vue {
   readonly centroidsContext = centroidsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
 
-  @Prop(Number) canvasWidth;
-  @Prop(Number) canvasHeight;
-
   points: CellPoint[] = [];
   scatterplot: any;
   selection: any[] = [];
+
+  get showWorkspace() {
+    return this.mainContext.getters.showWorkspace;
+  }
+
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
 
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
@@ -72,6 +79,20 @@ export default class ImageViewer extends Vue {
       const { width, height } = canvas.getBoundingClientRect();
       this.scatterplot.set({ width, height });
     }
+  }
+
+  onResize() {
+    this.refresh();
+  }
+
+  @Watch("showWorkspace")
+  showWorkspaceChanged(value) {
+    this.refresh();
+  }
+
+  @Watch("showOptions")
+  showOptionsChanged(value) {
+    this.refresh();
   }
 
   @Watch("selectedChannels")
@@ -150,24 +171,14 @@ export default class ImageViewer extends Vue {
     this.selection = [];
   }
 
-  resizeHandler() {
-    const canvas = this.$refs.canvasWebGl as any;
-    if (canvas) {
-      const rect = canvas.getBoundingClientRect();
-      if (rect) {
-        this.scatterplot.set({ width: this.canvasWidth, height: this.canvasHeight });
-      }
-    }
-  }
-
   refresh() {
-    this.scatterplot.set({ width: this.canvasWidth, height: this.canvasHeight });
+    if (!this.scatterplot) {
+      return;
+    }
+    const canvas = this.$refs.canvasWebGl as Element;
+    const { width, height } = canvas.getBoundingClientRect();
+    this.scatterplot.set({ width, height });
     this.scatterplot.refresh();
-  }
-
-  @Watch("canvasWidth")
-  onCanvasWidthUpdate(value: number) {
-    this.refresh();
   }
 
   @Watch("showLegend")
@@ -212,45 +223,14 @@ export default class ImageViewer extends Vue {
     });
   }
 
-  private drawScalebar() {
-    const canvas = this.$refs.canvas2d as HTMLCanvasElement;
-    const { width, height } = canvas.getBoundingClientRect();
-    const ctx = canvas.getContext("2d")!;
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.fillRect(5, height - 100, 200, 3);
-
-    // def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
-    //   height, width, _ = image.shape
-    //   length = 64
-    //   cv2.line(
-    //       image, (width - 60, height - 60), (width - 60 - length, height - 60), (255, 255, 255), 2, cv2.LINE_4,
-    //   )
-    //
-    //   scale_text = length
-    //   if scalebar.settings is not None and "scale" in scalebar.settings:
-    //       scale = scalebar.settings.get("scale")
-    //       if scale is not None and scale != "":
-    //           scale_text = int(length * float(scale))
-    //   cv2.putText(
-    //       image,
-    //       f"{scale_text} um",
-    //       (width - 60 - length, height - 30),
-    //       cv2.FONT_HERSHEY_PLAIN,
-    //       1,
-    //       (255, 255, 255),
-    //       1,
-    //       cv2.LINE_4,
-    //   )
-    //   return image
-  }
-
   private initViewer() {
-    const canvas = this.$refs.canvasWebGl as any;
+    const canvas = this.$refs.canvasWebGl as Element;
+    const { width, height } = canvas.getBoundingClientRect();
 
     this.scatterplot = createScatterplot({
       canvas,
-      width: this.canvasWidth,
-      height: this.canvasHeight,
+      width,
+      height,
       opacity: 1,
       pointSize: 2,
       pointSizeSelected: 1,
@@ -262,16 +242,13 @@ export default class ImageViewer extends Vue {
     // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
-
-    // window.addEventListener("resize", this.resizeHandler);
   }
 
-  async mounted() {
+  mounted() {
     this.initViewer();
   }
 
   beforeDestroy() {
-    // window.removeEventListener("resize", this.resizeHandler);
     if (this.scatterplot) {
       this.scatterplot.destroy();
     }
@@ -280,12 +257,19 @@ export default class ImageViewer extends Vue {
 </script>
 
 <style scoped>
-#canvasWebGl,
-#canvas2d {
+#canvasContainer {
+  height: calc(100vh - 134px);
+  position: relative;
+  width: 100%;
+}
+#canvasWebGl {
+  height: 100%;
   position: absolute;
+  width: 100%;
 }
 #canvas2d {
-  z-index: 2;
   pointer-events: none;
+  position: absolute;
+  z-index: 2;
 }
 </style>

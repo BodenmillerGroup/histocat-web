@@ -3,13 +3,16 @@
     <v-card-title>
       <v-text-field
         v-model="search"
-        append-icon="mdi-magnify"
         label="Search"
         single-line
         hide-details
         clearable
         dense
-      />
+      >
+        <template v-slot:append-outer>
+          <v-icon dense>mdi-magnify</v-icon>
+        </template>
+      </v-text-field>
     </v-card-title>
     <v-data-table
       :headers="headers"

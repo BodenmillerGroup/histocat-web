@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
     <v-card-title>
-      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable />
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable dense />
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -69,7 +69,7 @@ table.v-table tbody th {
 }
 
 .scroll-view {
-  height: calc(50vh - 120px);
+  height: calc(50vh - 108px);
 }
 </style>
 

@@ -4,9 +4,7 @@
       <v-tab>Channels</v-tab>
       <v-tab>General</v-tab>
       <v-tab-item class="overflow-y-auto channel-settings-view">
-        <v-expansion-panels>
-          <BrushableHistogram v-for="channel in selectedChannels" :key="channel.id" :channel="channel" />
-        </v-expansion-panels>
+        <BrushableHistogram v-for="channel in selectedChannels" :key="channel.id" :channel="channel" />
       </v-tab-item>
       <v-tab-item class="overflow-y-auto channel-settings-view">
         <GeneralSettingsView />
@@ -17,7 +15,7 @@
 
 <script lang="ts">
 import { experimentModule } from "@/modules/experiment";
-import GeneralSettingsView from "@/views/main/experiment/image/settings/general/GeneralSettingsView.vue";
+import GeneralSettingsView from "@/views/main/experiment/image/options/settings/general/GeneralSettingsView.vue";
 import { Component, Vue } from "vue-property-decorator";
 import BrushableHistogram from "@/components/BrushableHistogram.vue";
 
@@ -37,6 +35,6 @@ export default class SettingsView extends Vue {
 
 <style scoped>
 .channel-settings-view {
-  height: calc(50vh - 124px);
+  height: calc(50vh - 82px);
 }
 </style>
