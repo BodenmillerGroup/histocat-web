@@ -5,9 +5,11 @@
   <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
-  <div v-else :class="layoutClass">
-    <v-chart :options="options" autoresize class="chart-container" />
-    <div v-if="showOptions">
+  <v-row v-else no-gutters class="chart-container">
+    <v-col :cols="columns">
+      <v-chart :options="options" autoresize @brushselected="brushSelected"/>
+    </v-col>
+    <v-col v-if="showOptions" cols="3">
       <v-card tile>
         <v-card-title>Scatter Plot Settings</v-card-title>
         <v-card-text>
@@ -82,8 +84,8 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -115,7 +117,12 @@ const commonOptions: echarts.EChartOption = {
   },
   animation: false,
   tooltip: {
-    show: true,
+    show: false,
+  },
+  brush: {
+    toolbox: ["polygon", "keep", "clear"],
+    throttleType: "debounce",
+    throttleDelay: 500,
   },
   toolbox: {
     show: true,
@@ -134,6 +141,9 @@ const commonOptions: echarts.EChartOption = {
         title: "Data",
         readOnly: true,
         lang: ["Data View", "Hide", "Refresh"],
+      },
+      brush: {
+        title: "",
       },
     },
   },
@@ -163,6 +173,18 @@ export default class ScatterPlotTab extends Vue {
   markerZ: string | null = null;
   heatmap: { type: string; label: string } | null = null;
 
+  brushSelected(params) {
+    var brushed: any[] = [];
+    var brushComponent = params.batch[0];
+
+    for (var sIdx = 0; sIdx < brushComponent.selected.length; sIdx++) {
+        var rawIndices = brushComponent.selected[sIdx].dataIndex;
+        brushed.push(rawIndices);
+    }
+
+    console.log(brushed)
+  }
+
   get heatmaps() {
     return this.datasetContext.getters.heatmaps;
   }
@@ -171,11 +193,8 @@ export default class ScatterPlotTab extends Vue {
     return this.mainContext.getters.showOptions;
   }
 
-  get layoutClass() {
-    if (!this.showOptions) {
-      return "layout-without-options";
-    }
-    return "layout-full";
+  get columns() {
+    return this.showOptions ? 9 : 12;
   }
 
   get activeAcquisition() {
@@ -267,16 +286,17 @@ export default class ScatterPlotTab extends Vue {
       // },
       series: [
         {
-          type: "scatterGL",
+          type: "scatter",
           name: "Scatter2D",
           symbolSize: 2,
           data: points,
-          large: false,
-          encode: {
-            x: data.x.label,
-            y: data.y.label,
-            tooltip: [data.x.label, data.y.label],
-          },
+          large: true,
+          largeThreshold: 1000000,
+          // encode: {
+          //   x: data.x.label,
+          //   y: data.y.label,
+          //   tooltip: [data.x.label, data.y.label],
+          // },
         },
       ],
     };
@@ -467,16 +487,6 @@ export default class ScatterPlotTab extends Vue {
 </script>
 
 <style scoped>
-.layout-full {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  grid-template-rows: auto;
-}
-.layout-without-options {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-}
 .chart-container {
   height: calc(100vh - 154px);
 }

@@ -121,16 +121,16 @@ export default class ImageViewer extends Vue {
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
         });
+
+        if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
+          this.points = this.centroids.get(this.activeAcquisitionId!)!;
+          const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
+          this.scatterplot.draw(x);
+        } else {
+          this.scatterplot.draw([]);
+        }
       };
       img.src = this.channelStackImage as any;
-
-      if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
-        this.points = this.centroids.get(this.activeAcquisitionId!)!;
-        const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
-        this.scatterplot.draw(x);
-      } else {
-        this.scatterplot.draw([]);
-      }
     }
   }
 

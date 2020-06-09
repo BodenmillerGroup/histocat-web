@@ -20,9 +20,11 @@ import { selectionModule } from "@/modules/selection";
 import { equals, uniq } from "rambda";
 import { CellPoint } from "@/data/CellPoint";
 import { SelectedCell } from "@/modules/selection/models";
+import {mainModule} from "@/modules/main";
 
 @Component
 export default class Scatter2D extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
@@ -33,6 +35,14 @@ export default class Scatter2D extends Vue {
   points: CellPoint[] = [];
   scatterplot: any;
   selection: any[] = [];
+
+  get showWorkspace() {
+    return this.mainContext.getters.showWorkspace;
+  }
+
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
 
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
@@ -95,7 +105,6 @@ export default class Scatter2D extends Vue {
 
   @Watch("data")
   dataChanged(data: IChart2DData) {
-    console.log("dataChanged");
     if (data) {
       this.scatterplot.deselect();
 

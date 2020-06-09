@@ -67,6 +67,6 @@ export default class TilesView extends Vue {
 
 <style scoped>
 .tiles-view {
-  height: calc(100vh - 154px);
+  height: calc(100vh - 84px);
 }
 </style>
