@@ -38,6 +38,7 @@
     "ky": "0.20.0",
     "localforage": "1.7.4",
     "memoize-one": "5.1.1",
+    "normalizr": "3.6.0",
     "ol": "6.3.1",
     "pub-sub-es": "1.2.1",
     "rambda": "5.6.2",
@@ -49,7 +50,7 @@
     "vue-echarts": "4.1.0",
     "vue-property-decorator": "8.4.2",
     "vue-router": "3.3.2",
-    "vuetify": "2.2.33",
+    "vuetify": "2.2.34",
     "vuex": "3.4.0",
     "vuex-persist": "2.2.0",
     "vuex-smart-module": "0.3.4"

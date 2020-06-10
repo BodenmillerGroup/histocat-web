@@ -5,6 +5,7 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
+import {presetModule} from "@/modules/presets";
 
 export class RootActions extends Actions {
   analysis?: Context<typeof analysisModule>;
@@ -12,6 +13,7 @@ export class RootActions extends Actions {
   experiment?: Context<typeof experimentModule>;
   selection?: Context<typeof selectionModule>;
   centroids?: Context<typeof centroidsModule>;
+  presets?: Context<typeof presetModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -20,6 +22,7 @@ export class RootActions extends Actions {
     this.experiment = experimentModule.context(store);
     this.selection = selectionModule.context(store);
     this.centroids = centroidsModule.context(store);
+    this.presets = presetModule.context(store);
   }
 
   // Reset global store
@@ -29,5 +32,6 @@ export class RootActions extends Actions {
     this.experiment?.mutations.reset();
     this.selection?.mutations.reset();
     this.centroids?.mutations.reset();
+    this.presets?.mutations.reset();
   }
 }

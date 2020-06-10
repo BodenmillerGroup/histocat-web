@@ -130,7 +130,7 @@ export default class ImageViewer extends Vue {
           this.scatterplot.draw([]);
         }
       };
-      img.src = this.channelStackImage as any;
+      img.src = value;
     }
   }
 

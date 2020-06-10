@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[ExperimentDto])
+@router.get("/experiments", response_model=List[ExperimentDto])
 def read_all(
     db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -35,7 +35,7 @@ def read_all(
     return items
 
 
-@router.get("/tags", response_model=Set[str])
+@router.get("/experiments/tags", response_model=Set[str])
 def read_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """
     Retrieve tags
@@ -44,7 +44,7 @@ def read_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(g
     return items
 
 
-@router.post("/", response_model=ExperimentDto)
+@router.post("/experiments", response_model=ExperimentDto)
 def create(
     *,
     db: Session = Depends(get_db),
@@ -66,40 +66,40 @@ def create(
     return item
 
 
-@router.get("/{id}", response_model=ExperimentDto)
+@router.get("/experiments/{experiment_id}", response_model=ExperimentDto)
 def read_by_id(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    experiment_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific experiment by id
     """
-    item = service.get(db, id=id)
+    item = service.get(db, id=experiment_id)
     return item
 
 
-@router.delete("/{id}", response_model=ExperimentDto)
+@router.delete("/experiments/{experiment_id}", response_model=ExperimentDto)
 def delete_by_id(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    experiment_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific experiment by id
     """
-    item = service.remove(db, id=id)
+    item = service.remove(db, id=experiment_id)
     return item
 
 
-@router.put("/{id}", response_model=ExperimentDto)
+@router.put("/experiments/{experiment_id}", response_model=ExperimentDto)
 def update(
     *,
     db: Session = Depends(get_db),
-    id: int,
+    experiment_id: int,
     params: ExperimentUpdateDto,
     current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Update an experiment
     """
-    item = service.get(db, id=id)
+    item = service.get(db, id=experiment_id)
 
     if not item:
         raise HTTPException(
@@ -109,9 +109,9 @@ def update(
     return item
 
 
-@router.post("/{id}/upload")
+@router.post("/experiments/{experiment_id}/upload")
 def upload_data(
-    id: int,
+    experiment_id: int,
     file: UploadFile = File(None),
     user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -122,16 +122,16 @@ def upload_data(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_data.send(uri, id, user.id)
+    worker.import_data.send(uri, experiment_id, user.id)
     return {"uri": uri}
 
 
-@router.get("/{id}/data", response_model=ExperimentDatasetDto)
+@router.get("/experiments/{experiment_id}/data", response_model=ExperimentDatasetDto)
 async def read_data(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    experiment_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get all experiment data
     """
-    item = service.get_data(db, id=id)
+    item = service.get_data(db, id=experiment_id)
     return item

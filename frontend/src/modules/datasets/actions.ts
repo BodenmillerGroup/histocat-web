@@ -11,7 +11,7 @@ import { api } from "./api";
 import { DatasetGetters } from "./getters";
 import { DatasetMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_ACTIVE_DATASET, SET_DATASETS } from "@/modules/datasets/events";
+import { SET_DATASETS } from "@/modules/datasets/events";
 
 export class DatasetActions extends Actions<DatasetState, DatasetGetters, DatasetMutations, DatasetActions> {
   // Declare context type

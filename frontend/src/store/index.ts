@@ -14,6 +14,7 @@ import { responsiveModule } from "@/modules/responsive";
 import { RootActions } from "@/store/actions";
 import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
+import { presetModule } from "@/modules/presets";
 
 Vue.use(Vuex);
 
@@ -30,6 +31,7 @@ const rootModule = new Module({
     user: userModule,
     selection: selectionModule,
     centroids: centroidsModule,
+    presets: presetModule,
   },
   actions: RootActions,
 });

@@ -13,6 +13,8 @@ from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto
 from histocat.modules.user.models import UserModel  # noqa
+from histocat.modules.preset.models import PresetModel  # noqa
+from histocat.modules.gate.models import GateModel  # noqa
 
 
 def init_db(db_session):
