@@ -15,6 +15,7 @@ import { RootActions } from "@/store/actions";
 import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
 import { presetModule } from "@/modules/presets";
+import { gateModule } from "@/modules/gates";
 
 Vue.use(Vuex);
 
@@ -32,6 +33,7 @@ const rootModule = new Module({
     selection: selectionModule,
     centroids: centroidsModule,
     presets: presetModule,
+    gates: gateModule,
   },
   actions: RootActions,
 });
