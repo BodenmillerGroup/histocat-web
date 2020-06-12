@@ -22,7 +22,7 @@ api_router.include_router(slide_controller.router, prefix="/slides", tags=["slid
 api_router.include_router(panorama_controller.router, prefix="/panoramas", tags=["panoramas"])
 api_router.include_router(acquisition_controller.router, prefix="/acquisitions", tags=["acquisitions"])
 api_router.include_router(user_controller.router, prefix="/users", tags=["users"])
-api_router.include_router(dataset_controller.router, prefix="/datasets", tags=["datasets"])
+api_router.include_router(dataset_controller.router, tags=["datasets"])
 api_router.include_router(share_controller.router, prefix="/share", tags=["share"])
 api_router.include_router(preset_controller.router, tags=["presets"])
 api_router.include_router(gate_controller.router, tags=["gates"])

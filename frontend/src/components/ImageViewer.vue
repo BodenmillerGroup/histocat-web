@@ -164,7 +164,7 @@ export default class ImageViewer extends Vue {
           newSelectedCells.set(acquisitionId, []);
         }
         const ids = newSelectedCells.get(acquisitionId);
-        ids!.push(Object.freeze(new SelectedCell(i, point.cellId)));
+        ids!.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
       }
       this.selectionContext.mutations.setSelectedCells(newSelectedCells);
       if (this.applyMask) {

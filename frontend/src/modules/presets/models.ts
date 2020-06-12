@@ -1,6 +1,6 @@
 export interface IPresetCreate {
   experiment_id: number;
-  name?: string;
+  name: string;
   description?: string;
   data?: object;
 }

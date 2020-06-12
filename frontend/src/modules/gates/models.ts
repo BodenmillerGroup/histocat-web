@@ -1,15 +1,19 @@
 export interface IGateCreate {
-  experiment_id: number;
-  name?: string;
+  dataset_id: number;
+  name: string;
   description?: string;
-  data?: object;
+  acquisition_ids: number[];
+  indices: number[];
+  cell_ids: number[];
 }
 
 export interface IGate {
   id: number;
-  experiment_id: number;
+  dataset_id: number;
   name: string;
-  description: string;
-  data: object;
+  description?: string;
+  acquisition_ids: number[];
+  indices: number[];
+  cell_ids: number[];
   created_at: string;
 }

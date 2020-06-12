@@ -1,7 +1,7 @@
 import logging
 import os
 from io import BytesIO
-from typing import List
+from typing import Sequence
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -21,74 +21,63 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=List[DatasetDto])
-def read_all(
-    db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
-):
-    """
-    Retrieve datasets
-    """
-    items = service.get_multi(db)
-    return items
-
-
-@router.get("/experiment/{experiment_id}", response_model=List[DatasetDto])
-def read_own_by_experiment(
+@router.get("/experiments/{experiment_id}/datasets", response_model=Sequence[DatasetDto])
+def get_experiment_datasets(
     experiment_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Retrieve own datasets for specified experiment
     """
-    items = service.get_own_by_experiment_id(db, experiment_id=experiment_id)
+    items = service.get_experiment_datasets(db, experiment_id=experiment_id)
     return items
 
 
-@router.get("/{id}/centroids")
+@router.get("/datasets/{dataset_id}/centroids")
 def get_centroids(
-    id: int,
+    dataset_id: int,
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
     Get dataset cell centroids
     """
-    dataset = service.get(db, id=id)
+    dataset = service.get(db, id=dataset_id)
     if dataset is None:
-        raise HTTPException(status_code=400, detail=f"Cannot find dataset [{id}]")
+        raise HTTPException(status_code=400, detail=f"Cannot find dataset [{dataset_id}]")
     content = service.get_centroids(dataset)
     return ORJSONResponse(content)
 
 
-@router.get("/{id}", response_model=DatasetDto)
+@router.get("/datasets/{dataset_id}", response_model=DatasetDto)
 def read_by_id(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific dataset by id
     """
-    item = service.get(db, id=id)
+    item = service.get(db, id=dataset_id)
     return item
 
 
-@router.delete("/{id}", response_model=DatasetDto)
+@router.delete("/datasets/{dataset_id}", response_model=DatasetDto)
 def delete_by_id(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific dataset by id
     """
-    item = service.remove(db, id=id)
+    item = service.remove(db, id=dataset_id)
     return item
 
 
-@router.get("/{id}/download")
-async def download_by_id(id: int, db: Session = Depends(get_db)):
+@router.get("/datasets/{dataset_id}/download")
+async def download_by_id(dataset_id: int, db: Session = Depends(get_db)):
     """
     Download dataset by id
     """
-    item = service.get(db, id=id)
+    item = service.get(db, id=dataset_id)
     if item is None:
-        raise HTTPException(status_code=400, detail=f"Cannot find dataset [{id}]")
+        raise HTTPException(status_code=400, detail=f"Cannot find dataset [{dataset_id}]")
 
     file_name = f"{item.name}.zip"
     abs_src = os.path.abspath(item.location)

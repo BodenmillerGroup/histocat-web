@@ -24,6 +24,7 @@ def upgrade():
         sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), nullable=False, index=True),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
+        sa.Column('acquisition_ids', ARRAY(sa.Integer())),
         sa.Column('indices', ARRAY(sa.Integer())),
         sa.Column('cell_ids', ARRAY(sa.Integer())),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),

@@ -49,12 +49,12 @@ def create(
     return items
 
 
-@router.delete("/gates/{gate_id}", response_model=GateDto)
+@router.delete("/gates/{gate_id}", response_model=int)
 def delete_by_id(
     gate_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete gate by id
     """
-    item = service.delete_by_id(db, id=gate_id)
-    return item
+    service.delete_by_id(db, id=gate_id)
+    return gate_id

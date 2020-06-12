@@ -186,7 +186,7 @@ export default class Scatter2D extends Vue {
           newSelectedCells.set(acquisitionId, []);
         }
         const ids = newSelectedCells.get(acquisitionId);
-        ids!.push(Object.freeze(new SelectedCell(i, point.cellId)));
+        ids!.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
       }
       this.selectionContext.mutations.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
@@ -242,7 +242,7 @@ export default class Scatter2D extends Vue {
 
 <style scoped>
 #canvasContainer {
-  height: calc(100vh - 134px);
+  height: calc(100vh - 98px);
   position: relative;
   width: 100%;
 }

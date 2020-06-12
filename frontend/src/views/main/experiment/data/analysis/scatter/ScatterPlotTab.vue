@@ -488,6 +488,6 @@ export default class ScatterPlotTab extends Vue {
 
 <style scoped>
 .chart-container {
-  height: calc(100vh - 154px);
+  height: calc(100vh - 98px);
 }
 </style>

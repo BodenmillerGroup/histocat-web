@@ -27,8 +27,8 @@ def create(session: Session, *, params: GateCreateDto) -> GateModel:
     return entity
 
 
-def delete_by_id(session: Session, *, id: int) -> Optional[GateModel]:
+def delete_by_id(session: Session, *, id: int) -> int:
     item = session.query(GateModel).filter(GateModel.id == id).first()
     session.delete(item)
     session.commit()
-    return item
+    return id

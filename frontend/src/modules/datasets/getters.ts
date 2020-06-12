@@ -3,11 +3,19 @@ import { DatasetState } from ".";
 
 export class DatasetGetters extends Getters<DatasetState> {
   get datasets() {
-    return this.state.datasets;
+    return this.state.ids.map((id) => this.state.entities[id]);
+  }
+
+  getDataset(id: number) {
+    return this.state.entities[id];
+  }
+
+  get activeDatasetId() {
+    return this.state.activeDatasetId;
   }
 
   get activeDataset() {
-    return this.state.activeDataset;
+    return this.getters.activeDatasetId ? this.getters.getDataset(this.getters.activeDatasetId) : null;
   }
 
   get channels() {

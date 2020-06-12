@@ -1,17 +1,17 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <v-btn @click="createPreset" color="primary" elevation="1" small>
-        Create preset
+      <v-btn @click="createGate" color="primary" elevation="1" small>
+        Create gate
       </v-btn>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon small v-on="on" @click="refreshPresets">
+          <v-btn icon small v-on="on" @click="refreshGates">
             <v-icon small>mdi-refresh</v-icon>
           </v-btn>
         </template>
-        <span>Refresh presets</span>
+        <span>Refresh gates</span>
       </v-tooltip>
     </v-toolbar>
     <v-list dense two-line class="overflow-y-auto scroll-view pa-0">
@@ -25,21 +25,21 @@
           <v-list-item-action>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on" download color="primary lighten-3" @click="applyPreset($event, item.id)">
+                <v-btn icon v-on="on" download color="primary lighten-3" @click="applyGate($event, item.id)">
                   <v-icon>mdi-refresh-circle</v-icon>
                 </v-btn>
               </template>
-              <span>Apply preset</span>
+              <span>Apply gate</span>
             </v-tooltip>
           </v-list-item-action>
           <v-list-item-action>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on" color="secondary lighten-3" @click.stop="deletePreset($event, item.id)">
+                <v-btn icon v-on="on" color="secondary lighten-3" @click.stop="deleteGate($event, item.id)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </template>
-              <span>Delete preset</span>
+              <span>Delete gate</span>
             </v-tooltip>
           </v-list-item-action>
         </v-list-item>
@@ -51,19 +51,21 @@
 <script lang="ts">
 import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { presetModule } from "@/modules/presets";
+import {gateModule} from "@/modules/gates";
+import {datasetModule} from "@/modules/datasets";
 
 @Component
-export default class PresetsView extends Vue {
+export default class GatesView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
-  readonly presetContext = presetModule.context(this.$store);
+  readonly gateContext = gateModule.context(this.$store);
+  readonly datasetContext = datasetModule.context(this.$store);
 
   selected?: number | null = null;
 
   @Watch("selected")
-  presetChanged(index: number | null) {
+  gateChanged(index: number | null) {
     if (index !== null && index !== undefined) {
-      const preset = this.presets[index];
+      const preset = this.gates[index];
       // BroadcastManager.publish(SET_ACTIVE_DATASET, dataset);
       // this.centroidsContext.actions.getCentroids({ datasetId: dataset.id });
     } else {
@@ -71,46 +73,50 @@ export default class PresetsView extends Vue {
     }
   }
 
-  get presets() {
-    return this.presetContext.getters.presets;
+  get gates() {
+    return this.gateContext.getters.gates;
   }
 
   get items() {
-    return this.presets.map((preset) => {
-      return Object.assign({}, preset, {
-        createdAt: new Date(preset.created_at).toUTCString(),
+    return this.gates.map((gate) => {
+      return Object.assign({}, gate, {
+        createdAt: new Date(gate.created_at).toUTCString(),
       });
     });
   }
 
-  async applyPreset(event, id: number) {
-    if (self.confirm("Do you want to apply preset?")) {
-      await this.presetContext.actions.applyPreset(id);
+  async applyGate(event, id: number) {
+    await this.gateContext.actions.applyGate(id);
+  }
+
+  async deleteGate(event, id: number) {
+    if (self.confirm("Do you really want to delete gate?")) {
+      await this.gateContext.actions.deleteGate(id);
     }
   }
 
-  async deletePreset(event, id: number) {
-    if (self.confirm("Do you really want to delete preset?")) {
-      await this.presetContext.actions.deletePreset(id);
-    }
-  }
-
-  async createPreset() {
-    const name = self.prompt("Please enter preset name:");
+  async createGate() {
+    const name = self.prompt("Please enter gate name:");
     if (name) {
-      await this.presetContext.actions.createPreset(name);
+      await this.gateContext.actions.createGate(name);
     }
   }
 
-  async refreshPresets() {
-    const experimentId = this.experimentContext.getters.activeExperimentId;
-    if (experimentId) {
-      await this.presetContext.actions.getPresets(experimentId);
+  async refreshGates() {
+    const dataset = this.datasetContext.getters.activeDataset;
+    if (dataset) {
+      await this.gateContext.actions.getGates(dataset.id);
     }
   }
 
   mounted() {
-    this.refreshPresets();
+    this.refreshGates();
   }
 }
 </script>
+
+<style scoped>
+.scroll-view {
+  height: calc(100vh - 132px);
+}
+</style>

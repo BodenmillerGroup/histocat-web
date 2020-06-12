@@ -8,6 +8,7 @@ class GateCreateDto(BaseModel):
     dataset_id: int
     name: Optional[str]
     description: Optional[str]
+    acquisition_ids: Sequence[int]
     indices: Sequence[int]
     cell_ids: Sequence[int]
 
@@ -17,6 +18,7 @@ class GateDto(BaseModel):
     dataset_id: int
     name: Optional[str]
     description: Optional[str]
+    acquisition_ids: Sequence[int]
     indices: Sequence[int]
     cell_ids: Sequence[int]
     created_at: datetime

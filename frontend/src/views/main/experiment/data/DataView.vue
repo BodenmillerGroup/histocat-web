@@ -2,7 +2,7 @@
   <LoadingView v-if="!experimentData" text="Loading..." />
   <div v-else :class="layoutClass">
     <div v-show="showWorkspace" class="pr-1">
-      <DataWorkspaceView :experiment="experimentData" />
+      <DataWorkspaceView />
     </div>
     <AnalysisView />
   </div>

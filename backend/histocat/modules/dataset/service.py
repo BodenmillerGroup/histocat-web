@@ -18,7 +18,7 @@ def get(session: Session, *, id: int) -> Optional[DatasetModel]:
     return session.query(DatasetModel).filter(DatasetModel.id == id).first()
 
 
-def get_own_by_experiment_id(session: Session, *, experiment_id: int) -> List[DatasetModel]:
+def get_experiment_datasets(session: Session, *, experiment_id: int) -> List[DatasetModel]:
     return session.query(DatasetModel).filter(DatasetModel.experiment_id == experiment_id).all()
 
 
