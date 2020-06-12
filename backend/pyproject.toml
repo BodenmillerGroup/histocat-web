@@ -16,7 +16,7 @@ alembic = { version = "^1.4.2", optional = true }
 dramatiq = { version = "^1.9.0", extras = ["rabbitmq", "watch"] }
 email-validator = "^1.1.1"
 emails = "^0.5.15"
-fastapi = "^0.55.1"
+fastapi = "^0.56.0"
 fastobo = "^0.7.2"
 flatbuffers = "^1.12"
 flatten-dict = "^0.3.0"
@@ -24,7 +24,7 @@ fsspec = "^0.7.4"
 gunicorn = { version = "^20.0.4", optional = true }
 imctools = { git = "https://github.com/BodenmillerGroup/imctools.git", branch="next" }  # "^1.0.7"
 jinja2 = "^2.11.2"
-mahotas = "^1.4.9"
+mahotas = "^1.4.10"
 matplotlib = "^3.2.1"
 opencv-python-headless = "^4.2.0.34"
 orjson = "^3.1.0"

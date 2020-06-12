@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
-        <div class="headline primary--text">Share Experiment</div>
+        <div class="text-h5 primary--text">Share Experiment</div>
         <v-spacer />
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable />
       </v-card-title>

@@ -2,14 +2,14 @@
   <v-container fluid>
     <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
-        <div class="headline primary--text">Edit User</div>
+        <div class="text-h5 primary--text">Edit User</div>
       </v-card-title>
       <v-card-text>
         <template>
           <div class="my-4">
-            <div class="subtitle-1 primary--text text--lighten-2">Username</div>
-            <div class="title primary--text text--darken-2" v-if="user">{{ user.email }}</div>
-            <div class="title primary--text text--darken-2" v-else>-----</div>
+            <div class="text-subtitle-1 primary--text text--lighten-2">Username</div>
+            <div class="text-h6 primary--text text--darken-2" v-if="user">{{ user.email }}</div>
+            <div class="text-h6 primary--text text--darken-2" v-else>-----</div>
           </div>
           <v-form v-model="valid" ref="form">
             <v-text-field label="Name" v-model="name"></v-text-field>

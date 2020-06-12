@@ -7,7 +7,7 @@
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot";
+import createScatterplot from "regl-scatterplot/src";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import {
   scaleSequential,

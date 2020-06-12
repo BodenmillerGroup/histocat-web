@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -13,7 +13,6 @@ class PresetCreateDto(BaseModel):
 
 class PresetDto(BaseModel):
     id: int
-    experiment_id: int
     name: Optional[str]
     description: Optional[str]
     data: Optional[Any]

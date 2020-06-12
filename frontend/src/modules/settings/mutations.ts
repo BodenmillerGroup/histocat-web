@@ -14,6 +14,7 @@ import {
   SET_SEGMENTATION_SETTINGS,
   SET_SHARED_CHANNEL_SETTINGS,
 } from "@/modules/settings/events";
+import {IPreset} from "@/modules/presets/models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
   constructor() {
@@ -30,30 +31,29 @@ export class SettingsMutations extends Mutations<SettingsState> {
   }
 
   setSharedChannelSettings(payload: IChannelSettings[]) {
+    let newState = { ...this.state.channelSettings };
     for (const item of payload) {
-      let acquisitionChannelSettings = this.state.channelSettings.get(item.acquisitionId);
+      let acquisitionChannelSettings = this.state.channelSettings[item.acquisitionId];
       if (!acquisitionChannelSettings) {
-        acquisitionChannelSettings = new Map<string, IChannelSettings>();
+        acquisitionChannelSettings = {};
       }
-      acquisitionChannelSettings.set(item.name, item);
-      this.state.channelSettings.set(item.acquisitionId, acquisitionChannelSettings);
+      acquisitionChannelSettings[item.name] = item;
+      newState[item.acquisitionId] = acquisitionChannelSettings;
     }
-    this.state.channelSettings = new Map(this.state.channelSettings);
+    this.state.channelSettings = newState;
   }
 
   setChannelSettings(payload: IChannelSettings) {
-    let acquisitionChannelSettings = this.state.channelSettings.get(payload.acquisitionId);
+    let acquisitionChannelSettings = this.state.channelSettings[payload.acquisitionId];
     if (!acquisitionChannelSettings) {
-      acquisitionChannelSettings = new Map<string, IChannelSettings>();
+      acquisitionChannelSettings = {};
     }
-    acquisitionChannelSettings.set(payload.name, payload);
-    this.state.channelSettings.set(payload.acquisitionId, acquisitionChannelSettings);
-    this.state.channelSettings = new Map(this.state.channelSettings);
+    acquisitionChannelSettings[payload.name] = payload;
+    this.state.channelSettings = { ...this.state.channelSettings, [payload.acquisitionId]: acquisitionChannelSettings };
   }
 
-  setMetalColor(payload: { metal: string; color: string; suppressBroadcast?: boolean }) {
-    this.state.metalColorMap.set(payload.metal, payload.color);
-    this.state.metalColorMap = new Map(this.state.metalColorMap);
+  setMetalColor(payload: { metal: string; color: string }) {
+    this.state.colorMap = { ...this.state.colorMap, [payload.metal]: payload.color };
   }
 
   setFilter(payload: IImageFilter) {
@@ -74,6 +74,11 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setMaskSettings(payload: IMaskSettings) {
     this.state.mask = payload;
+  }
+
+  setPreset(preset: IPreset) {
+    this.state.channelSettings = preset.data["channelSettings"];
+    this.state.colorMap = preset.data["colorMap"];
   }
 
   reset() {

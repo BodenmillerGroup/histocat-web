@@ -49,12 +49,12 @@ def create(
     return items
 
 
-@router.delete("/presets/{preset_id}", response_model=PresetDto)
+@router.delete("/presets/{preset_id}", response_model=int)
 def delete_by_id(
     preset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete preset by id
     """
-    item = service.delete_by_id(db, id=preset_id)
-    return item
+    service.delete_by_id(db, id=preset_id)
+    return preset_id

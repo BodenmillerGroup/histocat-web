@@ -1,6 +1,6 @@
 <template>
   <v-card tile width="60" elevation="1">
-    <v-card-title class="caption">{{ caption }}</v-card-title>
+    <v-card-title class="text-caption">{{ caption }}</v-card-title>
     <v-card-text>
       <svg ref="svg" class="svg" shape-rendering="optimizeSpeed"></svg>
     </v-card-text>
@@ -26,12 +26,12 @@ export default class IntensityBar extends Vue {
   }
 
   get caption() {
-    const settings = this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name);
+    const settings = this.activeAcquisitionId ? this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name) : undefined;
     return settings && settings.levels ? settings.levels.max : this.channel.max_intensity.toFixed(0);
   }
 
   get color() {
-    const color = this.settingsContext.getters.metalColorMap.get(this.channel.name);
+    const color = this.settingsContext.getters.colorMap[this.channel.name];
     return color ? color : "#ffffff";
   }
 

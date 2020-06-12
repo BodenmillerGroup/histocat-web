@@ -3,8 +3,8 @@
     <v-card-title>
       <v-row no-gutters>
         <v-col>
-          <h5 class="headline">{{ experiment.name }}</h5>
-          <span class="caption"><v-icon small>mdi-calendar-outline</v-icon> {{ createdAt }}</span>
+          <h5 class="text-h5">{{ experiment.name }}</h5>
+          <span class="text-caption"><v-icon small>mdi-calendar-outline</v-icon> {{ createdAt }}</span>
         </v-col>
       </v-row>
     </v-card-title>

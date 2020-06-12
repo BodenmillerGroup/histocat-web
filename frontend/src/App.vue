@@ -1,17 +1,17 @@
 <template>
   <v-app id="app">
-    <v-content v-if="loggedIn === null">
+    <v-main v-if="loggedIn === null">
       <v-container fill-height>
         <v-row align="center" justify="center">
           <v-col>
             <div class="text-center">
-              <div class="headline my-12">Loading...</div>
+              <div class="text-h5 my-12">Loading...</div>
               <v-progress-circular size="100" indeterminate color="primary"></v-progress-circular>
             </div>
           </v-col>
         </v-row>
       </v-container>
-    </v-content>
+    </v-main>
     <router-view v-else />
     <NotificationsManager />
   </v-app>

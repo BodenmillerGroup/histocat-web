@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot";
+import createScatterplot from "regl-scatterplot/src";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { experimentModule } from "@/modules/experiment";
 import { analysisModule } from "@/modules/analysis";
@@ -118,9 +118,13 @@ export default class ImageViewer extends Vue {
       img.crossOrigin = "";
       img.onload = () => {
         const regl = this.scatterplot.get("regl");
+        const prevBackgroundImage = this.scatterplot.get('backgroundImage');
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
         });
+        if (prevBackgroundImage) {
+          prevBackgroundImage.destroy();
+        }
 
         if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
           this.points = this.centroids.get(this.activeAcquisitionId!)!;
@@ -198,7 +202,7 @@ export default class ImageViewer extends Vue {
     ctx.font = `${textHeight}pt sans-serif`;
     let maxTextWidth = 0;
     this.selectedChannels.forEach((v, i) => {
-      const channelSettings = this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name);
+      const channelSettings = this.activeAcquisitionId ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name) : undefined;
       const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
       const textWidth = ctx.measureText(text).width;
       if (textWidth > maxTextWidth) {
@@ -213,10 +217,10 @@ export default class ImageViewer extends Vue {
     }
 
     this.selectedChannels.forEach((v, i) => {
-      const color = this.settingsContext.getters.metalColorMap.get(v.name)
-        ? this.settingsContext.getters.metalColorMap.get(v.name)
+      const color = this.settingsContext.getters.colorMap[v.name]
+        ? this.settingsContext.getters.colorMap[v.name]
         : "#ffffff";
-      const channelSettings = this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name);
+      const channelSettings = this.activeAcquisitionId ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name) : undefined;
       const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
       ctx.fillStyle = color!;
       ctx.fillText(text, 10, (textHeight + 10) * (i + 1) + 5);

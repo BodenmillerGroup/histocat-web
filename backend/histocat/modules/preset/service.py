@@ -15,7 +15,7 @@ def get_by_id(session: Session, *, id: int) -> Optional[PresetModel]:
 
 
 def get_experiment_presets(session: Session, *, experiment_id: int) -> Sequence[PresetModel]:
-    return session.query(PresetModel).filter(PresetModel.experiment_id == experiment_id).all()
+    return session.query(PresetModel.id, PresetModel.name, PresetModel.description, PresetModel.created_at).filter(PresetModel.experiment_id == experiment_id).all()
 
 
 def create(session: Session, *, params: PresetCreateDto) -> PresetModel:
@@ -27,8 +27,8 @@ def create(session: Session, *, params: PresetCreateDto) -> PresetModel:
     return entity
 
 
-def delete_by_id(session: Session, *, id: int) -> Optional[PresetModel]:
+def delete_by_id(session: Session, *, id: int) -> int:
     item = session.query(PresetModel).filter(PresetModel.id == id).first()
     session.delete(item)
     session.commit()
-    return item
+    return id

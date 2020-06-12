@@ -35,6 +35,7 @@ class ExperimentModel(Base):
     user = sa.orm.relationship("UserModel", back_populates="experiments")
     slides = sa.orm.relationship("SlideModel", back_populates="experiment", cascade="all, delete, delete-orphan")
     datasets = sa.orm.relationship("DatasetModel", back_populates="experiment", cascade="all, delete, delete-orphan")
+    presets = sa.orm.relationship("PresetModel", back_populates="experiment", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
     def slides_location(self) -> str:

@@ -65,8 +65,8 @@ export default class BrushableHistogram extends Vue {
       : [this.channel.min_intensity, this.channel.max_intensity];
 
   get metalColor() {
-    const colorMap = this.settingsContext.getters.metalColorMap;
-    const color = colorMap.get(this.channel.name);
+    const colorMap = this.settingsContext.getters.colorMap;
+    const color = colorMap[this.channel.name];
     return color ? color : "#ffffff";
   }
 
@@ -75,7 +75,7 @@ export default class BrushableHistogram extends Vue {
   }
 
   get settings() {
-    return this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name);
+    return this.activeAcquisitionId ? this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name) : undefined;
   }
 
   get label() {
@@ -221,13 +221,11 @@ export default class BrushableHistogram extends Vue {
         name: this.channel.name,
         customLabel: this.channel.label,
         levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-        suppressBroadcast: false,
       };
     } else {
       settings = {
         ...settings,
         levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-        suppressBroadcast: false,
       };
     }
     BroadcastManager.publish(SET_CHANNEL_SETTINGS, settings);

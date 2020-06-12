@@ -35,6 +35,7 @@ class DatasetModel(Base):
 
     experiment = sa.orm.relationship("ExperimentModel", back_populates="datasets")
     user = sa.orm.relationship("UserModel", back_populates="datasets")
+    gates = sa.orm.relationship("GateModel", back_populates="dataset", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

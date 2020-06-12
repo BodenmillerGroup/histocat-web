@@ -19,7 +19,6 @@
         single-line
         hide-details
         clearable
-        flat
         dense
       >
         <template v-slot:append-outer>

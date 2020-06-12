@@ -2,16 +2,16 @@
   <v-container fluid>
     <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
-        <div class="headline primary--text">Set Password</div>
+        <div class="text-h5 primary--text">Set Password</div>
       </v-card-title>
       <v-card-text>
         <template>
           <div class="my-4">
-            <div class="subtitle-1 primary--text text--lighten-2">User</div>
-            <div class="title primary--text text--darken-2" v-if="userProfile.name">
+            <div class="text-subtitle-1 primary--text text--lighten-2">User</div>
+            <div class="text-h6 primary--text text--darken-2" v-if="userProfile.name">
               {{ userProfile.name }}
             </div>
-            <div class="title primary--text text--darken-2" v-else>{{ userProfile.email }}</div>
+            <div class="text-h6 primary--text text--darken-2" v-else>{{ userProfile.email }}</div>
           </div>
           <v-form ref="form">
             <v-text-field type="password" ref="password" label="Password" :rules="password1Rules" v-model="password1">

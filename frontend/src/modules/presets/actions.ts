@@ -6,15 +6,20 @@ import { PresetState } from ".";
 import { api } from "./api";
 import { PresetGetters } from "./getters";
 import { PresetMutations } from "./mutations";
+import {settingsModule} from "@/modules/settings";
+import {experimentModule} from "@/modules/experiment";
 
 export class PresetActions extends Actions<PresetState, PresetGetters, PresetMutations, PresetActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  experiment?: Context<typeof experimentModule>;
+  settings?: Context<typeof settingsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
-    // Create and retain main module context
     this.main = mainModule.context(store);
+    this.experiment = experimentModule.context(store);
+    this.settings = settingsModule.context(store);
   }
 
   async getPresets(experimentId: number) {
@@ -28,8 +33,18 @@ export class PresetActions extends Actions<PresetState, PresetGetters, PresetMut
     }
   }
 
-  async createPreset(payload: IPresetCreate) {
+  async createPreset(name: string) {
     try {
+      const experimentId = this.experiment!.getters.activeExperimentId;
+      const presetData = {
+        colorMap: this.settings!.getters.colorMap,
+        channelSettings: this.settings!.getters.channelSettings,
+      };
+      const payload: IPresetCreate = {
+        name: name,
+        experiment_id: experimentId!,
+        data: presetData
+      }
       const data = await api.createPreset(payload);
       this.mutations.addEntity(data);
       this.main!.mutations.addNotification({ content: "Preset successfully created", color: "success" });
@@ -38,11 +53,11 @@ export class PresetActions extends Actions<PresetState, PresetGetters, PresetMut
     }
   }
 
-  async getPreset(id: number) {
+  async applyPreset(id: number) {
     try {
-      const data = await api.getPreset(id);
-      if (data) {
-        this.mutations.setEntity(data);
+      const preset = await api.getPreset(id);
+      if (preset) {
+        this.settings?.mutations.setPreset(preset);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

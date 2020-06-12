@@ -3,7 +3,7 @@
     <v-row>
       <v-col v-for="item in items" :key="item.name" class="d-flex child-flex" :cols="cols">
         <v-card flat>
-          <v-card-title class="subtitle-2 pa-0">{{ item.caption }}</v-card-title>
+          <v-card-title class="text-subtitle-2 pa-0">{{ item.caption }}</v-card-title>
           <v-img :src="`${item.url}`" aspect-ratio="1" class="grey lighten-2" eager>
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
@@ -28,11 +28,18 @@ export default class TilesView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
+  get colorMap() {
+    return this.settingsContext.getters.colorMap;
+  }
+
   get items() {
     const acquisitionId = this.experimentContext.getters.activeAcquisitionId;
+    if (!acquisitionId) {
+      return [];
+    }
     return this.experimentContext.getters.selectedChannels.map((channel) => {
       let url = `${apiUrl}/acquisitions/${acquisitionId}/${channel.name}/image?`;
-      let color = this.metalColorMap.get(channel.name);
+      let color = this.colorMap[channel.name];
       if (color) {
         color = color.replace("#", "");
         url += `color=${color}`;
@@ -47,10 +54,6 @@ export default class TilesView extends Vue {
         caption: channelSettings && channelSettings.customLabel ? channelSettings.customLabel : channel.label,
       };
     });
-  }
-
-  get metalColorMap() {
-    return this.settingsContext.getters.metalColorMap;
   }
 
   get cols() {

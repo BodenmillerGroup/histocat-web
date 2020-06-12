@@ -1,6 +1,6 @@
 <template>
   <v-card tile>
-    <v-card-title>
+    <v-toolbar dense flat>
       <v-text-field
         v-model="search"
         label="Search"
@@ -13,7 +13,7 @@
           <v-icon dense>mdi-magnify</v-icon>
         </template>
       </v-text-field>
-    </v-card-title>
+    </v-toolbar>
     <v-data-table
       :headers="headers"
       :items="items"
@@ -95,7 +95,7 @@ export default class ChannelsView extends Vue {
       return [];
     }
     return this.channels.map((channel) => {
-      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId, channel.name);
+      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId!, channel.name);
       return {
         id: channel.name,
         label: settings && settings.customLabel ? settings.customLabel : channel.label,
@@ -131,7 +131,7 @@ export default class ChannelsView extends Vue {
     }
     let allSettings: IChannelSettings[] = [];
     this.items.forEach((item) => {
-      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId, item.name);
+      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId!, item.name);
       if (!settings) {
         allSettings.push({
           acquisitionId: this.activeAcquisitionId!,
@@ -162,7 +162,7 @@ table.v-table tbody th {
 }
 
 .scroll-view {
-  height: calc(50vh - 108px);
+  height: calc(50vh - 94px);
 }
 </style>
 
