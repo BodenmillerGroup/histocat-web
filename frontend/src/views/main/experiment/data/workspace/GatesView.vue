@@ -87,6 +87,7 @@ export default class GatesView extends Vue {
 
   async applyGate(event, id: number) {
     await this.gateContext.actions.applyGate(id);
+    await this.experimentContext.actions.getChannelStackImage();
   }
 
   async deleteGate(event, id: number) {

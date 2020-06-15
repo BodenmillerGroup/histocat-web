@@ -318,17 +318,17 @@ description = "FastAPI framework, high performance, easy to learn, fast to code,
 name = "fastapi"
 optional = false
 python-versions = ">=3.6"
-version = "0.56.0"
+version = "0.57.0"
 
 [package.dependencies]
 pydantic = ">=0.32.2,<2.0.0"
-starlette = "0.13.2"
+starlette = "0.13.4"
 
 [package.extras]
 all = ["requests", "aiofiles", "jinja2", "python-multipart", "itsdangerous", "pyyaml", "graphene", "ujson", "orjson", "email-validator", "uvicorn", "async-exit-stack", "async-generator"]
 dev = ["pyjwt", "passlib", "autoflake", "flake8", "uvicorn", "graphene"]
 doc = ["mkdocs", "mkdocs-material", "markdown-include", "typer", "typer-cli", "pyyaml"]
-test = ["pytest (>=4.0.0)", "pytest-cov", "mypy", "black", "isort", "requests", "email-validator", "sqlalchemy", "peewee", "databases", "orjson", "async-exit-stack", "async-generator", "python-multipart", "aiofiles", "flask"]
+test = ["pytest (>=5.4.3)", "pytest-cov", "mypy", "black", "isort", "requests", "email-validator", "sqlalchemy", "peewee", "databases", "orjson", "async-exit-stack", "async-generator", "python-multipart", "aiofiles", "flask"]
 
 [[package]]
 category = "main"
@@ -336,7 +336,7 @@ description = "Faultless AST for Open Biomedical Ontologies in Python."
 name = "fastobo"
 optional = false
 python-versions = ">=3.5.*"
-version = "0.7.2"
+version = "0.8.1"
 
 [[package]]
 category = "dev"
@@ -679,7 +679,7 @@ description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
 python-versions = ">=3.5"
-version = "8.3.0"
+version = "8.4.0"
 
 [[package]]
 category = "dev"
@@ -1383,7 +1383,7 @@ description = "The little ASGI library that shines."
 name = "starlette"
 optional = false
 python-versions = ">=3.6"
-version = "0.13.2"
+version = "0.13.4"
 
 [package.extras]
 full = ["aiofiles", "graphene", "itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests", "ujson"]
@@ -1678,7 +1678,7 @@ backend = ["alembic", "python-multipart", "gunicorn", "uvicorn"]
 worker = []
 
 [metadata]
-content-hash = "200798ee5d35e8b8e323766dea10c5f28877ac265b1c643561ce37077001e117"
+content-hash = "2e8cdc3693362cdb8ac190455fb5c5f31e2430807441f8bb91fc1abbc38de4a2"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1831,34 +1831,33 @@ emails = [
     {file = "emails-0.5.15.tar.gz", hash = "sha256:fcc02567a528eae6b66d2a5c20ce7a0326e4f6b201bc8ae302f89413164db06a"},
 ]
 fastapi = [
-    {file = "fastapi-0.56.0-py3-none-any.whl", hash = "sha256:c0ba776275e91920b2f0eab1066f4c3f83fc05695f3e654f2013e6fcd9084969"},
-    {file = "fastapi-0.56.0.tar.gz", hash = "sha256:35394a965e66af64b64f0ce18d5ab49403876eabf0f6a4f2f2a20f794214997b"},
+    {file = "fastapi-0.57.0-py3-none-any.whl", hash = "sha256:6280be6cbee579fc05be2f425bf75af74813fd740a2eb3b758d445abf0bbd280"},
+    {file = "fastapi-0.57.0.tar.gz", hash = "sha256:8c03091049987dc9b18a2d6155cd2f1ce18cfea74f397a1f72ddd7945060bb7d"},
 ]
 fastobo = [
-    {file = "fastobo-0.7.2-cp35-cp35m-macosx_10_13_x86_64.whl", hash = "sha256:29b7ca92f0b2bdc295b6691ced39fcf5b7229e0f20962ad6b520d69b23c33217"},
-    {file = "fastobo-0.7.2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:65b63c9c8635f3e415b1c77eaede0208038f20525b898cbdbbb8ec1b1746d05a"},
-    {file = "fastobo-0.7.2-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:9bdbf4b3dc232fd45604bfea9ed9b7bec621ff8cfaba0d186244ee3b759c433d"},
-    {file = "fastobo-0.7.2-cp35-cp35m-win_amd64.whl", hash = "sha256:2c6bf884ba5908c448dcee3fa35ca7c9d09dee7f396269ee16534377fd401c95"},
-    {file = "fastobo-0.7.2-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:2b75f0bf7540c3c6ec422a3b335f0b96b145199fc50fe3bd1a72dd452166be26"},
-    {file = "fastobo-0.7.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:297dbc785dd2492c347988b4e6f0657032fe9eb8582dc656033af0108a3f0fae"},
-    {file = "fastobo-0.7.2-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:7a1182ceb633df9b347ad426fb62ed0c53e2e47c5a0d014ef600ed32cbaefff9"},
-    {file = "fastobo-0.7.2-cp36-cp36m-win_amd64.whl", hash = "sha256:bc61bf2c73ef42e972f76594d5aa8c8e22992ac5d30c3ec6de4e4f66ba7afbf8"},
-    {file = "fastobo-0.7.2-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:625e60ef5e03a5ca20e806720179027e6d348f5450d122cd6135fb487ee65e43"},
-    {file = "fastobo-0.7.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:4fb238d0e5ed274598dc99aac54a80e743e4d902f2509b073932a1c32ea535f4"},
-    {file = "fastobo-0.7.2-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:da7a052abbeed5155ffebba61c9c5d258bc8ae15bd0d0e5157b002200929ccb4"},
-    {file = "fastobo-0.7.2-cp37-cp37m-win_amd64.whl", hash = "sha256:238b16b225a52b7d973738902d1fa641edab729973eaa71ab3e817b9df7b960f"},
-    {file = "fastobo-0.7.2-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:390c1fa8d782a689028827bd193f7398708bee20664685e067933fcfa63d68f0"},
-    {file = "fastobo-0.7.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3799475ad27802e3a9cd77d286ac5d969d741b78e43056150485398d0ae2f5f3"},
-    {file = "fastobo-0.7.2-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:516a238ed589f844b967251e684d5038cbfd34ebf7eaa39771fac3dc7c477e84"},
-    {file = "fastobo-0.7.2-cp38-cp38-win_amd64.whl", hash = "sha256:f9998d0d19616b973caf3c333a7ecca5d6083ac80f52c2ce7289c1920445ae81"},
-    {file = "fastobo-0.7.2-pp36-pypy36_pp73-macosx_10_13_x86_64.whl", hash = "sha256:6ffcc624ac8c02d829dd216f73e85871a588a782b0ef38c8b33abc09c47ec0d9"},
-    {file = "fastobo-0.7.2-pp371-pypy3_71-manylinux1_x86_64.whl", hash = "sha256:2f2a35a375bc5056d7e6314ddfd9e1e27c5c733434879530430fcd2106c5bfa3"},
-    {file = "fastobo-0.7.2-pp371-pypy3_71-manylinux2010_x86_64.whl", hash = "sha256:5d13ea848ed81dd3d633244f42a877a7c8ec6b2a491ef94536e08eaaaf178539"},
-    {file = "fastobo-0.7.2-pp372-pypy3_72-manylinux1_x86_64.whl", hash = "sha256:32a4a6971b6e8d463493e8ecce5f9adfe993615b8626250f44fd59ff5b353cdf"},
-    {file = "fastobo-0.7.2-pp372-pypy3_72-manylinux2010_x86_64.whl", hash = "sha256:80331fd0a7e11b47b4c29d9deea8d0a97d6a15ec54293e11c470aeb572aa6e2e"},
-    {file = "fastobo-0.7.2-pp373-pypy36_pp73-manylinux1_x86_64.whl", hash = "sha256:5d04de79e6cbbbe3340ab561ff2e705470ab319c670aad0009c032ece53d6963"},
-    {file = "fastobo-0.7.2-pp373-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:5dd21b0c6ad8bceb7b942aadc2a8a3d43dd2dbf81a9f7c85849a54c64b494580"},
-    {file = "fastobo-0.7.2.tar.gz", hash = "sha256:9d7647f4adacbb4b5fd61e13259da093b0b98590233e669309d9a2eb2f3c2485"},
+    {file = "fastobo-0.8.1-cp35-cp35m-macosx_10_13_x86_64.whl", hash = "sha256:04a1bda446490f6066df70a4828d9fadd6192efb574fc45dec39935365abbf62"},
+    {file = "fastobo-0.8.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:fd90225161b9ca63c10009bb427dad03b32143c780e4ef4295f5b6c0904a0de9"},
+    {file = "fastobo-0.8.1-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:5f532026c300402b1ab2163afd64dc2540a76cac88cc11c7b009a269ba4af143"},
+    {file = "fastobo-0.8.1-cp35-cp35m-win_amd64.whl", hash = "sha256:ed755dbb61acfe06ccd454219288b779f313a9503bf19a4e461186c439131a09"},
+    {file = "fastobo-0.8.1-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:fde6a4fbcb05348c1b0f2457a7aca9c8c42892a0875bf067c81f8d34025a090d"},
+    {file = "fastobo-0.8.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:bfb464d12a3b7658ea34891177020144a549954f63c2fa7d06c9f9aa3c95eb77"},
+    {file = "fastobo-0.8.1-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:55c9ae1872e36f97a463734d5dd1b769d1fcfe6147c4b94ecab3bae329d0893b"},
+    {file = "fastobo-0.8.1-cp36-cp36m-win_amd64.whl", hash = "sha256:20eb98bdbabbbeb53351fa928796c8c2b016a3fd4a347b04a655cff5646d98cb"},
+    {file = "fastobo-0.8.1-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:853e28ae2fab90c4ceba22c74c426e5f2ea53d49a6b3770e5f7312622cc86cd6"},
+    {file = "fastobo-0.8.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:b20cf6fa9e87a3122c50625af5f675210dca64980fc1ebfcf47c2138f6472472"},
+    {file = "fastobo-0.8.1-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:eba1f45b658759cab99c899a6a1221a3f47c2dfa6083fb4984d60287692235aa"},
+    {file = "fastobo-0.8.1-cp37-cp37m-win_amd64.whl", hash = "sha256:7f3b2fff1fa1af7c5171df240a1b5456adc9b6dad1a234a855a6e725bfa1f698"},
+    {file = "fastobo-0.8.1-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:4fbcf18a4fec1255054b25613bf2194f2b34c491d55d5c0dcfa2e81fe7f4b8ad"},
+    {file = "fastobo-0.8.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:53ce0ea5f27dd59b86882e64b8305b69ca93b2eaff71207c7eb1ae3185b8f19a"},
+    {file = "fastobo-0.8.1-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:11ab1e6776d92ae89c5d32ac32687b1f341199bc9036be199dc5d3b40570567d"},
+    {file = "fastobo-0.8.1-cp38-cp38-win_amd64.whl", hash = "sha256:8fe7fc06ebeab002b0be5e0d26843accb32c6e6a985dce619a47f7d911da92c5"},
+    {file = "fastobo-0.8.1-pp36-pypy36_pp73-manylinux1_x86_64.whl", hash = "sha256:25f8c9975b8751dac6ad47987e59e156de18fc8bff31f873f21f8e07aa42e60d"},
+    {file = "fastobo-0.8.1-pp36-pypy36_pp73-manylinux2010_x86_64.whl", hash = "sha256:856035a4e318bef8d1af6a75e03b90f646dd84ea3ce00a535c682a8202ed3538"},
+    {file = "fastobo-0.8.1-pp36-pypy3_72-manylinux1_x86_64.manylinux2010_x86_64.whl", hash = "sha256:f7af4dcb367b5289e63c7d0eb442f4af1d726260ec521c12fa2838115c7ade6d"},
+    {file = "fastobo-0.8.1-pp36-pypy3_72-manylinux1_x86_64.whl", hash = "sha256:11b26828837d60b297917cdfd0a050685671985f3227f9e7c7f3f2c820c89630"},
+    {file = "fastobo-0.8.1-pp36-pypy3_72-manylinux2010_x86_64.manylinux1_x86_64.whl", hash = "sha256:db73bd7ae59918e2d4a8a965c57b91c563a06bb6afc64e46b316b7702630b5ec"},
+    {file = "fastobo-0.8.1-pp36-pypy3_72-manylinux2010_x86_64.whl", hash = "sha256:a20abadcd6c5389c33abbac118a364d34cd59edaab7c36f946472e75aec2d81d"},
+    {file = "fastobo-0.8.1.tar.gz", hash = "sha256:4ca0d9a6ea79e6ae75845e0c2d03fa46c996a67a5201d542cb0f09c265068744"},
 ]
 flake8 = [
     {file = "flake8-3.8.3-py2.py3-none-any.whl", hash = "sha256:15e351d19611c887e482fb960eae4d44845013cc142d42896e9862f775d8cf5c"},
@@ -2207,8 +2206,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 more-itertools = [
-    {file = "more-itertools-8.3.0.tar.gz", hash = "sha256:558bb897a2232f5e4f8e2399089e35aecb746e1f9191b6584a151647e89267be"},
-    {file = "more_itertools-8.3.0-py3-none-any.whl", hash = "sha256:7818f596b1e87be009031c7653d01acc46ed422e6656b394b0f765ce66ed4982"},
+    {file = "more-itertools-8.4.0.tar.gz", hash = "sha256:68c70cc7167bdf5c7c9d8f6954a7837089c6a36bf565383919bb595efb8a17e5"},
+    {file = "more_itertools-8.4.0-py3-none-any.whl", hash = "sha256:b78134b2063dd214000685165d81c154522c3ee0a1c0d4d113c80361c234c5a2"},
 ]
 mypy = [
     {file = "mypy-0.780-cp35-cp35m-macosx_10_6_x86_64.whl", hash = "sha256:d3b4941de44341227ece1caaf5b08b23e42ad4eeb8b603219afb11e9d4cfb437"},
@@ -2801,8 +2800,8 @@ sqlalchemy-stubs = [
     {file = "sqlalchemy_stubs-0.3-py3-none-any.whl", hash = "sha256:ca1250605a39648cc433f5c70cb1a6f9fe0b60bdda4c51e1f9a2ab3651daadc8"},
 ]
 starlette = [
-    {file = "starlette-0.13.2-py3-none-any.whl", hash = "sha256:6169ee78ded501095d1dda7b141a1dc9f9934d37ad23196e180150ace2c6449b"},
-    {file = "starlette-0.13.2.tar.gz", hash = "sha256:a9bb130fa7aa736eda8a814b6ceb85ccf7a209ed53843d0d61e246b380afa10f"},
+    {file = "starlette-0.13.4-py3-none-any.whl", hash = "sha256:0fb4b38d22945b46acb880fedee7ee143fd6c0542992501be8c45c0ed737dd1a"},
+    {file = "starlette-0.13.4.tar.gz", hash = "sha256:04fe51d86fd9a594d9b71356ed322ccde5c9b448fc716ac74155e5821a922f8d"},
 ]
 statsmodels = [
     {file = "statsmodels-0.11.1-cp35-cp35m-macosx_10_13_intel.whl", hash = "sha256:47e0f27fe515fae06240a1f1dbcdce8b93417ea294b4965335f538627f711b10"},
