@@ -9,6 +9,11 @@ import { api } from "./api";
 import { ExperimentGetters } from "./getters";
 import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from "./models";
 import { ExperimentMutations } from "./mutations";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { IChannelSettings } from "@/modules/settings/models";
+import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
+import { SET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
+import { selectionModule } from "@/modules/selection";
 
 export class ExperimentActions extends Actions<
   ExperimentState,
@@ -20,13 +25,14 @@ export class ExperimentActions extends Actions<
   main?: Context<typeof mainModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetModule>;
+  selection?: Context<typeof selectionModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
-    // Create and retain main module context
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetModule.context(store);
+    this.selection = selectionModule.context(store);
   }
 
   async getExperiments() {
@@ -141,7 +147,7 @@ export class ExperimentActions extends Actions<
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
+        BroadcastManager.publish(SET_CHANNEL_STACK_IMAGE, reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -162,7 +168,7 @@ export class ExperimentActions extends Actions<
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
+        BroadcastManager.publish(SET_CHANNEL_STACK_IMAGE, reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -185,6 +191,7 @@ export class ExperimentActions extends Actions<
   async setSharedChannelLevels(payload: { metal: string; levels: number[] }) {
     const experiment = this.getters.activeExperiment;
     if (experiment && experiment.slides) {
+      let allSettings: IChannelSettings[] = [];
       for (const slide of experiment.slides) {
         for (const acquisition of slide.acquisitions) {
           for (const channel of Object.values(acquisition.channels)) {
@@ -209,11 +216,12 @@ export class ExperimentActions extends Actions<
                   },
                 };
               }
-              this.settings!.mutations.setChannelSettings(settings);
+              allSettings.push(settings);
             }
           }
         }
       }
+      BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, allSettings);
     }
   }
 
@@ -244,11 +252,14 @@ export class ExperimentActions extends Actions<
     }
   }
 
+  /**
+   * Prepare stack image call parameters
+   */
   private prepareStackParams(format: "png" | "tiff" = "png") {
     const activeAcquisitionId = this.getters.activeAcquisitionId;
     const channels = this.getters.selectedChannels.map((channel) => {
-      const color = this.settings!.getters.metalColorMap.get(channel.name);
-      const settings = this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name);
+      const color = this.settings!.getters.colorMap[channel.name];
+      const settings = activeAcquisitionId ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name) : undefined;
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;
@@ -262,14 +273,12 @@ export class ExperimentActions extends Actions<
     });
 
     const filter = this.settings!.getters.filter;
-    const legend = this.settings!.getters.legend;
     const scalebar = this.settings!.getters.scalebar;
 
     const result = {
       acquisitionId: activeAcquisitionId,
       format: format,
       filter: filter,
-      legend: legend,
       scalebar: scalebar,
       channels: channels,
     };
@@ -287,6 +296,12 @@ export class ExperimentActions extends Actions<
             colorize: false,
             location: mask.location,
           };
+          // Prepare selected cell ids visualisation
+          const selectedCells = this.selection?.getters.selectedCells?.get(acquisition.id);
+          if (selectedCells && selectedCells.length > 0) {
+            result["mask"]["gated"] = true;
+            result["mask"]["cell_ids"] = selectedCells.map((item) => item.cellId);
+          }
         }
       }
     }

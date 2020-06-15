@@ -16,7 +16,7 @@ export const api = {
     });
   },
   async getExperimentDatasets(experimentId: number) {
-    return ApiManager.api.get(`datasets/experiment/${experimentId}`).json<IDataset[]>();
+    return ApiManager.api.get(`experiments/${experimentId}/datasets`).json<IDataset[]>();
   },
   async deleteDataset(id: number) {
     return ApiManager.api.delete(`datasets/${id}`).json();

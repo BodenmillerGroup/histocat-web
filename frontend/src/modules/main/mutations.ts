@@ -50,4 +50,16 @@ export class MainMutations extends Mutations<MainState> {
   setProcessingProgress(payload: number) {
     this.state.processingProgress = payload;
   }
+
+  setShowData(value: boolean) {
+    this.state.showData = value;
+  }
+
+  reset() {
+    // acquire initial state
+    const s = new MainState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
+  }
 }

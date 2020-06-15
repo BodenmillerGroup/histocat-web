@@ -10,6 +10,8 @@ import { DatasetState } from ".";
 import { api } from "./api";
 import { DatasetGetters } from "./getters";
 import { DatasetMutations } from "./mutations";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_DATASETS } from "@/modules/datasets/events";
 
 export class DatasetActions extends Actions<DatasetState, DatasetGetters, DatasetMutations, DatasetActions> {
   // Declare context type
@@ -28,7 +30,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
   async getExperimentDatasets(experimentId: number) {
     try {
       const data = await api.getExperimentDatasets(experimentId);
-      this.mutations.setDatasets(data);
+      BroadcastManager.publish(SET_DATASETS, data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -37,7 +39,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
   async deleteDataset(id: number) {
     try {
       const data = await api.deleteDataset(id);
-      this.mutations.deleteDataset(id);
+      this.mutations.deleteEntity(id);
       this.main!.mutations.addNotification({ content: "Dataset successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -89,7 +91,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
 
     try {
       const data = await api.createDataset(params);
-      this.mutations.setDataset(data);
+      this.mutations.addEntity(data);
       this.main!.mutations.addNotification({ content: "Dataset successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);

@@ -26,7 +26,6 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
-    // Create and retain main module context
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
     this.experiment = experimentModule.context(store);
@@ -186,8 +185,8 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   private prepareSegmentationParams(segmentationSettings: IImageSegmentationSettings, format: "png" | "tiff" = "png") {
     const activeAcquisitionId = this.experiment!.getters.activeAcquisitionId;
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
-      const color = this.settings!.getters.metalColorMap.get(channel.name);
-      const settings = this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name);
+      const color = this.settings!.getters.colorMap[channel.name];
+      const settings = activeAcquisitionId ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name) : undefined;
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;

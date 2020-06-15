@@ -95,8 +95,7 @@ export interface IChannel {
 }
 
 export interface IChannelStats {
-  hist: number[];
-  edges: number[];
+  bins: number[];
 }
 
 export interface IChannelStack {
@@ -104,13 +103,11 @@ export interface IChannelStack {
   datasetId?: number;
   format?: string;
   filter: IImageFilter;
-  legend: IImageLegend;
   scalebar: IImageScalebar;
   mask?: IMaskSettings;
   channels: {
     name: string;
     color?: string;
-    customLabel?: string;
     min?: number;
     max?: number;
   }[];

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid fill-height>
       <v-row align="center" justify="center">
         <v-col xs="12" sm="8" md="4">
@@ -34,12 +34,12 @@
                 </v-alert>
               </div>
               <v-row>
-                <v-col class="caption text-right py-0">
+                <v-col class="text-caption text-right py-0">
                   <router-link to="/recover-password">Recover password</router-link>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col class="caption text-right py-0">
+                <v-col class="text-caption text-right py-0">
                   <router-link to="/signup">Register an account</router-link>
                 </v-col>
               </v-row>
@@ -52,7 +52,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">

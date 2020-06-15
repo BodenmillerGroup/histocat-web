@@ -2,22 +2,22 @@
   <v-container fluid>
     <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
-        <div class="headline primary--text">User Profile</div>
+        <div class="text-h5 primary--text">User Profile</div>
       </v-card-title>
       <v-card-text>
         <div class="my-6">
-          <div class="subtitle-1 primary--text text--lighten-3">Name</div>
-          <div class="title primary--text text--darken-2" v-if="userProfile && userProfile.name">
+          <div class="text-subtitle-1 primary--text text--lighten-3">Name</div>
+          <div class="text-h6 primary--text text--darken-2" v-if="userProfile && userProfile.name">
             {{ userProfile.name }}
           </div>
-          <div class="title primary--text text--darken-2" v-else>-----</div>
+          <div class="text-h6 primary--text text--darken-2" v-else>-----</div>
         </div>
         <div class="my-4">
-          <div class="subtitle-1 primary--text text--lighten-3">Email</div>
-          <div class="title primary--text text--darken-2" v-if="userProfile && userProfile.email">
+          <div class="text-subtitle-1 primary--text text--lighten-3">Email</div>
+          <div class="text-h6 primary--text text--darken-2" v-if="userProfile && userProfile.email">
             {{ userProfile.email }}
           </div>
-          <div class="title primary--text text--darken-2" v-else>-----</div>
+          <div class="text-h6 primary--text text--darken-2" v-else>-----</div>
         </div>
       </v-card-text>
       <v-card-actions>

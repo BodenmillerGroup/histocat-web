@@ -1,29 +1,55 @@
 import { WebSocketMessage } from "@/utils/WebSocketMessage";
 import { Mutations } from "vuex-smart-module";
-import { DatasetState } from ".";
+import { datasetListSchema, DatasetState } from ".";
 import { IDataset } from "./models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_ACTIVE_DATASET_ID, SET_DATASETS } from "@/modules/datasets/events";
+import { normalize } from "normalizr";
 
 export class DatasetMutations extends Mutations<DatasetState> {
-  setDatasets(datasets: IDataset[]) {
-    this.state.datasets = datasets;
+  constructor() {
+    super();
+    BroadcastManager.subscribe(SET_DATASETS, (payload) => this.setEntities(payload));
+    BroadcastManager.subscribe(SET_ACTIVE_DATASET_ID, (payload) => this.setActiveDatasetId(payload));
   }
 
-  setDataset(dataset: IDataset) {
-    const items = this.state.datasets.filter((item) => item.id !== dataset.id);
-    items.push(dataset);
-    this.state.datasets = items;
+  setActiveDatasetId(id: number | null) {
+    this.state.activeDatasetId = id;
   }
 
-  deleteDataset(id: number) {
-    this.state.datasets = this.state.datasets.filter((item) => item.id !== id);
+  setEntities(payload: IDataset[]) {
+    const normalizedData = normalize<IDataset>(payload, datasetListSchema);
+    this.state.ids = normalizedData.result;
+    this.state.entities = normalizedData.entities.datasets ? normalizedData.entities.datasets : {};
   }
 
-  setActiveDataset(dataset?: IDataset) {
-    this.state.activeDataset = dataset;
+  setEntity(payload: IDataset) {
+    const existingId = this.state.ids.find((id) => id === payload.id);
+    if (!existingId) {
+      this.state.ids = this.state.ids.concat(payload.id);
+    }
+    this.state.entities = { ...this.state.entities, [payload.id]: payload };
+  }
+
+  addEntity(payload: IDataset) {
+    this.state.ids = this.state.ids.concat(payload.id);
+    this.state.entities = { ...this.state.entities, [payload.id]: payload };
+  }
+
+  updateEntity(payload: IDataset) {
+    this.state.entities = { ...this.state.entities, [payload.id]: payload };
+  }
+
+  deleteEntity(id: number) {
+    this.state.ids = this.state.ids.filter((item) => item !== id);
+    const entities = { ...this.state.entities };
+    delete entities[id];
+    this.state.entities = entities;
   }
 
   updateDatasetTSNEOutput(message: WebSocketMessage) {
-    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    const newState = { ...this.state.entities };
+    const dataset = newState[message.payload.params.dataset_id];
     if (dataset) {
       if (!dataset.output) {
         dataset.output = {
@@ -36,12 +62,13 @@ export class DatasetMutations extends Mutations<DatasetState> {
         dataset.output.tsne = {};
       }
       dataset.output.tsne[message.payload.name] = message.payload;
-      this.state.activeDataset = Object.assign({}, dataset);
+      this.state.entities = newState;
     }
   }
 
   updateDatasetUMAPOutput(message: WebSocketMessage) {
-    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    const newState = { ...this.state.entities };
+    const dataset = newState[message.payload.params.dataset_id];
     if (dataset) {
       if (!dataset.output) {
         dataset.output = {
@@ -54,12 +81,13 @@ export class DatasetMutations extends Mutations<DatasetState> {
         dataset.output.umap = {};
       }
       dataset.output.umap[message.payload.name] = message.payload;
-      this.state.activeDataset = Object.assign({}, dataset);
+      this.state.entities = newState;
     }
   }
 
   updateDatasetPhenoGraphOutput(message: WebSocketMessage) {
-    const dataset = this.state.datasets.find((item) => item.id === message.payload.params.dataset_id);
+    const newState = { ...this.state.entities };
+    const dataset = newState[message.payload.params.dataset_id];
     if (dataset) {
       if (!dataset.output) {
         dataset.output = {
@@ -72,12 +100,15 @@ export class DatasetMutations extends Mutations<DatasetState> {
         dataset.output.phenograph = {};
       }
       dataset.output.phenograph[message.payload.name] = message.payload;
-      this.state.activeDataset = Object.assign({}, dataset);
+      this.state.entities = newState;
     }
   }
 
   reset() {
-    this.state.datasets = [];
-    this.state.activeDataset = undefined;
+    // acquire initial state
+    const s = new DatasetState();
+    Object.keys(s).forEach((key) => {
+      this.state[key] = s[key];
+    });
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid fill-height>
       <v-row align="center" justify="center">
         <v-col xs="12" sm="8" md="4">
@@ -45,7 +45,7 @@
                 ></v-text-field>
               </v-form>
               <v-row>
-                <v-col class="caption text-right py-0">
+                <v-col class="text-caption text-right py-0">
                   <router-link to="/login">Already have an account?</router-link>
                 </v-col>
               </v-row>
@@ -58,7 +58,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">

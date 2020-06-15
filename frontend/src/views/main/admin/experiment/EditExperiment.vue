@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
-        <div class="headline primary--text">Edit Experiment</div>
+        <div class="text-h5 primary--text">Edit Experiment</div>
       </v-card-title>
       <v-card-text>
         <template>
@@ -23,7 +23,7 @@
             >
               <template v-slot:no-data>
                 <v-list-item>
-                  <span class="subtitle-1">Create</span>
+                  <span class="text-subtitle-1">Create</span>
                   <v-chip label small>
                     {{ search }}
                   </v-chip>

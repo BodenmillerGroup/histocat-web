@@ -6,8 +6,8 @@ import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSett
 import { SettingsMutations } from "./mutations";
 
 export class SettingsState {
-  channelSettings: Map<number, Map<string, IChannelSettings>> = new Map<number, Map<string, IChannelSettings>>();
-  metalColorMap: Map<string, string> = new Map<string, string>();
+  channelSettings: { [acquisitionId: number]: { [channelName: string]: IChannelSettings } } = {};
+  colorMap: { [markerName: string]: string } = {};
   filter: IImageFilter = {
     apply: false,
     type: "gaussian",
@@ -18,7 +18,7 @@ export class SettingsState {
   };
   legend: IImageLegend = {
     apply: false,
-    fontScale: 1.0,
+    fontScale: 12,
     showIntensity: false,
   };
   scalebar: IImageScalebar = {

@@ -1,5 +1,9 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:12.16.2-alpine3.11 as build-stage
+FROM node:12.18.0-alpine3.11 as build-stage
+
+# Comment out the next line to disable git
+RUN apk update && apk upgrade && \
+    apk add --no-cache git
 
 WORKDIR /app
 
@@ -20,7 +24,7 @@ RUN yarn build
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1.16.1-alpine
+FROM nginx:1.18.0-alpine
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 

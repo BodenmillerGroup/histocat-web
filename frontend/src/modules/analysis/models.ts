@@ -8,7 +8,6 @@ export interface IImageSegmentationSettings {
   kernel_size: number;
   mask_color: string;
   result_type: ImageResultType;
-  suppressBroadcast?: boolean;
 }
 
 export interface IImageSegmentationSubmission {
@@ -46,7 +45,24 @@ export interface IPCASubmission {
   heatmap: string;
 }
 
+export interface IChart3DData {
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
+export interface IChart2DData {
+  acquisitionIds: number[];
+  cellIds: number[];
+  x: IPlotSeries;
+  y: IPlotSeries;
+  z?: IPlotSeries;
+  heatmap?: IPlotSeries;
+}
+
 export interface IPCAData {
+  cell_ids: any[];
   x: IPlotSeries;
   y: IPlotSeries;
   z?: IPlotSeries;

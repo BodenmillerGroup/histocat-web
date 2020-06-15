@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-card class="ma-4 pa-4">
       <v-card-title primary-title>
-        <div class="headline primary--text">Create User</div>
+        <div class="text-h5 primary--text">Create User</div>
       </v-card-title>
       <v-card-text>
         <template>

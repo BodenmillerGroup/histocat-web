@@ -10,6 +10,12 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import { createStore, Module } from "vuex-smart-module";
 import createLogger from "vuex/dist/logger";
+import { responsiveModule } from "@/modules/responsive";
+import { RootActions } from "@/store/actions";
+import { selectionModule } from "@/modules/selection";
+import { centroidsModule } from "@/modules/centroids";
+import { presetModule } from "@/modules/presets";
+import { gateModule } from "@/modules/gates";
 
 Vue.use(Vuex);
 
@@ -17,13 +23,19 @@ const debug = false; // process.env.NODE_ENV !== "production";
 
 const rootModule = new Module({
   modules: {
-    main: mainModule,
-    user: userModule,
-    experiment: experimentModule,
-    dataset: datasetModule,
     analysis: analysisModule,
+    dataset: datasetModule,
+    experiment: experimentModule,
+    main: mainModule,
+    responsive: responsiveModule,
     settings: settingsModule,
+    user: userModule,
+    selection: selectionModule,
+    centroids: centroidsModule,
+    presets: presetModule,
+    gates: gateModule,
   },
+  actions: RootActions,
 });
 
 const vuexStorage = new VuexPersistence<typeof rootModule>({

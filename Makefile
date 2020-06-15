@@ -33,19 +33,19 @@ update-backend:
 	cd backend && poetry update
 
 mypy:
-	cd backend && mypy app
+	cd backend && mypy histocat
 
 pyright:
 	cd backend && pyright
 
 isort:
-	cd backend && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply app
+	cd backend && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply histocat
 
 vulture:
-	cd backend && vulture app --min-confidence 70
+	cd backend && vulture histocat --min-confidence 70
 
 black:
-	cd backend && black app
+	cd backend && black histocat
 
 autoflake:
 	cd backend && autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place app --exclude=__init__.py

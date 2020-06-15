@@ -15,6 +15,7 @@ export class MainState {
   notifications: AppNotification[] = [];
   showWorkspace = true;
   showOptions = true;
+  showData = false;
 
   processing = false;
   processingProgress = 0;

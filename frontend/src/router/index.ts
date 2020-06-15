@@ -14,16 +14,10 @@ export default new Router({
       children: [
         {
           path: "login",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
           component: () => import(/* webpackChunkName: "login" */ "@/views/Login.vue"),
         },
         {
           path: "signup",
-          // route level code-splitting
-          // this generates a separate chunk (about.[hash].js) for this route
-          // which is lazy-loaded when the route is visited.
           component: () => import(/* webpackChunkName: "login" */ "@/views/SignUp.vue"),
         },
         {
@@ -39,57 +33,24 @@ export default new Router({
           component: () => import(/* webpackChunkName: "main" */ "@/views/main/Main.vue"),
           children: [
             {
-              path: "dashboard",
-              component: () => import(/* webpackChunkName: "main-dashboard" */ "@/views/main/Dashboard.vue"),
-            },
-            {
-              path: "experiments/create",
-              name: "main-experiment-create",
-              component: () =>
-                import(
-                  /* webpackChunkName: "main-admin-experiments-create" */ "@/views/main/admin/experiment/CreateExperiment.vue"
-                ),
-            },
-            {
-              path: "experiments/:id",
-              name: "main-experiment",
-              component: () =>
-                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ExperimentView.vue"),
-            },
-            {
-              path: "experiments/edit/:id",
-              name: "main-experiment-edit",
-              component: () =>
-                import(
-                  /* webpackChunkName: "main-experiment-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
-                ),
-            },
-            {
-              path: "experiments/:id/share",
-              name: "main-experiment-share",
-              component: () =>
-                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ShareExperiment.vue"),
-            },
-            {
               path: "profile",
               component: RouterComponent,
               redirect: "profile/view",
               children: [
                 {
                   path: "view",
-                  component: () =>
-                    import(/* webpackChunkName: "main-profile" */ "@/views/main/profile/UserProfile.vue"),
+                  component: () => import(/* webpackChunkName: "profile" */ "@/views/main/profile/UserProfile.vue"),
                 },
                 {
                   path: "edit",
                   component: () =>
-                    import(/* webpackChunkName: "main-profile-edit" */ "@/views/main/profile/UserProfileEdit.vue"),
+                    import(/* webpackChunkName: "profile-edit" */ "@/views/main/profile/UserProfileEdit.vue"),
                 },
                 {
                   path: "password",
                   component: () =>
                     import(
-                      /* webpackChunkName: "main-profile-password" */ "@/views/main/profile/UserProfileEditPassword.vue"
+                      /* webpackChunkName: "profile-password" */ "@/views/main/profile/UserProfileEditPassword.vue"
                     ),
                 },
               ],
@@ -141,6 +102,39 @@ export default new Router({
                     ),
                 },
               ],
+            },
+            {
+              path: "experiments",
+              name: "main-experiments",
+              component: () => import(/* webpackChunkName: "main-experiments" */ "@/views/main/ExperimentsView.vue"),
+            },
+            {
+              path: "experiments/create",
+              name: "main-experiment-create",
+              component: () =>
+                import(
+                  /* webpackChunkName: "main-experiment-create" */ "@/views/main/admin/experiment/CreateExperiment.vue"
+                ),
+            },
+            {
+              path: "experiments/:experimentId/edit",
+              name: "main-experiment-edit",
+              component: () =>
+                import(
+                  /* webpackChunkName: "main-experiment-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
+                ),
+            },
+            {
+              path: "experiments/:experimentId/share",
+              name: "main-experiment-share",
+              component: () =>
+                import(/* webpackChunkName: "main-experiment-share" */ "@/views/main/experiment/ShareExperiment.vue"),
+            },
+            {
+              path: "experiments/:experimentId",
+              name: "main-experiment",
+              component: () =>
+                import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ExperimentView.vue"),
             },
           ],
         },
