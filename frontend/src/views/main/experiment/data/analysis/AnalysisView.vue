@@ -7,7 +7,7 @@
     <v-tab>UMAP</v-tab>
     <v-tab>PhenoGraph</v-tab>
     <v-tab-item>
-      <ScatterPlotTab />
+      <ScatterPlotTabNew />
     </v-tab-item>
     <v-tab-item>
       <BoxPlotTab />
@@ -35,9 +35,11 @@ import TSNETab from "@/views/main/experiment/data/analysis/tsne/TSNETab.vue";
 import ScatterPlotTab from "@/views/main/experiment/data/analysis/scatter/ScatterPlotTab.vue";
 import UMAPTab from "@/views/main/experiment/data/analysis/umap/UMAPTab.vue";
 import { Component, Vue } from "vue-property-decorator";
+import ScatterPlotTabNew from "@/views/main/experiment/data/analysis/scatter/ScatterPlotTabNew.vue";
 
 @Component({
   components: {
+    ScatterPlotTabNew,
     PhenoGraphTab,
     UMAPTab,
     PCATab,

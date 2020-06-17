@@ -21,7 +21,7 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
   }
 
   setScatterPlotData(data: IScatterPlotData | null) {
-    this.state.scatterPlotData = data;
+    this.state.scatterPlotData = Object.freeze(data);
   }
 
   setBoxPlotData(data: IPlotSeries[]) {
@@ -29,15 +29,15 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
   }
 
   setPCAData(data: IPCAData | null) {
-    this.state.pcaData = data;
+    this.state.pcaData = Object.freeze(data);
   }
 
   setTSNEData(data: ITSNEData | null) {
-    this.state.tsneData = data;
+    this.state.tsneData = Object.freeze(data);
   }
 
   setUMAPData(data: IUMAPData | null) {
-    this.state.umapData = data;
+    this.state.umapData = Object.freeze(data);
   }
 
   setPhenoGraphData(data: IPhenoGraphData | null) {

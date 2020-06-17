@@ -166,20 +166,16 @@ async def get_scatter_plot_data(
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
     channel_map = dataset.input.get("channel_map")
-    image_map = dataset.input.get("image_map")
 
-    image_numbers = []
-    for acquisition_id in acquisition_ids:
-        image_number = image_map.get(str(acquisition_id))
-        image_numbers.append(image_number)
-
-    if not cell_input or not channel_map or len(image_numbers) == 0:
+    if not cell_input or not channel_map or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"].isin(image_numbers)]
+    df = df[df["acquisition_id"].isin(acquisition_ids)]
 
-    content = {
+    output = {
+        "acquisitionIds": df["acquisition_id"].tolist(),
+        "cellIds": df["ObjectNumber"].tolist(),
         "x": {
             "label": marker_x,
             "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16).tolist(),
@@ -191,7 +187,7 @@ async def get_scatter_plot_data(
     }
 
     if marker_z:
-        content["z"] = {
+        output["z"] = {
             "label": marker_z,
             "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}"] * 2 ** 16).tolist(),
         }
@@ -199,20 +195,14 @@ async def get_scatter_plot_data(
     if heatmap_type and heatmap:
         if heatmap_type == "channel":
             channel_map = dataset.input.get("channel_map")
-            heatmap_data = (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16).tolist()
+            heatmap_data = (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16)
         else:
-            heatmap_data = df[heatmap].tolist()
+            heatmap_data = df[heatmap]
 
-        content["heatmap"] = {"label": heatmap, "data": heatmap_data}
-    elif len(acquisition_ids) > 1:
-        image_map_inv = {v: k for k, v in image_map.items()}
-        content["heatmap"] = {
-            "label": "Acquisition",
-            "data": ([image_map_inv.get(item) for item in df["ImageNumber"].tolist()]),
-        }
+        output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return ORJSONResponse(content)
+    return ORJSONResponse(output)
 
 
 @router.get("/boxplot", response_model=List[PlotSeriesDto])
