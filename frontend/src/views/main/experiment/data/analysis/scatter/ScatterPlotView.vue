@@ -160,7 +160,7 @@ export default class ScatterPlotView extends Vue {
     const brush = d3
       .brush()
       .on("end", () => {
-        pointMark.each(function (d) {
+        pointMark.each((d) => {
           d.selected = false;
         });
 
@@ -305,7 +305,7 @@ export default class ScatterPlotView extends Vue {
         this.points = data.x.data.map(
           (x, i) =>
             // Object.freeze(
-            new CellPoint(data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], data.heatmap!.data[i])
+            new CellPoint(i, data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], data.heatmap!.data[i])
           // )
         );
         this.colorScale = scaleSequential(interpolateReds).domain([0, d3.max(data.heatmap!.data)!]);
@@ -314,13 +314,15 @@ export default class ScatterPlotView extends Vue {
         this.points = data.x.data.map(
           (x, i) =>
             // Object.freeze(
-            new CellPoint(data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], data.acquisitionIds[i])
+            new CellPoint(i, data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], data.acquisitionIds[i])
           // )
         );
         this.colorScale = scaleOrdinal(schemeCategory10);
       }
       this.maxX = d3.max(data.x.data)!;
       this.maxY = d3.max(data.y.data)!;
+
+      // this.points = d3.range(10000).map((v, i) => { return new CellPoint(data.acquisitionIds[i], data.cellIds[i], Math.random() * 100, Math.random() * 100, data.acquisitionIds[i]); });
 
       this.refresh();
     }

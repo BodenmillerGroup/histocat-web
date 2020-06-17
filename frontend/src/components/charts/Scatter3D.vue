@@ -1,188 +1,104 @@
 <template>
-  <v-chart :options="options" autoresize class="chart" />
+  <div id="scatter3dContainer">
+    <div ref="scatter3d" id="scatter3d"><!-- Plotly chart will be drawn inside this DIV --></div>
+  </div>
 </template>
 
 <script lang="ts">
 import { IChart3DData } from "@/modules/analysis/models";
-import * as echarts from "echarts";
-import "echarts-gl";
-import "echarts/lib/component/toolbox";
-import "echarts/lib/component/tooltip";
-import "echarts/lib/component/visualMap";
-import { uniq } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import Plotly from "plotly.js/dist/plotly";
+import { mainModule } from "@/modules/main";
 
 @Component
 export default class Scatter3D extends Vue {
+  readonly mainContext = mainModule.context(this.$store);
+
   @Prop(Object) data;
   @Prop(String) title;
 
-  options: echarts.EChartOption = {};
+  get showWorkspace() {
+    return this.mainContext.getters.showWorkspace;
+  }
+
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
+
+  @Watch("showWorkspace")
+  showWorkspaceChanged(value) {
+    this.refresh();
+  }
+
+  @Watch("showOptions")
+  showOptionsChanged(value) {
+    this.refresh();
+  }
+
+  refresh() {
+    const canvasElement = this.$refs.scatter3d as Element;
+    const { width, height } = canvasElement.getBoundingClientRect();
+    Plotly.relayout("scatter3d", {
+      width,
+      height,
+    });
+  }
 
   @Watch("data")
   dataChanged(data: IChart3DData) {
     if (data) {
-      const options = {
-        title: {
-          text: this.title,
-          left: "center",
-          top: 0,
-        },
-        animation: false,
-        tooltip: {
-          show: false,
-        },
-        toolbox: {
-          show: true,
-          right: "9%",
-          feature: {
-            restore: {
-              show: true,
-              title: "Reset",
-            },
-            saveAsImage: {
-              show: true,
-              title: "Export",
-            },
-            dataView: {
-              show: true,
-              title: "Data",
-              readOnly: true,
-              lang: ["Data View", "Hide", "Refresh"],
-            },
+      const plotlyData = [
+        {
+          type: "scatter3d",
+          mode: "markers",
+          marker: {
+            size: 2,
           },
+          x: data.x.data,
+          y: data.y.data,
+          z: data.z?.data,
         },
-        grid3D: {},
-        xAxis3D: {
-          type: "value",
-          name: data.x.label,
-          nameTextStyle: {
-            fontWeight: "bold",
-          },
-        },
-        yAxis3D: {
-          type: "value",
-          name: data.y.label,
-          nameTextStyle: {
-            fontWeight: "bold",
-          },
-        },
-        zAxis3D: {
-          type: "value",
-          name: data.z!.label,
-          nameTextStyle: {
-            fontWeight: "bold",
-          },
-        },
-        dataset: {
-          source: [data.x.data, data.y.data, data.z!.data],
-          dimensions: [
-            { name: data.x.label, type: "float" },
-            { name: data.y.label, type: "float" },
-            { name: data.z!.label, type: "float" },
-          ],
-        },
-        series: [
-          {
-            type: "scatter3D",
-            name: "Scatter3D",
-            seriesLayoutBy: "row",
-            symbolSize: 2,
-            encode: {
-              x: data.x.label,
-              y: data.y.label,
-              z: data.z!.label,
-              tooltip: [data.x.label, data.y.label, data.z!.label],
-            },
-          },
-        ],
-      } as echarts.EChartOption;
+      ];
 
-      if (data.heatmap) {
-        (options.dataset as any).dimensions.push({ name: data.heatmap.label });
-        (options.dataset as any).source.push(data.heatmap.data);
-        options.visualMap = this.getVisualMap(data);
-      }
+      const layout = {
+        title: this.title,
+        showlegend: true,
+        scene: {
+          xaxis: {
+            title: data.x.label,
+          },
+          yaxis: {
+            title: data.y.label,
+          },
+          zaxis: {
+            title: data.z!.label,
+          },
+        },
+      };
 
-      this.options = options;
+      const config = {
+        scrollZoom: true,
+        displaylogo: false,
+        displayModeBar: true,
+        modeBarButtonsToRemove: ["toggleSpikelines"],
+        responsive: true,
+      };
+
+      Plotly.react("scatter3d", plotlyData, layout, config);
     }
-  }
-
-  private getVisualMap(data: IChart3DData): echarts.EChartOption.VisualMap[] {
-    return data.heatmap!.label === "Acquisition"
-      ? this.getCategoricalVisualMap(data)
-      : this.getContinuousVisualMap(data);
-  }
-
-  private getCategoricalVisualMap(data: IChart3DData): echarts.EChartOption.VisualMap[] {
-    const categories = uniq(data.heatmap!.data);
-    return [
-      {
-        type: "piecewise",
-        orient: "vertical",
-        top: "top",
-        left: "right",
-        categories: categories as any,
-        padding: [
-          60, // up
-          20, // right
-          5, // down
-          5, // left
-        ],
-        inRange: {
-          color: [
-            "#e6194b",
-            "#3cb44b",
-            "#ffe119",
-            "#4363d8",
-            "#f58231",
-            "#911eb4",
-            "#46f0f0",
-            "#f032e6",
-            "#bcf60c",
-            "#fabebe",
-            "#008080",
-            "#e6beff",
-            "#9a6324",
-            "#fffac8",
-            "#800000",
-            "#aaffc3",
-            "#808000",
-            "#ffd8b1",
-            "#000075",
-            "#808080",
-            "#000000",
-          ],
-        },
-      },
-    ];
-  }
-
-  private getContinuousVisualMap(data: IChart3DData): echarts.EChartOption.VisualMap[] {
-    const min = Math.min(...data.heatmap!.data);
-    const max = Math.max(...data.heatmap!.data);
-    return [
-      {
-        type: "continuous",
-        orient: "horizontal",
-        left: "center",
-        text: ["Max", "Min"],
-        calculable: true,
-        realtime: false,
-        min: min,
-        max: max,
-        inRange: {
-          color: ["#4457cc", "#ff5200"],
-        },
-      },
-    ];
   }
 }
 </script>
 
 <style scoped>
-.chart {
-  height: calc(100vh - 88px);
+#scatter3dContainer {
+  height: calc(100vh - 84px);
+  position: relative;
+  width: 100%;
+}
+#scatter3d {
+  height: 100%;
+  position: absolute;
   width: 100%;
 }
 </style>

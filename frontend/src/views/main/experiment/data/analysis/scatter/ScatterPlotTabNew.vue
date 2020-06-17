@@ -6,7 +6,7 @@
     Please select acquisition(s)
   </v-banner>
   <div v-else :class="layoutClass">
-    <ScatterPlotView
+    <ScatterPlotView2
       v-if="!markerZ"
       :data="scatterPlotData"
       :show-regression="showRegression"
@@ -104,11 +104,12 @@ import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import ScatterPlotView from "@/views/main/experiment/data/analysis/scatter/ScatterPlotView.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
+import ScatterPlotView2 from "@/views/main/experiment/data/analysis/scatter/ScatterPlotView2.vue";
 
 type RegressionType = "linear" | "polynomial";
 
 @Component({
-  components: { Scatter3D, ScatterPlotView },
+  components: {ScatterPlotView2, Scatter3D, ScatterPlotView },
 })
 export default class ScatterPlotTabNew extends Vue {
   readonly mainContext = mainModule.context(this.$store);

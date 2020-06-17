@@ -44,6 +44,7 @@
     "memoize-one": "5.1.1",
     "normalizr": "3.6.0",
     "ol": "6.3.1",
+    "plotly.js": "1.54.3",
     "pub-sub-es": "1.2.1",
     "rambda": "5.7.0",
     "register-service-worker": "1.7.1",
@@ -54,7 +55,7 @@
     "vue-echarts": "4.1.0",
     "vue-property-decorator": "8.5.0",
     "vue-router": "3.3.4",
-    "vuetify": "2.3.0",
+    "vuetify": "2.3.1",
     "vuex": "3.4.0",
     "vuex-persist": "2.2.0",
     "vuex-smart-module": "0.3.4"

@@ -97,7 +97,6 @@ import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { required } from "@/utils/validators";
 import * as echarts from "echarts";
-import "echarts-gl";
 import "echarts/lib/chart/line";
 import "echarts/lib/chart/scatter";
 import "echarts/lib/component/toolbox";

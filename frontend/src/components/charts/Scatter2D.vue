@@ -116,7 +116,7 @@ export default class Scatter2D extends Vue {
         const normalizedValues = values.map((v) => v / max);
 
         this.points = data.x.data.map(
-          (x, i) => new CellPoint(data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], normalizedValues[i])
+          (x, i) => new CellPoint(i, data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], normalizedValues[i])
         );
 
         // Use continuous color scale
@@ -140,6 +140,7 @@ export default class Scatter2D extends Vue {
         this.points = data.x.data.map(
           (x, i) =>
             new CellPoint(
+              i,
               data.acquisitionIds[i],
               data.cellIds[i],
               x,
