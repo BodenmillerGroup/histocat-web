@@ -1,15 +1,13 @@
 <template>
-  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
+  <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">
     Please select dataset
   </v-banner>
-  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
+  <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
-  <v-row v-else no-gutters class="chart-container">
-    <v-col :cols="columns">
-      <v-chart :options="options" autoresize />
-    </v-col>
-    <v-col v-if="showOptions" cols="3">
+  <div v-else :class="layoutClass">
+    <PhenoGraphView plot-id="phenographHeatmap" :data="phenographData" title="PhenoGraph Clustering" />
+    <div v-if="showOptions">
       <v-card tile>
         <v-card-title>PhenoGraph Settings</v-card-title>
         <v-card-text>
@@ -84,42 +82,34 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { analysisModule } from "@/modules/analysis";
-import { IPhenoGraphData } from "@/modules/analysis/models";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
-import { settingsModule } from "@/modules/settings";
 import { required } from "@/utils/validators";
-import * as echarts from "echarts";
-import "echarts/lib/chart/line";
-import "echarts/lib/chart/scatter";
-import "echarts/lib/component/toolbox";
-import "echarts/lib/component/tooltip";
-import "echarts/lib/component/visualMap";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
+import PhenoGraphView from "@/views/main/experiment/data/analysis/phenograph/PhenoGraphView.vue";
 
-@Component
+@Component({
+  components: { PhenoGraphView },
+})
 export default class PhenoGraphTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
-  readonly settingsContext = settingsModule.context(this.$store);
 
   readonly required = required;
   readonly metrics = ["euclidean", "manhattan", "correlation", "cosine"];
 
   valid = false;
-
-  options: echarts.EChartOption = {};
 
   selectedChannels: any[] = [];
   nearestNeighbors = 30;
@@ -133,20 +123,23 @@ export default class PhenoGraphTab extends Vue {
     return this.mainContext.getters.showOptions;
   }
 
-  get columns() {
-    return this.showOptions ? 9 : 12;
+  get layoutClass() {
+    if (!this.showOptions) {
+      return "layout-without-options";
+    }
+    return "layout-full";
   }
 
-  get activeAcquisition() {
-    return this.experimentContext.getters.activeAcquisition;
+  get activeAcquisitionId() {
+    return this.experimentContext.getters.activeAcquisitionId;
   }
 
   get selectedAcquisitionIds() {
     return this.experimentContext.getters.selectedAcquisitionIds;
   }
 
-  get activeDataset() {
-    return this.datasetContext.getters.activeDataset;
+  get activeDatasetId() {
+    return this.datasetContext.getters.activeDatasetId;
   }
 
   get channels() {
@@ -168,10 +161,10 @@ export default class PhenoGraphTab extends Vue {
   async submit() {
     if ((this.$refs.form as any).validate()) {
       const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
 
       await this.analysisContext.actions.submitPhenoGraph({
-        dataset_id: this.activeDataset!.id,
+        dataset_id: this.activeDatasetId!,
         acquisition_ids: acquisitionIds,
         markers: this.selectedChannels,
         jaccard: this.jaccard === "jaccard",
@@ -196,7 +189,7 @@ export default class PhenoGraphTab extends Vue {
 
   async display() {
     await this.analysisContext.actions.getPhenoGraphResult({
-      datasetId: this.activeDataset!.id,
+      datasetId: this.activeDatasetId!,
       name: this.result ? this.result.name : "",
     });
   }
@@ -204,111 +197,18 @@ export default class PhenoGraphTab extends Vue {
   get phenographData() {
     return this.analysisContext.getters.phenographData;
   }
-
-  @Watch("phenographData")
-  phenographDataChanged(data: IPhenoGraphData) {
-    if (data) {
-      this.plot(data);
-    }
-  }
-
-  private plot(data: any) {
-    const communities = data.community;
-    const markers = Object.keys(data).filter((item) => item !== "community");
-    const points: any[] = [];
-    const mins: any[] = [];
-    const maxs: any[] = [];
-    for (let m = 0; m < markers.length; m++) {
-      mins.push(Math.min(...data[markers[m]]));
-      maxs.push(Math.max(...data[markers[m]]));
-      for (let c = 0; c < communities.length; c++) {
-        const v = data[markers[m]][c];
-        points.push([c, m, v]);
-      }
-    }
-    const options: echarts.EChartOption = {
-      title: {
-        text: "PhenoGraph",
-        left: "center",
-        top: 0,
-      },
-      animation: false,
-      tooltip: {
-        show: true,
-      },
-      toolbox: {
-        show: true,
-        right: "9%",
-        feature: {
-          restore: {
-            show: true,
-            title: "Reset",
-          },
-          saveAsImage: {
-            show: true,
-            title: "Export",
-          },
-          dataView: {
-            show: true,
-            title: "Data",
-            readOnly: true,
-            lang: ["Data View", "Hide", "Refresh"],
-          },
-        },
-      },
-      xAxis: {
-        type: "category",
-        name: "Community",
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-        data: communities,
-        splitArea: {
-          show: true,
-        },
-      },
-      yAxis: {
-        type: "category",
-        name: "Marker",
-        nameTextStyle: {
-          fontWeight: "bold",
-        },
-        data: markers,
-        splitArea: {
-          show: true,
-        },
-      },
-      series: [
-        {
-          type: "heatmap",
-          name: "PhenoGraph",
-          data: points,
-          itemStyle: {
-            emphasis: {
-              shadowBlur: 10,
-              shadowColor: "rgba(0, 0, 0, 0.5)",
-            },
-          },
-        },
-      ],
-      visualMap: [
-        {
-          min: Math.min(...mins),
-          max: Math.max(...maxs),
-          calculable: true,
-          orient: "horizontal",
-          left: "center",
-        },
-      ],
-    };
-
-    this.options = options;
-  }
 }
 </script>
 
 <style scoped>
-.chart-container {
-  height: calc(100vh - 98px);
+.layout-full {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto;
+}
+.layout-without-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
 }
 </style>

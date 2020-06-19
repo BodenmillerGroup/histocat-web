@@ -1,7 +1,15 @@
 <template>
   <v-card tile>
     <v-card-title>
-      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details clearable dense />
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details
+        clearable
+        dense
+      />
     </v-card-title>
     <v-data-table
       :headers="headers"

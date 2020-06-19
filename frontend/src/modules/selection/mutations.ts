@@ -3,7 +3,7 @@ import { SelectionState } from ".";
 import { SelectedCell } from "./models";
 
 export class SelectionMutations extends Mutations<SelectionState> {
-  setSelectedCells(payload: Map<number, SelectedCell[]> | null) {
+  setSelectedCells(payload: SelectedCell[]) {
     this.state.selectedCells = payload;
   }
 

@@ -6,8 +6,8 @@
     Please select acquisition(s)
   </v-banner>
   <div v-else :class="layoutClass">
-    <Scatter2D v-if="nComponents === '2'" :data="pcaData" title="2D PCA" />
-    <Scatter3D v-else :data="pcaData" title="3D PCA" />
+    <Scatter2D v-if="nComponents === '2'" plot-id="pca2D" :data="pcaData" title="2D PCA" />
+    <Scatter3D v-else plot-id="pca3D" :data="pcaData" :show-regression="false" title="3D PCA" />
     <div v-if="showOptions">
       <v-card tile>
         <v-card-title>PCA Settings</v-card-title>

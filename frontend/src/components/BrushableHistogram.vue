@@ -75,7 +75,9 @@ export default class BrushableHistogram extends Vue {
   }
 
   get settings() {
-    return this.activeAcquisitionId ? this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name) : undefined;
+    return this.activeAcquisitionId
+      ? this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name)
+      : undefined;
   }
 
   get label() {

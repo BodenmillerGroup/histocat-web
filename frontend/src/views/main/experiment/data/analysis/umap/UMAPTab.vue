@@ -6,8 +6,8 @@
     Please select acquisition(s)
   </v-banner>
   <div v-else :class="layoutClass">
-    <Scatter2D v-if="nComponents === '2'" :data="umapData" title="2D UMAP" />
-    <Scatter3D v-else :data="umapData" title="3D UMAP" />
+    <Scatter2D v-if="nComponents === '2'" plot-id="umap2D" :data="umapData" title="2D UMAP" />
+    <Scatter3D v-else plot-id="umap3D" :data="umapData" title="3D UMAP" />
     <div v-if="showOptions">
       <v-card tile>
         <v-card-title>UMAP Settings</v-card-title>

@@ -5,8 +5,7 @@ import { SelectionMutations } from "./mutations";
 import { SelectedCell } from "./models";
 
 export class SelectionState {
-  // Mapped by acquisition id
-  selectedCells: Map<number, SelectedCell[]> | null = null;
+  selectedCells: SelectedCell[] = [];
 }
 
 export const selectionModule = new Module({

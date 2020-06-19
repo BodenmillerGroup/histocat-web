@@ -14,7 +14,7 @@ import {
   SET_SEGMENTATION_SETTINGS,
   SET_SHARED_CHANNEL_SETTINGS,
 } from "@/modules/settings/events";
-import {IPreset} from "@/modules/presets/models";
+import { IPreset } from "@/modules/presets/models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
   constructor() {

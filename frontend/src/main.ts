@@ -2,7 +2,6 @@
 import "@/component-hooks";
 import App from "@/App.vue";
 import "@/plugins/masonry-css";
-import "@/plugins/echarts";
 import vuetify from "@/plugins/vuetify";
 import "@/registerServiceWorker";
 import router from "@/router";

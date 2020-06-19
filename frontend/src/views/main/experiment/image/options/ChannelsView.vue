@@ -1,14 +1,7 @@
 <template>
   <v-card tile>
     <v-toolbar dense flat>
-      <v-text-field
-        v-model="search"
-        label="Search"
-        single-line
-        hide-details
-        clearable
-        dense
-      >
+      <v-text-field v-model="search" label="Search" single-line hide-details clearable dense>
         <template v-slot:append-outer>
           <v-icon dense>mdi-magnify</v-icon>
         </template>

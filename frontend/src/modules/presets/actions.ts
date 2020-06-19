@@ -6,8 +6,8 @@ import { PresetState } from ".";
 import { api } from "./api";
 import { PresetGetters } from "./getters";
 import { PresetMutations } from "./mutations";
-import {settingsModule} from "@/modules/settings";
-import {experimentModule} from "@/modules/experiment";
+import { settingsModule } from "@/modules/settings";
+import { experimentModule } from "@/modules/experiment";
 
 export class PresetActions extends Actions<PresetState, PresetGetters, PresetMutations, PresetActions> {
   // Declare context type
@@ -43,8 +43,8 @@ export class PresetActions extends Actions<PresetState, PresetGetters, PresetMut
       const payload: IPresetCreate = {
         name: name,
         experiment_id: experimentId!,
-        data: presetData
-      }
+        data: presetData,
+      };
       const data = await api.createPreset(payload);
       this.mutations.addEntity(data);
       this.main!.mutations.addNotification({ content: "Preset successfully created", color: "success" });

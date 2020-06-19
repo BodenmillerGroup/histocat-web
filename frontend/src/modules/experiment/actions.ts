@@ -259,7 +259,9 @@ export class ExperimentActions extends Actions<
     const activeAcquisitionId = this.getters.activeAcquisitionId;
     const channels = this.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.colorMap[channel.name];
-      const settings = activeAcquisitionId ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name) : undefined;
+      const settings = activeAcquisitionId
+        ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name)
+        : undefined;
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;
@@ -287,9 +289,9 @@ export class ExperimentActions extends Actions<
     if (activeDataset) {
       result["datasetId"] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
-      const acquisition = this.getters.activeAcquisition;
-      if (acquisition && activeDataset.input && activeDataset.input.probability_masks) {
-        const mask = activeDataset.input.probability_masks[acquisition.id];
+      const activeAcquisitionId = this.getters.activeAcquisitionId;
+      if (activeAcquisitionId && activeDataset.input && activeDataset.input.probability_masks) {
+        const mask = activeDataset.input.probability_masks[activeAcquisitionId];
         if (mask) {
           result["mask"] = {
             apply: maskSettings.apply,
@@ -297,7 +299,9 @@ export class ExperimentActions extends Actions<
             location: mask.location,
           };
           // Prepare selected cell ids visualisation
-          const selectedCells = this.selection?.getters.selectedCells?.get(acquisition.id);
+          const selectedCells = this.selection?.getters.selectedCells?.filter(
+            (v) => v.acquisitionId === activeAcquisitionId
+          );
           if (selectedCells && selectedCells.length > 0) {
             result["mask"]["gated"] = true;
             result["mask"]["cell_ids"] = selectedCells.map((item) => item.cellId);
