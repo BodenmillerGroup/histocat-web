@@ -22,8 +22,6 @@ import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_SCALEBAR } from "@/modules/settings/events";
 
 @Component
 export default class ScalebarSettingsView extends Vue {
@@ -37,7 +35,7 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    BroadcastManager.publish(SET_SCALEBAR, {
+    this.settingsContext.actions.setScalebar({
       ...this.settingsContext.getters.scalebar,
       apply: value,
     });
@@ -51,7 +49,7 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set scale(value: number) {
-    BroadcastManager.publish(SET_SCALEBAR, {
+    this.settingsContext.actions.setScalebar({
       ...this.settingsContext.getters.scalebar,
       settings: {
         scale: value,

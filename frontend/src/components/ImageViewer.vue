@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot/src";
+import createScatterplot from "regl-scatterplot";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { experimentModule } from "@/modules/experiment";
 import { analysisModule } from "@/modules/analysis";
@@ -118,7 +118,7 @@ export default class ImageViewer extends Vue {
       img.crossOrigin = "";
       img.onload = () => {
         const regl = this.scatterplot.get("regl");
-        const prevBackgroundImage = this.scatterplot.get('backgroundImage');
+        const prevBackgroundImage = this.scatterplot.get("backgroundImage");
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
         });
@@ -133,6 +133,7 @@ export default class ImageViewer extends Vue {
         } else {
           this.scatterplot.draw([]);
         }
+        this.scatterplot.deselect({ preventEvent: true });
       };
       img.src = value;
     }
@@ -156,23 +157,19 @@ export default class ImageViewer extends Vue {
     console.log("ImageViewer Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const newSelectedCells = new Map<number, SelectedCell[]>();
+      const newSelectedCells: SelectedCell[] = [];
       for (const i of this.selection) {
         const point = this.points[i];
         const acquisitionId = point.acquisitionId;
-        if (!newSelectedCells.has(acquisitionId)) {
-          newSelectedCells.set(acquisitionId, []);
-        }
-        const ids = newSelectedCells.get(acquisitionId);
-        ids!.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
+        newSelectedCells.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
       }
-      this.selectionContext.mutations.setSelectedCells(newSelectedCells);
+      this.selectionContext.actions.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
         console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     } else {
-      this.selectionContext.mutations.setSelectedCells(null);
+      this.selectionContext.actions.setSelectedCells([]);
       if (this.applyMask) {
         console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
@@ -202,7 +199,9 @@ export default class ImageViewer extends Vue {
     ctx.font = `${textHeight}pt sans-serif`;
     let maxTextWidth = 0;
     this.selectedChannels.forEach((v, i) => {
-      const channelSettings = this.activeAcquisitionId ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name) : undefined;
+      const channelSettings = this.activeAcquisitionId
+        ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name)
+        : undefined;
       const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
       const textWidth = ctx.measureText(text).width;
       if (textWidth > maxTextWidth) {
@@ -220,7 +219,9 @@ export default class ImageViewer extends Vue {
       const color = this.settingsContext.getters.colorMap[v.name]
         ? this.settingsContext.getters.colorMap[v.name]
         : "#ffffff";
-      const channelSettings = this.activeAcquisitionId ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name) : undefined;
+      const channelSettings = this.activeAcquisitionId
+        ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name)
+        : undefined;
       const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
       ctx.fillStyle = color!;
       ctx.fillText(text, 10, (textHeight + 10) * (i + 1) + 5);
@@ -242,7 +243,7 @@ export default class ImageViewer extends Vue {
       lassoMinDelay: 15,
     });
 
-    // this.scatterplot.subscribe("pointover", this.pointoverHandler);
+    this.scatterplot.subscribe("pointover", this.pointoverHandler);
     // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);

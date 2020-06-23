@@ -1,26 +1,21 @@
 <template>
-  <div id="canvasContainer">
-    <canvas id="canvasWebGl" ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
+  <div class="plotContainer">
+    <div :id="plotId" ref="plot" class="plot"><!-- Plotly chart will be drawn inside this DIV --></div>
   </div>
 </template>
 
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
-import { settingsModule } from "@/modules/settings";
-import createScatterplot from "regl-scatterplot/src";
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import {
-  scaleSequential,
-  rgb,
-  schemeCategory10,
-  interpolateReds,
-} from "d3";
 import { experimentModule } from "@/modules/experiment";
-import { selectionModule } from "@/modules/selection";
-import { equals, uniq } from "rambda";
-import { CellPoint } from "@/data/CellPoint";
+import { mainModule } from "@/modules/main";
+import { settingsModule } from "@/modules/settings";
+import { equals } from "rambda";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import { SelectedCell } from "@/modules/selection/models";
-import {mainModule} from "@/modules/main";
+import { selectionModule } from "@/modules/selection";
+import { CellPoint } from "@/data/CellPoint";
+import Plotly from "plotly.js/dist/plotly";
+import { linearRegression, linearRegressionLine } from "simple-statistics";
 
 @Component
 export default class Scatter2D extends Vue {
@@ -29,12 +24,16 @@ export default class Scatter2D extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
 
+  @Prop(String) plotId;
   @Prop(Object) data;
   @Prop(String) title;
+  @Prop(Boolean) showRegression;
 
-  points: CellPoint[] = [];
-  scatterplot: any;
-  selection: any[] = [];
+  selection: SelectedCell[] = [];
+  hasHeatmap = false;
+  xAxisTitle = "";
+  yAxisTitle = "";
+  points = new Map<number, CellPoint[]>();
 
   get showWorkspace() {
     return this.mainContext.getters.showWorkspace;
@@ -48,205 +47,219 @@ export default class Scatter2D extends Vue {
     return this.settingsContext.getters.maskSettings.apply;
   }
 
-  get activeAcquisitionId() {
-    return this.experimentContext.getters.activeAcquisitionId;
-  }
-
   get selectedCells() {
     return this.selectionContext.getters.selectedCells;
   }
 
-  onIntersect(entries, observer, isIntersecting) {
-    if (isIntersecting) {
-      const canvas = this.$refs.canvasWebGl as Element;
-      const { width, height } = canvas.getBoundingClientRect();
-      this.scatterplot.set({ width, height });
-    }
-  }
-
-  onResize() {
-    this.refresh();
-  }
-
   @Watch("showWorkspace")
-  showWorkspaceChanged(value) {
+  showWorkspaceChanged(value: boolean) {
     this.refresh();
   }
 
   @Watch("showOptions")
-  showOptionsChanged(value) {
+  showOptionsChanged(value: boolean) {
     this.refresh();
   }
 
   refresh() {
-    if (!this.scatterplot) {
-      return;
-    }
-    const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
-    this.scatterplot.set({ width, height });
-    this.scatterplot.refresh();
-  }
-
-  @Watch("selectedCells")
-  selectedCellsChanged(data: Map<number, SelectedCell[]> | null) {
-    if (data !== null) {
-      let allCells: SelectedCell[] = [];
-      data.forEach((val, key) => {
-        allCells = allCells.concat(val);
-      });
-      const indices = allCells.map((i) => i.index);
-      if (!equals(indices, this.selection)) {
-        this.scatterplot.select(indices, { preventEvent: true });
-        this.selection = indices;
-      }
-    }
+    const plotElement = this.$refs.plot as Element;
+    const { width, height } = plotElement.getBoundingClientRect();
+    Plotly.relayout(this.plotId, {
+      width,
+      height,
+    });
   }
 
   @Watch("data")
   dataChanged(data: IChart2DData) {
     if (data) {
-      this.scatterplot.deselect();
+      this.hasHeatmap = !!data.heatmap;
+      this.xAxisTitle = data.x.label;
+      this.yAxisTitle = data.y.label;
 
-      if (data.heatmap) {
-        // Use heatmap value
-        const values = data.heatmap!.data;
-        const max = Math.max(...values);
-
-        const normalizedValues = values.map((v) => v / max);
-
-        this.points = data.x.data.map(
-          (x, i) => new CellPoint(data.acquisitionIds[i], data.cellIds[i], x, data.y.data[i], normalizedValues[i])
+      this.points = new Map<number, CellPoint[]>();
+      const regressionData: number[][] = [];
+      for (let i = 0; i < data.cellIds.length; i++) {
+        const cellPoint = Object.freeze(
+          new CellPoint(
+            i,
+            data.acquisitionIds[i],
+            data.cellIds[i],
+            data.x.data[i],
+            data.y.data[i],
+            data.heatmap ? data.heatmap.data[i] : data.acquisitionIds[i]
+          )
         );
-
-        // Use continuous color scale
-        const colorScale = scaleSequential(interpolateReds).domain([0, values.length]);
-        const colors: string[] = [];
-        for (let i = 0; i < values.length; i++) {
-          colors.push(rgb(colorScale(i)).hex());
+        if (!this.points.has(cellPoint.acquisitionId)) {
+          this.points.set(cellPoint.acquisitionId, []);
         }
+        const acquisitionPoints = this.points.get(cellPoint.acquisitionId)!;
+        acquisitionPoints.push(cellPoint);
 
-        this.scatterplot.set({
-          colorBy: "value",
-          pointColor: colors,
-        });
-      } else {
-        // Use acquisitionId as category
-        const colorMap = new Map<number, number>();
-        const uniqueAcquisitionIds = uniq(data.acquisitionIds);
-        uniqueAcquisitionIds.forEach((v, i) => {
-          colorMap.set(v, i);
-        });
-        this.points = data.x.data.map(
-          (x, i) =>
-            new CellPoint(
-              data.acquisitionIds[i],
-              data.cellIds[i],
-              x,
-              data.y.data[i],
-              colorMap.get(data.acquisitionIds[i])!
-            )
-        );
+        if (this.showRegression) {
+          regressionData.push([cellPoint.x, cellPoint.y]);
+        }
+      }
 
-        // Use discrete categorical color scale
-        this.scatterplot.set({
-          colorBy: "category",
-          pointColor: schemeCategory10,
+      const traces: any[] = [];
+      this.points.forEach((v, k) => {
+        traces.push({
+          type: "scattergl",
+          mode: "markers",
+          name: `Acquisition ${k}`,
+          x: v.map((v) => v.x),
+          y: v.map((v) => v.y),
+          text: v.map((v) => `Cell ID: ${v.cellId}`),
+          customdata: v,
+          marker: this.hasHeatmap
+            ? {
+                size: 3,
+                color: v.map((v) => v.value),
+                colorscale: "RdBu",
+              }
+            : {
+                size: 3,
+              },
+        });
+      });
+
+      if (this.showRegression) {
+        const regression = linearRegression(regressionData);
+        const regressionLine = linearRegressionLine(regression);
+        const xMin = Math.min(...data.x.data);
+        const xMax = Math.max(...data.x.data);
+        traces.push({
+          type: "scattergl",
+          mode: "line",
+          name: `Regression`,
+          x: [xMin, xMax],
+          y: [regressionLine(xMin), regressionLine(xMax)],
+          marker: {
+            size: 1,
+          },
+          line: {
+            width: 1,
+          },
         });
       }
 
-      const p = this.points.map((item) => [item.x, item.y, item.value, item.value]);
-      this.scatterplot.draw(p);
+      const layout = {
+        title: this.title,
+        showlegend: true,
+        xaxis: {
+          title: this.xAxisTitle,
+        },
+        yaxis: {
+          title: this.yAxisTitle,
+        },
+        hovermode: "closest",
+      };
+
+      Plotly.react(this.plotId, traces, layout);
     }
   }
 
-  pointoverHandler(idx: number) {
-    const point = this.points[idx];
-    console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
-    );
-  }
+  @Watch("selectedCells")
+  selectedCellsChanged(data: SelectedCell[]) {
+    if (!equals(data, this.selection)) {
+      this.selection = data;
+      const traces: any[] = [];
+      this.points.forEach((v, k) => {
+        traces.push({
+          type: "scattergl",
+          mode: "markers",
+          name: `Acquisition ${k}`,
+          x: v.map((v) => v.x),
+          y: v.map((v) => v.y),
+          text: v.map((v) => `Cell ID: ${v.cellId}`),
+          customdata: v,
+          selectedpoints: data.filter((v) => v.acquisitionId === k).map((v) => v.index),
+          marker: this.hasHeatmap
+            ? {
+                size: 3,
+                color: v.map((v) => v.value),
+              }
+            : {
+                size: 3,
+              },
+        });
+      });
 
-  pointoutHandler(idx: number) {
-    const point = this.points[idx];
-    console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
-    );
-  }
+      const layout = {
+        title: this.title,
+        showlegend: true,
+        xaxis: {
+          title: this.xAxisTitle,
+        },
+        yaxis: {
+          title: this.yAxisTitle,
+        },
+      };
 
-  selectHandler({ points: selectedPoints }) {
-    console.log("Scatter2D Selected:", selectedPoints);
-    this.selection = selectedPoints;
-    if (this.selection.length > 0) {
-      const newSelectedCells = new Map<number, SelectedCell[]>();
-      for (const i of this.selection) {
-        const point = this.points[i];
-        const acquisitionId = point.acquisitionId;
-        if (!newSelectedCells.has(acquisitionId)) {
-          newSelectedCells.set(acquisitionId, []);
-        }
-        const ids = newSelectedCells.get(acquisitionId);
-        ids!.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
-      }
-      this.selectionContext.mutations.setSelectedCells(newSelectedCells);
-      if (this.applyMask) {
-        console.log("Scatter2D getChannelStackImage");
-        this.experimentContext.actions.getChannelStackImage();
-      }
-    } else {
-      this.selectionContext.mutations.setSelectedCells(null);
-      if (this.applyMask) {
-        console.log("Scatter2D getChannelStackImage");
-        this.experimentContext.actions.getChannelStackImage();
-      }
+      Plotly.react(this.plotId, traces, layout);
     }
   }
 
-  deselectHandler() {
-    console.log("Deselected:", this.selection);
-    this.selection = [];
-  }
+  private initPlot() {
+    const initData = [];
 
-  private initViewer() {
-    const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
+    const initLayout = {
+      title: this.title,
+      showlegend: true,
+      hovermode: "closest",
+    };
 
-    this.scatterplot = createScatterplot({
-      canvas,
-      width,
-      height,
-      opacity: 1,
-      pointSize: 2,
-      pointSizeSelected: 1,
-      pointOutlineWidth: 1,
-      lassoMinDelay: 15,
+    const initConfig = {
+      scrollZoom: true,
+      displaylogo: false,
+      displayModeBar: true,
+      modeBarButtonsToRemove: ["toggleSpikelines"],
+      responsive: true,
+    };
+
+    Plotly.react(this.plotId, initData, initLayout, initConfig);
+
+    const plot = this.$refs.plot as any;
+    plot.on("plotly_selected", (eventData) => {
+      if (eventData) {
+        if (eventData.points.length > 0) {
+          console.log(eventData.points);
+          const newSelectedCells: SelectedCell[] = [];
+          eventData.points.forEach((point, i) => {
+            const cellPoint = point.customdata;
+            newSelectedCells.push(
+              Object.freeze(new SelectedCell(cellPoint.acquisitionId, point.pointIndex, cellPoint.cellId))
+            );
+          });
+          this.selectionContext.actions.setSelectedCells(newSelectedCells);
+          if (this.applyMask) {
+            this.experimentContext.actions.getChannelStackImage();
+          }
+        } else {
+          if (this.selectionContext.getters.selectedCells !== null) {
+            this.selectionContext.actions.setSelectedCells([]);
+            if (this.applyMask) {
+              this.experimentContext.actions.getChannelStackImage();
+            }
+          }
+        }
+      }
     });
-
-    // this.scatterplot.subscribe("pointover", this.pointoverHandler);
-    // this.scatterplot.subscribe("pointout", this.pointoutHandler);
-    this.scatterplot.subscribe("select", this.selectHandler);
-    this.scatterplot.subscribe("deselect", this.deselectHandler);
   }
 
   mounted() {
-    this.initViewer();
-  }
-
-  beforeDestroy() {
-    if (this.scatterplot) {
-      this.scatterplot.destroy();
-    }
+    this.initPlot();
   }
 }
 </script>
 
 <style scoped>
-#canvasContainer {
-  height: calc(100vh - 98px);
+.plotContainer {
+  height: calc(100vh - 84px);
   position: relative;
   width: 100%;
 }
-#canvasWebGl {
+.plot {
   height: 100%;
   position: absolute;
   width: 100%;

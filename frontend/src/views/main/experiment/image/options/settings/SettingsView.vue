@@ -25,7 +25,7 @@ import BrushableHistogram from "@/components/BrushableHistogram.vue";
 import PresetsView from "@/views/main/experiment/image/options/settings/PresetsView.vue";
 
 @Component({
-  components: {PresetsView, BrushableHistogram, GeneralSettingsView },
+  components: { PresetsView, BrushableHistogram, GeneralSettingsView },
 })
 export default class SettingsView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);

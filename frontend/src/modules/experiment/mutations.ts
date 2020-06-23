@@ -9,7 +9,7 @@ import {
   SET_CHANNEL_STACK_IMAGE,
   SET_SELECTED_ACQUISITION_IDS,
   SET_SELECTED_METALS,
-} from "@/modules/experiment/events";
+} from "./events";
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
   constructor() {

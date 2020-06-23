@@ -21,8 +21,6 @@
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_LEGEND } from "@/modules/settings/events";
 
 @Component
 export default class LegendSettingsView extends Vue {
@@ -35,7 +33,7 @@ export default class LegendSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    BroadcastManager.publish(SET_LEGEND, {
+    this.settingsContext.actions.setLegend({
       ...this.settingsContext.getters.legend,
       apply: value,
     });
@@ -46,7 +44,7 @@ export default class LegendSettingsView extends Vue {
   }
 
   set legendFontScale(value: number) {
-    BroadcastManager.publish(SET_LEGEND, {
+    this.settingsContext.actions.setLegend({
       ...this.settingsContext.getters.legend,
       fontScale: value,
     });
@@ -57,7 +55,7 @@ export default class LegendSettingsView extends Vue {
   }
 
   set showIntensity(value: boolean) {
-    BroadcastManager.publish(SET_LEGEND, {
+    this.settingsContext.actions.setLegend({
       ...this.settingsContext.getters.legend,
       showIntensity: value,
     });

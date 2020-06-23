@@ -51,8 +51,8 @@
 <script lang="ts">
 import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import {gateModule} from "@/modules/gates";
-import {datasetModule} from "@/modules/datasets";
+import { gateModule } from "@/modules/gates";
+import { datasetModule } from "@/modules/datasets";
 
 @Component
 export default class GatesView extends Vue {

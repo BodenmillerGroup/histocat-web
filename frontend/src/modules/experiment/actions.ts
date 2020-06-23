@@ -12,7 +12,13 @@ import { ExperimentMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { IChannelSettings } from "@/modules/settings/models";
 import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
-import { SET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
+import {
+  SET_CHANNEL_STACK_IMAGE,
+  SET_ACTIVE_ACQUISITION_ID,
+  SET_ACTIVE_WORKSPACE_NODE,
+  SET_SELECTED_ACQUISITION_IDS,
+  SET_SELECTED_METALS,
+} from "./events";
 import { selectionModule } from "@/modules/selection";
 
 export class ExperimentActions extends Actions<
@@ -33,6 +39,22 @@ export class ExperimentActions extends Actions<
     this.settings = settingsModule.context(store);
     this.datasets = datasetModule.context(store);
     this.selection = selectionModule.context(store);
+  }
+
+  setActiveAcquisitionId(id?: number, isGlobal = true) {
+    BroadcastManager.publish(SET_ACTIVE_ACQUISITION_ID, id, isGlobal);
+  }
+
+  setActiveWorkspaceNode(node?: { id: number; type: string }, isGlobal = true) {
+    BroadcastManager.publish(SET_ACTIVE_WORKSPACE_NODE, node, isGlobal);
+  }
+
+  setSelectedAcquisitionIds(ids: number[], isGlobal = true) {
+    BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, ids, isGlobal);
+  }
+
+  setSelectedMetals(metals: string[], isGlobal = true) {
+    BroadcastManager.publish(SET_SELECTED_METALS, metals, isGlobal);
   }
 
   async getExperiments() {
@@ -259,7 +281,9 @@ export class ExperimentActions extends Actions<
     const activeAcquisitionId = this.getters.activeAcquisitionId;
     const channels = this.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.colorMap[channel.name];
-      const settings = activeAcquisitionId ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name) : undefined;
+      const settings = activeAcquisitionId
+        ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name)
+        : undefined;
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;
@@ -287,9 +311,9 @@ export class ExperimentActions extends Actions<
     if (activeDataset) {
       result["datasetId"] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
-      const acquisition = this.getters.activeAcquisition;
-      if (acquisition && activeDataset.input && activeDataset.input.probability_masks) {
-        const mask = activeDataset.input.probability_masks[acquisition.id];
+      const activeAcquisitionId = this.getters.activeAcquisitionId;
+      if (activeAcquisitionId && activeDataset.input && activeDataset.input.probability_masks) {
+        const mask = activeDataset.input.probability_masks[activeAcquisitionId];
         if (mask) {
           result["mask"] = {
             apply: maskSettings.apply,
@@ -297,7 +321,9 @@ export class ExperimentActions extends Actions<
             location: mask.location,
           };
           // Prepare selected cell ids visualisation
-          const selectedCells = this.selection?.getters.selectedCells?.get(acquisition.id);
+          const selectedCells = this.selection?.getters.selectedCells?.filter(
+            (v) => v.acquisitionId === activeAcquisitionId
+          );
           if (selectedCells && selectedCells.length > 0) {
             result["mask"]["gated"] = true;
             result["mask"]["cell_ids"] = selectedCells.map((item) => item.cellId);

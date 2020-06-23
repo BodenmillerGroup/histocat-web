@@ -1,14 +1,7 @@
 <template>
   <v-card tile>
     <v-toolbar dense flat>
-      <v-text-field
-        v-model="search"
-        label="Search"
-        single-line
-        hide-details
-        clearable
-        dense
-      >
+      <v-text-field v-model="search" label="Search" single-line hide-details clearable dense>
         <template v-slot:append-outer>
           <v-icon dense>mdi-magnify</v-icon>
         </template>
@@ -51,13 +44,10 @@ import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
 import { Component, Vue } from "vue-property-decorator";
 import { IChannelSettings } from "@/modules/settings/models";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
-import { SET_SELECTED_METALS } from "@/modules/experiment/events";
 
 @Component
 export default class ChannelsView extends Vue {
-  readonly settingsModule = settingsModule.context(this.$store);
+  readonly settingsContext = settingsModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
 
   search = "";
@@ -95,7 +85,7 @@ export default class ChannelsView extends Vue {
       return [];
     }
     return this.channels.map((channel) => {
-      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId!, channel.name);
+      const settings = this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId!, channel.name);
       return {
         id: channel.name,
         label: settings && settings.customLabel ? settings.customLabel : channel.label,
@@ -120,7 +110,7 @@ export default class ChannelsView extends Vue {
   set selected(items: IChannel[]) {
     const selectedMetals = items.map((item) => item.name);
     if (!equals(this.selectedMetals, selectedMetals)) {
-      BroadcastManager.publish(SET_SELECTED_METALS, selectedMetals);
+      this.experimentContext.actions.setSelectedMetals(selectedMetals);
       this.experimentContext.actions.getChannelStackImage();
     }
   }
@@ -131,7 +121,7 @@ export default class ChannelsView extends Vue {
     }
     let allSettings: IChannelSettings[] = [];
     this.items.forEach((item) => {
-      const settings = this.settingsModule.getters.getChannelSettings(this.activeAcquisitionId!, item.name);
+      const settings = this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId!, item.name);
       if (!settings) {
         allSettings.push({
           acquisitionId: this.activeAcquisitionId!,
@@ -148,7 +138,7 @@ export default class ChannelsView extends Vue {
       }
     });
     if (allSettings.length > 0) {
-      BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, allSettings);
+      this.settingsContext.actions.setSharedChannelSettings(allSettings);
       this.experimentContext.actions.getChannelStackImage();
     }
   }

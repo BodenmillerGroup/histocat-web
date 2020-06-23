@@ -11,7 +11,7 @@ import { api } from "./api";
 import { DatasetGetters } from "./getters";
 import { DatasetMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_DATASETS } from "@/modules/datasets/events";
+import { SET_DATASETS, SET_ACTIVE_DATASET_ID } from "./events";
 
 export class DatasetActions extends Actions<DatasetState, DatasetGetters, DatasetMutations, DatasetActions> {
   // Declare context type
@@ -25,6 +25,10 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
     this.main = mainModule.context(store);
     this.settings = settingsModule.context(store);
     this.experiment = experimentModule.context(store);
+  }
+
+  setActiveDatasetId(id: number | null) {
+    BroadcastManager.publish(SET_ACTIVE_DATASET_ID, id);
   }
 
   async getExperimentDatasets(experimentId: number) {

@@ -186,7 +186,9 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     const activeAcquisitionId = this.experiment!.getters.activeAcquisitionId;
     const channels = this.experiment!.getters.selectedChannels.map((channel) => {
       const color = this.settings!.getters.colorMap[channel.name];
-      const settings = activeAcquisitionId ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name) : undefined;
+      const settings = activeAcquisitionId
+        ? this.settings!.getters.getChannelSettings(activeAcquisitionId, channel.name)
+        : undefined;
       const min = settings && settings.levels ? settings.levels.min : undefined;
       const max = settings && settings.levels ? settings.levels.max : undefined;
       const customLabel = settings && settings.customLabel ? settings.customLabel : channel.label;

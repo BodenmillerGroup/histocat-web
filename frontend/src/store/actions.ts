@@ -5,8 +5,8 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
-import {presetModule} from "@/modules/presets";
-import {gateModule} from "@/modules/gates";
+import { presetModule } from "@/modules/presets";
+import { gateModule } from "@/modules/gates";
 
 export class RootActions extends Actions {
   analysis?: Context<typeof analysisModule>;

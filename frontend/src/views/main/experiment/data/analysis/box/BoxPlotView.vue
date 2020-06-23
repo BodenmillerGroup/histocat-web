@@ -5,17 +5,17 @@
 </template>
 
 <script lang="ts">
-import { IChart3DData } from "@/modules/analysis/models";
+import { IPlotSeries } from "@/modules/analysis/models";
+import { mainModule } from "@/modules/main";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Plotly from "plotly.js/dist/plotly";
-import { mainModule } from "@/modules/main";
 
 @Component
-export default class Scatter3D extends Vue {
+export default class BoxPlotView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
 
   @Prop(String) plotId;
-  @Prop(Object) data;
+  @Prop(Array) data;
   @Prop(String) title;
 
   get showWorkspace() {
@@ -36,9 +36,12 @@ export default class Scatter3D extends Vue {
     this.refresh();
   }
 
-  private refresh() {
-    const element = this.$refs.plot as Element;
-    const { width, height } = element.getBoundingClientRect();
+  refresh() {
+    if (!this.data) {
+      return;
+    }
+    const plotElement = this.$refs.plot as Element;
+    const { width, height } = plotElement.getBoundingClientRect();
     Plotly.relayout(this.plotId, {
       width,
       height,
@@ -46,40 +49,25 @@ export default class Scatter3D extends Vue {
   }
 
   @Watch("data")
-  dataChanged(data: IChart3DData) {
+  dataChanged(data: IPlotSeries[]) {
     if (data) {
-      const plotlyData = [
-        {
-          type: "scatter3d",
-          mode: "markers",
-          marker: data.heatmap
-            ? {
-                size: 2,
-                color: data.heatmap.data,
-                colorscale: "RdBu",
-              }
-            : {
-                size: 2,
-              },
-          x: data.x.data,
-          y: data.y.data,
-          z: data.z?.data,
-        },
-      ];
+      const traces: any = [];
+      data.forEach((item) => {
+        traces.push({
+          type: "box",
+          name: item.label,
+          y: item.data,
+        });
+      });
 
       const layout = {
         title: this.title,
         showlegend: true,
-        scene: {
-          xaxis: {
-            title: data.x.label,
-          },
-          yaxis: {
-            title: data.y.label,
-          },
-          zaxis: {
-            title: data.z!.label,
-          },
+        xaxis: {
+          title: "Markers",
+        },
+        yaxis: {
+          title: "Values",
         },
       };
 
@@ -87,11 +75,11 @@ export default class Scatter3D extends Vue {
         scrollZoom: true,
         displaylogo: false,
         displayModeBar: true,
-        modeBarButtonsToRemove: ["toggleSpikelines"],
         responsive: true,
+        modeBarButtonsToRemove: ["toggleSpikelines"],
       };
 
-      Plotly.react(this.plotId, plotlyData, layout, config);
+      Plotly.react(this.plotId, traces, layout, config);
     }
   }
 }

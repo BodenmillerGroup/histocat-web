@@ -9,6 +9,8 @@ import { GateMutations } from "./mutations";
 import { datasetModule } from "@/modules/datasets";
 import { selectionModule } from "@/modules/selection";
 import { SelectedCell } from "@/modules/selection/models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_ACTIVE_GATE_ID } from "./events";
 
 export class GateActions extends Actions<GateState, GateGetters, GateMutations, GateActions> {
   // Declare context type
@@ -21,6 +23,10 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
     this.main = mainModule.context(store);
     this.dataset = datasetModule.context(store);
     this.selection = selectionModule.context(store);
+  }
+
+  setActiveGateId(id: number | null, isGlobal = true) {
+    BroadcastManager.publish(SET_ACTIVE_GATE_ID, id, isGlobal);
   }
 
   async getGates(datasetId: number) {
@@ -42,12 +48,10 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
         const acquisitionIds: number[] = [];
         const indices: number[] = [];
         const cellIds: number[] = [];
-        selectedCells.forEach((arr, key) => {
-          arr.forEach((selectedCell) => {
-            acquisitionIds.push(selectedCell.acquisitionId);
-            indices.push(selectedCell.index);
-            cellIds.push(selectedCell.cellId);
-          });
+        selectedCells.forEach((selectedCell) => {
+          acquisitionIds.push(selectedCell.acquisitionId);
+          indices.push(selectedCell.index);
+          cellIds.push(selectedCell.cellId);
         });
         const payload: IGateCreate = {
           dataset_id: datasetId!,
@@ -69,18 +73,14 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
     try {
       const data = await api.getGate(id);
       if (data) {
-        const selectedCells = new Map<number, SelectedCell[]>();
-        for (let i=0; i < data.acquisition_ids.length; i++) {
+        const selectedCells: SelectedCell[] = [];
+        for (let i = 0; i < data.acquisition_ids.length; i++) {
           const acquisitionId = data.acquisition_ids[i];
           const index = data.indices[i];
           const cellId = data.cell_ids[i];
-          if (!selectedCells.has(acquisitionId)) {
-            selectedCells.set(acquisitionId, []);
-          }
-          const ids = selectedCells.get(acquisitionId);
-          ids!.push(Object.freeze(new SelectedCell(acquisitionId, index, cellId)));
+          selectedCells.push(Object.freeze(new SelectedCell(acquisitionId, index, cellId)));
         }
-        this.selection?.mutations.setSelectedCells(selectedCells);
+        this.selection?.actions.setSelectedCells(selectedCells);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

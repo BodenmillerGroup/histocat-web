@@ -6,8 +6,8 @@
     Please select acquisition(s)
   </v-banner>
   <div v-else :class="layoutClass">
-    <Scatter2D v-if="nComponents === '2'" :data="tsneData" title="2D tSNE" />
-    <Scatter3D v-else :data="tsneData" title="3D tSNE" />
+    <Scatter2D v-if="nComponents === '2'" plot-id="tsne2D" :data="tsneData" title="2D tSNE" />
+    <Scatter3D v-else plot-id="tsne3D" :data="tsneData" title="3D tSNE" />
     <div v-if="showOptions">
       <v-card tile>
         <v-card-title>t-SNE Settings</v-card-title>
@@ -144,11 +144,9 @@ import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
 
 @Component({
-  components: { Scatter3D, Scatter2D },
+  components: { Scatter2D, Scatter3D },
 })
 export default class TSNETab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
@@ -249,7 +247,7 @@ export default class TSNETab extends Vue {
       this.theta = result.params.theta;
       this.init = result.params.init;
 
-      BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, result.params.acquisition_ids);
+      this.experimentContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 

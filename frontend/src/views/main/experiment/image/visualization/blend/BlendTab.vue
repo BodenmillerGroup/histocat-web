@@ -74,8 +74,6 @@ import BlendView from "@/views/main/experiment/image/visualization/blend/BlendVi
 import IntensityView from "@/views/main/experiment/image/visualization/blend/IntensityView.vue";
 import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_MASK_SETTINGS } from "@/modules/settings/events";
 
 @Component({
   components: { IntensityView, BlendView },
@@ -95,7 +93,7 @@ export default class BlendTab extends Vue {
   }
 
   set applyMask(value: boolean) {
-    BroadcastManager.publish(SET_MASK_SETTINGS, {
+    this.settingsContext.actions.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
       apply: value,
     });

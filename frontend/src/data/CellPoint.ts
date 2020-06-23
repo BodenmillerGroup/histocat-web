@@ -1,5 +1,6 @@
 export class CellPoint {
   constructor(
+    public readonly index: number,
     public readonly acquisitionId: number,
     public readonly cellId: number,
     public readonly x: number,
