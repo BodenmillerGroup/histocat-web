@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from histocat.modules.acquisition import controller as acquisition_controller
 from histocat.modules.analysis import controller as analysis_controller
 from histocat.modules.auth import controller as auth_controller
-from histocat.modules.cellxgene import controller as cellxgene_controller
 from histocat.modules.core import controller as core_controller
 from histocat.modules.dataset import controller as dataset_controller
 from histocat.modules.experiment import controller as experiment_controller
@@ -27,4 +26,3 @@ api_router.include_router(share_controller.router, prefix="/share", tags=["share
 api_router.include_router(preset_controller.router, tags=["presets"])
 api_router.include_router(gate_controller.router, tags=["gates"])
 api_router.include_router(analysis_controller.router, prefix="/analysis", tags=["analysis"])
-api_router.include_router(cellxgene_controller.router, tags=["cellxgene"])

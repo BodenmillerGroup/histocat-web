@@ -6,7 +6,6 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from histocat.api.api_v1.api import api_router
-from histocat.cellxgene.common.app_config import AppConfig
 from histocat.config import config
 from histocat.core.notifier import notifier
 from histocat.core.redis_manager import redis_manager
@@ -32,11 +31,9 @@ if os.environ.get("BACKEND_ENV") == "development":
         logger.error(e)
 
 
-app_config = AppConfig()
 app = FastAPI(
     title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json", docs_url="/docs", redoc_url="/redoc",
 )
-app.app_config = app_config
 
 # GZIP compression
 # app.add_middleware(GZipMiddleware, minimum_size=100000)
