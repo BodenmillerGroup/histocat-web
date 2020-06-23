@@ -2,8 +2,15 @@ import { Mutations } from "vuex-smart-module";
 import { CentroidsState } from ".";
 import { ICentroidsData } from "./models";
 import { CellPoint } from "@/data/CellPoint";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_CENTROIDS } from "./events";
 
 export class CentroidsMutations extends Mutations<CentroidsState> {
+  constructor() {
+    super();
+    BroadcastManager.subscribe(SET_CENTROIDS, (payload) => this.setCentroids(payload));
+  }
+
   setCentroids(payload: ICentroidsData) {
     const newState = new Map<number, CellPoint[]>();
     payload.acquisitionIds.forEach((acquisitionId, i) => {

@@ -27,10 +27,6 @@ export class SettingsGetters extends Getters<SettingsState> {
     return this.state.scalebar;
   }
 
-  get segmentationSettings() {
-    return this.state.segmentationSettings;
-  }
-
   get maskSettings() {
     return this.state.mask;
   }

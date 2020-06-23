@@ -144,8 +144,6 @@ import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
 
 @Component({
   components: { Scatter2D, Scatter3D },
@@ -249,7 +247,7 @@ export default class TSNETab extends Vue {
       this.theta = result.params.theta;
       this.init = result.params.init;
 
-      BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, result.params.acquisition_ids);
+      this.experimentContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 

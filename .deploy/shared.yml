@@ -103,13 +103,13 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.8.4-alpine
+    image: rabbitmq:3.8.5-alpine
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   redis:
     restart: always
-    image: redis:6.0.4-alpine3.11
+    image: redis:6.0.5-alpine3.12
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -118,7 +118,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.5.0
+    image: redislabs/redisinsight:1.6.0
     depends_on:
       - redis
     ports:

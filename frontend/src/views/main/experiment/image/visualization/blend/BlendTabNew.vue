@@ -51,8 +51,6 @@ import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
 import ImageViewer from "@/components/ImageViewer.vue";
 import { mainModule } from "@/modules/main";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_MASK_SETTINGS } from "@/modules/settings/events";
 
 @Component({
   components: { ImageViewer },
@@ -69,7 +67,7 @@ export default class BlendTabNew extends Vue {
   }
 
   set applyMask(value: boolean) {
-    BroadcastManager.publish(SET_MASK_SETTINGS, {
+    this.settingsContext.actions.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
       apply: value,
     });

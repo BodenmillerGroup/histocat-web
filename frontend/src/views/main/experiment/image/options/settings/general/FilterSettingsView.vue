@@ -24,8 +24,6 @@ import { experimentModule } from "@/modules/experiment";
 import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_FILTER } from "@/modules/settings/events";
 
 @Component
 export default class FilterSettingsView extends Vue {
@@ -45,7 +43,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    BroadcastManager.publish(SET_FILTER, {
+    this.settingsContext.actions.setFilter({
       ...this.settingsContext.getters.filter,
       apply: value,
     });
@@ -57,7 +55,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set filterType(value: string) {
-    BroadcastManager.publish(SET_FILTER, {
+    this.settingsContext.actions.setFilter({
       ...this.settingsContext.getters.filter,
       type: value,
     });
@@ -73,7 +71,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set sigma(value: number) {
-    BroadcastManager.publish(SET_FILTER, {
+    this.settingsContext.actions.setFilter({
       ...this.settingsContext.getters.filter,
       settings: {
         sigma: value,
@@ -91,7 +89,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set kernelSize(value: string) {
-    BroadcastManager.publish(SET_FILTER, {
+    this.settingsContext.actions.setFilter({
       ...this.settingsContext.getters.filter,
       settings: {
         kernel_size: value,

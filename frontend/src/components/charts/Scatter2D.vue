@@ -231,13 +231,13 @@ export default class Scatter2D extends Vue {
               Object.freeze(new SelectedCell(cellPoint.acquisitionId, point.pointIndex, cellPoint.cellId))
             );
           });
-          this.selectionContext.mutations.setSelectedCells(newSelectedCells);
+          this.selectionContext.actions.setSelectedCells(newSelectedCells);
           if (this.applyMask) {
             this.experimentContext.actions.getChannelStackImage();
           }
         } else {
           if (this.selectionContext.getters.selectedCells !== null) {
-            this.selectionContext.mutations.setSelectedCells([]);
+            this.selectionContext.actions.setSelectedCells([]);
             if (this.applyMask) {
               this.experimentContext.actions.getChannelStackImage();
             }

@@ -93,8 +93,6 @@ import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_SELECTED_ACQUISITION_IDS } from "@/modules/experiment/events";
 import PhenoGraphView from "@/views/main/experiment/data/analysis/phenograph/PhenoGraphView.vue";
 
 @Component({
@@ -183,7 +181,7 @@ export default class PhenoGraphTab extends Vue {
       this.minClusterSize = result.params.min_cluster_size;
       this.jaccard = result.params.jaccard ? "jaccard" : "gaussian";
 
-      BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, result.params.acquisition_ids);
+      this.experimentContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 

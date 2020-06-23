@@ -163,13 +163,13 @@ export default class ImageViewer extends Vue {
         const acquisitionId = point.acquisitionId;
         newSelectedCells.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
       }
-      this.selectionContext.mutations.setSelectedCells(newSelectedCells);
+      this.selectionContext.actions.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
         console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     } else {
-      this.selectionContext.mutations.setSelectedCells([]);
+      this.selectionContext.actions.setSelectedCells([]);
       if (this.applyMask) {
         console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();

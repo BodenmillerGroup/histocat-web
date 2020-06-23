@@ -4,8 +4,10 @@ import { CentroidsState } from ".";
 import { CentroidsGetters } from "./getters";
 import { CentroidsMutations } from "./mutations";
 import { api } from "./api";
-import { ICentroidsSubmission } from "./models";
+import { ICentroidsData, ICentroidsSubmission } from "./models";
 import { mainModule } from "@/modules/main";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_CENTROIDS } from "./events";
 
 export class CentroidsActions extends Actions<CentroidsState, CentroidsGetters, CentroidsMutations, CentroidsActions> {
   // Declare context type
@@ -16,10 +18,14 @@ export class CentroidsActions extends Actions<CentroidsState, CentroidsGetters, 
     this.main = mainModule.context(store);
   }
 
+  setCentroids(payload: ICentroidsData, isGlobal = true) {
+    BroadcastManager.publish(SET_CENTROIDS, payload, isGlobal);
+  }
+
   async getCentroids(payload: ICentroidsSubmission) {
     try {
       const response = await api.getCentroids(payload);
-      this.mutations.setCentroids(response);
+      this.actions.setCentroids(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

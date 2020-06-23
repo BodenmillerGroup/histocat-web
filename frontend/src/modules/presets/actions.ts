@@ -57,7 +57,7 @@ export class PresetActions extends Actions<PresetState, PresetGetters, PresetMut
     try {
       const preset = await api.getPreset(id);
       if (preset) {
-        this.settings?.mutations.setPreset(preset);
+        this.settings?.actions.setPreset(preset);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

@@ -27,13 +27,6 @@ export class SettingsState {
       scale: 1.0,
     },
   };
-  segmentationSettings: IImageSegmentationSettings = {
-    algorithm: "Otsu Hue",
-    iterations: 1,
-    kernel_size: 3,
-    mask_color: "#00AAFF40",
-    result_type: "origin",
-  };
   mask: IMaskSettings = {
     apply: false,
     location: undefined,

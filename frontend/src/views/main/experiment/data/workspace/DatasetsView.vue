@@ -66,8 +66,6 @@ import { apiUrl } from "@/env";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_ACTIVE_DATASET_ID } from "@/modules/datasets/events";
 import { centroidsModule } from "@/modules/centroids";
 
 @Component
@@ -88,10 +86,10 @@ export default class DatasetsView extends Vue {
   datasetChanged(index: number | null) {
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
-      BroadcastManager.publish(SET_ACTIVE_DATASET_ID, dataset.id);
+      this.datasetContext.actions.setActiveDatasetId(dataset.id);
       this.centroidsContext.actions.getCentroids({ datasetId: dataset.id });
     } else {
-      BroadcastManager.publish(SET_ACTIVE_DATASET_ID, null);
+      this.datasetContext.actions.setActiveDatasetId(null);
     }
   }
 

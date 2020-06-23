@@ -9,6 +9,8 @@ import { GateMutations } from "./mutations";
 import { datasetModule } from "@/modules/datasets";
 import { selectionModule } from "@/modules/selection";
 import { SelectedCell } from "@/modules/selection/models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_ACTIVE_GATE_ID } from "./events";
 
 export class GateActions extends Actions<GateState, GateGetters, GateMutations, GateActions> {
   // Declare context type
@@ -21,6 +23,10 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
     this.main = mainModule.context(store);
     this.dataset = datasetModule.context(store);
     this.selection = selectionModule.context(store);
+  }
+
+  setActiveGateId(id: number | null, isGlobal = true) {
+    BroadcastManager.publish(SET_ACTIVE_GATE_ID, id, isGlobal);
   }
 
   async getGates(datasetId: number) {
@@ -74,7 +80,7 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
           const cellId = data.cell_ids[i];
           selectedCells.push(Object.freeze(new SelectedCell(acquisitionId, index, cellId)));
         }
-        this.selection?.mutations.setSelectedCells(selectedCells);
+        this.selection?.actions.setSelectedCells(selectedCells);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

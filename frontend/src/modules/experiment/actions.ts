@@ -12,7 +12,13 @@ import { ExperimentMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { IChannelSettings } from "@/modules/settings/models";
 import { SET_SHARED_CHANNEL_SETTINGS } from "@/modules/settings/events";
-import { SET_CHANNEL_STACK_IMAGE } from "@/modules/experiment/events";
+import {
+  SET_CHANNEL_STACK_IMAGE,
+  SET_ACTIVE_ACQUISITION_ID,
+  SET_ACTIVE_WORKSPACE_NODE,
+  SET_SELECTED_ACQUISITION_IDS,
+  SET_SELECTED_METALS,
+} from "./events";
 import { selectionModule } from "@/modules/selection";
 
 export class ExperimentActions extends Actions<
@@ -33,6 +39,22 @@ export class ExperimentActions extends Actions<
     this.settings = settingsModule.context(store);
     this.datasets = datasetModule.context(store);
     this.selection = selectionModule.context(store);
+  }
+
+  setActiveAcquisitionId(id?: number, isGlobal = true) {
+    BroadcastManager.publish(SET_ACTIVE_ACQUISITION_ID, id, isGlobal);
+  }
+
+  setActiveWorkspaceNode(node?: { id: number; type: string }, isGlobal = true) {
+    BroadcastManager.publish(SET_ACTIVE_WORKSPACE_NODE, node, isGlobal);
+  }
+
+  setSelectedAcquisitionIds(ids: number[], isGlobal = true) {
+    BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, ids, isGlobal);
+  }
+
+  setSelectedMetals(metals: string[], isGlobal = true) {
+    BroadcastManager.publish(SET_SELECTED_METALS, metals, isGlobal);
   }
 
   async getExperiments() {

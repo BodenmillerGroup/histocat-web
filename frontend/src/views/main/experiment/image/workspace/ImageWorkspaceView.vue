@@ -76,12 +76,6 @@ import { experimentModule } from "@/modules/experiment";
 import { IExperiment } from "@/modules/experiment/models";
 import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import {
-  SET_ACTIVE_ACQUISITION_ID,
-  SET_ACTIVE_WORKSPACE_NODE,
-  SET_SELECTED_ACQUISITION_IDS,
-} from "@/modules/experiment/events";
 
 @Component({
   components: { UploadButton, InfoCard },
@@ -113,9 +107,9 @@ export default class ImageWorkspaceView extends Vue {
       return;
     }
     const node = items[0];
-    BroadcastManager.publish(SET_ACTIVE_WORKSPACE_NODE, node);
+    this.experimentContext.actions.setActiveWorkspaceNode(node);
     if (node.type === "acquisition") {
-      BroadcastManager.publish(SET_ACTIVE_ACQUISITION_ID, node.id);
+      this.experimentContext.actions.setActiveAcquisitionId(node.id);
       this.experimentContext.actions.getChannelStackImage();
     }
   }
@@ -128,7 +122,7 @@ export default class ImageWorkspaceView extends Vue {
   async selectedChanged(items: any[]) {
     this.mutex = true;
     const ids = items.filter((item) => item.type === "acquisition").map((acquisition) => acquisition.id);
-    BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, ids);
+    this.experimentContext.actions.setSelectedAcquisitionIds(ids);
     this.mutex = false;
   }
 

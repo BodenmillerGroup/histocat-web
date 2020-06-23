@@ -29,8 +29,6 @@ import memoize from "memoize-one";
 import { settingsModule } from "@/modules/settings";
 import { experimentModule } from "@/modules/experiment";
 import { IChannel, IChannelStats } from "@/modules/experiment/models";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_CHANNEL_SETTINGS, SET_METAL_COLOR } from "@/modules/settings/events";
 
 function clamp(val, rng) {
   return Math.max(Math.min(val, rng[1]), rng[0]);
@@ -86,7 +84,7 @@ export default class BrushableHistogram extends Vue {
 
   @Watch("color")
   onColorChanged(color: string) {
-    BroadcastManager.publish(SET_METAL_COLOR, {
+    this.settingsContext.actions.setMetalColor({
       metal: this.channel.name,
       color: color,
     });
@@ -230,7 +228,7 @@ export default class BrushableHistogram extends Vue {
         levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
       };
     }
-    BroadcastManager.publish(SET_CHANNEL_SETTINGS, settings);
+    this.settingsContext.actions.setChannelSettings(settings);
     this.experimentContext.actions.getChannelStackImage();
   }
 
