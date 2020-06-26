@@ -1,5 +1,5 @@
 [build-system]
-requires = ["poetry>=1.0.5"]
+requires = ["poetry>=1.0.9"]
 build-backend = "poetry.masonry.api"
 
 [tool.poetry]
@@ -23,7 +23,7 @@ jinja2 = "^2.11.2"
 mahotas = "^1.4.10"
 matplotlib = "^3.2.2"
 opencv-python-headless = "^4.2.0.34"
-orjson = "^3.1.1"
+orjson = "^3.1.2"
 pandas = "^1.0.5"
 passlib = { version = "^1.7.2", extras = ["bcrypt"] }
 phenograph = { git = "https://github.com/jacoblevine/phenograph.git" }  # "^1.5.5"
@@ -32,6 +32,7 @@ ptvsd = "^4.3.2"
 pyarrow = "^0.17.0"
 pydevd-pycharm = "^201.*"
 PyJWT = "^1.7.1"
+pynndescent = "^0.4.7"
 python-multipart = { version = "^0.0.5", optional = true }
 redis = { version = "^3.5.3", extras = ["hiredis"] }
 requests = "^2.24.0"

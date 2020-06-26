@@ -2,7 +2,7 @@
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
     Please select dataset
   </v-banner>
-  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
+  <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
   <div v-else :class="layoutClass">
@@ -124,8 +124,8 @@ export default class ScatterPlotTab extends Vue {
     return "layout-full";
   }
 
-  get activeAcquisition() {
-    return this.experimentContext.getters.activeAcquisition;
+  get activeAcquisitionId() {
+    return this.experimentContext.getters.activeAcquisitionId;
   }
 
   get activeDataset() {
@@ -144,13 +144,9 @@ export default class ScatterPlotTab extends Vue {
 
   async submit() {
     if ((this.$refs.form as any).validate()) {
-      let heatmap = "";
-      if (this.heatmap) {
-        heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
-      }
-
+      const heatmap = this.heatmap ? this.heatmap.label : "";
       const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
 
       await this.analysisContext.actions.getScatterPlotData({
         datasetId: this.activeDataset!.id,

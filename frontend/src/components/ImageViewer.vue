@@ -142,14 +142,14 @@ export default class ImageViewer extends Vue {
   pointoverHandler(idx: number) {
     const point = this.points[idx];
     console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
+      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nValue: ${point.value}`
     );
   }
 
   pointoutHandler(idx: number) {
     const point = this.points[idx];
     console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nValue: ${point.value}`
+      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nValue: ${point.value}`
     );
   }
 
@@ -161,7 +161,7 @@ export default class ImageViewer extends Vue {
       for (const i of this.selection) {
         const point = this.points[i];
         const acquisitionId = point.acquisitionId;
-        newSelectedCells.push(Object.freeze(new SelectedCell(acquisitionId, i, point.cellId)));
+        newSelectedCells.push(Object.freeze(new SelectedCell(acquisitionId, point.cellId, point.objectNumber)));
       }
       this.selectionContext.actions.setSelectedCells(newSelectedCells);
       if (this.applyMask) {

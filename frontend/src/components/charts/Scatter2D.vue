@@ -82,9 +82,9 @@ export default class Scatter2D extends Vue {
       for (let i = 0; i < data.cellIds.length; i++) {
         const cellPoint = Object.freeze(
           new CellPoint(
-            i,
             data.acquisitionIds[i],
             data.cellIds[i],
+            data.objectNumbers[i],
             data.x.data[i],
             data.y.data[i],
             data.heatmap ? data.heatmap.data[i] : data.acquisitionIds[i]
@@ -165,6 +165,7 @@ export default class Scatter2D extends Vue {
       this.selection = data;
       const traces: any[] = [];
       this.points.forEach((v, k) => {
+        // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
         traces.push({
           type: "scattergl",
           mode: "markers",
@@ -173,7 +174,7 @@ export default class Scatter2D extends Vue {
           y: v.map((v) => v.y),
           text: v.map((v) => `Cell ID: ${v.cellId}`),
           customdata: v,
-          selectedpoints: data.filter((v) => v.acquisitionId === k).map((v) => v.index),
+          selectedpoints: data.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1),
           marker: this.hasHeatmap
             ? {
                 size: 3,
@@ -223,12 +224,12 @@ export default class Scatter2D extends Vue {
     plot.on("plotly_selected", (eventData) => {
       if (eventData) {
         if (eventData.points.length > 0) {
-          console.log(eventData.points);
+          // console.log(eventData.points);
           const newSelectedCells: SelectedCell[] = [];
           eventData.points.forEach((point, i) => {
-            const cellPoint = point.customdata;
+            const cellPoint = point.customdata as CellPoint;
             newSelectedCells.push(
-              Object.freeze(new SelectedCell(cellPoint.acquisitionId, point.pointIndex, cellPoint.cellId))
+              Object.freeze(new SelectedCell(cellPoint.acquisitionId, cellPoint.cellId, cellPoint.objectNumber))
             );
           });
           this.selectionContext.actions.setSelectedCells(newSelectedCells);

@@ -32,26 +32,15 @@ def process_phenograph(
 
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
-    channel_map = dataset.input.get("channel_map")
-    image_map = dataset.input.get("image_map")
 
-    image_numbers = []
-    for acquisition_id in acquisition_ids:
-        image_number = image_map.get(str(acquisition_id))
-        image_numbers.append(image_number)
-
-    if not cell_input or not channel_map or len(image_numbers) == 0:
+    if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"].isin(image_numbers)]
-
-    features = []
-    for marker in markers:
-        features.append(f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}")
+    df = df[df["AcquisitionId"].isin(acquisition_ids)]
 
     # Get a numpy array instead of DataFrame
-    feature_values = df[features].values
+    feature_values = df[markers].values
 
     # Normalize data
     min_max_scaler = preprocessing.MinMaxScaler()
@@ -67,7 +56,7 @@ def process_phenograph(
         min_cluster_size=min_cluster_size,
     )
 
-    result = df[features]
+    result = df[markers]
     result = result.assign(community=communities)
     result = result.groupby("community", as_index=False).mean()
 
@@ -116,22 +105,9 @@ def get_phenograph_result(db: Session, dataset_id: int, name: str):
 
     params = phenograph_result.get("params")
     acquisition_ids = params.get("acquisition_ids")
-    image_map = dataset.input.get("image_map")
-    channel_map = dataset.input.get("channel_map")
-    channel_map_updated = {}
-    for key, item in channel_map.items():
-        channel_map_updated[key] = f"Intensity_MeanIntensity_FullStack_c{item}"
-    channel_map_inv = {v: k for k, v in channel_map_updated.items()}
-
-    image_numbers = []
-    for acquisition_id in acquisition_ids:
-        image_number = image_map.get(str(acquisition_id))
-        image_numbers.append(image_number)
 
     output = {}
     for (columnName, columnData) in result.iteritems():
-        if columnName != "community":
-            columnName = channel_map_inv.get(columnName)
         output[columnName] = columnData.tolist()
 
     return output

@@ -98,9 +98,9 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getBoxPlotData(payload: { datasetId: number; acquisitionId: number; markers: string[] }) {
+  async getBoxPlotData(payload: { datasetId: number; gateId: number | null, acquisitionIds: number[]; markers: string[] }) {
     try {
-      const response = await api.getBoxPlotData(payload.datasetId, payload.acquisitionId, payload.markers);
+      const response = await api.getBoxPlotData(payload.datasetId, payload.gateId, payload.acquisitionIds, payload.markers);
       this.mutations.setBoxPlotData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);

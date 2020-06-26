@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Tuple
+from typing import Sequence, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -28,7 +28,8 @@ from histocat.core.utils import stream_bytes
 from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import pca, phenograph, tsne, umap
-from histocat.modules.dataset import service as dataset_crud
+from histocat.modules.dataset import service as dataset_service
+from histocat.modules.gate import service as gate_service
 from histocat.modules.user.models import UserModel
 
 from .dto import (
@@ -55,7 +56,7 @@ RESULT_TYPE_MASK = "mask"
 
 def get_additive_image(db: Session, params: ChannelStackDto):
     additive_image: Optional[np.ndarray] = None
-    legend_labels: List[Tuple[str, str, float]] = list()
+    legend_labels: Sequence[Tuple[str, str, float]] = list()
 
     acquisition = acquisition_crud.get_by_id(db, id=params.acquisitionId)
     if not acquisition:
@@ -149,7 +150,7 @@ async def get_scatter_plot_data(
     dataset_id: int,
     marker_x: str,
     marker_y: str,
-    acquisition_ids: List[int] = Query(None),
+    acquisition_ids: Sequence[int] = Query(None),
     marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
@@ -163,80 +164,74 @@ async def get_scatter_plot_data(
     # if content:
     #     return UJSONResponse(content=ujson.loads(content))
 
-    dataset = dataset_crud.get(db, id=dataset_id)
+    dataset = dataset_service.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
-    channel_map = dataset.input.get("channel_map")
 
-    if not cell_input or not channel_map or len(acquisition_ids) == 0:
+    if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["acquisition_id"].isin(acquisition_ids)]
+    df = df[df["AcquisitionId"].isin(acquisition_ids)]
 
     output = {
-        "acquisitionIds": df["acquisition_id"].tolist(),
-        "cellIds": df["ObjectNumber"].tolist(),
+        "acquisitionIds": df["AcquisitionId"].tolist(),
+        "cellIds": df["CellId"].tolist(),
+        "objectNumbers": df["ObjectNumber"].tolist(),
         "x": {
             "label": marker_x,
-            "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_x]}"] * 2 ** 16).tolist(),
+            "data": df[marker_x].tolist(),
         },
         "y": {
             "label": marker_y,
-            "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_y]}"] * 2 ** 16).tolist(),
+            "data": df[marker_y].tolist(),
         },
     }
 
     if marker_z:
         output["z"] = {
             "label": marker_z,
-            "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker_z]}"] * 2 ** 16).tolist(),
+            "data": df[marker_z].tolist(),
         }
 
     if heatmap_type and heatmap:
-        if heatmap_type == "channel":
-            channel_map = dataset.input.get("channel_map")
-            heatmap_data = (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16)
-        else:
-            heatmap_data = df[heatmap]
+        output["heatmap"] = {"label": heatmap, "data": df[heatmap].tolist()}
 
-        output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
-
-    # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
     return ORJSONResponse(output)
 
 
-@router.get("/boxplot", response_model=List[PlotSeriesDto])
+@router.get("/boxplot", response_model=Sequence[PlotSeriesDto])
 async def get_box_plot_data(
     dataset_id: int,
-    acquisition_id: int,
-    markers: List[str] = Query(None),
+    gate_id: Optional[int] = None,
+    acquisition_ids: Sequence[int] = Query(None),
+    markers: Sequence[str] = Query(None),
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
     Read box plot data from the dataset
     """
-    # content = await redis_manager.cache.get(request.url.path)
-    # if content:
-    #     return UJSONResponse(content=ujson.loads(content))
 
-    dataset = dataset_crud.get(db, id=dataset_id)
+    dataset = dataset_service.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
-    channel_map = dataset.input.get("channel_map")
-    image_map = dataset.input.get("image_map")
-    image_number = image_map.get(str(acquisition_id))
-    if not cell_input or not image_number or not channel_map:
+
+    if not cell_input or (not gate_id and len(acquisition_ids) == 0):
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     content = []
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"] == image_number]
+
+    if gate_id:
+        gate = gate_service.get_by_id(db, id=gate_id)
+        df = df[df["CellId"].isin(gate.cell_ids)]
+    else:
+        df = df[df["AcquisitionId"].isin(acquisition_ids)]
 
     for marker in markers:
         content.append(
             {
                 "label": marker,
-                "data": (df[f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}"] * 2 ** 16).tolist(),
+                "data": df[marker].tolist(),
             }
         )
 
@@ -248,10 +243,10 @@ async def get_box_plot_data(
 async def get_pca_data(
     dataset_id: int,
     n_components: int,
-    acquisition_ids: List[int] = Query(None),
+    acquisition_ids: Sequence[int] = Query(None),
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    markers: List[str] = Query(None),
+    markers: Sequence[str] = Query(None),
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -378,7 +373,7 @@ async def read_phenograph_data(
     return ORJSONResponse(content)
 
 
-@router.post("/region/stats", response_model=List[RegionChannelStatsDto])
+@router.post("/region/stats", response_model=Sequence[RegionChannelStatsDto])
 async def calculate_region_stats(
     params: RegionStatsSubmissionDto,
     request: Request,

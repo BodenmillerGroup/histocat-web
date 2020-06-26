@@ -324,9 +324,10 @@ export class ExperimentActions extends Actions<
           const selectedCells = this.selection?.getters.selectedCells?.filter(
             (v) => v.acquisitionId === activeAcquisitionId
           );
+          // console.log(selectedCells)
           if (selectedCells && selectedCells.length > 0) {
             result["mask"]["gated"] = true;
-            result["mask"]["cell_ids"] = selectedCells.map((item) => item.cellId);
+            result["mask"]["cell_ids"] = selectedCells.map((item) => item.objectNumber);
           }
         }
       }

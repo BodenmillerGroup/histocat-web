@@ -50,7 +50,7 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
         const cellIds: number[] = [];
         selectedCells.forEach((selectedCell) => {
           acquisitionIds.push(selectedCell.acquisitionId);
-          indices.push(selectedCell.index);
+          indices.push(selectedCell.objectNumber);
           cellIds.push(selectedCell.cellId);
         });
         const payload: IGateCreate = {
@@ -78,7 +78,7 @@ export class GateActions extends Actions<GateState, GateGetters, GateMutations, 
           const acquisitionId = data.acquisition_ids[i];
           const index = data.indices[i];
           const cellId = data.cell_ids[i];
-          selectedCells.push(Object.freeze(new SelectedCell(acquisitionId, index, cellId)));
+          selectedCells.push(Object.freeze(new SelectedCell(acquisitionId, cellId, index)));
         }
         this.selection?.actions.setSelectedCells(selectedCells);
       }

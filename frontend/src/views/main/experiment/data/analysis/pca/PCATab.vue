@@ -128,11 +128,7 @@ export default class PCATab extends Vue {
   }
 
   async submit() {
-    let heatmap = "";
-    if (this.heatmap) {
-      heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
-    }
-
+    const heatmap = this.heatmap ? this.heatmap.label : "";
     const acquisitionIds =
       this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
 

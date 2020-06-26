@@ -34,20 +34,15 @@ def process_umap(
 
     dataset = dataset_crud.get(db, id=dataset_id)
     cell_input = dataset.input.get("cell")
-    channel_map = dataset.input.get("channel_map")
 
-    if not cell_input or not channel_map or len(acquisition_ids) == 0:
+    if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     df = pd.read_feather(cell_input.get("location"))
-    df = df[df["acquisition_id"].isin(acquisition_ids)]
-
-    features = []
-    for marker in markers:
-        features.append(f"Intensity_MeanIntensity_FullStack_c{channel_map[marker]}")
+    df = df[df["AcquisitionId"].isin(acquisition_ids)]
 
     # Get a numpy array instead of DataFrame
-    feature_values = df[features].values
+    feature_values = df[markers].values
 
     # Normalize data
     feature_values = np.arcsinh(feature_values / 5, out=feature_values)
@@ -62,11 +57,12 @@ def process_umap(
         min_dist=min_dist,
         metric=metric,
         verbose=6,
-        random_state=42,
+        random_state=77,
     )
     umap_result = umap.fit_transform(feature_values_scaled)
-    acquisitionIds = df["acquisition_id"]
-    cellIds = df["ObjectNumber"]
+    acquisitionIds = df["AcquisitionId"]
+    cellIds = df["CellId"]
+    objectNumbers = df["ObjectNumber"]
 
     timestamp = str(datetime.utcnow())
 
@@ -74,7 +70,7 @@ def process_umap(
     location = os.path.join(dataset.location, "umap", f"{timestamp}.pickle")
 
     with open(location, "wb") as f:
-        pickle.dump({"acquisitionIds": acquisitionIds, "cellIds": cellIds, "umap_result": umap_result}, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump({"acquisitionIds": acquisitionIds, "cellIds": cellIds, "objectNumbers": objectNumbers, "umap_result": umap_result}, f, pickle.HIGHEST_PROTOCOL)
 
     result = {
         "name": timestamp,
@@ -115,6 +111,7 @@ def get_umap_result(
 
     acquisitionIds = r.get("acquisitionIds")
     cellIds = r.get("cellIds")
+    objectNumbers = r.get("objectNumbers")
     result = r.get("umap_result")
 
     result = normalize_embedding(result)
@@ -122,6 +119,7 @@ def get_umap_result(
     output = {
         "acquisitionIds": acquisitionIds.tolist(),
         "cellIds": cellIds.tolist(),
+        "objectNumbers": objectNumbers.tolist(),
         "x": {"label": "C1", "data": result[:, 0].tolist()},
         "y": {"label": "C2", "data": result[:, 1].tolist()},
     }
@@ -130,26 +128,14 @@ def get_umap_result(
     if n_component == 3:
         output["z"] = {"label": "C3", "data": result[:, 2].tolist()}
 
-    params = umap_result.get("params")
-    acquisition_ids = params.get("acquisition_ids")
-    image_map = dataset.input.get("image_map")
-    cell_input = dataset.input.get("cell")
-
-    image_numbers = []
-    for acquisition_id in acquisition_ids:
-        image_number = image_map.get(str(acquisition_id))
-        image_numbers.append(image_number)
-
-    df = pd.read_feather(cell_input.get("location"))
-    df = df[df["ImageNumber"].isin(image_numbers)]
-
     if heatmap_type and heatmap:
-        if heatmap_type == "channel":
-            channel_map = dataset.input.get("channel_map")
-            heatmap_data = df[f"Intensity_MeanIntensity_FullStack_c{channel_map[heatmap]}"] * 2 ** 16
-        else:
-            heatmap_data = df[heatmap]
+        params = umap_result.get("params")
+        acquisition_ids = params.get("acquisition_ids")
+        cell_input = dataset.input.get("cell")
 
-        output["heatmap"] = {"label": heatmap, "data": heatmap_data.tolist()}
+        df = pd.read_feather(cell_input.get("location"))
+        df = df[df["AcquisitionId"].isin(acquisition_ids)]
+
+        output["heatmap"] = {"label": heatmap, "data": df[heatmap].tolist()}
 
     return output

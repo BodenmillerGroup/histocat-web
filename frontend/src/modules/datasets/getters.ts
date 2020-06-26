@@ -37,7 +37,7 @@ export class DatasetGetters extends Getters<DatasetState> {
     const neighborItems = this.getters.activeDataset.input["neighbors_columns"].map((item) => {
       return {
         type: "neighbor",
-        label: item.substring(10, item.length),
+        label: item,
       };
     });
     return channelItems.concat(neighborItems);

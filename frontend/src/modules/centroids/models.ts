@@ -5,6 +5,7 @@ export interface ICentroidsSubmission {
 export interface ICentroidsData {
   acquisitionIds: number[];
   cellIds: number[];
+  objectNumbers: number[];
   x: number[];
   y: number[];
 }

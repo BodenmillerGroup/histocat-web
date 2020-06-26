@@ -65,11 +65,10 @@ export default class GatesView extends Vue {
   @Watch("selected")
   gateChanged(index: number | null) {
     if (index !== null && index !== undefined) {
-      const preset = this.gates[index];
-      // BroadcastManager.publish(SET_ACTIVE_DATASET, dataset);
-      // this.centroidsContext.actions.getCentroids({ datasetId: dataset.id });
+      const gate = this.gates[index];
+      this.gateContext.actions.setActiveGateId(gate.id);
     } else {
-      // BroadcastManager.publish(SET_ACTIVE_DATASET, undefined);
+      this.gateContext.actions.setActiveGateId(null);
     }
   }
 

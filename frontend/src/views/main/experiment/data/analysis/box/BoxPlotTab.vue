@@ -2,7 +2,7 @@
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
     Please select dataset
   </v-banner>
-  <v-banner v-else-if="!activeAcquisitionId" icon="mdi-alert-circle-outline">
+  <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition
   </v-banner>
   <div v-else :class="layoutClass">
@@ -42,6 +42,7 @@ import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { Component, Vue } from "vue-property-decorator";
 import BoxPlotView from "@/views/main/experiment/data/analysis/box/BoxPlotView.vue";
+import {gateModule} from "@/modules/gates";
 
 @Component({
   components: { BoxPlotView },
@@ -51,6 +52,7 @@ export default class BoxPlotTab extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
+  readonly gateContext = gateModule.context(this.$store);
 
   selectedItems: any[] = [];
 
@@ -67,6 +69,10 @@ export default class BoxPlotTab extends Vue {
 
   get activeAcquisitionId() {
     return this.experimentContext.getters.activeAcquisitionId;
+  }
+
+  get selectedAcquisitionIds() {
+    return this.experimentContext.getters.selectedAcquisitionIds;
   }
 
   get activeDataset() {
@@ -88,19 +94,15 @@ export default class BoxPlotTab extends Vue {
   }
 
   async submit() {
-    if (!this.activeDataset) {
-      self.alert("Please select a dataset");
-      return;
-    }
+    const acquisitionIds =
+        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
 
-    if (!this.activeAcquisitionId) {
-      self.alert("Please select an acquisition");
-      return;
-    }
+    const gateId = this.gateContext.getters.activeGateId;
 
     await this.analysisContext.actions.getBoxPlotData({
-      datasetId: this.activeDataset.id,
-      acquisitionId: this.activeAcquisitionId,
+      datasetId: this.activeDataset!.id,
+      gateId: gateId,
+      acquisitionIds: acquisitionIds,
       markers: this.selectedItems,
     });
   }

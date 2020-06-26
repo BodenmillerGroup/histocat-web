@@ -236,10 +236,7 @@ export default class UMAPTab extends Vue {
       return;
     }
 
-    let heatmap = "";
-    if (this.heatmap) {
-      heatmap = this.heatmap.type === "channel" ? this.heatmap.label : `Neighbors_${this.heatmap.label}`;
-    }
+    const heatmap = this.heatmap ? this.heatmap.label : "";
 
     await this.analysisContext.actions.getUMAPResult({
       datasetId: this.activeDataset.id,

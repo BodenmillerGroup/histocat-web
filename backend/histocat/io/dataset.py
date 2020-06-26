@@ -69,6 +69,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
     # Map acquisition database ID to ImageNumber column
     input["image_map"] = image_map
 
+    channels_input = {}
     for channels_filename in locate(str(root_folder), f"*{CHANNELS_FULL_CSV_ENDING}"):
         channels_input = _import_channels_csv(db, channels_filename)
         input["channel_map"] = channels_input
@@ -78,12 +79,12 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
     if object_relationships_input:
         input["object_relationships"] = object_relationships_input
 
-    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id)
+    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id, channels_input)
     if cell_input:
         input["cell"] = cell_input
 
     # Register heatmap columns
-    neighbors_cols = [col for col in cell_df.columns if "Neighbors_" in col]
+    neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]
     input["neighbors_columns"] = neighbors_cols
 
     acquisition_metadata_df, acquisition_metadata_input = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
@@ -139,7 +140,7 @@ def _import_object_relationships(db: Session, src_folder: Path, dst_folder: Path
     return df, artifact
 
 
-def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path, image_number_to_acquisition_id: Dict[int, int]):
+def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path, image_number_to_acquisition_id: Dict[int, int], channels_input: Dict[str, int]):
     src_uri = src_folder / f"{CELL_FILENAME}{CSV_FILE_EXTENSION}"
 
     if not src_uri.exists():
@@ -148,10 +149,27 @@ def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path, image_numb
     dst_uri = dst_folder / f"{CELL_FILENAME}{FEATHER_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
 
-    df["acquisition_id"] = df["ImageNumber"]
-    df["acquisition_id"].replace(image_number_to_acquisition_id, inplace=True)
+    df_preprocessed = pd.DataFrame()
+    df_preprocessed["CellId"] = df.index
+    df_preprocessed["AcquisitionId"] = df["ImageNumber"]
+    df_preprocessed["AcquisitionId"].replace(image_number_to_acquisition_id, inplace=True)
+    df_preprocessed["ImageNumber"] = df["ImageNumber"]
+    df_preprocessed["ObjectNumber"] = df["ObjectNumber"]
+    df_preprocessed["CentroidX"] = df["Location_Center_X"]
+    df_preprocessed["CentroidY"] = df["Location_Center_Y"]
+    for key, value in channels_input.items():
+        # TODO: check intensity multiplier
+        df_preprocessed[key] = df[f"Intensity_MeanIntensity_FullStack_c{value}"] * 2 ** 16
 
-    df.to_feather(dst_uri)
+    neighbors_cols = [col for col in df.columns if "Neighbors_" in col]
+    for col in neighbors_cols:
+        col_name = col.split("_")[1]
+        if col_name:
+            df_preprocessed[col_name] = df[col]
+            if col_name == "NumberOfNeighbors":
+                df_preprocessed[col_name] = df_preprocessed[col_name].astype("int64")
+
+    df_preprocessed.to_feather(dst_uri)
     artifact = {"location": str(dst_uri)}
     return df, artifact
 
