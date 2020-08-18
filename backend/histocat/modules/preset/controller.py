@@ -8,7 +8,7 @@ from histocat.api.utils.security import get_current_active_user
 from histocat.modules.user.models import UserModel
 
 from . import service
-from .dto import PresetDto, PresetCreateDto
+from .dto import PresetCreateDto, PresetDto
 
 router = APIRouter()
 

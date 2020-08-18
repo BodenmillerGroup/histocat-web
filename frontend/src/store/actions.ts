@@ -7,8 +7,12 @@ import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
 import { presetModule } from "@/modules/presets";
 import { gateModule } from "@/modules/gates";
+import { groupModule } from "@/modules/group";
+import { memberModule } from "@/modules/member";
 
 export class RootActions extends Actions {
+  group?: Context<typeof groupModule>;
+  member?: Context<typeof memberModule>;
   analysis?: Context<typeof analysisModule>;
   dataset?: Context<typeof datasetModule>;
   experiment?: Context<typeof experimentModule>;
@@ -19,6 +23,8 @@ export class RootActions extends Actions {
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
+    this.group = groupModule.context(store);
+    this.member = memberModule.context(store);
     this.analysis = analysisModule.context(store);
     this.dataset = datasetModule.context(store);
     this.experiment = experimentModule.context(store);
@@ -30,6 +36,8 @@ export class RootActions extends Actions {
 
   // Reset global store
   reset() {
+    this.group?.mutations.reset();
+    this.member?.mutations.reset();
     this.analysis?.mutations.reset();
     this.dataset?.mutations.reset();
     this.experiment?.mutations.reset();

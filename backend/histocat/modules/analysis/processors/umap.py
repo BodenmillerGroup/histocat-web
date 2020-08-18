@@ -70,7 +70,16 @@ def process_umap(
     location = os.path.join(dataset.location, "umap", f"{timestamp}.pickle")
 
     with open(location, "wb") as f:
-        pickle.dump({"acquisitionIds": acquisitionIds, "cellIds": cellIds, "objectNumbers": objectNumbers, "umap_result": umap_result}, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(
+            {
+                "acquisitionIds": acquisitionIds,
+                "cellIds": cellIds,
+                "objectNumbers": objectNumbers,
+                "umap_result": umap_result,
+            },
+            f,
+            pickle.HIGHEST_PROTOCOL,
+        )
 
     result = {
         "name": timestamp,

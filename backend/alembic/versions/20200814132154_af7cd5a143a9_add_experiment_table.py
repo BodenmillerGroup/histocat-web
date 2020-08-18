@@ -1,18 +1,18 @@
 """Add experiment table
 
-Revision ID: 7bed832a38b0
-Revises: fed22b8a9121
-Create Date: 2019-04-10 15:30:11.616899
+Revision ID: af7cd5a143a9
+Revises: e1c9291e68ae
+Create Date: 2020-08-14 13:21:54.388521
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 
-# revision identifiers, used by Alembic.
 
-revision = '7bed832a38b0'
-down_revision = 'fed22b8a9121'
+# revision identifiers, used by Alembic.
+revision = 'af7cd5a143a9'
+down_revision = 'e1c9291e68ae'
 branch_labels = None
 depends_on = None
 
@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'experiment',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True),
+        sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
         sa.Column('description', sa.String()),
         sa.Column('meta', JSONB()),

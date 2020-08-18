@@ -1,17 +1,18 @@
-"""Add aquisition table
+"""Add acquisition table
 
-Revision ID: b182e0878258
-Revises: b111fd91b7sw
-Create Date: 2019-04-10 15:50:16.499555
+Revision ID: 299731f9d191
+Revises: 19404c6188e2
+Create Date: 2020-08-14 13:22:30.535722
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
+
 # revision identifiers, used by Alembic.
-revision = 'b182e0878258'
-down_revision = 'b111fd91b7sw'
+revision = '299731f9d191'
+down_revision = '19404c6188e2'
 branch_labels = None
 depends_on = None
 

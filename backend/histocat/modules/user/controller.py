@@ -20,14 +20,14 @@ from .dto import UserCreateDto, UserDto, UserUpdateDto
 router = APIRouter()
 
 
-@router.get("/", response_model=Sequence[UserDto])
+@router.get("/users", response_model=Sequence[UserDto])
 def get_all(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get all users."""
     items = service.get_all(db)
     return items
 
 
-@router.post("/", response_model=UserDto)
+@router.post("/users", response_model=UserDto)
 def create(
     params: UserCreateDto,
     db: Session = Depends(get_db),
@@ -45,7 +45,7 @@ def create(
     return item
 
 
-@router.patch("/profile", response_model=UserDto)
+@router.patch("/users/profile", response_model=UserDto)
 def update_me(
     password: str = Body(None),
     name: str = Body(None),
@@ -66,13 +66,13 @@ def update_me(
     return item
 
 
-@router.get("/profile", response_model=UserDto)
+@router.get("/users/profile", response_model=UserDto)
 def get_me(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     """Get current user."""
     return current_user
 
 
-@router.post("/signup", response_model=UserDto)
+@router.post("/users/signup", response_model=UserDto)
 def create_open(
     password: str = Body(...), email: EmailStr = Body(...), name: str = Body(None), db: Session = Depends(get_db),
 ):
@@ -91,7 +91,7 @@ def create_open(
     return item
 
 
-@router.get("/{id}", response_model=UserDto)
+@router.get("/users/{id}", response_model=UserDto)
 def get_by_id(
     id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
 ):
@@ -104,7 +104,7 @@ def get_by_id(
     return user
 
 
-@router.put("/{id}", response_model=UserDto)
+@router.put("/users/{id}", response_model=UserDto)
 def update(
     id: int,
     params: UserUpdateDto,
@@ -121,7 +121,7 @@ def update(
     return item
 
 
-@router.get("/check/{email}")
+@router.get("/users/check/{email}")
 def check_user_exists(email: str, db: Session = Depends(get_db)):
     """Check if user with the email exists."""
     user = service.get_by_email(db, email=email)

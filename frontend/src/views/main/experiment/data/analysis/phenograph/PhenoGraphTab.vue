@@ -25,6 +25,10 @@
                 Clear all
               </v-btn>
             </v-card-actions>
+            <v-radio-group v-model="clusteringAlgo" mandatory hide-details label="Clustering Algorithm">
+              <v-radio label="Louvain" value="louvain" />
+              <v-radio label="Leiden" value="leiden" />
+            </v-radio-group>
             <v-radio-group v-model="jaccard" mandatory hide-details label="Mode">
               <v-radio label="Jaccard metric" value="jaccard" />
               <v-radio label="Gaussian kernel" value="gaussian" />
@@ -110,6 +114,7 @@ export default class PhenoGraphTab extends Vue {
   valid = false;
 
   selectedChannels: any[] = [];
+  clusteringAlgo = "louvain";
   nearestNeighbors = 30;
   jaccard = "jaccard";
   minClusterSize = 10;
@@ -165,6 +170,7 @@ export default class PhenoGraphTab extends Vue {
         dataset_id: this.activeDatasetId!,
         acquisition_ids: acquisitionIds,
         markers: this.selectedChannels,
+        clustering_algo: this.clusteringAlgo,
         jaccard: this.jaccard === "jaccard",
         min_cluster_size: this.minClusterSize,
         nearest_neighbors: this.nearestNeighbors,
@@ -179,6 +185,7 @@ export default class PhenoGraphTab extends Vue {
       this.nearestNeighbors = result.params.nearest_neighbors;
       this.primaryMetric = result.params.primary_metric;
       this.minClusterSize = result.params.min_cluster_size;
+      this.clusteringAlgo = result.params.clustering_algo;
       this.jaccard = result.params.jaccard ? "jaccard" : "gaussian";
 
       this.experimentContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);

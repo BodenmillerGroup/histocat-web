@@ -34,9 +34,7 @@ def get_experiment_datasets(
 
 @router.get("/datasets/{dataset_id}/centroids")
 def get_centroids(
-    dataset_id: int,
-    current_user: UserModel = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Get dataset cell centroids

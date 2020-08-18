@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Tuple, Sequence
+from typing import Sequence, Tuple
 
 import cv2
 import numpy as np
@@ -10,11 +10,7 @@ from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage.color import label2rgb
 
-from histocat.modules.acquisition.dto import (
-    FilterDto,
-    MaskSettingsDto,
-    ScalebarDto,
-)
+from histocat.modules.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
 from histocat.modules.analysis.dto import SegmentationSettingsDto
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.

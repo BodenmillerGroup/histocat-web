@@ -1,4 +1,4 @@
-import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "@/modules/settings/models";
+import { IImageFilter, IImageScalebar, IMaskSettings } from "@/modules/settings/models";
 
 export interface IExperimentUpdate {
   name?: string;

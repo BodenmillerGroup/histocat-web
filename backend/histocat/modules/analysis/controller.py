@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence, Optional, Tuple
+from typing import Optional, Sequence, Tuple
 
 import cv2
 import numpy as np
@@ -177,14 +177,8 @@ async def get_scatter_plot_data(
         "acquisitionIds": df["AcquisitionId"].tolist(),
         "cellIds": df["CellId"].tolist(),
         "objectNumbers": df["ObjectNumber"].tolist(),
-        "x": {
-            "label": marker_x,
-            "data": df[marker_x].tolist(),
-        },
-        "y": {
-            "label": marker_y,
-            "data": df[marker_y].tolist(),
-        },
+        "x": {"label": marker_x, "data": df[marker_x].tolist(),},
+        "y": {"label": marker_y, "data": df[marker_y].tolist(),},
     }
 
     if marker_z:
@@ -229,10 +223,7 @@ async def get_box_plot_data(
 
     for marker in markers:
         content.append(
-            {
-                "label": marker,
-                "data": df[marker].tolist(),
-            }
+            {"label": marker, "data": df[marker].tolist(),}
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
@@ -350,6 +341,7 @@ def submit_phenograph(
         params.dataset_id,
         params.acquisition_ids,
         params.markers,
+        params.clustering_algo,
         params.nearest_neighbors,
         params.jaccard,
         params.primary_metric,

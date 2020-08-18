@@ -16,6 +16,8 @@ import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
 import { presetModule } from "@/modules/presets";
 import { gateModule } from "@/modules/gates";
+import { groupModule } from "@/modules/group";
+import { memberModule } from "@/modules/member";
 
 Vue.use(Vuex);
 
@@ -23,6 +25,8 @@ const debug = false; // process.env.NODE_ENV !== "production";
 
 const rootModule = new Module({
   modules: {
+    group: groupModule,
+    member: memberModule,
     analysis: analysisModule,
     dataset: datasetModule,
     experiment: experimentModule,
@@ -40,7 +44,7 @@ const rootModule = new Module({
 
 const vuexStorage = new VuexPersistence<typeof rootModule>({
   strictMode: debug,
-  storage: localforage,
+  storage: localforage as any,
   asyncStorage: true,
   modules: ["settings"],
 });

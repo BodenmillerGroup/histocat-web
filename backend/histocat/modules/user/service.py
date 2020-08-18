@@ -1,6 +1,5 @@
 from typing import Optional, Sequence
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from histocat.core.security import get_password_hash, verify_password
@@ -45,12 +44,11 @@ def create(session: Session, *, params: UserCreateDto) -> UserModel:
 
 
 def update(session: Session, *, item: UserModel, params: UserUpdateDto) -> UserModel:
-    data = jsonable_encoder(item)
+    data = item.as_dict()
+    update_data = params.dict(exclude_unset=True)
     for field in data:
-        if field in params.fields:
-            value_in = getattr(params, field)
-            if value_in is not None:
-                setattr(item, field, value_in)
+        if field in update_data:
+            setattr(item, field, update_data[field])
     if params.password:
         hash = get_password_hash(params.password)
         item.password = hash

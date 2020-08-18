@@ -106,7 +106,7 @@ export default class EditExperiment extends Vue {
   }
 
   get experiment() {
-    return this.experimentContext.getters.getExperiment(+this.$router.currentRoute.params.id);
+    return this.experimentContext.getters.getExperiment(+this.$router.currentRoute.params.experimentId);
   }
 
   async mounted() {

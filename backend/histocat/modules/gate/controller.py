@@ -8,7 +8,7 @@ from histocat.api.utils.security import get_current_active_user
 from histocat.modules.user.models import UserModel
 
 from . import service
-from .dto import GateDto, GateCreateDto
+from .dto import GateCreateDto, GateDto
 
 router = APIRouter()
 
@@ -37,10 +37,7 @@ def get_dataset_gates(
 
 @router.post("/gates", response_model=GateDto)
 def create(
-    *,
-    db: Session = Depends(get_db),
-    params: GateCreateDto,
-    current_user: UserModel = Depends(get_current_active_user),
+    *, db: Session = Depends(get_db), params: GateCreateDto, current_user: UserModel = Depends(get_current_active_user),
 ):
     """
     Create new gate

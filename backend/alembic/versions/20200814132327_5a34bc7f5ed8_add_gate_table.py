@@ -1,18 +1,18 @@
 """Add gate table
 
-Revision ID: 06df70ede08a
-Revises: fa29b07fd05f
-Create Date: 2020-06-10 17:37:17.185233
+Revision ID: 5a34bc7f5ed8
+Revises: c18a654cf9b3
+Create Date: 2020-08-14 13:23:27.886176
 
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB, ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 # revision identifiers, used by Alembic.
-revision = '06df70ede08a'
-down_revision = 'fa29b07fd05f'
+revision = '5a34bc7f5ed8'
+down_revision = 'c18a654cf9b3'
 branch_labels = None
 depends_on = None
 

@@ -44,8 +44,8 @@ def create(session: Session, *, params: DatasetCreateDto) -> DatasetModel:
 
 
 def update(session: Session, *, item: DatasetModel, params: DatasetUpdateDto) -> DatasetModel:
-    data = jsonable_encoder(item)
-    update_data = params.dict(skip_defaults=True)
+    data = item.as_dict()
+    update_data = params.dict(exclude_unset=True)
     for field in data:
         if field in update_data:
             setattr(item, field, update_data[field])

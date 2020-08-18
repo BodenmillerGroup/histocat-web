@@ -25,9 +25,9 @@ if os.environ.get("BACKEND_ENV") == "development":
     try:
         # VS Code Debugging
         # Allow other computers to attach to ptvsd at this IP address and port.
-        import ptvsd
-
-        ptvsd.enable_attach(address=("0.0.0.0", 5688), redirect_output=True)
+        # import ptvsd
+        #
+        # ptvsd.enable_attach(address=("0.0.0.0", 5688), redirect_output=True)
         pass
 
         # PyCharm Debugging
@@ -141,6 +141,7 @@ def process_phenograph(
     dataset_id: int,
     acquisition_ids: List[int],
     markers: List[str],
+    clustering_algo: str,
     nearest_neighbors: int,
     jaccard: bool,
     primary_metric: str,
@@ -153,6 +154,7 @@ def process_phenograph(
             dataset_id,
             acquisition_ids,
             markers,
+            clustering_algo,
             nearest_neighbors,
             jaccard,
             primary_metric,

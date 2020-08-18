@@ -45,6 +45,7 @@ class BoxPlotDto(BaseModel):
 
 class PcaDto(BaseModel):
     """PCA plot model."""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -102,6 +103,7 @@ class PhenographSubmissionDto(BaseModel):
     dataset_id: int
     acquisition_ids: Sequence[int]
     markers: Sequence[str]
+    clustering_algo: str
     nearest_neighbors: int
     jaccard: bool
     primary_metric: str

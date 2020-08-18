@@ -1,4 +1,4 @@
-FROM python:3.8.3
+FROM python:3.8.5
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
@@ -10,7 +10,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PIP_NO_CACHE_DIR=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.0.9 \
+  POETRY_VERSION=1.0.10 \
   POETRY_VIRTUALENVS_CREATE=false \
   BACKEND_ENV=${BACKEND_ENV}
   PATH="${PATH}:/root/.poetry/bin" \

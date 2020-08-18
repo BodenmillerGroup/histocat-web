@@ -111,6 +111,7 @@ export interface IPhenoGraphSubmission {
   dataset_id: number;
   acquisition_ids: number[];
   markers: string[];
+  clustering_algo: string;
   nearest_neighbors: number;
   jaccard: boolean;
   primary_metric: string;

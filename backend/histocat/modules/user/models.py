@@ -15,8 +15,7 @@ class UserModel(Base):
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
     updated_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
-    experiments = sa.orm.relationship("ExperimentModel", back_populates="user", cascade="all, delete, delete-orphan")
-    datasets = sa.orm.relationship("DatasetModel", back_populates="user", cascade="all, delete, delete-orphan")
+    members = sa.orm.relationship("MemberModel", back_populates="user", cascade="all, delete, delete-orphan")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, email={self.email}, name={self.name})>"

@@ -24,7 +24,7 @@ from .dto import TokenDto
 router = APIRouter()
 
 
-@router.post("/login", response_model=TokenDto)
+@router.post("/auth/login", response_model=TokenDto)
 def login_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -41,7 +41,7 @@ def login_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordR
     }
 
 
-@router.post("/test-token", response_model=UserDto)
+@router.post("/auth/test-token", response_model=UserDto)
 def test_token(current_user: DBUser = Depends(get_current_user)):
     """
     Test access token
@@ -49,7 +49,7 @@ def test_token(current_user: DBUser = Depends(get_current_user)):
     return current_user
 
 
-@router.post("/password-recovery/{email}", response_model=MsgDto)
+@router.post("/auth/password-recovery/{email}", response_model=MsgDto)
 def recover_password(email: str, db: Session = Depends(get_db)):
     """
     Password Recovery
@@ -65,7 +65,7 @@ def recover_password(email: str, db: Session = Depends(get_db)):
     return {"msg": "Password recovery email sent"}
 
 
-@router.post("/reset-password/", response_model=MsgDto)
+@router.post("/auth/reset-password/", response_model=MsgDto)
 def reset_password(token: str = Body(...), new_password: str = Body(...), db: Session = Depends(get_db)):
     """
     Reset password

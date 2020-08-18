@@ -53,4 +53,8 @@ export class MainGetters extends Getters<MainState> {
   get showData() {
     return this.state.showData;
   }
+
+  get isAdmin() {
+    return this.state.userProfile ? this.state.userProfile.is_admin : false;
+  }
 }

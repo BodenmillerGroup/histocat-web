@@ -23,7 +23,7 @@ class ExperimentModel(Base):
     __tablename__ = "experiment"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    user_id = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
+    group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True)
     name = sa.Column(sa.String(), index=True)
     description = sa.Column(sa.Text())
     meta = sa.Column(JSONB())
@@ -32,7 +32,7 @@ class ExperimentModel(Base):
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    user = sa.orm.relationship("UserModel", back_populates="experiments")
+    group = sa.orm.relationship("GroupModel", back_populates="experiments")
     slides = sa.orm.relationship("SlideModel", back_populates="experiment", cascade="all, delete, delete-orphan")
     datasets = sa.orm.relationship("DatasetModel", back_populates="experiment", cascade="all, delete, delete-orphan")
     presets = sa.orm.relationship("PresetModel", back_populates="experiment", cascade="all, delete, delete-orphan")

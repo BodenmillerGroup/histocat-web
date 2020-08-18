@@ -1,8 +1,8 @@
 """Add preset table
 
-Revision ID: fa29b07fd05f
-Revises: 35b87e175854
-Create Date: 2020-06-10 17:33:04.292113
+Revision ID: c18a654cf9b3
+Revises: 601250049059
+Create Date: 2020-08-14 13:23:19.279740
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 
 # revision identifiers, used by Alembic.
-revision = 'fa29b07fd05f'
-down_revision = '35b87e175854'
+revision = 'c18a654cf9b3'
+down_revision = '601250049059'
 branch_labels = None
 depends_on = None
 

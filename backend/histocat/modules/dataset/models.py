@@ -21,7 +21,6 @@ class DatasetModel(Base):
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
     experiment_id = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
-    user_id = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
     uid = sa.Column(UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True)
     status = sa.Column(sa.String(64), default="pending", nullable=False, index=True)
     name = sa.Column(sa.String())
@@ -34,7 +33,6 @@ class DatasetModel(Base):
     updated_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), onupdate=sa.sql.func.now(), nullable=False)
 
     experiment = sa.orm.relationship("ExperimentModel", back_populates="datasets")
-    user = sa.orm.relationship("UserModel", back_populates="datasets")
     gates = sa.orm.relationship("GateModel", back_populates="dataset", cascade="all, delete, delete-orphan")
 
     def __repr__(self):

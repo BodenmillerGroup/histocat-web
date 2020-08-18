@@ -8,7 +8,6 @@ import pandas as pd
 from fastapi import HTTPException
 from sklearn import preprocessing
 from sklearn.manifold import TSNE
-
 from sqlalchemy.orm import Session
 
 from histocat.core.image import normalize_embedding
@@ -74,7 +73,16 @@ def process_tsne(
     location = os.path.join(dataset.location, "tsne", f"{timestamp}.pickle")
 
     with open(location, "wb") as f:
-        pickle.dump({"acquisitionIds": acquisitionIds, "cellIds": cellIds, "objectNumbers": objectNumbers, "tsne_result": tsne_result}, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(
+            {
+                "acquisitionIds": acquisitionIds,
+                "cellIds": cellIds,
+                "objectNumbers": objectNumbers,
+                "tsne_result": tsne_result,
+            },
+            f,
+            pickle.HIGHEST_PROTOCOL,
+        )
 
     result = {
         "name": timestamp,

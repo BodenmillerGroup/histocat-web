@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence, Optional
+from typing import Optional, Sequence
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session

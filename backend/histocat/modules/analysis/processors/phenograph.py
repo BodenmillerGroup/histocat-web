@@ -21,6 +21,7 @@ def process_phenograph(
     dataset_id: int,
     acquisition_ids: List[int],
     markers: List[str],
+    clustering_algo: str,
     nearest_neighbors: int,
     jaccard: bool,
     primary_metric: str,
@@ -49,6 +50,7 @@ def process_phenograph(
     # PhenoGraph implementation
     communities, graph, Q = phenograph.cluster(
         feature_values_scaled,
+        clustering_algo=clustering_algo,
         n_jobs=1,
         k=nearest_neighbors,
         jaccard=jaccard,
@@ -73,6 +75,7 @@ def process_phenograph(
             "dataset_id": dataset_id,
             "acquisition_ids": acquisition_ids,
             "markers": markers,
+            "clustering_algo": clustering_algo,
             "nearest_neighbors": nearest_neighbors,
             "jaccard": jaccard,
             "primary_metric": primary_metric,

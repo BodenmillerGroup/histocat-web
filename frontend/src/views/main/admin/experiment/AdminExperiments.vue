@@ -12,7 +12,7 @@
       <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" icon :to="{ name: 'main-admin-experiments-edit', params: { id: item.id } }">
+            <v-btn v-on="on" icon :to="{ name: 'main-admin-experiments-edit', params: { experimentId: item.id } }">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>

@@ -1,18 +1,18 @@
 """Add panorama table
 
-Revision ID: b111fd91b7sw
-Revises: a596fd31b7bd
-Create Date: 2019-04-10 15:44:16.499555
+Revision ID: 19404c6188e2
+Revises: 49ce2d9138fa
+Create Date: 2020-08-14 13:22:17.981270
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
-# revision identifiers, used by Alembic.
 
-revision = 'b111fd91b7sw'
-down_revision = 'a596fd31b7bd'
+# revision identifiers, used by Alembic.
+revision = '19404c6188e2'
+down_revision = '49ce2d9138fa'
 branch_labels = None
 depends_on = None
 

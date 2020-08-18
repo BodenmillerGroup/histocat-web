@@ -75,7 +75,7 @@ services:
 
   db:
     restart: always
-    image: postgres:12.3-alpine
+    image: postgres:12.4-alpine
     environment:
       - POSTGRES_SERVER
       - POSTGRES_USER
@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.22
+    image: dpage/pgadmin4:4.24
     depends_on:
       - db
     environment:
@@ -103,13 +103,13 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.8.5-alpine
+    image: rabbitmq:3.8.6-alpine
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   redis:
     restart: always
-    image: redis:6.0.5-alpine3.12
+    image: redis:6.0.6-alpine3.12
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -118,7 +118,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.6.0
+    image: redislabs/redisinsight:1.6.3
     depends_on:
       - redis
     ports:
@@ -128,7 +128,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer:1.24.0-alpine
+    image: portainer/portainer:1.24.1-alpine
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: traefik:2.2.1
+    image: traefik:2.2.8
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

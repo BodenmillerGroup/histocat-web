@@ -24,7 +24,8 @@ class ExperimentUpdateDto(BaseModel):
 
 class ExperimentDto(BaseModel):
     id: int
-    user_id: int
+    group_id: int
+    member_id: int
     name: Optional[str]
     description: Optional[str]
     meta: Optional[dict]

@@ -2,13 +2,10 @@ import logging
 import os
 from typing import List, Optional, Set
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from histocat.config import config
-from histocat.modules.share.service import get_by_user_id
-from histocat.modules.user.models import UserModel
 
 from .dto import ExperimentCreateDto, ExperimentUpdateDto
 from .models import EXPERIMENT_LOCATION_FORMAT, ExperimentModel
@@ -24,20 +21,8 @@ def get_by_name(session: Session, *, name: str) -> Optional[ExperimentModel]:
     return session.query(ExperimentModel).filter(ExperimentModel.name == name).first()
 
 
-def get_multi(
-    session: Session, *, user: UserModel, skip: int = 0, limit: int = 1000
-) -> List[Optional[ExperimentModel]]:
-    if user.is_admin:
-        items = session.query(ExperimentModel).offset(skip).limit(limit).all()
-    else:
-        shares = get_by_user_id(session, user_id=user.id)
-        shared_experiments = [item.experiment for item in shares]
-        items = (
-            session.query(ExperimentModel).filter(ExperimentModel.user_id == user.id).offset(skip).limit(limit).all()
-        )
-        items.extend(shared_experiments)
-
-    return items
+def get_group_experiments(session: Session, *, group_id: int) -> List[Optional[ExperimentModel]]:
+    return session.query(ExperimentModel).filter(ExperimentModel.group_id == group_id).all()
 
 
 def get_tags(session: Session) -> Set[str]:
@@ -45,9 +30,9 @@ def get_tags(session: Session) -> Set[str]:
     return {e[0] for e in items}
 
 
-def create(session: Session, *, user_id: int, params: ExperimentCreateDto) -> ExperimentModel:
+def create(session: Session, *, group_id: int, params: ExperimentCreateDto) -> ExperimentModel:
     entity = ExperimentModel(
-        user_id=user_id, name=params.name, description=params.description, meta=params.meta, tags=params.tags,
+        group_id=group_id, name=params.name, description=params.description, meta=params.meta, tags=params.tags,
     )
     session.add(entity)
     session.commit()
@@ -65,8 +50,8 @@ def create(session: Session, *, user_id: int, params: ExperimentCreateDto) -> Ex
 
 
 def update(session: Session, *, item: ExperimentModel, params: ExperimentUpdateDto) -> ExperimentModel:
-    data = jsonable_encoder(item)
-    update_data = params.dict(skip_defaults=True)
+    data = item.as_dict()
+    update_data = params.dict(exclude_unset=True)
     for field in data:
         if field in update_data:
             setattr(item, field, update_data[field])

@@ -1,20 +1,21 @@
-# make sure all SQL Alchemy models are imported before initializing DB
-# otherwise, SQL Alchemy might fail to initialize properly relationships
-# for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
-
 from histocat.config import config
 from histocat.db.base import Base  # noqa
 from histocat.modules.acquisition.models import AcquisitionModel  # noqa
 from histocat.modules.dataset.models import DatasetModel  # noqa
 from histocat.modules.experiment.models import ExperimentModel  # noqa
+from histocat.modules.gate.models import GateModel  # noqa
+from histocat.modules.group.models import GroupModel  # noqa
+from histocat.modules.member.models import MemberModel  # noqa
 from histocat.modules.panorama.models import PanoramaModel  # noqa
-from histocat.modules.share.models import ShareModel  # noqa
+from histocat.modules.preset.models import PresetModel  # noqa
 from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto
 from histocat.modules.user.models import UserModel  # noqa
-from histocat.modules.preset.models import PresetModel  # noqa
-from histocat.modules.gate.models import GateModel  # noqa
+
+# make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
+# otherwise, SQL Alchemy might fail to initialize relationships properly
+# for more details: https://github.com/tiangolo/full-stack-fastapi-postgresql/issues/28
 
 
 def init_db(db_session):

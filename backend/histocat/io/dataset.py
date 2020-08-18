@@ -140,7 +140,13 @@ def _import_object_relationships(db: Session, src_folder: Path, dst_folder: Path
     return df, artifact
 
 
-def _import_cell_csv(db: Session, src_folder: Path, dst_folder: Path, image_number_to_acquisition_id: Dict[int, int], channels_input: Dict[str, int]):
+def _import_cell_csv(
+    db: Session,
+    src_folder: Path,
+    dst_folder: Path,
+    image_number_to_acquisition_id: Dict[int, int],
+    channels_input: Dict[str, int],
+):
     src_uri = src_folder / f"{CELL_FILENAME}{CSV_FILE_EXTENSION}"
 
     if not src_uri.exists():

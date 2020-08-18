@@ -1,17 +1,17 @@
 """Add user table
 
-Revision ID: fed22b8a9121
-Revises: b9935fae5e7c
-Create Date: 2019-04-10 15:29:17.676102
+Revision ID: 4bec27c370f0
+Revises: c72fcc1bfbaf
+Create Date: 2020-08-14 13:21:34.610121
 
 """
-import sqlalchemy as sa
 from alembic import op
+import sqlalchemy as sa
+
 
 # revision identifiers, used by Alembic.
-
-revision = 'fed22b8a9121'
-down_revision = 'b9935fae5e7c'
+revision = '4bec27c370f0'
+down_revision = 'c72fcc1bfbaf'
 branch_labels = None
 depends_on = None
 

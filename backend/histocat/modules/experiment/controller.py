@@ -24,15 +24,15 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/experiments", response_model=List[ExperimentDto])
-def read_all(
-    db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
-):
-    """
-    Retrieve experiments
-    """
-    items = service.get_multi(db, user=current_user)
-    return items
+# @router.get("/experiments", response_model=List[ExperimentDto])
+# def read_all(
+#     db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
+# ):
+#     """
+#     Retrieve experiments
+#     """
+#     items = service.get_multi(db, user=current_user)
+#     return items
 
 
 @router.get("/experiments/tags", response_model=Set[str])
@@ -100,7 +100,6 @@ def update(
     Update an experiment
     """
     item = service.get(db, id=experiment_id)
-
     if not item:
         raise HTTPException(
             status_code=404, detail="The experiment with this id does not exist in the system",
