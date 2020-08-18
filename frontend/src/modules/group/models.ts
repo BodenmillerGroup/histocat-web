@@ -1,10 +1,12 @@
 import {IExperiment} from "@/modules/experiment/models";
+import {IMember} from "@/modules/member/models";
 
 export interface IGroupCreate {
   name: string;
   description: string | null;
   url: string | null;
   is_open: boolean;
+  tags: string[];
 }
 
 export interface IGroupUpdate {
@@ -12,6 +14,7 @@ export interface IGroupUpdate {
   description: string | null;
   url: string | null;
   is_open: boolean;
+  tags: string[];
 }
 
 export interface IGroup {
@@ -20,7 +23,9 @@ export interface IGroup {
   description: string | null;
   url: string | null;
   is_open: boolean;
+  tags: string[];
   created_at: string;
 
-  experiments?: IExperiment[];
+  members: IMember[];
+  experiments: IExperiment[];
 }

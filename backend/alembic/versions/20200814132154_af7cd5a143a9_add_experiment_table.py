@@ -7,7 +7,7 @@ Create Date: 2020-08-14 13:21:54.388521
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB, ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 # revision identifiers, used by Alembic.
@@ -24,9 +24,7 @@ def upgrade():
         sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
         sa.Column('description', sa.String()),
-        sa.Column('meta', JSONB()),
         sa.Column('tags', ARRAY(sa.String(64)), index=True),
-        sa.Column('is_public', sa.Boolean(), nullable=False, default=False),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )

@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Sequence
 
 from pydantic import BaseModel
+
+from histocat.modules.member.dto import MemberDto
 
 
 class GroupCreateDto(BaseModel):
@@ -9,6 +11,7 @@ class GroupCreateDto(BaseModel):
     description: Optional[str]
     url: Optional[str]
     is_open: bool
+    tags: Optional[Sequence[str]]
 
 
 class GroupUpdateDto(BaseModel):
@@ -16,6 +19,7 @@ class GroupUpdateDto(BaseModel):
     description: Optional[str]
     url: Optional[str]
     is_open: bool
+    tags: Optional[Sequence[str]]
 
 
 class GroupDto(BaseModel):
@@ -24,7 +28,11 @@ class GroupDto(BaseModel):
     description: Optional[str]
     url: Optional[str]
     is_open: bool
+    tags: Optional[Sequence[str]]
+    location: Optional[str]
     created_at: datetime
+
+    members: Sequence[MemberDto]
 
     class Config:
         orm_mode = True

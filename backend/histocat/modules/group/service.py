@@ -1,13 +1,18 @@
-from typing import Optional, Sequence
+import logging
+import os
+from typing import Optional, Sequence, Set
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_, any_
 
+from histocat.config import config
 from .dto import GroupCreateDto, GroupUpdateDto
-from .models import GroupModel
+from .models import GroupModel, GROUP_LOCATION_FORMAT
 from histocat.modules.member import service as member_service
 from histocat.modules.member.dto import MemberCreateDto
 from histocat.modules.member.models import MemberModel
+
+logger = logging.getLogger(__name__)
 
 
 def get_by_id(session: Session, id: int) -> Optional[GroupModel]:
@@ -19,12 +24,26 @@ def get_by_name(session: Session, *, name: str) -> Optional[GroupModel]:
 
 
 def get_all(session: Session, *, user_id: int) -> Sequence[GroupModel]:
-    return session.query(GroupModel).outerjoin(GroupModel.members).filter((GroupModel.is_open) | (MemberModel.user_id == user_id)).all()
+    return session.query(GroupModel).outerjoin(GroupModel.members).filter(
+        GroupModel.is_open | (MemberModel.user_id == user_id)).all()
+
+
+def get_tags(session: Session) -> Set[str]:
+    items = session.query(func.unnest(GroupModel.tags)).distinct().all()
+    return {e[0] for e in items}
 
 
 def create(session: Session, *, params: GroupCreateDto, user_id: int) -> GroupModel:
-    entity = GroupModel(name=params.name, description=params.description, url=params.url, is_open=params.is_open)
+    entity = GroupModel(name=params.name, description=params.description, url=params.url, is_open=params.is_open, tags=params.tags)
     session.add(entity)
+    session.commit()
+    session.refresh(entity)
+
+    entity.location = os.path.join(config.ROOT_DATA_DIRECTORY, GROUP_LOCATION_FORMAT.format(id=entity.id))
+    if not os.path.exists(entity.location):
+        logger.debug(f"Create location for group {entity.id}: {entity.location}")
+        os.makedirs(entity.location)
+
     session.commit()
     session.refresh(entity)
 
@@ -43,6 +62,11 @@ def update(session: Session, *, item: GroupModel, params: GroupUpdateDto) -> Gro
     session.commit()
     session.refresh(item)
     return item
+
+
+def join(session: Session, *, group_id: int, user_id: int) -> GroupModel:
+    member = member_service.create(session, params=MemberCreateDto(group_id=group_id, user_id=user_id, role=100, is_active=True))
+    return get_by_id(session, id=group_id)
 
 
 def delete_by_id(session: Session, *, id: int):

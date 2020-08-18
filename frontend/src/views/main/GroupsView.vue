@@ -11,6 +11,17 @@
         solo
         class="mt-1"
       />
+      <v-select
+        v-model="selectedTags"
+        :items="tags"
+        chips
+        deletable-chips
+        clearable
+        label="Tags"
+        multiple
+        solo
+        class="mt-1 ml-4"
+      />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" dark fab color="primary lighten-1" to="/main/groups/create" class="ml-4">
@@ -40,6 +51,16 @@ export default class GroupsView extends Vue {
   readonly groupContext = groupModule.context(this.$store);
 
   search = "";
+  selectedTags: string[] = [];
+
+  get tags(): any[] {
+    const list = this.groupContext.getters.tags;
+    return list.map((item) => {
+      return {
+        text: item,
+      };
+    });
+  }
 
   get userProfile() {
     return this.mainContext.getters.userProfile;
@@ -49,11 +70,19 @@ export default class GroupsView extends Vue {
     const items = this.search
       ? this.groupContext.getters.groups.filter((item) => item.name.toLowerCase().includes(this.search.toLowerCase()))
       : this.groupContext.getters.groups;
-    return items;
+    if (this.selectedTags.length === 0) {
+      return items;
+    } else {
+      return items.filter((group) => {
+        if (group.tags && this.selectedTags.some((r) => group.tags.includes(r))) {
+          return group;
+        }
+      });
+    }
   }
 
   async mounted() {
-    await this.groupContext.actions.getGroups();
+    await Promise.all([this.groupContext.actions.getGroups(), this.groupContext.actions.getTags()]);
   }
 }
 </script>

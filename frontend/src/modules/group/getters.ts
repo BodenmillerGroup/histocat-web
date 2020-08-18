@@ -6,6 +6,10 @@ export class GroupGetters extends Getters<GroupState> {
     return this.state.ids.map((id) => this.state.entities[id]);
   }
 
+  get tags() {
+    return this.state.tags;
+  }
+
   getGroup(id: number) {
     return this.state.entities[id];
   }

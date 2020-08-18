@@ -6,6 +6,9 @@ export const api = {
   async getGroups() {
     return ApiManager.api.get(`groups`).json<IGroup[]>();
   },
+  async getTags() {
+    return ApiManager.api.get(`groups/tags`).json<string[]>();
+  },
   async createGroup(data: IGroupCreate) {
     return ApiManager.api
       .post(`groups/`, {

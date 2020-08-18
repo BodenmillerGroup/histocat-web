@@ -31,9 +31,7 @@ def get_tags(session: Session) -> Set[str]:
 
 
 def create(session: Session, *, group_id: int, params: ExperimentCreateDto) -> ExperimentModel:
-    entity = ExperimentModel(
-        group_id=group_id, name=params.name, description=params.description, meta=params.meta, tags=params.tags,
-    )
+    entity = ExperimentModel(group_id=group_id, name=params.name, description=params.description, tags=params.tags)
     session.add(entity)
     session.commit()
     session.refresh(entity)

@@ -29,6 +29,17 @@ export class GroupActions extends Actions<GroupState, GroupGetters, GroupMutatio
     }
   }
 
+  async getTags() {
+    try {
+      const data = await api.getTags();
+      if (data) {
+        this.mutations.setTags(data);
+      }
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
   async createGroup(payload: IGroupCreate) {
     try {
       const data = await api.createGroup(payload);

@@ -2,7 +2,7 @@ import logging
 import os
 
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY
 
 from histocat.core.utils import (
     autocreate_directory_property,
@@ -18,7 +18,7 @@ EXPERIMENT_LOCATION_FORMAT = "experiment_{id}"
 
 @remove_location_upon_delete
 class ExperimentModel(Base):
-    """An *experiment* is the main organizational unit of `HistoCAT`."""
+    """An *experiment* is the secondary organizational unit of `histoCAT`."""
 
     __tablename__ = "experiment"
 
@@ -26,9 +26,7 @@ class ExperimentModel(Base):
     group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True)
     name = sa.Column(sa.String(), index=True)
     description = sa.Column(sa.Text())
-    meta = sa.Column(JSONB())
     tags = sa.Column(ARRAY(sa.String(64)))
-    is_public = sa.Column(sa.Boolean(), nullable=False, default=False)
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 

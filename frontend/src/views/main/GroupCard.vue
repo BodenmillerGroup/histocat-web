@@ -11,6 +11,12 @@
     <v-card-text v-if="group.description">
       {{ group.description }}
     </v-card-text>
+    <v-card-text v-if="group.tags && group.tags.length > 0">
+      <v-chip :key="item" v-for="item in group.tags" label small class="mr-1">
+        <v-icon small left>mdi-tag-outline</v-icon>
+        {{ item }}
+      </v-chip>
+    </v-card-text>
     <v-card-actions>
       <v-btn
         v-if="isMember || user.is_admin"
@@ -19,15 +25,26 @@
       >
         Open
       </v-btn>
-      <v-btn
-        color="primary"
-        :to="{ name: 'main-groups-edit', params: { groupId: group.id } }"
-      >
-        Edit
+      <v-btn v-if="!isMember && group.is_open" color="primary" @click="joinGroup()">
+        Join
       </v-btn>
-      <v-btn v-if="group.is_open" color="primary" @click="joinGroup()">
-        Request Access
-      </v-btn>
+      <v-spacer />
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" :to="{ name: 'main-groups-edit', params: { groupId: group.id } }">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+        </template>
+        <span>Edit group</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon color="secondary" v-on="on" @click="deleteGroup(group.id)">
+            <v-icon>mdi-delete-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Delete group</span>
+      </v-tooltip>
     </v-card-actions>
   </v-card>
 </template>
@@ -55,9 +72,7 @@ export default class GroupCard extends Vue {
   readonly group!: IGroup;
 
   get userIds() {
-    return (this.group as any).members
-      ? (this.group as any).members.filter((item) => item.is_active).map((member) => member.user_id)
-      : [];
+    return this.group.members.filter((item) => item.is_active).map((member) => member.user_id);
   }
 
   get isMember() {
@@ -66,6 +81,12 @@ export default class GroupCard extends Vue {
 
   async joinGroup() {
     await this.groupContext.actions.joinGroup(this.group.id);
+  }
+
+  async deleteGroup() {
+    if (self.confirm("Are you sure you want to delete the group?")) {
+      await this.groupContext.actions.deleteGroup(this.group.id);
+    }
   }
 }
 </script>

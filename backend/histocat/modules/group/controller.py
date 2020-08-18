@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Set
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -14,6 +14,14 @@ from . import service
 from .dto import GroupCreateDto, GroupDto, GroupUpdateDto
 
 router = APIRouter()
+
+
+@router.get("/groups/tags", response_model=Set[str])
+def get_tags(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
+    """
+    Get groups tags
+    """
+    return service.get_tags(db)
 
 
 @router.get("/groups", response_model=Sequence[GroupDto])
@@ -59,7 +67,17 @@ def update(
     return item
 
 
-@router.delete("/groups/{id}", response_model=GroupDto)
+@router.post("/groups/{id}/join", response_model=GroupDto)
+def join(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_active_user),
+):
+    """Join the group."""
+    return service.join(db, group_id=id, user_id=current_user.id)
+
+
+@router.delete("/groups/{id}", response_model=int)
 def delete_by_id(
     id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
@@ -67,4 +85,4 @@ def delete_by_id(
     Delete group by id
     """
     item = service.delete_by_id(db, id=id)
-    return item
+    return item.id

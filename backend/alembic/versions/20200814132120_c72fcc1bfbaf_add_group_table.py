@@ -7,6 +7,7 @@ Create Date: 2020-08-14 13:21:20.332666
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ARRAY
 
 
 # revision identifiers, used by Alembic.
@@ -24,6 +25,8 @@ def upgrade():
         sa.Column('description', sa.String()),
         sa.Column('url', sa.String()),
         sa.Column('is_open', sa.Boolean(), default=False, nullable=False),
+        sa.Column('tags', ARRAY(sa.String(64)), index=True),
+        sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 

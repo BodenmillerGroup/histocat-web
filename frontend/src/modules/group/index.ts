@@ -14,6 +14,7 @@ export class GroupState {
   entities: { [key: number]: IGroup } = {};
   activeGroupId: number | null = null;
   myMember: IMember | null = null;
+  tags: string[] = [];
 }
 
 export const groupModule = new Module({
