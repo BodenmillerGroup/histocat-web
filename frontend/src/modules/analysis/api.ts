@@ -53,7 +53,9 @@ export const api = {
     const markersArray = markers.map((marker) => `&markers=${marker}`);
     const gateIdArg = gateId !== null ? `&gate_id=${gateId}` : "";
     return ApiManager.api
-      .get(`analysis/boxplot?dataset_id=${datasetId}${gateIdArg}${acquisitionIdsArray.join("")}${markersArray.join("")}`)
+      .get(
+        `analysis/boxplot?dataset_id=${datasetId}${gateIdArg}${acquisitionIdsArray.join("")}${markersArray.join("")}`
+      )
       .json<IPlotSeries[]>();
   },
   async getPCAData(params: IPCASubmission) {

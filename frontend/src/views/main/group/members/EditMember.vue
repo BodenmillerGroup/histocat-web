@@ -40,7 +40,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { memberModule } from "@/modules/member";
-import {IMemberUpdate} from "@/modules/member/models";
+import { IMemberUpdate } from "@/modules/member/models";
 
 @Component
 export default class EditMember extends Vue {

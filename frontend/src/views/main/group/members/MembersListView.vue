@@ -7,7 +7,7 @@
       <v-spacer />
       <v-toolbar-items>
         <v-btn v-if="isGroupAdmin" text :to="`/main/groups/${activeGroupId}/members/create`" color="primary">
-          Create Member
+          Add Member
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -63,9 +63,8 @@
         }"
         multi-sort
       >
-        <template v-slot:item.user="{ item }">
+        <template v-slot:item.user.name="{ item }">
           <router-link
-            v-if="item.user"
             class="link"
             :to="{
               name: 'main-admin-users-edit',
@@ -78,14 +77,25 @@
             {{ item.user.name }}
           </router-link>
         </template>
+        <template v-slot:item.user.email="{ item }">
+          <router-link
+            class="link"
+            :to="{
+              name: 'main-admin-users-edit',
+              params: {
+                groupId: activeGroupId,
+                id: item.user.id,
+              },
+            }"
+          >
+            {{ item.user.email }}
+          </router-link>
+        </template>
         <template v-slot:item.role="{ item }">
           {{ roleToString(item.role) }}
         </template>
-        <template v-slot:item.isActive="{ item }">
-          <v-icon v-if="item.isActive">mdi-check</v-icon>
-        </template>
-        <template v-slot:item.allPanels="{ item }">
-          <v-icon v-if="item.allPanels">mdi-check</v-icon>
+        <template v-slot:item.is_active="{ item }">
+          <v-icon v-if="item.is_active">mdi-check</v-icon>
         </template>
         <template v-slot:item.action="{ item }">
           <v-menu bottom left>
@@ -144,17 +154,22 @@ export default class MembersListView extends Vue {
   readonly roles = roleEnum;
 
   readonly headers = [
-    // {
-    //   text: "Id",
-    //   sortable: true,
-    //   value: "id",
-    //   align: "right",
-    //   filterable: false,
-    //   width: "80",
-    // },
     {
       text: "Name",
-      value: "user",
+      value: "user.name",
+      sort: (a, b) => {
+        if (a === null) {
+          return 1;
+        }
+        if (b === null) {
+          return -1;
+        }
+        return a.name.localeCompare(b.name);
+      },
+    },
+    {
+      text: "Email",
+      value: "user.email",
       sort: (a, b) => {
         if (a === null) {
           return 1;
@@ -172,18 +187,10 @@ export default class MembersListView extends Vue {
     {
       text: "Active",
       sortable: true,
-      value: "isActive",
+      value: "is_active",
       align: "left",
       filterable: false,
       width: "100",
-    },
-    {
-      text: "All panels",
-      sortable: true,
-      value: "allPanels",
-      align: "left",
-      filterable: false,
-      width: "130",
     },
     {
       text: "Actions",
@@ -223,7 +230,9 @@ export default class MembersListView extends Vue {
       return true;
     }
     const normalizedSearchTerm = search.toLowerCase().trim();
-    return item.user ? item.user.name.toLowerCase().indexOf(normalizedSearchTerm) !== -1 : false;
+    return item.user.name
+      ? item.user.name.toLowerCase().indexOf(normalizedSearchTerm) !== -1
+      : item.user.email.toLowerCase().indexOf(normalizedSearchTerm) !== -1;
   }
 
   async mounted() {

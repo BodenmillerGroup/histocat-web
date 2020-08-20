@@ -17,7 +17,14 @@ export class CentroidsMutations extends Mutations<CentroidsState> {
       if (!newState.has(acquisitionId)) {
         newState.set(acquisitionId, []);
       }
-      const cellPoint = new CellPoint(acquisitionId, payload.cellIds[i], payload.objectNumbers[i], payload.x[i], payload.y[i], 0);
+      const cellPoint = new CellPoint(
+        acquisitionId,
+        payload.cellIds[i],
+        payload.objectNumbers[i],
+        payload.x[i],
+        payload.y[i],
+        0
+      );
       newState.get(acquisitionId)!.push(Object.freeze(cellPoint));
     });
     this.state.centroids = newState;

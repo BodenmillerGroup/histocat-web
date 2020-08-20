@@ -19,6 +19,7 @@ GROUP_LOCATION_FORMAT = "group_{id}"
 @remove_location_upon_delete
 class GroupModel(Base):
     """A *group* is the main organizational unit of `histoCAT`."""
+
     __tablename__ = "group"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)

@@ -52,7 +52,7 @@ import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
 import { userModule } from "@/modules/user";
 import { required } from "@/utils/validators";
-import {IMemberCreate} from "@/modules/member/models";
+import { IMemberCreate } from "@/modules/member/models";
 
 @Component
 export default class CreateMember extends Vue {

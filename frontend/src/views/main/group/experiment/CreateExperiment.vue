@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-toolbar dense>
       <v-toolbar-title>
-        Edit Group
+        Create Experiment
       </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
@@ -14,10 +14,8 @@
     <v-card class="mt-4 px-4">
       <v-card-text>
         <v-form v-model="valid" ref="form" lazy-validation>
-          <v-text-field label="Name" v-model="name" :rules="nameRules" />
-          <v-text-field label="Description" v-model="description" />
-          <v-text-field label="URL" v-model="url" />
-          <v-checkbox label="Open" v-model="isOpen" />
+          <v-text-field label="Name" v-model="name" :rules="nameRules"></v-text-field>
+          <v-text-field label="Description" v-model="description"></v-text-field>
           <v-combobox
             v-model="tags"
             :filter="filter"
@@ -43,7 +41,7 @@
                 <span class="pr-2">
                   {{ item.text }}
                 </span>
-                <v-icon small @click="parent.selectItem(item)">mdi-close</v-icon>
+                <v-icon small @click="parent.selectItem(item)">mdi-close </v-icon>
               </v-chip>
             </template>
             <template v-slot:item="{ index, item }">
@@ -75,22 +73,22 @@
 </template>
 
 <script lang="ts">
+import { experimentModule } from "@/modules/experiment";
+import { IExperimentCreate } from "@/modules/experiment/models";
 import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
-import { IGroupUpdate } from "@/modules/group/models";
 
 @Component
-export default class EditGroup extends Vue {
+export default class CreateExperiment extends Vue {
   readonly groupContext = groupModule.context(this.$store);
+  readonly experimentContext = experimentModule.context(this.$store);
 
   readonly nameRules = [required];
 
-  valid = true;
-  name = "";
-  description: string | null = null;
-  url: string | null = null;
-  isOpen = false;
+  valid = false;
+  name: string = "";
+  description: string = "";
   tags: any[] = [];
 
   editing = null;
@@ -98,8 +96,12 @@ export default class EditGroup extends Vue {
   nonce = 1;
   search = null;
 
+  get activeGroupId() {
+    return this.groupContext.getters.activeGroupId;
+  }
+
   get items(): any[] {
-    const list = this.groupContext.getters.tags;
+    const list = this.experimentContext.getters.tags;
     return list.map((item) => {
       return {
         text: item,
@@ -107,40 +109,15 @@ export default class EditGroup extends Vue {
     });
   }
 
-  get group() {
-    return this.groupContext.getters.getGroup(+this.$router.currentRoute.params.groupId);
-  }
-
   async mounted() {
-    await Promise.all([
-      this.groupContext.actions.getGroup(+this.$router.currentRoute.params.groupId),
-      this.groupContext.actions.getTags(),
-    ]);
-    this.reset();
+    await this.experimentContext.actions.getExperimentTags(this.activeGroupId!);
   }
 
   reset() {
     this.name = "";
     this.description = "";
-    this.url = "";
-    this.isOpen = false;
     this.tags = [];
-    if (this.$refs.form) {
-      (this.$refs.form as any).resetValidation();
-    }
-    if (this.group) {
-      this.name = this.group.name;
-      this.description = this.group.description;
-      this.url = this.group.url;
-      this.isOpen = this.group.is_open;
-      this.tags = this.group.tags
-        ? this.group.tags.map((item) => {
-            return {
-              text: item,
-            };
-          })
-        : [];
-    }
+    (this.$refs.form as any).resetValidation();
   }
 
   cancel() {
@@ -148,8 +125,8 @@ export default class EditGroup extends Vue {
   }
 
   @Watch("tags")
-  onTagsChange(val: any[], prev: any[]) {
-    if (!val || !prev || val.length === prev.length) {
+  onModelChange(val: any[], prev: any[]) {
+    if (val.length === prev.length) {
       return;
     }
 
@@ -186,17 +163,13 @@ export default class EditGroup extends Vue {
 
   async submit() {
     if ((this.$refs.form as any).validate()) {
-      const data: IGroupUpdate = {
+      const params: IExperimentCreate = {
+        group_id: this.activeGroupId!,
         name: this.name,
         description: this.description,
-        url: this.url,
-        is_open: this.isOpen,
         tags: this.tags.map((tag) => tag.text),
       };
-      await this.groupContext.actions.updateGroup({
-        id: this.group!.id,
-        data: data,
-      });
+      await this.experimentContext.actions.createExperiment(params);
       this.$router.back();
     }
   }

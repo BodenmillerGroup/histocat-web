@@ -1,5 +1,5 @@
-import {IExperiment} from "@/modules/experiment/models";
-import {IMember} from "@/modules/member/models";
+import { IExperiment } from "@/modules/experiment/models";
+import { IMember } from "@/modules/member/models";
 
 export interface IGroupCreate {
   name: string;

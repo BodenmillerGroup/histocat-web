@@ -57,9 +57,9 @@ export class ExperimentActions extends Actions<
     BroadcastManager.publish(SET_SELECTED_METALS, metals, isGlobal);
   }
 
-  async getExperiments() {
+  async getGroupExperiments(groupId: number) {
     try {
-      const data = await api.getExperiments();
+      const data = await api.getGroupExperiments(groupId);
       if (data) {
         this.mutations.setExperiments(data);
       }
@@ -68,9 +68,9 @@ export class ExperimentActions extends Actions<
     }
   }
 
-  async getTags() {
+  async getExperimentTags(groupId: number) {
     try {
-      const data = await api.getTags();
+      const data = await api.getExperimentTags(groupId);
       if (data) {
         this.mutations.setTags(data);
       }
@@ -134,6 +134,17 @@ export class ExperimentActions extends Actions<
         },
         () => {}
       );
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getExperiment(id: number) {
+    try {
+      const data = await api.getExperiment(id);
+      if (data) {
+        this.mutations.setExperiment(data);
+      }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

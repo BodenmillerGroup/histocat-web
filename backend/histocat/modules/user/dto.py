@@ -31,3 +31,12 @@ class UserDto(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ShortUserDto(BaseModel):
+    id: int
+    email: EmailStr
+    name: Optional[str]
+
+    class Config:
+        orm_mode = True

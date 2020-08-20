@@ -14,11 +14,9 @@ from .dto import MemberCreateDto, MemberDto, MemberUpdateDto
 router = APIRouter()
 
 
-@router.post("/", response_model=MemberDto)
-def create(
-    params: MemberCreateDto,
-    db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_active_superuser),
+@router.post("/members", response_model=MemberDto)
+def create_group_member(
+    params: MemberCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user),
 ):
     """Create new member."""
     item = service.get_by_group_id_and_user_id(db, group_id=params.group_id, user_id=params.user_id)
@@ -30,19 +28,19 @@ def create(
     return item
 
 
-@router.get("/{id}", response_model=MemberDto)
-def get_by_id(id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
+@router.get("/members/{id}", response_model=MemberDto)
+def get_by_id(id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user)):
     """Get member by id."""
     item = service.get_by_id(db, id)
     return item
 
 
-@router.put("/{id}", response_model=MemberDto)
+@router.patch("/members/{id}", response_model=MemberDto)
 def update(
     id: int,
     params: MemberUpdateDto,
     db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_active_superuser),
+    user: UserModel = Depends(get_current_active_superuser),
 ):
     """Update the member."""
     item = service.get_by_id(db, id)
@@ -50,9 +48,9 @@ def update(
     return item
 
 
-@router.delete("/{id}", response_model=MemberDto)
+@router.delete("/members/{id}", response_model=MemberDto)
 def delete_by_id(
-    id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    id: int, user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete member by id

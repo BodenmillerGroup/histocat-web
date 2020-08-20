@@ -1,64 +1,91 @@
 <template>
   <div>
-    <v-navigation-drawer :clipped="$vuetify.breakpoint.lgAndUp" v-model="showDrawer" fixed app width="180">
+    <v-navigation-drawer
+      :mini-variant="miniDrawer"
+      mini-variant-width="60"
+      :clipped="$vuetify.breakpoint.lgAndUp"
+      v-model="showDrawer"
+      fixed
+      app
+      width="180"
+    >
       <v-row no-gutters>
         <v-col>
-          <v-list nav dense expand>
-            <v-list-group v-if="activeGroupId" :value="true">
-              <template v-slot:activator>
-                <v-list-item-title>Group</v-list-item-title>
-              </template>
-              <v-list-item :to="`/main/groups/${activeGroupId}/dashboard`">
-                <v-list-item-icon>
-                  <v-icon>mdi-view-dashboard-outline</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Dashboard</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item :to="`/main/groups/${activeGroupId}/clones`">
-                <v-list-item-icon>
-                  <v-icon>mdi-test-tube</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Clones</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-group :value="true">
-                <template v-slot:activator>
-                  <v-list-item-title>Details</v-list-item-title>
-                </template>
-                <v-list-item v-if="isGroupAdmin" :to="`/main/groups/${activeGroupId}/members`">
-                  <v-list-item-icon>
-                    <v-icon>mdi-account-multiple-outline</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Members</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-group>
-            </v-list-group>
-            <v-list-group v-if="isAdmin" :value="false">
-              <template v-slot:activator>
-                <v-list-item-title>Admin</v-list-item-title>
-              </template>
-              <v-list-item to="/main/admin/users">
-                <v-list-item-icon>
-                  <v-icon>mdi-account-outline</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Users</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-              <v-list-item to="/main/admin/groups">
-                <v-list-item-icon>
-                  <v-icon>mdi-account-multiple-outline</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>Groups</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-group>
+          <v-list nav dense>
+            <v-list-item
+              v-if="activeGroupId && !activeExperimentId"
+              :to="{ name: 'main-group-experiments', params: { groupId: activeGroupId } }"
+            >
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
+                  </template>
+                  <span>Experiments</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Experiments</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              v-if="activeGroupId && !activeExperimentId"
+              :to="{ name: 'main-group-members', params: { groupId: activeGroupId } }"
+            >
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-account-multiple-outline</v-icon>
+                  </template>
+                  <span>Members</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Members</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item v-if="activeGroupId && activeExperimentId" @click="showData(false)">
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-magnify-scan</v-icon>
+                  </template>
+                  <span>Image</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Image</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item v-if="activeGroupId && activeExperimentId" @click="showData(true)">
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-scatter-plot-outline</v-icon>
+                  </template>
+                  <span>Data</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Data</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item v-if="!activeGroupId && !activeExperimentId && isAdmin" :to="{ name: 'main-admin-users' }">
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-account-outline</v-icon>
+                  </template>
+                  <span>Users</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Users</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-col>
       </v-row>
@@ -69,13 +96,38 @@
         appName
       }}</v-toolbar-title>
       <v-spacer />
+      <v-btn-toggle
+        v-if="activeGroupId && activeExperimentId"
+        v-model="views"
+        multiple
+        background-color="primary"
+        group
+      >
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" value="workspace" color="primary">
+              <v-icon>mdi-file-tree</v-icon>
+            </v-btn>
+          </template>
+          <span v-if="!showWorkspace">Show workspace</span>
+          <span v-else>Hide workspace</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" value="options" color="primary">
+              <v-icon>mdi-tune</v-icon>
+            </v-btn>
+          </template>
+          <span v-if="!showOptions">Show options</span>
+          <span v-else>Hide options</span>
+        </v-tooltip>
+      </v-btn-toggle>
       <v-menu bottom left offset-y>
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
-
         <v-list>
           <v-list-item to="/main/profile">
             <v-list-item-title>Profile</v-list-item-title>
@@ -111,8 +163,9 @@ import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { WebSocketManager } from "@/utils/WebSocketManager";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
+import { experimentModule } from "@/modules/experiment";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === "/main") {
@@ -128,8 +181,10 @@ const routeGuardMain = async (to, from, next) => {
 export default class Main extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly groupContext = groupModule.context(this.$store);
+  readonly experimentContext = experimentModule.context(this.$store);
 
   readonly appName = appName;
+  views: string[] = ["workspace", "options"];
 
   beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
@@ -137,6 +192,26 @@ export default class Main extends Vue {
 
   beforeRouteUpdate(to, from, next) {
     routeGuardMain(to, from, next);
+  }
+
+  @Watch("views")
+  viewsChanged(views: string[]) {
+    this.mainContext.mutations.setLayout({
+      showWorkspace: views.includes("workspace"),
+      showOptions: views.includes("options"),
+    });
+  }
+
+  get showWorkspace() {
+    return this.mainContext.getters.showWorkspace;
+  }
+
+  get showOptions() {
+    return this.mainContext.getters.showOptions;
+  }
+
+  get miniDrawer() {
+    return this.mainContext.getters.dashboardMiniDrawer;
   }
 
   get showDrawer() {
@@ -163,6 +238,10 @@ export default class Main extends Vue {
     return this.groupContext.getters.activeGroupId;
   }
 
+  get activeExperimentId() {
+    return this.experimentContext.getters.activeExperimentId;
+  }
+
   async logout() {
     await this.mainContext.actions.userLogOut();
   }
@@ -173,6 +252,10 @@ export default class Main extends Vue {
 
   get processingProgress() {
     return this.mainContext.getters.processingProgress;
+  }
+
+  showData(value: boolean) {
+    this.mainContext.mutations.setShowData(value);
   }
 
   mounted() {

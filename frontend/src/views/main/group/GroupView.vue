@@ -7,7 +7,6 @@
 
 <script lang="ts">
 import LoadingView from "@/components/LoadingView.vue";
-import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
 
@@ -24,15 +23,13 @@ export default class GroupView extends Vue {
   }
 
   async mounted() {
-    const groupId = parseInt(this.$router.currentRoute.params.groupId, 10);
+    const groupId = +this.$router.currentRoute.params.groupId;
     this.groupContext.mutations.setActiveGroupId(groupId);
     await Promise.all([this.groupContext.actions.getMyMember(groupId), this.groupContext.actions.getGroup(groupId)]);
-    WebSocketManager.connect(groupId);
   }
 
   beforeDestroy() {
-    WebSocketManager.close();
-    this.$store.dispatch("reset");
+    this.groupContext.mutations.reset();
   }
 }
 </script>

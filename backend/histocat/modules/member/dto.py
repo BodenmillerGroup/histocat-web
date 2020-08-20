@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from histocat.modules.user.dto import ShortUserDto
+
 
 class MemberCreateDto(BaseModel):
     group_id: int
@@ -23,6 +25,8 @@ class MemberDto(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
+
+    user: ShortUserDto
 
     class Config:
         orm_mode = True

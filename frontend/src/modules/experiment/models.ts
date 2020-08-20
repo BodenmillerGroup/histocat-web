@@ -1,19 +1,21 @@
 import { IImageFilter, IImageScalebar, IMaskSettings } from "@/modules/settings/models";
 
+export interface IExperimentCreate {
+  group_id: number;
+  name: string;
+  description?: string;
+  tags?: string[];
+}
+
 export interface IExperimentUpdate {
   name?: string;
   description?: string;
   tags?: string[];
 }
 
-export interface IExperimentCreate {
-  name: string;
-  description?: string;
-  tags?: string[];
-}
-
 export interface IExperiment {
   id: number;
+  group_id: number;
   user_id: number;
   name: string;
   description: string;

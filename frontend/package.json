@@ -38,7 +38,7 @@
     "ol": "6.4.3",
     "plotly.js": "1.54.7",
     "pub-sub-es": "1.2.2",
-    "rambda": "5.12.1",
+    "rambda": "5.13.0",
     "register-service-worker": "1.7.1",
     "regl": "1.6.1",
     "regl-scatterplot": "0.10.1",
@@ -47,7 +47,7 @@
     "vue-class-component": "7.2.5",
     "vue-property-decorator": "9.0.0",
     "vue-router": "3.4.3",
-    "vuetify": "2.3.8",
+    "vuetify": "2.3.9",
     "vuex": "3.5.1",
     "vuex-persist": "2.2.0",
     "vuex-smart-module": "0.4.5"

@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/test-worker/", response_model=MsgDto, status_code=201)
-def test_worker(msg: MsgDto, current_user=Depends(get_current_active_superuser)):
+def test_worker(msg: MsgDto, user=Depends(get_current_active_superuser)):
     """
     Test worker
     """
@@ -21,7 +21,7 @@ def test_worker(msg: MsgDto, current_user=Depends(get_current_active_superuser))
 
 @router.post("/test-email/", response_model=MsgDto, status_code=201)
 def test_email(
-    email_to: EmailStr, current_user=Depends(get_current_active_superuser),
+    email_to: EmailStr, user=Depends(get_current_active_superuser),
 ):
     """
     Test emails

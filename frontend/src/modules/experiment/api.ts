@@ -14,11 +14,11 @@ import { ApiManager } from "@/utils/api";
 const cacheAvailable = false; // 'caches' in self;
 
 export const api = {
-  async getExperiments() {
-    return ApiManager.api.get(`experiments`).json<IExperiment[]>();
+  async getGroupExperiments(groupId: number) {
+    return ApiManager.api.get(`groups/${groupId}/experiments`).json<IExperiment[]>();
   },
-  async getTags() {
-    return ApiManager.api.get(`experiments/tags`).json<string[]>();
+  async getExperimentTags(groupId: number) {
+    return ApiManager.api.get(`groups/${groupId}/tags`).json<string[]>();
   },
   async updateExperiment(id: number, data: IExperimentUpdate) {
     return ApiManager.api
@@ -29,7 +29,7 @@ export const api = {
   },
   async createExperiment(data: IExperimentCreate) {
     return ApiManager.api
-      .post(`experiments`, {
+      .post(`groups/${data.group_id}/experiments`, {
         json: data,
       })
       .json<IExperiment>();

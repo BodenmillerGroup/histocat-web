@@ -25,8 +25,10 @@ def get_group_experiments(session: Session, *, group_id: int) -> List[Optional[E
     return session.query(ExperimentModel).filter(ExperimentModel.group_id == group_id).all()
 
 
-def get_tags(session: Session) -> Set[str]:
-    items = session.query(func.unnest(ExperimentModel.tags)).distinct().all()
+def get_tags(session: Session, *, group_id: int) -> Set[str]:
+    items = (
+        session.query(func.unnest(ExperimentModel.tags)).filter(ExperimentModel.group_id == group_id).distinct().all()
+    )
     return {e[0] for e in items}
 
 
