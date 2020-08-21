@@ -18,98 +18,88 @@ export default new Router({
         },
         {
           path: "signup",
-          component: () => import(/* webpackChunkName: "login" */ "@/views/SignUp.vue"),
+          component: () => import(/* webpackChunkName: "signup" */ "@/views/SignUp.vue"),
         },
         {
-          path: "recover-password",
-          component: () => import(/* webpackChunkName: "recover-password" */ "@/views/PasswordRecovery.vue"),
+          path: "password-recovery",
+          component: () => import(/* webpackChunkName: "password-recovery" */ "@/views/PasswordRecovery.vue"),
         },
         {
           path: "reset-password",
           component: () => import(/* webpackChunkName: "reset-password" */ "@/views/ResetPassword.vue"),
         },
+
         {
           path: "main",
-          component: () => import(/* webpackChunkName: "main" */ "@/views/main/Main.vue"),
+          component: () => import(/* webpackChunkName: "main" */ "@/views/Main.vue"),
           children: [
             {
               path: "groups",
-              name: "main-groups",
-              component: () => import(/* webpackChunkName: "main-groups" */ "@/views/main/group/GroupsView.vue"),
+              name: "groups",
+              component: () => import(/* webpackChunkName: "groups" */ "@/views/group/GroupsView.vue"),
             },
             {
               path: "groups/create",
-              name: "main-groups-create",
-              component: () =>
-                import(/* webpackChunkName: "main-groups-create" */ "@/views/main/group/CreateGroup.vue"),
+              name: "groups-create",
+              component: () => import(/* webpackChunkName: "groups-create" */ "@/views/group/CreateGroup.vue"),
             },
             {
               path: "groups/:groupId/edit",
-              name: "main-groups-edit",
-              component: () => import(/* webpackChunkName: "main-groups-edit" */ "@/views/main/group/EditGroup.vue"),
+              name: "groups-edit",
+              component: () => import(/* webpackChunkName: "groups-edit" */ "@/views/group/EditGroup.vue"),
             },
             {
               path: "groups/:groupId",
-              name: "main-group",
-              component: () => import(/* webpackChunkName: "main-group" */ "@/views/main/group/GroupView.vue"),
+              name: "group",
+              component: () => import(/* webpackChunkName: "group" */ "@/views/group/GroupView.vue"),
               redirect: "groups/:groupId/experiments",
               children: [
                 {
                   path: "experiments",
-                  name: "main-group-experiments",
+                  name: "group-experiments",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "main-group-experiments" */ "@/views/main/group/experiment/ExperimentsView.vue"
-                    ),
+                    import(/* webpackChunkName: "group-experiments" */ "@/views/group/experiment/ExperimentsView.vue"),
                 },
                 {
                   path: "experiments/create",
-                  name: "main-group-experiments-create",
+                  name: "group-experiments-create",
                   component: () =>
                     import(
-                      /* webpackChunkName: "main-group-experiments-create" */ "@/views/main/group/experiment/CreateExperiment.vue"
+                      /* webpackChunkName: "group-experiments-create" */ "@/views/group/experiment/CreateExperiment.vue"
                     ),
                 },
                 {
                   path: "experiments/:experimentId/edit",
-                  name: "main-group-experiments-edit",
+                  name: "group-experiments-edit",
                   component: () =>
                     import(
-                      /* webpackChunkName: "main-group-experiments-edit" */ "@/views/main/group/experiment/EditExperiment.vue"
+                      /* webpackChunkName: "group-experiments-edit" */ "@/views/group/experiment/EditExperiment.vue"
                     ),
                 },
                 {
                   path: "experiments/:experimentId",
-                  name: "main-group-experiment",
+                  name: "group-experiment",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "main-group-experiment" */ "@/views/main/group/experiment/ExperimentView.vue"
-                    ),
+                    import(/* webpackChunkName: "group-experiment" */ "@/views/group/experiment/ExperimentView.vue"),
                 },
 
                 {
                   path: "members",
-                  name: "main-group-members",
+                  name: "group-members",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "main-group-members" */ "@/views/main/group/members/MembersListView.vue"
-                    ),
+                    import(/* webpackChunkName: "group-members" */ "@/views/group/members/MembersListView.vue"),
                 },
                 {
                   path: "members/create",
-                  name: "main-group-members-create",
+                  name: "group-members-create",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "main-group-members-create" */ "@/views/main/group/members/CreateMember.vue"
-                    ),
+                    import(/* webpackChunkName: "group-members-create" */ "@/views/group/members/CreateMember.vue"),
                 },
                 {
                   path: "members/:id/edit",
-                  name: "main-group-members-edit",
+                  name: "group-members-edit",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "main-group-members-edit" */ "@/views/main/group/members/EditMember.vue"
-                    ),
+                    import(/* webpackChunkName: "group-members-edit" */ "@/views/group/members/EditMember.vue"),
                 },
               ],
             },
@@ -121,104 +111,47 @@ export default new Router({
               children: [
                 {
                   path: "view",
-                  component: () => import(/* webpackChunkName: "profile" */ "@/views/main/profile/UserProfile.vue"),
+                  component: () => import(/* webpackChunkName: "profile" */ "@/views/profile/UserProfile.vue"),
                 },
                 {
                   path: "edit",
-                  component: () =>
-                    import(/* webpackChunkName: "profile-edit" */ "@/views/main/profile/UserProfileEdit.vue"),
+                  component: () => import(/* webpackChunkName: "profile-edit" */ "@/views/profile/UserProfileEdit.vue"),
                 },
                 {
                   path: "password",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "profile-password" */ "@/views/main/profile/UserProfileEditPassword.vue"
-                    ),
+                    import(/* webpackChunkName: "profile-password" */ "@/views/profile/UserProfileEditPassword.vue"),
                 },
               ],
             },
+
             {
               path: "admin",
-              component: () => import(/* webpackChunkName: "main-admin" */ "@/views/main/admin/Admin.vue"),
-              redirect: "admin/users/all",
+              component: () => import(/* webpackChunkName: "admin" */ "@/views/admin/Admin.vue"),
+              redirect: "admin/users",
               children: [
                 {
                   path: "users",
-                  redirect: "users/all",
+                  redirect: "users",
                 },
                 {
                   path: "users",
-                  name: "main-admin-users",
-                  component: () =>
-                    import(/* webpackChunkName: "main-admin-users" */ "@/views/main/admin/user/AdminUsers.vue"),
+                  name: "admin-users",
+                  component: () => import(/* webpackChunkName: "admin-users" */ "@/views/admin/user/AdminUsers.vue"),
                 },
                 {
                   path: "users/edit/:id",
-                  name: "main-admin-users-edit",
-                  component: () =>
-                    import(/* webpackChunkName: "main-admin-users-edit" */ "@/views/main/admin/user/EditUser.vue"),
+                  name: "admin-users-edit",
+                  component: () => import(/* webpackChunkName: "admin-users-edit" */ "@/views/admin/user/EditUser.vue"),
                 },
                 {
                   path: "users/create",
-                  name: "main-admin-users-create",
+                  name: "admin-users-create",
                   component: () =>
-                    import(/* webpackChunkName: "main-admin-users-create" */ "@/views/main/admin/user/CreateUser.vue"),
+                    import(/* webpackChunkName: "admin-users-create" */ "@/views/admin/user/CreateUser.vue"),
                 },
-
-                // {
-                //   path: "experiments",
-                //   redirect: "experiments/all",
-                // },
-                // {
-                //   path: "experiments/all",
-                //   component: () =>
-                //     import(
-                //       /* webpackChunkName: "main-admin-experiments" */ "@/views/main/admin/experiment/AdminExperiments.vue"
-                //     ),
-                // },
-                // {
-                //   path: "experiments/edit/:experimentId",
-                //   name: "main-admin-experiments-edit",
-                //   component: () =>
-                //     import(
-                //       /* webpackChunkName: "main-admin-experiments-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
-                //     ),
-                // },
               ],
             },
-            // {
-            //   path: "experiments",
-            //   name: "main-experiments",
-            //   component: () => import(/* webpackChunkName: "main-experiments" */ "@/views/main/ExperimentsView.vue"),
-            // },
-            // {
-            //   path: "experiments/create",
-            //   name: "main-experiment-create",
-            //   component: () =>
-            //     import(
-            //       /* webpackChunkName: "main-experiment-create" */ "@/views/main/admin/experiment/CreateExperiment.vue"
-            //     ),
-            // },
-            // {
-            //   path: "experiments/:experimentId/edit",
-            //   name: "main-experiment-edit",
-            //   component: () =>
-            //     import(
-            //       /* webpackChunkName: "main-experiment-edit" */ "@/views/main/admin/experiment/EditExperiment.vue"
-            //     ),
-            // },
-            // {
-            //   path: "experiments/:experimentId/share",
-            //   name: "main-experiment-share",
-            //   component: () =>
-            //     import(/* webpackChunkName: "main-experiment-share" */ "@/views/main/experiment/ShareExperiment.vue"),
-            // },
-            // {
-            //   path: "experiments/:experimentId",
-            //   name: "main-experiment",
-            //   component: () =>
-            //     import(/* webpackChunkName: "main-experiment" */ "@/views/main/experiment/ExperimentView.vue"),
-            // },
           ],
         },
       ],

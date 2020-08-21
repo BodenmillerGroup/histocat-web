@@ -39,7 +39,7 @@ pyright:
 	cd backend && pyright
 
 isort:
-	cd backend && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --apply histocat
+	cd backend && isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 histocat
 
 vulture:
 	cd backend && vulture histocat --min-confidence 70

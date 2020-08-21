@@ -35,7 +35,7 @@
               </div>
               <v-row>
                 <v-col class="text-caption text-right py-0">
-                  <router-link to="/recover-password">Recover password</router-link>
+                  <router-link to="/password-recovery">Recover password</router-link>
                 </v-col>
               </v-row>
               <v-row>

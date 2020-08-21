@@ -81,7 +81,7 @@ export default class UserProfileEdit extends Vue {
         content: "No token provided in the URL, start a new password recovery",
         color: "error",
       });
-      this.$router.push("/recover-password");
+      this.$router.push("/password-recovery");
     } else {
       return token;
     }
