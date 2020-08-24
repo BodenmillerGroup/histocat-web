@@ -3,8 +3,8 @@ from typing import Sequence
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import get_current_active_user
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user
 from histocat.modules.user.models import UserModel
 
 from . import service
@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("/gates/{gate_id}", response_model=GateDto)
 def get_by_id(
-    gate_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    gate_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get gate by id
@@ -26,7 +26,7 @@ def get_by_id(
 
 @router.get("/datasets/{dataset_id}/gates", response_model=Sequence[GateDto])
 def get_dataset_gates(
-    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get all dataset gates
@@ -37,7 +37,7 @@ def get_dataset_gates(
 
 @router.post("/gates", response_model=GateDto)
 def create(
-    *, db: Session = Depends(get_db), params: GateCreateDto, current_user: UserModel = Depends(get_current_active_user),
+    *, db: Session = Depends(get_db), params: GateCreateDto, user: UserModel = Depends(get_active_user),
 ):
     """
     Create new gate
@@ -48,7 +48,7 @@ def create(
 
 @router.delete("/gates/{gate_id}", response_model=int)
 def delete_by_id(
-    gate_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    gate_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete gate by id

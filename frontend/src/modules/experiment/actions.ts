@@ -7,7 +7,7 @@ import { Actions, Context } from "vuex-smart-module";
 import { ExperimentState } from ".";
 import { api } from "./api";
 import { ExperimentGetters } from "./getters";
-import { ExportFormat, IExperimentCreate, IExperimentUpdate, IShareCreate } from "./models";
+import { ExportFormat, IExperimentCreate, IExperimentUpdate } from "./models";
 import { ExperimentMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { IChannelSettings } from "@/modules/settings/models";
@@ -255,24 +255,6 @@ export class ExperimentActions extends Actions<
         }
       }
       BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, allSettings);
-    }
-  }
-
-  async createShare(payload: IShareCreate) {
-    try {
-      const data = await api.createShare(payload);
-      this.main!.mutations.addNotification({ content: "Experiment successfully shared", color: "success" });
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getExperimentShares(experimentId: number) {
-    try {
-      const data = await api.getExperimentShares(experimentId);
-      this.mutations.setShares(data);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
     }
   }
 

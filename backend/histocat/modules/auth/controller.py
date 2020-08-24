@@ -4,8 +4,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import get_current_user
+from histocat.api.db import get_db
+from histocat.api.security import get_user
 from histocat.config import config
 from histocat.core.jwt import create_access_token
 from histocat.core.security import get_password_hash
@@ -42,7 +42,7 @@ def login_access_token(db: Session = Depends(get_db), form_data: OAuth2PasswordR
 
 
 @router.post("/auth/test-token", response_model=UserDto)
-def test_token(user: DBUser = Depends(get_current_user)):
+def test_token(user: DBUser = Depends(get_user)):
     """
     Test access token
     """

@@ -14,8 +14,8 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
 from histocat import worker
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import get_current_active_user
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user
 from histocat.core.image import (
     apply_filter,
     apply_morphology,
@@ -86,9 +86,9 @@ def get_additive_image(db: Session, params: ChannelStackDto):
     return additive_image, legend_labels
 
 
-@router.post("/segmentation/image")
+@router.post("/analysis/segmentation/image")
 async def produce_segmentation_image(
-    params: AnalysisDto, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    params: AnalysisDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Produce segmentation image
@@ -120,12 +120,9 @@ async def produce_segmentation_image(
     return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")
 
 
-@router.post("/segmentation/contours")
+@router.post("/analysis/segmentation/contours")
 async def produce_segmentation_contours(
-    params: AnalysisDto,
-    request: Request,
-    current_user: UserModel = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: AnalysisDto, request: Request, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Produce segmentation image
@@ -145,7 +142,7 @@ async def produce_segmentation_contours(
     return ORJSONResponse(contours)
 
 
-@router.get("/scatterplot")
+@router.get("/analysis/scatterplot")
 async def get_scatter_plot_data(
     dataset_id: int,
     marker_x: str,
@@ -154,7 +151,7 @@ async def get_scatter_plot_data(
     marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -193,13 +190,13 @@ async def get_scatter_plot_data(
     return ORJSONResponse(output)
 
 
-@router.get("/boxplot", response_model=Sequence[PlotSeriesDto])
+@router.get("/analysis/boxplot", response_model=Sequence[PlotSeriesDto])
 async def get_box_plot_data(
     dataset_id: int,
     gate_id: Optional[int] = None,
     acquisition_ids: Sequence[int] = Query(None),
     markers: Sequence[str] = Query(None),
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -230,7 +227,7 @@ async def get_box_plot_data(
     return ORJSONResponse(content)
 
 
-@router.get("/pca", response_model=PcaDto)
+@router.get("/analysis/pca", response_model=PcaDto)
 async def get_pca_data(
     dataset_id: int,
     n_components: int,
@@ -238,7 +235,7 @@ async def get_pca_data(
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     markers: Sequence[str] = Query(None),
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -249,11 +246,9 @@ async def get_pca_data(
     return ORJSONResponse(content)
 
 
-@router.post("/tsne")
+@router.post("/analysis/tsne")
 def submit_tsne(
-    params: TsneSubmissionDto,
-    current_user: UserModel = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: TsneSubmissionDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Start t-SNE data processing
@@ -272,13 +267,13 @@ def submit_tsne(
     return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/tsne", response_model=TsneDto)
+@router.get("/analysis/tsne", response_model=TsneDto)
 async def read_tsne_data(
     dataset_id: int,
     name: str,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -289,11 +284,9 @@ async def read_tsne_data(
     return ORJSONResponse(content)
 
 
-@router.post("/umap")
+@router.post("/analysis/umap")
 def submit_umap(
-    params: UmapSubmissionDto,
-    current_user: UserModel = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: UmapSubmissionDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Start UMAP data processing
@@ -310,13 +303,13 @@ def submit_umap(
     return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/umap", response_model=UmapDto)
+@router.get("/analysis/umap", response_model=UmapDto)
 async def read_umap_data(
     dataset_id: int,
     name: str,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -327,11 +320,9 @@ async def read_umap_data(
     return ORJSONResponse(content)
 
 
-@router.post("/phenograph")
+@router.post("/analysis/phenograph")
 def submit_phenograph(
-    params: PhenographSubmissionDto,
-    current_user: UserModel = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    params: PhenographSubmissionDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Start PhenoGraph data processing
@@ -350,12 +341,9 @@ def submit_phenograph(
     return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/phenograph", response_model=PhenographDto)
+@router.get("/analysis/phenograph", response_model=PhenographDto)
 async def read_phenograph_data(
-    dataset_id: int,
-    name: str,
-    current_user: UserModel = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    dataset_id: int, name: str, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Read PhenoGraph result data
@@ -365,11 +353,11 @@ async def read_phenograph_data(
     return ORJSONResponse(content)
 
 
-@router.post("/region/stats", response_model=Sequence[RegionChannelStatsDto])
+@router.post("/analysis/region/stats", response_model=Sequence[RegionChannelStatsDto])
 async def calculate_region_stats(
     params: RegionStatsSubmissionDto,
     request: Request,
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """

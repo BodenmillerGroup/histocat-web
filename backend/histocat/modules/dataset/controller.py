@@ -9,8 +9,8 @@ from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import get_current_active_user
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user
 from histocat.core.utils import stream_bytes
 from histocat.modules.user.models import UserModel
 
@@ -23,7 +23,7 @@ router = APIRouter()
 
 @router.get("/experiments/{experiment_id}/datasets", response_model=Sequence[DatasetDto])
 def get_experiment_datasets(
-    experiment_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
+    experiment_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
 ):
     """
     Retrieve own datasets for specified experiment
@@ -34,7 +34,7 @@ def get_experiment_datasets(
 
 @router.get("/datasets/{dataset_id}/centroids")
 def get_centroids(
-    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get dataset cell centroids
@@ -48,7 +48,7 @@ def get_centroids(
 
 @router.get("/datasets/{dataset_id}", response_model=DatasetDto)
 def read_by_id(
-    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get a specific dataset by id
@@ -59,7 +59,7 @@ def read_by_id(
 
 @router.delete("/datasets/{dataset_id}", response_model=DatasetDto)
 def delete_by_id(
-    dataset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete a specific dataset by id

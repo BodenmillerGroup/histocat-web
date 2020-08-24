@@ -1,6 +1,6 @@
 <template>
   <LoadingView v-if="!experimentData" text="Loading..." />
-  <v-container v-else fluid class="px-1 py-0">
+  <v-container v-else fluid class="ma-0 pa-0">
     <DataView v-show="showData" />
     <ImageView v-show="!showData" />
   </v-container>
@@ -52,7 +52,7 @@ export default class ExperimentView extends Vue {
     // if (process.env.VUE_APP_ENV !== "development") {
     //   this.$store.dispatch("reset");
     // }
-    this.$store.dispatch("reset");
+    this.$store.dispatch("resetExperiment");
   }
 }
 </script>

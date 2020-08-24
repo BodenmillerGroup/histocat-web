@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import EmailStr
 
 import histocat.worker as worker
-from histocat.api.utils.security import get_current_active_superuser
+from histocat.api.security import get_admin
 from histocat.core.utils import send_test_email
 
 from .dto import MsgDto
@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.post("/test-worker/", response_model=MsgDto, status_code=201)
-def test_worker(msg: MsgDto, user=Depends(get_current_active_superuser)):
+def test_worker(msg: MsgDto, user=Depends(get_admin)):
     """
     Test worker
     """
@@ -21,7 +21,7 @@ def test_worker(msg: MsgDto, user=Depends(get_current_active_superuser)):
 
 @router.post("/test-email/", response_model=MsgDto, status_code=201)
 def test_email(
-    email_to: EmailStr, user=Depends(get_current_active_superuser),
+    email_to: EmailStr, user=Depends(get_admin),
 ):
     """
     Test emails

@@ -6,10 +6,6 @@ export class ExperimentGetters extends Getters<ExperimentState> {
     return this.state.experiments;
   }
 
-  get shares() {
-    return this.state.shares;
-  }
-
   getExperiment(id?: number) {
     return this.getters.experiments.find((item) => item.id === id);
   }

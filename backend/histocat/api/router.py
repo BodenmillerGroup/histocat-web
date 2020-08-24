@@ -15,6 +15,7 @@ from histocat.modules.slide import controller as slide_controller
 from histocat.modules.user import controller as user_controller
 
 api_router = APIRouter()
+
 api_router.include_router(auth_controller.router, tags=["auth"])
 api_router.include_router(core_controller.router, tags=["utils"])
 api_router.include_router(group_controller.router, tags=["groups"])

@@ -5,13 +5,12 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
-from histocat.api.api_v1.api import api_router
+from histocat.api.router import api_router
 from histocat.config import config
 from histocat.core.notifier import notifier
 from histocat.core.redis_manager import redis_manager
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 if os.environ.get("BACKEND_ENV") == "development":

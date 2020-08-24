@@ -4,9 +4,8 @@ import {
   IChannelStats,
   IExperiment,
   IExperimentCreate,
+  IExperimentData,
   IExperimentUpdate,
-  IShare,
-  IShareCreate,
   ISlide,
 } from "./models";
 import { ApiManager } from "@/utils/api";
@@ -72,7 +71,7 @@ export const api = {
     return ApiManager.api.get(`experiments/${id}`).json<IExperiment>();
   },
   async getExperimentData(id: number) {
-    return ApiManager.api.get(`experiments/${id}/data`).json<IExperiment>();
+    return ApiManager.api.get(`experiments/${id}/data`).json<IExperimentData>();
   },
   async getChannelStats(acquisitionId: number, channelName: string) {
     const url = `acquisitions/${acquisitionId}/${channelName}/stats?bins=40`;
@@ -97,16 +96,6 @@ export const api = {
       json: params,
       timeout: false,
     });
-  },
-  async createShare(data: IShareCreate) {
-    return ApiManager.api
-      .post(`share`, {
-        json: data,
-      })
-      .json<IShare>();
-  },
-  async getExperimentShares(id: number) {
-    return ApiManager.api.get(`share/${id}`).json<IShare[]>();
   },
   async deleteSlide(id: number) {
     return ApiManager.api.delete(`slides/${id}`).json<ISlide>();

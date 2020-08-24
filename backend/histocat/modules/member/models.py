@@ -17,5 +17,5 @@ class MemberModel(Base):
     group = sa.orm.relationship("GroupModel", back_populates="members")
     user = sa.orm.relationship("UserModel", back_populates="members")
 
-    def __repr__(self):
+    def __str__(self):
         return f"<{self.__class__.__name__}(id={self.id}, group_id={self.group_id}, , user_id={self.user_id})>"

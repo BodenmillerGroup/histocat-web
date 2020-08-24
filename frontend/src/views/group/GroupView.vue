@@ -1,8 +1,6 @@
 <template>
   <LoadingView v-if="!group" text="Loading..." />
-  <v-container v-else fluid class="px-1 py-0">
-    <router-view />
-  </v-container>
+  <router-view v-else />
 </template>
 
 <script lang="ts">

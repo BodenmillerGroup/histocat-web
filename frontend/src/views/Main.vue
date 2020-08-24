@@ -28,6 +28,7 @@
                 <v-list-item-title>Experiments</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+
             <v-list-item
               v-if="activeGroupId && !activeExperimentId"
               :to="{ name: 'group-members', params: { groupId: activeGroupId } }"
@@ -70,6 +71,25 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>Data</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-divider v-if="activeGroupId && activeExperimentId" />
+
+            <v-list-item
+              v-if="activeGroupId && activeExperimentId"
+              @click="$router.push({ name: 'group-experiments', params: { groupId: activeGroupId } })"
+            >
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
+                  </template>
+                  <span>Experiments</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Experiments</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 

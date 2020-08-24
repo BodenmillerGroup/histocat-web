@@ -1,7 +1,7 @@
 import { equals } from "rambda";
 import { Mutations } from "vuex-smart-module";
 import { ExperimentState } from ".";
-import { IExperiment, IShare } from "./models";
+import { IExperiment } from "./models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
   SET_ACTIVE_ACQUISITION_ID,
@@ -24,10 +24,6 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
 
   setExperiments(experiments: IExperiment[]) {
     this.state.experiments = experiments;
-  }
-
-  setShares(shares: IShare[]) {
-    this.state.shares = shares;
   }
 
   setTags(tags: string[]) {

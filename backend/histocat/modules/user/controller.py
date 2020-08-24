@@ -5,11 +5,8 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import (
-    get_current_active_superuser,
-    get_current_active_user,
-)
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user, get_admin
 from histocat.config import config
 from histocat.core.utils import send_new_account_email
 from histocat.modules.user.models import UserModel
@@ -21,7 +18,7 @@ router = APIRouter()
 
 
 @router.get("/users", response_model=Sequence[UserDto])
-def get_all(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
+def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """Get all users."""
     items = service.get_all(db)
     return items
@@ -29,9 +26,7 @@ def get_all(db: Session = Depends(get_db), current_user: UserModel = Depends(get
 
 @router.post("/users", response_model=UserDto)
 def create(
-    params: UserCreateDto,
-    db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_active_superuser),
+    params: UserCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_admin),
 ):
     """Create new user."""
     item = service.get_by_email(db, email=params.email)
@@ -51,10 +46,10 @@ def update_me(
     name: str = Body(None),
     email: EmailStr = Body(None),
     db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
 ):
     """Update personal profile."""
-    data = jsonable_encoder(current_user)
+    data = jsonable_encoder(user)
     params = UserUpdateDto(**data)
     if password is not None:
         params.password = password
@@ -62,14 +57,14 @@ def update_me(
         params.name = name
     if email is not None:
         params.email = email
-    item = service.update(db, item=current_user, params=params)
+    item = service.update(db, item=user, params=params)
     return item
 
 
 @router.get("/users/profile", response_model=UserDto)
-def get_me(db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
+def get_me(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """Get current user."""
-    return current_user
+    return user
 
 
 @router.post("/users/signup", response_model=UserDto)
@@ -93,7 +88,7 @@ def create_open(
 
 @router.get("/users/{id}", response_model=UserDto)
 def get_by_id(
-    id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user),
+    id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_active_user),
 ):
     """Get user by id."""
     user = service.get_by_id(db, id)
@@ -106,10 +101,7 @@ def get_by_id(
 
 @router.put("/users/{id}", response_model=UserDto)
 def update(
-    id: int,
-    params: UserUpdateDto,
-    db: Session = Depends(get_db),
-    current_user: UserModel = Depends(get_current_active_superuser),
+    id: int, params: UserUpdateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_admin),
 ):
     """Update user."""
     item = service.get_by_id(db, id)

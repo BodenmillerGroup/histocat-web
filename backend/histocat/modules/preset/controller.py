@@ -3,8 +3,8 @@ from typing import Sequence
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import get_current_active_user
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user
 from histocat.modules.user.models import UserModel
 
 from . import service
@@ -15,7 +15,7 @@ router = APIRouter()
 
 @router.get("/presets/{preset_id}", response_model=PresetDto)
 def get_by_id(
-    preset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    preset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get preset by id
@@ -26,7 +26,7 @@ def get_by_id(
 
 @router.get("/experiments/{experiment_id}/presets", response_model=Sequence[PresetDto])
 def get_experiment_presets(
-    experiment_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    experiment_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get all experiment presets
@@ -37,10 +37,7 @@ def get_experiment_presets(
 
 @router.post("/presets", response_model=PresetDto)
 def create(
-    *,
-    db: Session = Depends(get_db),
-    params: PresetCreateDto,
-    current_user: UserModel = Depends(get_current_active_user),
+    *, db: Session = Depends(get_db), params: PresetCreateDto, user: UserModel = Depends(get_active_user),
 ):
     """
     Create new preset
@@ -51,7 +48,7 @@ def create(
 
 @router.delete("/presets/{preset_id}", response_model=int)
 def delete_by_id(
-    preset_id: int, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    preset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete preset by id

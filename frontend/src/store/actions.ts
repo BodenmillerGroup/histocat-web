@@ -34,9 +34,8 @@ export class RootActions extends Actions {
     this.gates = gateModule.context(store);
   }
 
-  // Reset global store
-  reset() {
-    this.group?.mutations.reset();
+  // Reset experiment store
+  resetExperiment() {
     this.member?.mutations.reset();
     this.analysis?.mutations.reset();
     this.dataset?.mutations.reset();
@@ -45,5 +44,11 @@ export class RootActions extends Actions {
     this.centroids?.mutations.reset();
     this.presets?.mutations.reset();
     this.gates?.mutations.reset();
+  }
+
+  // Reset global store
+  reset() {
+    this.resetExperiment();
+    this.group?.mutations.reset();
   }
 }

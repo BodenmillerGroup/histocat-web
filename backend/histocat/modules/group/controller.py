@@ -3,11 +3,8 @@ from typing import Sequence, Set
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import (
-    get_current_active_superuser,
-    get_current_active_user,
-)
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user, get_admin
 from histocat.modules.member.dto import MemberDto
 from histocat.modules.member.service import (
     get_by_group_id_and_user_id,
@@ -22,7 +19,7 @@ router = APIRouter()
 
 
 @router.get("/groups/tags", response_model=Set[str])
-def get_tags(db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user)):
+def get_tags(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """
     Get groups tags
     """
@@ -30,7 +27,7 @@ def get_tags(db: Session = Depends(get_db), user: UserModel = Depends(get_curren
 
 
 @router.get("/groups", response_model=Sequence[GroupDto])
-def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user)):
+def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """Get all groups."""
     items = service.get_all(db, user_id=user.id)
     return items
@@ -38,7 +35,7 @@ def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_current
 
 @router.post("/groups", response_model=GroupDto)
 def create(
-    params: GroupCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user),
+    params: GroupCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
 ):
     """Create new group."""
     item = service.get_by_name(db, name=params.name)
@@ -50,54 +47,51 @@ def create(
     return item
 
 
-@router.get("/groups/{id}", response_model=GroupDto)
-def get_by_id(id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user)):
+@router.get("/groups/{group_id}", response_model=GroupDto)
+def get_by_id(group_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """Get group by id."""
-    item = service.get_by_id(db, id)
+    item = service.get_by_id(db, group_id)
     return item
 
 
-@router.patch("/groups/{id}", response_model=GroupDto)
+@router.patch("/groups/{group_id}", response_model=GroupDto)
 def update(
-    id: int,
-    params: GroupUpdateDto,
-    db: Session = Depends(get_db),
-    user: UserModel = Depends(get_current_active_superuser),
+    group_id: int, params: GroupUpdateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_admin),
 ):
     """Update the group."""
-    item = service.get_by_id(db, id)
+    item = service.get_by_id(db, group_id)
     item = service.update(db, item=item, params=params)
     return item
 
 
-@router.post("/groups/{id}/join", response_model=GroupDto)
+@router.post("/groups/{group_id}/join", response_model=GroupDto)
 def join(
-    id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user),
+    group_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
 ):
     """Join the group."""
-    return service.join(db, group_id=id, user_id=user.id)
+    return service.join(db, group_id=group_id, user_id=user.id)
 
 
-@router.delete("/groups/{id}", response_model=int)
+@router.delete("/groups/{group_id}", response_model=int)
 def delete_by_id(
-    id: int, user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    group_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Delete group by id
     """
-    item = service.delete_by_id(db, id=id)
+    item = service.delete_by_id(db, id=group_id)
     return item.id
 
 
-@router.get("/groups/{id}/members/me", response_model=MemberDto)
-def get_own_member(id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user)):
+@router.get("/groups/{group_id}/members/me", response_model=MemberDto)
+def get_own_member(group_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """Get own member of the group."""
-    item = get_by_group_id_and_user_id(db, group_id=id, user_id=user.id)
+    item = get_by_group_id_and_user_id(db, group_id=group_id, user_id=user.id)
     return item
 
 
-@router.get("/groups/{id}/members", response_model=Sequence[MemberDto])
-def find_group_members(id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_current_active_user)):
+@router.get("/groups/{group_id}/members", response_model=Sequence[MemberDto])
+def find_group_members(group_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """Get group's members."""
-    items = get_group_members(db, group_id=id)
+    items = get_group_members(db, group_id=group_id)
     return items

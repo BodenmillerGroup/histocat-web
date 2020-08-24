@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
-from histocat.api.utils.db import get_db
-from histocat.api.utils.security import get_current_active_user
+from histocat.api.db import get_db
+from histocat.api.security import get_active_user
 from histocat.core.image import (
     apply_filter,
     colorize,
@@ -31,13 +31,13 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto)
+@router.get("/acquisitions/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto)
 async def read_channel_stats(
     acquisition_id: int,
     channel_name: str,
     request: Request,
     bins: int = 40,
-    current_user: UserModel = Depends(get_current_active_user),
+    user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
     """Get channel stats by name."""
@@ -60,14 +60,14 @@ async def read_channel_stats(
     return ORJSONResponse(content)
 
 
-@router.get("/{acquisition_id}/{channel_name}/image", responses={200: {"content": {"image/png": {}}}})
+@router.get("/acquisitions/{acquisition_id}/{channel_name}/image", responses={200: {"content": {"image/png": {}}}})
 async def read_channel_image(
     acquisition_id: int,
     channel_name: str,
     color: Optional[str] = None,
     min: Optional[float] = None,
     max: Optional[float] = None,
-    # current_user: UserModel = Depends(get_current_active_user),
+    # user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """Get channel image by name."""
@@ -99,9 +99,9 @@ async def read_channel_image(
     return StreamingResponse(stream_bytes(result), media_type="image/png")
 
 
-@router.post("/stack")
+@router.post("/acquisitions/stack")
 async def download_channel_stack(
-    params: ChannelStackDto, current_user: UserModel = Depends(get_current_active_user), db: Session = Depends(get_db),
+    params: ChannelStackDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """Download channel stack (additive) image."""
     additive_image, legend_labels = get_additive_image(db, params)

@@ -4,17 +4,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette.responses import FileResponse
 
-from histocat.api.utils.db import get_db
+from histocat.api.db import get_db
 
 from . import service
 
 router = APIRouter()
 
 
-@router.get("/{id}/image", responses={200: {"content": {"image/png": {}}}})
+@router.get("/panoramas/{id}/image", responses={200: {"content": {"image/png": {}}}})
 async def read_panorama_image(
     id: int,
-    # current_user: User = Depends(get_current_active_user),
+    # user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
