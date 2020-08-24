@@ -22,7 +22,7 @@ def get_by_name(session: Session, *, name: str) -> Optional[ExperimentModel]:
 
 
 def get_group_experiments(session: Session, *, group_id: int) -> List[Optional[ExperimentModel]]:
-    return session.query(ExperimentModel).filter(ExperimentModel.group_id == group_id).all()
+    return session.query(ExperimentModel).order_by(ExperimentModel.id.desc()).filter(ExperimentModel.group_id == group_id).all()
 
 
 def get_tags(session: Session, *, group_id: int) -> Set[str]:
