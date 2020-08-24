@@ -1,7 +1,7 @@
 import { equals } from "rambda";
 import { Mutations } from "vuex-smart-module";
-import { ExperimentState } from ".";
-import { IExperiment } from "./models";
+import { experimentListSchema, ExperimentState } from ".";
+import { IExperiment, IExperimentData } from "./models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
   SET_ACTIVE_ACQUISITION_ID,
@@ -10,6 +10,7 @@ import {
   SET_SELECTED_ACQUISITION_IDS,
   SET_SELECTED_METALS,
 } from "./events";
+import { normalize } from "normalizr";
 
 export class ExperimentMutations extends Mutations<ExperimentState> {
   constructor() {
@@ -22,8 +23,16 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     BroadcastManager.subscribe(SET_SELECTED_ACQUISITION_IDS, (payload) => this.setSelectedAcquisitionIds(payload));
   }
 
-  setExperiments(experiments: IExperiment[]) {
-    this.state.experiments = experiments;
+  setActiveExperimentId(id: number | null) {
+    this.state.activeExperimentId = id;
+  }
+
+  setActiveAcquisitionId(id: number | null) {
+    this.state.activeAcquisitionId = id;
+  }
+
+  setExperimentData(data: IExperimentData) {
+    this.state.experimentData = data;
   }
 
   setTags(tags: string[]) {
@@ -32,14 +41,34 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     }
   }
 
-  setExperiment(experiment: IExperiment) {
-    const items = this.state.experiments.filter((item) => item.id !== experiment.id);
-    items.push(experiment);
-    this.state.experiments = items;
+  setEntities(payload: IExperiment[]) {
+    const normalizedData = normalize<IExperiment>(payload, experimentListSchema);
+    this.state.ids = normalizedData.result;
+    this.state.entities = normalizedData.entities.experiments ? Object.freeze(normalizedData.entities.experiments) : {};
   }
 
-  deleteExperiment(id: number) {
-    this.state.experiments = this.state.experiments.filter((item) => item.id !== id);
+  setEntity(payload: IExperiment) {
+    const existingId = this.state.ids.find((id) => id === payload.id);
+    if (!existingId) {
+      this.state.ids = this.state.ids.concat(payload.id);
+    }
+    this.state.entities = Object.freeze({ ...this.state.entities, [payload.id]: payload });
+  }
+
+  addEntity(payload: IExperiment) {
+    this.state.ids = this.state.ids.concat(payload.id);
+    this.state.entities = Object.freeze({ ...this.state.entities, [payload.id]: payload });
+  }
+
+  updateEntity(payload: IExperiment) {
+    this.state.entities = Object.freeze({ ...this.state.entities, [payload.id]: payload });
+  }
+
+  deleteEntity(id: number) {
+    this.state.ids = this.state.ids.filter((item) => item !== id);
+    const entities = { ...this.state.entities };
+    delete entities[id];
+    this.state.entities = Object.freeze(entities);
   }
 
   setSelectedMetals(metals: string[]) {
@@ -52,15 +81,7 @@ export class ExperimentMutations extends Mutations<ExperimentState> {
     }
   }
 
-  setActiveExperimentId(id?: number) {
-    this.state.activeExperimentId = id;
-  }
-
-  setActiveAcquisitionId(id?: number) {
-    this.state.activeAcquisitionId = id;
-  }
-
-  setActiveWorkspaceNode(node?: { id: number; type: string }) {
+  setActiveWorkspaceNode(node: { id: number; type: string } | null) {
     this.state.activeWorkspaceNode = node;
   }
 

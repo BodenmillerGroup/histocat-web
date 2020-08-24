@@ -61,7 +61,7 @@ export class ExperimentActions extends Actions<
     try {
       const data = await api.getGroupExperiments(groupId);
       if (data) {
-        this.mutations.setExperiments(data);
+        this.mutations.setEntities(data);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -82,7 +82,7 @@ export class ExperimentActions extends Actions<
   async updateExperiment(payload: { id: number; data: IExperimentUpdate }) {
     try {
       const data = await api.updateExperiment(payload.id, payload.data);
-      this.mutations.setExperiment(data);
+      this.mutations.updateEntity(data);
       this.main!.mutations.addNotification({ content: "Experiment successfully updated", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -92,7 +92,7 @@ export class ExperimentActions extends Actions<
   async deleteExperiment(id: number) {
     try {
       const data = await api.deleteExperiment(id);
-      this.mutations.deleteExperiment(id);
+      this.mutations.deleteEntity(id);
       this.main!.mutations.addNotification({ content: "Experiment successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -102,7 +102,7 @@ export class ExperimentActions extends Actions<
   async createExperiment(payload: IExperimentCreate) {
     try {
       const data = await api.createExperiment(payload);
-      this.mutations.setExperiment(data);
+      this.mutations.addEntity(data);
       this.main!.mutations.addNotification({ content: "Experiment successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -143,7 +143,7 @@ export class ExperimentActions extends Actions<
     try {
       const data = await api.getExperiment(id);
       if (data) {
-        this.mutations.setExperiment(data);
+        this.mutations.setEntity(data);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -154,7 +154,7 @@ export class ExperimentActions extends Actions<
     try {
       const data = await api.getExperimentData(id);
       if (data) {
-        this.mutations.setExperiment(data);
+        this.mutations.setExperimentData(data);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -222,10 +222,10 @@ export class ExperimentActions extends Actions<
   }
 
   async setSharedChannelLevels(payload: { metal: string; levels: number[] }) {
-    const experiment = this.getters.activeExperiment;
-    if (experiment && experiment.slides) {
+    const experimentData = this.getters.experimentData;
+    if (experimentData && experimentData.slides) {
       let allSettings: IChannelSettings[] = [];
-      for (const slide of experiment.slides) {
+      for (const slide of experimentData.slides) {
         for (const acquisition of slide.acquisitions) {
           for (const channel of Object.values(acquisition.channels)) {
             if (channel.name === payload.metal) {

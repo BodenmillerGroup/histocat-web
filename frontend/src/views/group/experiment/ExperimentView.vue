@@ -28,12 +28,8 @@ export default class ExperimentView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
 
-  get experiment() {
-    return this.experimentContext.getters.activeExperiment;
-  }
-
   get experimentData() {
-    return this.experiment && this.experiment.slides ? this.experiment : undefined;
+    return this.experimentContext.getters.experimentData;
   }
 
   get showData() {

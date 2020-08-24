@@ -64,9 +64,9 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
     }
     const channelsSettings: IChannelSettings[] = [];
 
-    const experiment = this.experiment!.getters.activeExperiment;
-    if (experiment && experiment.slides) {
-      for (const slide of experiment.slides) {
+    const experimentData = this.experiment!.getters.experimentData;
+    if (experimentData && experimentData.slides) {
+      for (const slide of experimentData.slides) {
         for (const acquisition of slide.acquisitions) {
           if (acquisitionIds.includes(acquisition.id)) {
             for (const channel of Object.values(acquisition.channels)) {

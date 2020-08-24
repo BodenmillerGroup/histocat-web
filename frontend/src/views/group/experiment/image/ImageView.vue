@@ -2,7 +2,7 @@
   <LoadingView v-if="!experimentData" text="Loading..." />
   <div v-else :class="layoutClass">
     <div v-show="showWorkspace" class="pr-1">
-      <ImageWorkspaceView :experiment="experimentData" />
+      <ImageWorkspaceView :experimentData="experimentData" />
     </div>
     <VisualizationView />
     <div v-show="showOptions">
@@ -32,12 +32,8 @@ export default class ImageView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
 
-  get experiment() {
-    return this.experimentContext.getters.activeExperiment;
-  }
-
   get experimentData() {
-    return this.experiment && this.experiment.slides ? this.experiment : undefined;
+    return this.experimentContext.getters.experimentData;
   }
 
   get showWorkspace() {

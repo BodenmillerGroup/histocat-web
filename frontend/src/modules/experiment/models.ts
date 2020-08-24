@@ -23,11 +23,9 @@ export interface IExperiment {
   tags: string[];
   location: string;
   created_at: string;
-
-  slides?: ISlide[];
 }
 
-export interface IExperimentData extends IExperiment{
+export interface IExperimentData extends IExperiment {
   slides?: ISlide[];
 }
 
@@ -105,7 +103,7 @@ export interface IChannelStats {
 }
 
 export interface IChannelStack {
-  acquisitionId?: number;
+  acquisitionId: number | null;
   datasetId?: number;
   format?: string;
   filter: IImageFilter;

@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <UploadButton :id="experiment.id" />
+      <UploadButton :id="experimentData.id" />
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -73,7 +73,7 @@ import InfoCard from "@/components/InfoCard.vue";
 import UploadButton from "@/components/UploadButton.vue";
 import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
-import { IExperiment } from "@/modules/experiment/models";
+import { IExperimentData } from "@/modules/experiment/models";
 import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 
@@ -84,7 +84,7 @@ export default class ImageWorkspaceView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
 
-  @Prop(Object) readonly experiment!: IExperiment;
+  @Prop(Object) readonly experimentData!: IExperimentData;
 
   mutex = false;
 
@@ -163,7 +163,7 @@ export default class ImageWorkspaceView extends Vue {
   }
 
   async refreshSlides() {
-    await this.experimentContext.actions.getExperimentData(this.experiment.id);
+    await this.experimentContext.actions.getExperimentData(this.experimentData.id);
   }
 
   get dataset() {
@@ -171,8 +171,8 @@ export default class ImageWorkspaceView extends Vue {
   }
 
   get items() {
-    if (this.experiment.slides) {
-      return this.experiment.slides.map((slide) => {
+    if (this.experimentData.slides) {
+      return this.experimentData.slides.map((slide) => {
         const acquisitions = slide.acquisitions.map((acquisition) => {
           let hasMask = false;
           if (this.dataset && this.dataset.input && this.dataset.input.probability_masks) {

@@ -3,20 +3,32 @@ import { ExperimentState } from ".";
 
 export class ExperimentGetters extends Getters<ExperimentState> {
   get experiments() {
-    return this.state.experiments;
+    return this.state.ids.map((id) => this.state.entities[id]);
   }
 
-  getExperiment(id?: number) {
-    return this.getters.experiments.find((item) => item.id === id);
+  get tags() {
+    return this.state.tags;
+  }
+
+  getExperiment(id: number) {
+    return this.state.entities[id];
+  }
+
+  get activeExperimentId() {
+    return this.state.activeExperimentId;
   }
 
   get activeExperiment() {
-    return this.getters.getExperiment(this.getters.activeExperimentId);
+    return this.getters.activeExperimentId ? this.getters.getExperiment(this.getters.activeExperimentId) : null;
+  }
+
+  get experimentData() {
+    return this.state.experimentData;
   }
 
   get activeAcquisition() {
-    if (this.getters.activeExperiment && this.getters.activeExperiment.slides) {
-      for (const slide of this.getters.activeExperiment.slides) {
+    if (this.getters.experimentData && this.getters.experimentData.slides) {
+      for (const slide of this.getters.experimentData.slides) {
         const acquisition = slide.acquisitions.find((item) => item.id === this.state.activeAcquisitionId);
         if (acquisition) {
           return acquisition;
@@ -42,16 +54,8 @@ export class ExperimentGetters extends Getters<ExperimentState> {
     }
   }
 
-  get tags() {
-    return this.state.tags;
-  }
-
   get selectedAcquisitionIds() {
     return this.state.selectedAcquisitionIds;
-  }
-
-  get activeExperimentId() {
-    return this.state.activeExperimentId;
   }
 
   get activeAcquisitionId() {
