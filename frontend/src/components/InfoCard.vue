@@ -1,8 +1,6 @@
 <template>
   <v-card tile flat class="card overflow-y-auto">
-    <v-card-title>
-      Info
-    </v-card-title>
+    <v-card-title>Info</v-card-title>
     <v-divider />
     <v-card-title v-if="imageUrl">
       <v-img :src="imageUrl" class="grey lighten-2" width="380px">

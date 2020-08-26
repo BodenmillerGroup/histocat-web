@@ -55,6 +55,8 @@ def get_group_member(
     member = member_service.get_by_group_id_and_user_id(db, group_id=group_id, user_id=token_data.user_id)
     if not member:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Group member not found")
+    if not member.user.is_active:
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="User account is deactivated")
     return member
 
 
@@ -65,6 +67,6 @@ def get_active_member(member: MemberModel = Security(get_group_member)):
 
 
 def get_group_admin(member: MemberModel = Security(get_group_member)):
-    if not member.is_active or not member.role < 100:
+    if not member.is_active or member.role < 100:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Group member doesn't have enough privileges")
     return member

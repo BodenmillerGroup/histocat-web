@@ -19,9 +19,9 @@ export const api = {
   async getExperimentTags(groupId: number) {
     return ApiManager.api.get(`groups/${groupId}/tags`).json<string[]>();
   },
-  async updateExperiment(id: number, data: IExperimentUpdate) {
+  async updateExperiment(groupId: number, experimentId: number, data: IExperimentUpdate) {
     return ApiManager.api
-      .put(`experiments/${id}`, {
+      .put(`groups/${groupId}/experiments/${experimentId}`, {
         json: data,
       })
       .json<IExperiment>();
@@ -35,7 +35,8 @@ export const api = {
   },
   async upload(
     token: string,
-    id: number,
+    groupId: number,
+    experimentId: number,
     data,
     onLoadStart: () => void,
     onLoad: () => void,
@@ -43,7 +44,7 @@ export const api = {
     onError: () => void
   ) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${apiUrl}/experiments/${id}/upload`);
+    xhr.open("POST", `${apiUrl}/groups/${groupId}/experiments/${experimentId}/upload`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
     xhr.upload.onloadstart = onLoadStart;
@@ -64,14 +65,14 @@ export const api = {
     //   timeout: false
     // });
   },
-  async deleteExperiment(id: number) {
-    return ApiManager.api.delete(`experiments/${id}`).json<IExperiment>();
+  async deleteExperiment(groupId: number, experimentId: number) {
+    return ApiManager.api.delete(`groups/${groupId}/experiments/${experimentId}`).json<IExperiment>();
   },
-  async getExperiment(id: number) {
-    return ApiManager.api.get(`experiments/${id}`).json<IExperiment>();
+  async getExperiment(groupId: number, experimentId: number) {
+    return ApiManager.api.get(`groups/${groupId}/experiments/${experimentId}`).json<IExperiment>();
   },
-  async getExperimentData(id: number) {
-    return ApiManager.api.get(`experiments/${id}/data`).json<IExperimentData>();
+  async getExperimentData(groupId: number, experimentId: number) {
+    return ApiManager.api.get(`groups/${groupId}/experiments/${experimentId}/data`).json<IExperimentData>();
   },
   async getChannelStats(acquisitionId: number, channelName: string) {
     const url = `acquisitions/${acquisitionId}/${channelName}/stats?bins=40`;

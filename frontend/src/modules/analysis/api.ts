@@ -1,5 +1,4 @@
 import {
-  IImageSegmentationSubmission,
   IPCAData,
   IPCASubmission,
   IPhenoGraphData,
@@ -16,18 +15,6 @@ import {
 import { ApiManager } from "@/utils/api";
 
 export const api = {
-  async produceSegmentationImage(params: IImageSegmentationSubmission) {
-    return ApiManager.api.post(`analysis/segmentation/image`, {
-      json: params,
-    });
-  },
-  async produceSegmentationContours(params: IImageSegmentationSubmission) {
-    return ApiManager.api
-      .post(`analysis/segmentation/contours`, {
-        json: params,
-      })
-      .json<number[][]>();
-  },
   async getScatterPlotData(
     datasetId: number,
     acquisitionIds: number[],

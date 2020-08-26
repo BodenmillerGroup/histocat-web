@@ -23,9 +23,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click="cancel">Cancel</v-btn>
-              <v-btn @click.prevent="submit" :disabled="!valid">
-                Recover Password
-              </v-btn>
+              <v-btn @click.prevent="submit" :disabled="!valid">Recover Password</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>

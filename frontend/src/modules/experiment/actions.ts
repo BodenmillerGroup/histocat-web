@@ -20,6 +20,7 @@ import {
   SET_SELECTED_METALS,
 } from "./events";
 import { selectionModule } from "@/modules/selection";
+import { groupModule } from "@/modules/group";
 
 export class ExperimentActions extends Actions<
   ExperimentState,
@@ -29,6 +30,7 @@ export class ExperimentActions extends Actions<
 > {
   // Declare context type
   main?: Context<typeof mainModule>;
+  group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetModule>;
   selection?: Context<typeof selectionModule>;
@@ -36,6 +38,7 @@ export class ExperimentActions extends Actions<
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
+    this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetModule.context(store);
     this.selection = selectionModule.context(store);
@@ -81,7 +84,8 @@ export class ExperimentActions extends Actions<
 
   async updateExperiment(payload: { id: number; data: IExperimentUpdate }) {
     try {
-      const data = await api.updateExperiment(payload.id, payload.data);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.updateExperiment(groupId, payload.id, payload.data);
       this.mutations.updateEntity(data);
       this.main!.mutations.addNotification({ content: "Experiment successfully updated", color: "success" });
     } catch (error) {
@@ -89,10 +93,11 @@ export class ExperimentActions extends Actions<
     }
   }
 
-  async deleteExperiment(id: number) {
+  async deleteExperiment(experimentId: number) {
     try {
-      const data = await api.deleteExperiment(id);
-      this.mutations.deleteEntity(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deleteExperiment(groupId, experimentId);
+      this.mutations.deleteEntity(experimentId);
       this.main!.mutations.addNotification({ content: "Experiment successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -114,8 +119,10 @@ export class ExperimentActions extends Actions<
       return;
     }
     try {
+      const groupId = this.group?.getters.activeGroupId!;
       await api.upload(
         this.main!.getters.token,
+        groupId,
         payload.id,
         payload.data,
         () => {
@@ -139,9 +146,10 @@ export class ExperimentActions extends Actions<
     }
   }
 
-  async getExperiment(id: number) {
+  async getExperiment(experimentId: number) {
     try {
-      const data = await api.getExperiment(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getExperiment(groupId, experimentId);
       if (data) {
         this.mutations.setEntity(data);
       }
@@ -150,9 +158,10 @@ export class ExperimentActions extends Actions<
     }
   }
 
-  async getExperimentData(id: number) {
+  async getExperimentData(experimentId: number) {
     try {
-      const data = await api.getExperimentData(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getExperimentData(groupId, experimentId);
       if (data) {
         this.mutations.setExperimentData(data);
       }

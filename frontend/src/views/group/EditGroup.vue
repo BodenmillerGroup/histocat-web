@@ -1,9 +1,7 @@
 <template>
   <v-container fluid>
     <v-toolbar dense>
-      <v-toolbar-title>
-        Edit Group
-      </v-toolbar-title>
+      <v-toolbar-title>Edit Group</v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
         <v-btn @click="cancel" text color="primary">Cancel</v-btn>

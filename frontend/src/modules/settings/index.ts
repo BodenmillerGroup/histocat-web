@@ -1,4 +1,3 @@
-import { IImageSegmentationSettings } from "@/modules/analysis/models";
 import { Module } from "vuex-smart-module";
 import { SettingsActions } from "./actions";
 import { SettingsGetters } from "./getters";

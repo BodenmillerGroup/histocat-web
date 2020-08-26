@@ -8,10 +8,9 @@ from sqlalchemy.orm import Session
 
 import histocat.worker as worker
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_active_user
+from histocat.api.security import get_active_member, get_group_admin
 from histocat.config import config
 from histocat.modules.member.models import MemberModel
-from histocat.modules.user.models import UserModel
 
 from . import service
 from .dto import (
@@ -47,7 +46,10 @@ def get_group_experiments(
 
 @router.post("/groups/{group_id}/experiments", response_model=ExperimentDto)
 def create(
-    group_id: int, params: ExperimentCreateDto, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
+    group_id: int,
+    params: ExperimentCreateDto,
+    db: Session = Depends(get_db),
+    member: MemberModel = Depends(get_active_member),
 ):
     """
     Create new experiment
@@ -61,9 +63,9 @@ def create(
     return item
 
 
-@router.get("/experiments/{experiment_id}", response_model=ExperimentDto)
+@router.get("/groups/{group_id}/experiments/{experiment_id}", response_model=ExperimentDto)
 def get_by_id(
-    experiment_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, experiment_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get experiment by id
@@ -72,9 +74,9 @@ def get_by_id(
     return item
 
 
-@router.delete("/experiments/{experiment_id}", response_model=ExperimentDto)
+@router.delete("/groups/{group_id}/experiments/{experiment_id}", response_model=ExperimentDto)
 def delete_by_id(
-    experiment_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, experiment_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
 ):
     """
     Delete a specific experiment by id
@@ -83,13 +85,13 @@ def delete_by_id(
     return item
 
 
-@router.put("/experiments/{experiment_id}", response_model=ExperimentDto)
+@router.put("/groups/{group_id}/experiments/{experiment_id}", response_model=ExperimentDto)
 def update(
-    *,
-    db: Session = Depends(get_db),
+    group_id: int,
     experiment_id: int,
     params: ExperimentUpdateDto,
-    user: UserModel = Depends(get_active_user),
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Update an experiment
@@ -103,11 +105,12 @@ def update(
     return item
 
 
-@router.post("/experiments/{experiment_id}/upload")
+@router.post("/groups/{group_id}/experiments/{experiment_id}/upload")
 def upload_data(
+    group_id: int,
     experiment_id: int,
     file: UploadFile = File(None),
-    user: UserModel = Depends(get_active_user),
+    member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
     path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
@@ -116,13 +119,13 @@ def upload_data(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_data.send(uri, experiment_id, user.id)
+    worker.import_data.send(uri, experiment_id)
     return {"uri": uri}
 
 
-@router.get("/experiments/{experiment_id}/data", response_model=ExperimentDatasetDto)
+@router.get("/groups/{group_id}/experiments/{experiment_id}/data", response_model=ExperimentDatasetDto)
 async def read_data(
-    experiment_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, experiment_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get all experiment data

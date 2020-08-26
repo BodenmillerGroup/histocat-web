@@ -3,9 +3,7 @@
     <div class="container">
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn x-small elevation="1" v-on="on" class="mr-2" @click.stop="setSharedChannelLevels">
-            Share
-          </v-btn>
+          <v-btn x-small elevation="1" v-on="on" class="mr-2" @click.stop="setSharedChannelLevels"> Share </v-btn>
         </template>
         <span>Share levels and color</span>
       </v-tooltip>

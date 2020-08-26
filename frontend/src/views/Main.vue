@@ -112,7 +112,7 @@
     </v-navigation-drawer>
     <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
       <v-app-bar-nav-icon @click.stop="switchShowDrawer" />
-      <v-toolbar-title @click.stop="$router.push({ name: 'groups' })" class="toolbar-title">{{
+      <v-toolbar-title @click.stop="$router.push({ name: 'groups' }, () => {})" class="toolbar-title">{{
         appName
       }}</v-toolbar-title>
       <v-spacer />

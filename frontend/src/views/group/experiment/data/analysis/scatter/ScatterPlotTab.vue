@@ -1,7 +1,5 @@
 <template>
-  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
-    Please select dataset
-  </v-banner>
+  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
   <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
@@ -64,9 +62,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="submit" color="primary" block :disabled="!valid">
-            Analyze
-          </v-btn>
+          <v-btn @click="submit" color="primary" block :disabled="!valid"> Analyze </v-btn>
         </v-card-actions>
       </v-card>
     </div>

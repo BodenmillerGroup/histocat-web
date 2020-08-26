@@ -1,9 +1,7 @@
 <template>
   <v-col>
     <v-toolbar dense class="toolbar">
-      <v-toolbar-title>
-        Group Members
-      </v-toolbar-title>
+      <v-toolbar-title>Group Members</v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
         <v-btn v-if="isGroupAdmin" text :to="`/main/groups/${activeGroupId}/members/create`" color="primary">

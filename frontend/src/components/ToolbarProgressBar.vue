@@ -6,7 +6,7 @@
     :value="progress"
     class="ma-0"
     height="4"
-    style="top: -2px;"
+    style="top: -2px"
   />
 </template>
 

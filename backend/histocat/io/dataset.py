@@ -34,7 +34,7 @@ CHANNELS_FULL_CSV_ENDING = "_ac_full.csv"
 PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
-def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int, user_id: int):
+def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int):
     """Import dataset from the folder compatible with 'cpout' IMC pipeline folders."""
 
     experiment = experiment_service.get(db, id=experiment_id)
@@ -42,7 +42,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         logger.warning(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
         return
 
-    create_params = DatasetCreateDto(experiment_id=experiment_id, user_id=user_id, status="pending")
+    create_params = DatasetCreateDto(experiment_id=experiment_id, status="pending")
     dataset = dataset_service.create(db, params=create_params)
     input = {}
 

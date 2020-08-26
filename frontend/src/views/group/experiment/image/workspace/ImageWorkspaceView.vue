@@ -41,9 +41,7 @@
       <template v-slot:append="{ item }">
         <v-tooltip bottom v-if="item.type === 'acquisition' && item.hasMask">
           <template v-slot:activator="{ on }">
-            <v-icon small color="grey" v-on="on">
-              mdi-transition-masked
-            </v-icon>
+            <v-icon small color="grey" v-on="on">mdi-transition-masked</v-icon>
           </template>
           <span>Mask available</span>
         </v-tooltip>

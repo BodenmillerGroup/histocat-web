@@ -12,10 +12,12 @@ import { DatasetGetters } from "./getters";
 import { DatasetMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_DATASETS, SET_ACTIVE_DATASET_ID } from "./events";
+import { groupModule } from "@/modules/group";
 
 export class DatasetActions extends Actions<DatasetState, DatasetGetters, DatasetMutations, DatasetActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   experiment?: Context<typeof experimentModule>;
 
@@ -23,6 +25,7 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
   $init(store: Store<any>): void {
     // Create and retain main module context
     this.main = mainModule.context(store);
+    this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.experiment = experimentModule.context(store);
   }
@@ -33,7 +36,8 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
 
   async getExperimentDatasets(experimentId: number) {
     try {
-      const data = await api.getExperimentDatasets(experimentId);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getExperimentDatasets(groupId, experimentId);
       BroadcastManager.publish(SET_DATASETS, data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);

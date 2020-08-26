@@ -79,10 +79,6 @@ async def read_channel_image(
 
     channel = acquisition.channels[channel_name]
 
-    # lmin = float(data.min())
-    # lmax = float(data.max())
-    # data = np.floor((data - lmin) / (lmax - lmin) * 255.)
-
     levels = (
         (min, max)
         if min is not None and max is not None

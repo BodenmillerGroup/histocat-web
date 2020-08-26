@@ -24,7 +24,7 @@ from histocat.modules.slide.models import SlideModel
 logger = logging.getLogger(__name__)
 
 
-def import_imcfolder(db: Session, session_filename: str, experiment_id: int, user_id: int):
+def import_imcfolder(db: Session, session_filename: str, experiment_id: int):
     """
     Import slides from the folder compatible with IMC pipeline
     """

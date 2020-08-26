@@ -1,9 +1,7 @@
 <template>
   <v-col>
     <v-toolbar dense class="toolbar">
-      <v-toolbar-title>
-        Experiments
-      </v-toolbar-title>
+      <v-toolbar-title>Experiments</v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
         <v-btn

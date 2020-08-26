@@ -1,9 +1,7 @@
 <template>
   <div>
     <v-toolbar dense>
-      <v-toolbar-title>
-        Manage Users
-      </v-toolbar-title>
+      <v-toolbar-title>Manage Users</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn small color="primary" to="/main/admin/users/create">Create User </v-btn>
     </v-toolbar>

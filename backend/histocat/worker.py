@@ -65,7 +65,7 @@ def send_email(email_to: str, subject_template="", html_template="", environment
 
 
 @dramatiq.actor(queue_name="import", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def import_data(uri: str, experiment_id: int, user_id: int):
+def import_data(uri: str, experiment_id: int):
     logger.info(f"Importing data into experiment [{experiment_id}] from {uri}")
 
     path = os.path.dirname(os.path.abspath(uri))
@@ -74,9 +74,9 @@ def import_data(uri: str, experiment_id: int, user_id: int):
 
     try:
         if file_extension == MCD_FILENDING:
-            mcd.import_mcd(db_session, uri, experiment_id, user_id)
+            mcd.import_mcd(db_session, uri, experiment_id)
         elif file_extension == ZIP_FILENDING:
-            zip.import_zip(db_session, uri, experiment_id, user_id)
+            zip.import_zip(db_session, uri, experiment_id)
     except SlideImportError as error:
         logger.warning(error)
     finally:

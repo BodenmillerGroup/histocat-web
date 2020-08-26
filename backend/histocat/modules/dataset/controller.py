@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user
+from histocat.api.security import get_active_member, get_active_user
 from histocat.core.utils import stream_bytes
+from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
 
 from . import service
@@ -21,9 +22,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/experiments/{experiment_id}/datasets", response_model=Sequence[DatasetDto])
+@router.get("/groups/{group_id}/experiments/{experiment_id}/datasets", response_model=Sequence[DatasetDto])
 def get_experiment_datasets(
-    experiment_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
+    group_id: int, experiment_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
 ):
     """
     Retrieve own datasets for specified experiment

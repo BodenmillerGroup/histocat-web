@@ -1,7 +1,5 @@
 <template>
-  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">
-    Please select dataset
-  </v-banner>
+  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
   <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
     Please select acquisition(s)
   </v-banner>
@@ -22,9 +20,7 @@
               <v-btn @click="selectAll" small :disabled="selectedChannels.length === channels.length">
                 Select all
               </v-btn>
-              <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0">
-                Clear all
-              </v-btn>
+              <v-btn @click="clearAll" small :disabled="selectedChannels.length === 0"> Clear all </v-btn>
             </v-card-actions>
             <v-row>
               <v-col>
@@ -94,9 +90,7 @@
           </v-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0">
-            Analyze
-          </v-btn>
+          <v-btn @click="submit" color="primary" block :disabled="selectedChannels.length === 0"> Analyze </v-btn>
         </v-card-actions>
         <v-card-text>
           <v-select
@@ -125,9 +119,7 @@
           />
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="display" color="primary" block :disabled="!result">
-            Display
-          </v-btn>
+          <v-btn @click="display" color="primary" block :disabled="!result"> Display </v-btn>
         </v-card-actions>
       </v-card>
     </div>

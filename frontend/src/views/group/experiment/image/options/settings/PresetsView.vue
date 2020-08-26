@@ -1,9 +1,7 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <v-btn @click="createPreset" color="primary" elevation="1" small>
-        Create preset
-      </v-btn>
+      <v-btn @click="createPreset" color="primary" elevation="1" small>Create preset</v-btn>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
