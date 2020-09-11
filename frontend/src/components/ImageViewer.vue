@@ -1,7 +1,7 @@
 <template>
   <div id="canvasContainer">
-    <canvas id="canvas2d" ref="canvas2d"></canvas>
-    <canvas id="canvasWebGl" ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
+    <canvas :id="canvas2d" :ref="canvas2d"></canvas>
+    <canvas :id="canvasWebGl" :ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
   </div>
 </template>
 
@@ -28,6 +28,9 @@ export default class ImageViewer extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly centroidsContext = centroidsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
+
+  private readonly canvas2d = "canvas2d";
+  private readonly canvasWebGl = "canvasWebGl";
 
   points: CellPoint[] = [];
   scatterplot: any;
