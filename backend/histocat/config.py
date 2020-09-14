@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     INBOX_DIRECTORY: str = "/data/inbox/"
 
     # absolute path to the directory where experiments are located
-    ROOT_DATA_DIRECTORY: str = "/data/experiments/"
+    ROOT_DATA_DIRECTORY: str = "/data/groups/"
 
     SECRET_KEY: bytes = os.urandom(32)
 

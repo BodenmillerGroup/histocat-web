@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Dict
 
 import pandas as pd
+from anndata import AnnData
 from sqlalchemy.orm import Session
 
 from histocat.core.notifier import Message
@@ -23,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 CSV_FILE_EXTENSION = ".csv"
 FEATHER_FILE_EXTENSION = ".feather"
+ANNDATA_FILE_EXTENSION = ".h5ad"
 
 EXPERIMENT_CSV_FILENAME = "Experiment"
 ACQUISITION_METADATA_FILENAME = "acquisition_metadata"
@@ -176,6 +178,37 @@ def _import_cell_csv(
                 df_preprocessed[col_name] = df_preprocessed[col_name].astype("int64")
 
     df_preprocessed.to_feather(dst_uri)
+
+    obs = pd.DataFrame()
+    obs["CellId"] = df.index
+    obs["AcquisitionId"] = df["ImageNumber"]
+    obs["AcquisitionId"].replace(image_number_to_acquisition_id, inplace=True)
+    obs["ImageNumber"] = df["ImageNumber"]
+    obs["ObjectNumber"] = df["ObjectNumber"]
+    obs["CentroidX"] = df["Location_Center_X"]
+    obs["CentroidY"] = df["Location_Center_Y"]
+
+    neighbors_cols = [col for col in df.columns if "Neighbors_" in col]
+    for col in neighbors_cols:
+        col_name = col.split("_")[1]
+        if col_name:
+            obs[col_name] = df[col]
+            if col_name == "NumberOfNeighbors":
+                obs[col_name] = obs[col_name].astype("int64")
+
+    var_names = []
+    x_df = pd.DataFrame()
+    for key, value in channels_input.items():
+        # TODO: check intensity multiplier
+        x_df[key] = df[f"Intensity_MeanIntensity_FullStack_c{value}"] * 2 ** 16
+        var_names.append(key)
+    var = pd.DataFrame(index=var_names)
+    X = x_df.to_numpy()
+
+    ad = AnnData(X, obs=obs, var=var, dtype='float32')
+    filename = dst_folder / f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}"
+    ad.write_h5ad(filename)
+
     artifact = {"location": str(dst_uri)}
     return df, artifact
 

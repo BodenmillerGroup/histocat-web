@@ -78,7 +78,7 @@
 
             <v-list-item
               v-if="activeGroupId && activeExperimentId"
-              @click="$router.push({ name: 'group-experiments', params: { groupId: activeGroupId } })"
+              @click="$router.push({ name: 'group-experiments', params: { groupId: activeGroupId } }, () => {})"
             >
               <v-list-item-icon>
                 <v-tooltip right>

@@ -5,8 +5,6 @@ from typing import List, Optional, Set
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from histocat.config import config
-
 from .dto import ExperimentCreateDto, ExperimentUpdateDto
 from .models import EXPERIMENT_LOCATION_FORMAT, ExperimentModel
 
@@ -43,7 +41,7 @@ def create(session: Session, *, group_id: int, params: ExperimentCreateDto) -> E
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(config.ROOT_DATA_DIRECTORY, EXPERIMENT_LOCATION_FORMAT.format(id=entity.id))
+    entity.location = os.path.join(entity.group.experiments_location, EXPERIMENT_LOCATION_FORMAT.format(id=entity.id))
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for experiment {entity.id}: {entity.location}")
         os.makedirs(entity.location)

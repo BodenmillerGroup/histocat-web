@@ -115,7 +115,6 @@ export default class ImageViewer extends Vue {
 
   @Watch("channelStackImage")
   async onChannelStackImageChanged(value) {
-    console.log("ImageViewer update");
     if (value && this.activeAcquisitionId) {
       const img = new Image();
       img.crossOrigin = "";
@@ -129,7 +128,7 @@ export default class ImageViewer extends Vue {
           prevBackgroundImage.destroy();
         }
 
-        if (this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
+        if (this.applyMask && this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
           this.points = this.centroids.get(this.activeAcquisitionId!)!;
           const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
           this.scatterplot.draw(x);
@@ -168,20 +167,17 @@ export default class ImageViewer extends Vue {
       }
       this.selectionContext.actions.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
-        console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     } else {
       this.selectionContext.actions.setSelectedCells([]);
       if (this.applyMask) {
-        console.log("ImageViewer getChannelStackImage");
         this.experimentContext.actions.getChannelStackImage();
       }
     }
   }
 
   deselectHandler() {
-    console.log("Deselected:", this.selection);
     this.selection = [];
   }
 
@@ -197,7 +193,6 @@ export default class ImageViewer extends Vue {
     if (!this.showLegend) {
       return;
     }
-    const showIntensity = this.settingsContext.getters.legend.showIntensity;
     const textHeight = this.settingsContext.getters.legend.fontScale;
     ctx.font = `${textHeight}pt sans-serif`;
     let maxTextWidth = 0;

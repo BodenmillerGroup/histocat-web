@@ -132,10 +132,6 @@ export default new Router({
               children: [
                 {
                   path: "users",
-                  redirect: "users",
-                },
-                {
-                  path: "users",
                   name: "admin-users",
                   component: () => import(/* webpackChunkName: "admin-users" */ "@/views/admin/user/AdminUsers.vue"),
                 },
