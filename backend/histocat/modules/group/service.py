@@ -11,7 +11,7 @@ from histocat.modules.member.dto import MemberCreateDto
 from histocat.modules.member.models import MemberModel
 
 from .dto import GroupCreateDto, GroupUpdateDto
-from .models import GROUP_LOCATION_FORMAT, GroupModel
+from .models import GroupModel
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def create(session: Session, *, params: GroupCreateDto, user_id: int) -> GroupMo
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(config.ROOT_DATA_DIRECTORY, GROUP_LOCATION_FORMAT.format(id=entity.id))
+    entity.location = os.path.join(config.ROOT_DATA_DIRECTORY, str(entity.id))
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for group {entity.id}: {entity.location}")
         os.makedirs(entity.location)

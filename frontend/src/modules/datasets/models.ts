@@ -1,19 +1,3 @@
-import { IChannelSettings } from "@/modules/settings/models";
-
-export type Status = "pending" | "processing" | "terminated";
-
-export interface IDatasetCreate {
-  experiment_id: number;
-  name: string;
-  description?: string;
-  input: {
-    acquisition_ids: number[];
-    metals: string[];
-    channel_settings: IChannelSettings[];
-  };
-  meta?: object;
-}
-
 export interface IDatasetTSNEOutput {
   name: string;
   location: string;
@@ -39,8 +23,13 @@ export interface IDataset {
   uid: string;
   name: string;
   description: string;
-  status: Status;
-  input: {
+  status: string;
+  output?: {
+    tsne: { [name: string]: IDatasetTSNEOutput };
+    umap: { [name: string]: IDatasetUMAPOutput };
+    phenograph: { [name: string]: IDatasetPhenoGraphOutput };
+  };
+  meta: {
     acquisition_metadata?: {
       location: string;
     };
@@ -75,13 +64,6 @@ export interface IDataset {
       };
     };
   };
-  output?: {
-    tsne: { [name: string]: IDatasetTSNEOutput };
-    umap: { [name: string]: IDatasetUMAPOutput };
-    phenograph: { [name: string]: IDatasetPhenoGraphOutput };
-  };
-  meta?: object;
   location: string;
   created_at: string;
-  updated_at: string;
 }

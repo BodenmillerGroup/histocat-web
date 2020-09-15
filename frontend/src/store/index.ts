@@ -18,6 +18,7 @@ import { presetModule } from "@/modules/presets";
 import { gateModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
+import { resultModule } from "@/modules/results";
 
 Vue.use(Vuex);
 
@@ -29,6 +30,7 @@ const rootModule = new Module({
     member: memberModule,
     analysis: analysisModule,
     dataset: datasetModule,
+    results: resultModule,
     experiment: experimentModule,
     main: mainModule,
     responsive: responsiveModule,

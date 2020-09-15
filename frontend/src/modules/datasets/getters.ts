@@ -19,13 +19,13 @@ export class DatasetGetters extends Getters<DatasetState> {
   }
 
   get channels() {
-    return this.getters.activeDataset && this.getters.activeDataset.input["channel_map"]
-      ? Object.keys(this.getters.activeDataset.input["channel_map"])
+    return this.getters.activeDataset && this.getters.activeDataset.meta["channel_map"]
+      ? Object.keys(this.getters.activeDataset.meta["channel_map"])
       : [];
   }
 
   get heatmaps() {
-    if (!this.getters.activeDataset || !this.getters.activeDataset.input["neighbors_columns"]) {
+    if (!this.getters.activeDataset || !this.getters.activeDataset.meta["neighbors_columns"]) {
       return [];
     }
     const channelItems = this.getters.channels.map((item) => {
@@ -34,32 +34,12 @@ export class DatasetGetters extends Getters<DatasetState> {
         label: item,
       };
     });
-    const neighborItems = this.getters.activeDataset.input["neighbors_columns"].map((item) => {
+    const neighborItems = this.getters.activeDataset.meta["neighbors_columns"].map((item) => {
       return {
         type: "neighbor",
         label: item,
       };
     });
     return channelItems.concat(neighborItems);
-  }
-
-  get tsneResults() {
-    return this.getters.activeDataset && this.getters.activeDataset.output && this.getters.activeDataset.output["tsne"]
-      ? Object.values(this.getters.activeDataset.output["tsne"])
-      : [];
-  }
-
-  get umapResults() {
-    return this.getters.activeDataset && this.getters.activeDataset.output && this.getters.activeDataset.output["umap"]
-      ? Object.values(this.getters.activeDataset.output["umap"])
-      : [];
-  }
-
-  get phenographResults() {
-    return this.getters.activeDataset &&
-      this.getters.activeDataset.output &&
-      this.getters.activeDataset.output["phenograph"]
-      ? Object.values(this.getters.activeDataset.output["phenograph"])
-      : [];
   }
 }

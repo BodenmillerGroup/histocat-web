@@ -12,9 +12,6 @@ from histocat.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for experiment locations.
-EXPERIMENT_LOCATION_FORMAT = "experiment_{id}"
-
 
 @remove_location_upon_delete
 class ExperimentModel(Base):

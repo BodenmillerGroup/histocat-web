@@ -44,9 +44,9 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
         logger.warning(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
         return
 
-    create_params = DatasetCreateDto(experiment_id=experiment_id, status="pending")
+    create_params = DatasetCreateDto(experiment_id=experiment_id, status="importing")
     dataset = dataset_service.create(db, params=create_params)
-    input = {}
+    meta = {}
 
     src_folder = Path(cell_csv_filename).parent
     dst_folder = Path(dataset.location)
@@ -54,7 +54,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
 
     image_df, image_input = _import_image_csv(db, src_folder, dst_folder)
     if image_input:
-        input["image"] = image_input
+        meta["image"] = image_input
 
     probability_masks = {}
     image_map = {}
@@ -67,33 +67,33 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
             image_number = mask_meta.get("image_number")
             image_map[acquisition_id] = image_number
             image_number_to_acquisition_id[image_number] = acquisition_id
-    input["probability_masks"] = probability_masks
+    meta["probability_masks"] = probability_masks
     # Map acquisition database ID to ImageNumber column
-    input["image_map"] = image_map
+    meta["image_map"] = image_map
 
     channels_input = {}
     for channels_filename in locate(str(root_folder), f"*{CHANNELS_FULL_CSV_ENDING}"):
         channels_input = _import_channels_csv(db, channels_filename)
-        input["channel_map"] = channels_input
+        meta["channel_map"] = channels_input
         break
 
     object_relationships_df, object_relationships_input = _import_object_relationships(db, src_folder, dst_folder)
     if object_relationships_input:
-        input["object_relationships"] = object_relationships_input
+        meta["object_relationships"] = object_relationships_input
 
     cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id, channels_input)
     if cell_input:
-        input["cell"] = cell_input
+        meta["cell"] = cell_input
 
     # Register heatmap columns
     neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]
-    input["neighbors_columns"] = neighbors_cols
+    meta["neighbors_columns"] = neighbors_cols
 
     acquisition_metadata_df, acquisition_metadata_input = _import_acquisition_metadata_csv(db, src_folder, dst_folder)
     if acquisition_metadata_input:
-        input["acquisition_metadata"] = acquisition_metadata_input
+        meta["acquisition_metadata"] = acquisition_metadata_input
 
-    update_params = DatasetUpdateDto(status="ready", input=input)
+    update_params = DatasetUpdateDto(status="ready", meta=meta)
     dataset = dataset_service.update(db, item=dataset, params=update_params)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported"))
 
@@ -205,7 +205,7 @@ def _import_cell_csv(
     var = pd.DataFrame(index=var_names)
     X = x_df.to_numpy()
 
-    ad = AnnData(X, obs=obs, var=var, dtype='float32')
+    ad = AnnData(X, obs=obs, var=var, dtype="float32")
     filename = dst_folder / f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}"
     ad.write_h5ad(filename)
 

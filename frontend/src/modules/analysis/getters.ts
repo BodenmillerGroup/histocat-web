@@ -2,14 +2,6 @@ import { Getters } from "vuex-smart-module";
 import { AnalysisState } from ".";
 
 export class AnalysisGetters extends Getters<AnalysisState> {
-  get segmentationImage() {
-    return this.state.segmentationImage;
-  }
-
-  get segmentationContours() {
-    return this.state.segmentationContours;
-  }
-
   get scatterPlotData() {
     return this.state.scatterPlotData;
   }

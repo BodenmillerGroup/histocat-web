@@ -67,11 +67,13 @@ import { datasetModule } from "@/modules/datasets";
 import { experimentModule } from "@/modules/experiment";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { centroidsModule } from "@/modules/centroids";
+import { resultModule } from "@/modules/results";
 
 @Component
 export default class DatasetsView extends Vue {
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
+  readonly resultContext = resultModule.context(this.$store);
   readonly centroidsContext = centroidsModule.context(this.$store);
 
   readonly apiUrl = apiUrl;
@@ -88,6 +90,7 @@ export default class DatasetsView extends Vue {
       const dataset = this.datasets[index];
       this.datasetContext.actions.setActiveDatasetId(dataset.id);
       this.centroidsContext.actions.getCentroids({ datasetId: dataset.id });
+      this.resultContext.actions.getDatasetResults(dataset.id);
     } else {
       this.datasetContext.actions.setActiveDatasetId(null);
     }

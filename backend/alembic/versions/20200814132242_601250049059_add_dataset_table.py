@@ -24,6 +24,7 @@ def upgrade():
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
         sa.Column('uid', UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True),
+        sa.Column('status', sa.String(64), nullable=False, index=True),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
         sa.Column('meta', JSONB()),

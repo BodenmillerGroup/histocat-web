@@ -12,9 +12,6 @@ from histocat.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for group locations.
-GROUP_LOCATION_FORMAT = "group_{id}"
-
 
 @remove_location_upon_delete
 class GroupModel(Base):

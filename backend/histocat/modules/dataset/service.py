@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
 from .dto import DatasetCreateDto, DatasetUpdateDto
-from .models import DATASET_LOCATION_FORMAT, DatasetModel
+from .models import DatasetModel
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def create(session: Session, *, params: DatasetCreateDto) -> DatasetModel:
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(entity.experiment.datasets_location, DATASET_LOCATION_FORMAT.format(id=entity.id))
+    entity.location = os.path.join(entity.experiment.datasets_location, str(entity.id))
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for dataset {entity.id}: {entity.location}")
         os.makedirs(entity.location)
@@ -82,7 +82,7 @@ def remove(session: Session, *, id: int):
 
 
 def get_centroids(dataset: DatasetModel):
-    cell_input = dataset.input.get("cell")
+    cell_input = dataset.meta.get("cell")
 
     if not cell_input:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")

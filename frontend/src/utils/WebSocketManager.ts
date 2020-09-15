@@ -13,11 +13,16 @@ import { MainMutations } from "@/modules/main/mutations";
 import { WebSocketMessage } from "@/utils/WebSocketMessage";
 import { Store } from "vuex";
 import { Context, Module } from "vuex-smart-module";
+import { resultModule, ResultState } from "@/modules/results";
+import { ResultGetters } from "@/modules/results/getters";
+import { ResultMutations } from "@/modules/results/mutations";
+import { ResultActions } from "@/modules/results/actions";
 
 export class WebSocketManager {
   static mainContext: Context<Module<MainState, MainGetters, MainMutations, MainActions>>;
   static experimentContext: Context<Module<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions>>;
   static datasetContext: Context<Module<DatasetState, DatasetGetters, DatasetMutations, DatasetActions>>;
+  static resultContext: Context<Module<ResultState, ResultGetters, ResultMutations, ResultActions>>;
   static socket: WebSocket;
   static token: string;
   static protocol: string;
@@ -26,6 +31,7 @@ export class WebSocketManager {
     WebSocketManager.mainContext = mainModule.context(store);
     WebSocketManager.experimentContext = experimentModule.context(store);
     WebSocketManager.datasetContext = datasetModule.context(store);
+    WebSocketManager.resultContext = resultModule.context(store);
     WebSocketManager.token = WebSocketManager.mainContext.getters.token;
     WebSocketManager.protocol = self.location.protocol === "https:" ? "wss:" : "ws:";
   }
@@ -70,8 +76,7 @@ export class WebSocketManager {
             break;
           }
           case "tsne_result_ready": {
-            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
-            WebSocketManager.datasetContext.mutations.updateDatasetTSNEOutput(message);
+            WebSocketManager.resultContext.mutations.addEntity(message.payload);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "t-SNE result is ready",
               color: "success",
@@ -79,8 +84,7 @@ export class WebSocketManager {
             break;
           }
           case "umap_result_ready": {
-            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
-            WebSocketManager.datasetContext.mutations.updateDatasetUMAPOutput(message);
+            WebSocketManager.resultContext.mutations.addEntity(message.payload);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "UMAP result is ready",
               color: "success",
@@ -88,8 +92,7 @@ export class WebSocketManager {
             break;
           }
           case "phenograph_result_ready": {
-            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
-            WebSocketManager.datasetContext.mutations.updateDatasetPhenoGraphOutput(message);
+            WebSocketManager.resultContext.mutations.addEntity(message.payload);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "PhenoGraph result is ready",
               color: "success",

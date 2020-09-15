@@ -126,8 +126,8 @@ export default class BlendTab extends Vue {
 
   get hasMask() {
     let hasMask = false;
-    if (this.activeAcquisition && this.dataset && this.dataset.input && this.dataset.input.probability_masks) {
-      hasMask = !!this.dataset.input.probability_masks[this.activeAcquisition.id];
+    if (this.activeAcquisition && this.dataset && this.dataset.meta.probability_masks) {
+      hasMask = !!this.dataset.meta.probability_masks[this.activeAcquisition.id];
     }
     return hasMask;
   }

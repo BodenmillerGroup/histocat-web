@@ -14,8 +14,6 @@ import {
 import { AnalysisMutations } from "./mutations";
 
 export class AnalysisState {
-  segmentationImage: string | ArrayBuffer | null = null;
-  segmentationContours: number[][] = [];
   scatterPlotData: IScatterPlotData | null = null;
   boxPlotData: IPlotSeries[] = [];
   pcaData: IPCAData | null = null;

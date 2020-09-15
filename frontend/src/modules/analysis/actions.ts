@@ -1,8 +1,6 @@
 import { experimentModule } from "@/modules/experiment";
-import { ExportFormat } from "@/modules/experiment/models";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import { saveAs } from "file-saver";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
 import { AnalysisState } from ".";
@@ -16,16 +14,19 @@ import {
   IUMAPSubmission,
 } from "./models";
 import { AnalysisMutations } from "./mutations";
+import { groupModule } from "@/modules/group";
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   experiment?: Context<typeof experimentModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
+    this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.experiment = experimentModule.context(store);
   }
@@ -93,10 +94,11 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getTSNEResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
+  async getTSNEResult(payload: { resultId: number; heatmapType: string; heatmap: string }) {
     try {
-      const response = await api.getTSNEData(payload.datasetId, payload.name, payload.heatmapType, payload.heatmap);
-      this.mutations.setTSNEData(response);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getTSNEData(groupId, payload.resultId, payload.heatmapType, payload.heatmap);
+      this.mutations.setTSNEData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -112,10 +114,11 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getUMAPResult(payload: { datasetId: number; name: string; heatmapType: string; heatmap: string }) {
+  async getUMAPResult(payload: { resultId: number; heatmapType: string; heatmap: string }) {
     try {
-      const response = await api.getUMAPData(payload.datasetId, payload.name, payload.heatmapType, payload.heatmap);
-      this.mutations.setUMAPData(response);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getUMAPData(groupId, payload.resultId, payload.heatmapType, payload.heatmap);
+      this.mutations.setUMAPData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -131,10 +134,11 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getPhenoGraphResult(payload: { datasetId: number; name: string }) {
+  async getPhenoGraphResult(payload: { resultId: number }) {
     try {
-      const response = await api.getPhenoGraphData(payload.datasetId, payload.name);
-      this.mutations.setPhenoGraphData(response);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getPhenoGraphData(groupId, payload.resultId);
+      this.mutations.setPhenoGraphData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

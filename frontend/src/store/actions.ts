@@ -9,12 +9,14 @@ import { presetModule } from "@/modules/presets";
 import { gateModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
+import { resultModule } from "@/modules/results";
 
 export class RootActions extends Actions {
   group?: Context<typeof groupModule>;
   member?: Context<typeof memberModule>;
   analysis?: Context<typeof analysisModule>;
   dataset?: Context<typeof datasetModule>;
+  results?: Context<typeof resultModule>;
   experiment?: Context<typeof experimentModule>;
   selection?: Context<typeof selectionModule>;
   centroids?: Context<typeof centroidsModule>;
@@ -27,6 +29,7 @@ export class RootActions extends Actions {
     this.member = memberModule.context(store);
     this.analysis = analysisModule.context(store);
     this.dataset = datasetModule.context(store);
+    this.results = resultModule.context(store);
     this.experiment = experimentModule.context(store);
     this.selection = selectionModule.context(store);
     this.centroids = centroidsModule.context(store);
@@ -39,6 +42,7 @@ export class RootActions extends Actions {
     this.member?.mutations.reset();
     this.analysis?.mutations.reset();
     this.dataset?.mutations.reset();
+    this.results?.mutations.reset();
     this.experiment?.mutations.reset();
     this.selection?.mutations.reset();
     this.centroids?.mutations.reset();

@@ -136,6 +136,7 @@ import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
+import { resultModule } from "@/modules/results";
 
 @Component({
   components: { Scatter2D, Scatter3D },
@@ -144,6 +145,7 @@ export default class TSNETab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
+  readonly resultContext = resultModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
 
@@ -199,7 +201,7 @@ export default class TSNETab extends Vue {
   }
 
   get results() {
-    return this.datasetContext.getters.tsneResults;
+    return this.resultContext.getters.tsneResults;
   }
 
   selectAll() {
@@ -256,12 +258,13 @@ export default class TSNETab extends Vue {
 
     const heatmap = this.heatmap ? this.heatmap.label : "";
 
-    await this.analysisContext.actions.getTSNEResult({
-      datasetId: this.activeDataset.id,
-      name: this.result ? this.result.name : "",
-      heatmapType: this.heatmap ? this.heatmap.type : "",
-      heatmap: heatmap,
-    });
+    if (this.result) {
+      await this.analysisContext.actions.getTSNEResult({
+        resultId: this.result.id,
+        heatmapType: this.heatmap ? this.heatmap.type : "",
+        heatmap: heatmap,
+      });
+    }
   }
 }
 </script>

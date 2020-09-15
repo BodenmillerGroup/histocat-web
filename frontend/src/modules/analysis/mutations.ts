@@ -12,14 +12,6 @@ import {
 } from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
-  setSegmentationImage(base64Image: string | ArrayBuffer | null) {
-    this.state.segmentationImage = base64Image;
-  }
-
-  setSegmentationContours(contours: number[][]) {
-    this.state.segmentationContours = contours;
-  }
-
   setScatterPlotData(data: IScatterPlotData | null) {
     this.state.scatterPlotData = Object.freeze(data);
   }

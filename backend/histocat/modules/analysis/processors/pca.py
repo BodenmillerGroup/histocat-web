@@ -24,7 +24,7 @@ def process_pca(
     """
 
     dataset = service.get(db, id=dataset_id)
-    cell_input = dataset.input.get("cell")
+    cell_input = dataset.meta.get("cell")
 
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")

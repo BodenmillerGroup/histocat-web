@@ -8,6 +8,7 @@ from histocat.modules.group.models import GroupModel  # noqa
 from histocat.modules.member.models import MemberModel  # noqa
 from histocat.modules.panorama.models import PanoramaModel  # noqa
 from histocat.modules.preset.models import PresetModel  # noqa
+from histocat.modules.result.models import ResultModel  # noqa
 from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto

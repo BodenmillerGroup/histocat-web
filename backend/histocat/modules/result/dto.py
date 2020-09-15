@@ -4,29 +4,30 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class DatasetCreateDto(BaseModel):
-    experiment_id: int
+class ResultCreateDto(BaseModel):
+    dataset_id: int
+    type: str
     status: str
     name: Optional[str]
     description: Optional[str]
-    meta: Optional[dict]
+    params: dict
 
 
-class DatasetUpdateDto(BaseModel):
-    status: str
+class ResultUpdateDto(BaseModel):
+    dataset_id: int
+    status: Optional[str]
     name: Optional[str]
     description: Optional[str]
-    meta: Optional[dict]
 
 
-class DatasetDto(BaseModel):
+class ResultDto(BaseModel):
     id: int
-    experiment_id: int
-    uid: str
+    dataset_id: int
+    type: str
     status: str
     name: Optional[str]
     description: Optional[str]
-    meta: Optional[dict]
+    params: dict
     location: Optional[str]
     created_at: datetime
 

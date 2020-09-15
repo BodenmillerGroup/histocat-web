@@ -63,10 +63,10 @@ export const api = {
       })
       .json();
   },
-  async getTSNEData(datasetId: number, name: string, heatmapType: string, heatmap: string) {
-    let url = `analysis/tsne?dataset_id=${datasetId}&name=${name}`;
+  async getTSNEData(groupId: number, resultId: number, heatmapType: string, heatmap: string) {
+    let url = `groups/${groupId}/results/${resultId}/tsne`;
     if (heatmapType && heatmap) {
-      url += `&heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
     }
     return ApiManager.api.get(url).json<ITSNEData>();
   },
@@ -77,10 +77,10 @@ export const api = {
       })
       .json();
   },
-  async getUMAPData(datasetId: number, name: string, heatmapType: string, heatmap: string) {
-    let url = `analysis/umap?dataset_id=${datasetId}&name=${name}`;
+  async getUMAPData(groupId: number, resultId: number, heatmapType: string, heatmap: string) {
+    let url = `groups/${groupId}/results/${resultId}/umap`;
     if (heatmapType && heatmap) {
-      url += `&heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
     }
     return ApiManager.api.get(url).json<IUMAPData>();
   },
@@ -91,8 +91,8 @@ export const api = {
       })
       .json();
   },
-  async getPhenoGraphData(datasetId: number, name: string) {
-    return ApiManager.api.get(`analysis/phenograph?dataset_id=${datasetId}&name=${name}`).json<IPhenoGraphData>();
+  async getPhenoGraphData(groupId: number, resultId: number) {
+    return ApiManager.api.get(`groups/${groupId}/results/${resultId}/phenograph`).json<IPhenoGraphData>();
   },
   async calculateRegionStats(params: IRegionStatsSubmission) {
     return ApiManager.api

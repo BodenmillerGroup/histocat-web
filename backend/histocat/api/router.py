@@ -11,6 +11,7 @@ from histocat.modules.group import controller as group_controller
 from histocat.modules.member import controller as member_controller
 from histocat.modules.panorama import controller as panorama_controller
 from histocat.modules.preset import controller as preset_controller
+from histocat.modules.result import controller as result_controller
 from histocat.modules.slide import controller as slide_controller
 from histocat.modules.user import controller as user_controller
 
@@ -26,6 +27,7 @@ api_router.include_router(acquisition_controller.router, tags=["acquisitions"])
 api_router.include_router(user_controller.router, tags=["users"])
 api_router.include_router(member_controller.router, tags=["members"])
 api_router.include_router(dataset_controller.router, tags=["datasets"])
+api_router.include_router(result_controller.router, tags=["results"])
 api_router.include_router(preset_controller.router, tags=["presets"])
 api_router.include_router(gate_controller.router, tags=["gates"])
 api_router.include_router(analysis_controller.router, tags=["analysis"])

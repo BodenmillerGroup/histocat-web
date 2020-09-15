@@ -162,7 +162,7 @@ async def get_scatter_plot_data(
     #     return UJSONResponse(content=ujson.loads(content))
 
     dataset = dataset_service.get(db, id=dataset_id)
-    cell_input = dataset.input.get("cell")
+    cell_input = dataset.meta.get("cell")
 
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
@@ -204,7 +204,7 @@ async def get_box_plot_data(
     """
 
     dataset = dataset_service.get(db, id=dataset_id)
-    cell_input = dataset.input.get("cell")
+    cell_input = dataset.meta.get("cell")
 
     if not cell_input or (not gate_id and len(acquisition_ids) == 0):
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
@@ -267,10 +267,10 @@ def submit_tsne(
     return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/analysis/tsne", response_model=TsneDto)
-async def read_tsne_data(
-    dataset_id: int,
-    name: str,
+@router.get("/groups/{group_id}/results/{result_id}/tsne", response_model=TsneDto)
+async def get_tsne_data(
+    group_id: int,
+    result_id: int,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
@@ -280,7 +280,7 @@ async def read_tsne_data(
     Read t-SNE result data
     """
 
-    content = tsne.get_tsne_result(db, dataset_id, name, heatmap_type, heatmap)
+    content = tsne.get_tsne_result(db, result_id, heatmap_type, heatmap)
     return ORJSONResponse(content)
 
 
@@ -303,10 +303,10 @@ def submit_umap(
     return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/analysis/umap", response_model=UmapDto)
-async def read_umap_data(
-    dataset_id: int,
-    name: str,
+@router.get("/groups/{group_id}/results/{result_id}/umap", response_model=UmapDto)
+async def get_umap_data(
+    group_id: int,
+    result_id: int,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
@@ -316,7 +316,7 @@ async def read_umap_data(
     Read UMAP result data
     """
 
-    content = umap.get_umap_result(db, dataset_id, name, heatmap_type, heatmap)
+    content = umap.get_umap_result(db, result_id, heatmap_type, heatmap)
     return ORJSONResponse(content)
 
 
@@ -341,15 +341,15 @@ def submit_phenograph(
     return ORJSONResponse({"status": "submitted"})
 
 
-@router.get("/analysis/phenograph", response_model=PhenographDto)
-async def read_phenograph_data(
-    dataset_id: int, name: str, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+@router.get("/groups/{group_id}/results/{result_id}/phenograph", response_model=PhenographDto)
+async def get_phenograph_data(
+    group_id: int, result_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Read PhenoGraph result data
     """
 
-    content = phenograph.get_phenograph_result(db, dataset_id, name)
+    content = phenograph.get_phenograph_result(db, result_id)
     return ORJSONResponse(content)
 
 

@@ -72,8 +72,8 @@ export default class BoxPlotTab extends Vue {
   }
 
   get items() {
-    return this.activeDataset && this.activeDataset.input["channel_map"]
-      ? Object.keys(this.activeDataset.input["channel_map"])
+    return this.activeDataset && this.activeDataset.meta["channel_map"]
+      ? Object.keys(this.activeDataset.meta["channel_map"])
       : [];
   }
 

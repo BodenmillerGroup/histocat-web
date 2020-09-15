@@ -90,6 +90,7 @@ import { mainModule } from "@/modules/main";
 import { required } from "@/utils/validators";
 import { Component, Vue } from "vue-property-decorator";
 import PhenoGraphView from "@/views/group/experiment/data/analysis/phenograph/PhenoGraphView.vue";
+import { resultModule } from "@/modules/results";
 
 @Component({
   components: { PhenoGraphView },
@@ -98,6 +99,7 @@ export default class PhenoGraphTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly experimentContext = experimentModule.context(this.$store);
   readonly datasetContext = datasetModule.context(this.$store);
+  readonly resultContext = resultModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
 
   readonly required = required;
@@ -142,7 +144,7 @@ export default class PhenoGraphTab extends Vue {
   }
 
   get results() {
-    return this.datasetContext.getters.phenographResults;
+    return this.resultContext.getters.phenographResults;
   }
 
   selectAll() {
@@ -185,10 +187,11 @@ export default class PhenoGraphTab extends Vue {
   }
 
   async display() {
-    await this.analysisContext.actions.getPhenoGraphResult({
-      datasetId: this.activeDatasetId!,
-      name: this.result ? this.result.name : "",
-    });
+    if (this.result) {
+      await this.analysisContext.actions.getPhenoGraphResult({
+        resultId: this.result.id,
+      });
+    }
   }
 
   get phenographData() {

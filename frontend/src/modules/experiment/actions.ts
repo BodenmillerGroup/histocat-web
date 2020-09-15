@@ -314,8 +314,8 @@ export class ExperimentActions extends Actions<
       result["datasetId"] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
-      if (activeAcquisitionId && activeDataset.input && activeDataset.input.probability_masks) {
-        const mask = activeDataset.input.probability_masks[activeAcquisitionId];
+      if (activeAcquisitionId && activeDataset.meta.probability_masks) {
+        const mask = activeDataset.meta.probability_masks[activeAcquisitionId];
         if (mask) {
           result["mask"] = {
             apply: maskSettings.apply,

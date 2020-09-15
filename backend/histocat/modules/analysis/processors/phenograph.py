@@ -6,13 +6,16 @@ from typing import List
 import pandas as pd
 import phenograph
 from fastapi import HTTPException
+from fastapi.encoders import jsonable_encoder
 from sklearn import preprocessing
 from sqlalchemy.orm import Session
 
 from histocat.core.notifier import Message
 from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
-from histocat.modules.dataset import service as dataset_crud
+from histocat.modules.dataset import service as dataset_service
+from histocat.modules.result import service as result_service
+from histocat.modules.result.dto import ResultCreateDto
 
 
 @timeit
@@ -31,8 +34,8 @@ def process_phenograph(
     Calculate PhenoGraph data
     """
 
-    dataset = dataset_crud.get(db, id=dataset_id)
-    cell_input = dataset.input.get("cell")
+    dataset = dataset_service.get(db, id=dataset_id)
+    cell_input = dataset.meta.get("cell")
 
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
@@ -58,20 +61,16 @@ def process_phenograph(
         min_cluster_size=min_cluster_size,
     )
 
-    result = df[markers]
-    result = result.assign(community=communities)
-    result = result.groupby("community", as_index=False).mean()
+    phenograph_result = df[markers]
+    phenograph_result = phenograph_result.assign(community=communities)
+    phenograph_result = phenograph_result.groupby("community", as_index=False).mean()
 
-    timestamp = str(datetime.utcnow())
-
-    os.makedirs(os.path.join(dataset.location, "phenograph"), exist_ok=True)
-    location = os.path.join(dataset.location, "phenograph", f"{timestamp}.pickle")
-    with open(location, "wb") as f:
-        pickle.dump(result, f)
-
-    result = {
-        "name": timestamp,
-        "params": {
+    result_create_params = ResultCreateDto(
+        dataset_id=dataset_id,
+        type="phenograph",
+        status="ready",
+        name=str(datetime.utcnow()),
+        params={
             "dataset_id": dataset_id,
             "acquisition_ids": acquisition_ids,
             "markers": markers,
@@ -81,36 +80,33 @@ def process_phenograph(
             "primary_metric": primary_metric,
             "min_cluster_size": min_cluster_size,
         },
-        "location": location,
-    }
-    dataset_crud.update_output(db, dataset_id=dataset_id, result_type="phenograph", result=result)
+    )
+    result = result_service.create(db, params=result_create_params)
+
+    location = os.path.join(result.location, "data.pickle")
+    with open(location, "wb") as f:
+        pickle.dump(phenograph_result, f)
+
     redis_manager.publish(
-        UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "phenograph_result_ready", result),
+        UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "phenograph_result_ready", jsonable_encoder(result)),
     )
 
 
-def get_phenograph_result(db: Session, dataset_id: int, name: str):
+def get_phenograph_result(db: Session, result_id: int):
     """
     Read PhenoGraph result data
     """
 
-    dataset = dataset_crud.get(db, id=dataset_id)
-    phenograph_output = dataset.output.get("phenograph")
+    result = result_service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="PhenoGraph result not found.")
 
-    if not phenograph_output or name not in phenograph_output:
-        raise HTTPException(
-            status_code=400, detail="The dataset does not have a proper PhenoGraph output.",
-        )
-
-    phenograph_result = phenograph_output.get(name)
-    with open(phenograph_result.get("location"), "rb") as f:
-        result = pickle.load(f)
-
-    params = phenograph_result.get("params")
-    acquisition_ids = params.get("acquisition_ids")
+    location = os.path.join(result.location, "data.pickle")
+    with open(location, "rb") as f:
+        r = pickle.load(f)
 
     output = {}
-    for (columnName, columnData) in result.iteritems():
+    for (columnName, columnData) in r.iteritems():
         output[columnName] = columnData.tolist()
 
     return output

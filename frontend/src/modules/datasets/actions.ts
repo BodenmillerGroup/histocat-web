@@ -1,8 +1,6 @@
-import { IDatasetCreate } from "@/modules/datasets/models";
 import { experimentModule } from "@/modules/experiment";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
-import { IChannelSettings } from "@/modules/settings/models";
 import { saveAs } from "file-saver";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
@@ -49,58 +47,6 @@ export class DatasetActions extends Actions<DatasetState, DatasetGetters, Datase
       const data = await api.deleteDataset(id);
       this.mutations.deleteEntity(id);
       this.main!.mutations.addNotification({ content: "Dataset successfully deleted", color: "success" });
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async createDataset(payload: { name: string; description: string }) {
-    const experimentId = this.experiment!.getters.activeExperimentId;
-    const acquisitionIds = this.experiment!.getters.selectedAcquisitionIds;
-    if (acquisitionIds.length === 0) {
-      this.main!.mutations.addNotification({ content: "Please select at least one acquisition", color: "warning" });
-      return;
-    }
-    const metals = this.experiment!.getters.selectedMetals;
-    if (metals.length === 0) {
-      this.main!.mutations.addNotification({ content: "Please select at least one channel", color: "warning" });
-      return;
-    }
-    const channelsSettings: IChannelSettings[] = [];
-
-    const experimentData = this.experiment!.getters.experimentData;
-    if (experimentData && experimentData.slides) {
-      for (const slide of experimentData.slides) {
-        for (const acquisition of slide.acquisitions) {
-          if (acquisitionIds.includes(acquisition.id)) {
-            for (const channel of Object.values(acquisition.channels)) {
-              if (metals.includes(channel.name)) {
-                const settings = this.settings!.getters.getChannelSettings(acquisition.id, channel.name);
-                if (settings) {
-                  channelsSettings.push(settings);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    const params: IDatasetCreate = {
-      experiment_id: experimentId!,
-      name: payload.name,
-      description: payload.description,
-      input: {
-        acquisition_ids: acquisitionIds,
-        metals: metals,
-        channel_settings: channelsSettings,
-      },
-    };
-
-    try {
-      const data = await api.createDataset(params);
-      this.mutations.addEntity(data);
-      this.main!.mutations.addNotification({ content: "Dataset successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

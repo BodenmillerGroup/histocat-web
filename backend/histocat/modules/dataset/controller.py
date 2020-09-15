@@ -16,7 +16,7 @@ from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
 
 from . import service
-from .dto import DatasetDto
+from .dto import DatasetDto, DatasetUpdateDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -31,6 +31,26 @@ def get_experiment_datasets(
     """
     items = service.get_experiment_datasets(db, experiment_id=experiment_id)
     return items
+
+
+@router.patch("/groups/{group_id}/datasets/{dataset_id}", response_model=DatasetDto)
+def update(
+    group_id: int,
+    dataset_id: int,
+    params: DatasetUpdateDto,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    """
+    Update dataset
+    """
+    item = service.get(db, id=dataset_id)
+    if not item:
+        raise HTTPException(
+            status_code=404, detail="Dataset not found",
+        )
+    item = service.update(db, item=item, params=params)
+    return item
 
 
 @router.get("/datasets/{dataset_id}/centroids")
@@ -48,7 +68,7 @@ def get_centroids(
 
 
 @router.get("/datasets/{dataset_id}", response_model=DatasetDto)
-def read_by_id(
+def get_by_id(
     dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
