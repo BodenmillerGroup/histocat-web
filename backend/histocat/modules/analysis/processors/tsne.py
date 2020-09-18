@@ -103,7 +103,7 @@ def process_tsne(
         )
 
     redis_manager.publish(
-        UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "tsne_result_ready", jsonable_encoder(result)),
+        UPDATES_CHANNEL_NAME, Message(dataset.project_id, "tsne_result_ready", jsonable_encoder(result)),
     )
 
 

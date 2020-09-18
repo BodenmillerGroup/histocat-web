@@ -5,7 +5,7 @@ from histocat.modules.analysis import controller as analysis_controller
 from histocat.modules.auth import controller as auth_controller
 from histocat.modules.core import controller as core_controller
 from histocat.modules.dataset import controller as dataset_controller
-from histocat.modules.experiment import controller as experiment_controller
+from histocat.modules.project import controller as project_controller
 from histocat.modules.gate import controller as gate_controller
 from histocat.modules.group import controller as group_controller
 from histocat.modules.member import controller as member_controller
@@ -20,7 +20,7 @@ api_router = APIRouter()
 api_router.include_router(auth_controller.router, tags=["auth"])
 api_router.include_router(core_controller.router, tags=["utils"])
 api_router.include_router(group_controller.router, tags=["groups"])
-api_router.include_router(experiment_controller.router, tags=["experiments"])
+api_router.include_router(project_controller.router, tags=["projects"])
 api_router.include_router(slide_controller.router, tags=["slides"])
 api_router.include_router(panorama_controller.router, tags=["panoramas"])
 api_router.include_router(acquisition_controller.router, tags=["acquisitions"])

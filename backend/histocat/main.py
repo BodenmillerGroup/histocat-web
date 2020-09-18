@@ -53,17 +53,17 @@ if config.BACKEND_CORS_ORIGINS:
 app.include_router(api_router, prefix=config.API_V1_STR)
 
 
-@app.websocket("/ws/{experiment_id}")
-async def experiment_websocket_endpoint(websocket: WebSocket, experiment_id: int, token: str = None):
+@app.websocket("/ws/{project_id}")
+async def project_websocket_endpoint(websocket: WebSocket, project_id: int, token: str = None):
     if not token:
         raise Exception("WebSocket authorization token is missing")
 
-    await notifier.connect(websocket, experiment_id)
+    await notifier.connect(websocket, project_id)
     try:
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        notifier.remove(websocket, experiment_id)
+        notifier.remove(websocket, project_id)
 
 
 @app.on_event("startup")

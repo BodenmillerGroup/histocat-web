@@ -6,19 +6,19 @@ from pydantic import BaseModel
 from histocat.modules.slide.dto import SlideDatasetDto
 
 
-class ExperimentCreateDto(BaseModel):
+class ProjectCreateDto(BaseModel):
     name: str
     description: Optional[str]
     tags: Optional[Sequence[str]]
 
 
-class ExperimentUpdateDto(BaseModel):
+class ProjectUpdateDto(BaseModel):
     name: str
     description: Optional[str]
     tags: Optional[Sequence[str]]
 
 
-class ExperimentDto(BaseModel):
+class ProjectDto(BaseModel):
     id: int
     group_id: int
     name: Optional[str]
@@ -31,8 +31,8 @@ class ExperimentDto(BaseModel):
         orm_mode = True
 
 
-class ExperimentDatasetDto(ExperimentDto):
-    """Full experiment dataset."""
+class ProjectFullDto(ProjectDto):
+    """Full set of project data."""
 
     slides: Sequence[SlideDatasetDto]
 

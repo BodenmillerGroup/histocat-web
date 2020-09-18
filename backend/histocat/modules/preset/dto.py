@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class PresetCreateDto(BaseModel):
-    experiment_id: int
+    project_id: int
     name: Optional[str]
     description: Optional[str]
     data: Optional[Any]
@@ -13,6 +13,7 @@ class PresetCreateDto(BaseModel):
 
 class PresetDto(BaseModel):
     id: int
+    project_id: int
     name: Optional[str]
     description: Optional[str]
     data: Optional[Any]

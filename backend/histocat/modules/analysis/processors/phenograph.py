@@ -88,7 +88,7 @@ def process_phenograph(
         pickle.dump(phenograph_result, f)
 
     redis_manager.publish(
-        UPDATES_CHANNEL_NAME, Message(dataset.experiment_id, "phenograph_result_ready", jsonable_encoder(result)),
+        UPDATES_CHANNEL_NAME, Message(dataset.project_id, "phenograph_result_ready", jsonable_encoder(result)),
     )
 
 

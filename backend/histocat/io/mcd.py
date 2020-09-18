@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 
 
 @timeit
-def import_mcd(db: Session, uri: str, experiment_id: int):
+def import_mcd(db: Session, uri: str, project_id: int):
     input_dir = os.path.dirname(uri)
     output_dir = os.path.join(input_dir, "output")
     mcdfolder_to_imcfolder(input_dir, output_dir, create_zip=False)
 
     for session_filename in locate(output_dir, f"*{SESSION_JSON_SUFFIX}"):
-        import_imcfolder(db, session_filename, experiment_id)
+        import_imcfolder(db, session_filename, project_id)

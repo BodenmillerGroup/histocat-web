@@ -29,12 +29,12 @@ class GroupModel(Base):
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
     members = sa.orm.relationship("MemberModel", back_populates="group", cascade="all, delete, delete-orphan")
-    experiments = sa.orm.relationship("ExperimentModel", back_populates="group", cascade="all, delete, delete-orphan")
+    projects = sa.orm.relationship("ProjectModel", back_populates="group", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
-    def experiments_location(self) -> str:
-        """Location where experiment data are stored."""
-        return os.path.join(self.location, "experiments")
+    def projects_location(self) -> str:
+        """Location where projects data are stored."""
+        return os.path.join(self.location, "projects")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

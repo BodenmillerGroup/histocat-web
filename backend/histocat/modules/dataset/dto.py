@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class DatasetCreateDto(BaseModel):
-    experiment_id: int
+    project_id: int
     status: str
     name: Optional[str]
     description: Optional[str]
@@ -21,7 +21,7 @@ class DatasetUpdateDto(BaseModel):
 
 class DatasetDto(BaseModel):
     id: int
-    experiment_id: int
+    project_id: int
     uid: str
     status: str
     name: Optional[str]

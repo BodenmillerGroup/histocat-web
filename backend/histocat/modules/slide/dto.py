@@ -8,7 +8,7 @@ from histocat.modules.panorama.dto import PanoramaDatasetDto
 
 
 class SlideCreateDto(BaseModel):
-    experiment_id: int
+    project_id: int
     origin_id: int
     name: str
     width_um: Optional[int]
@@ -20,7 +20,7 @@ class SlideCreateDto(BaseModel):
 
 class SlideDto(BaseModel):
     id: int
-    experiment_id: int
+    project_id: int
     origin_id: int
     name: str
     width_um: Optional[int]

@@ -18,8 +18,8 @@ def get(session: Session, *, id: int) -> Optional[DatasetModel]:
     return session.query(DatasetModel).filter(DatasetModel.id == id).first()
 
 
-def get_experiment_datasets(session: Session, *, experiment_id: int) -> List[DatasetModel]:
-    return session.query(DatasetModel).filter(DatasetModel.experiment_id == experiment_id).all()
+def get_project_datasets(session: Session, *, project_id: int) -> List[DatasetModel]:
+    return session.query(DatasetModel).filter(DatasetModel.project_id == project_id).all()
 
 
 def get_multi(session: Session, *, skip: int = 0, limit: int = 1000) -> List[DatasetModel]:
@@ -33,7 +33,7 @@ def create(session: Session, *, params: DatasetCreateDto) -> DatasetModel:
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(entity.experiment.datasets_location, str(entity.id))
+    entity.location = os.path.join(entity.project.datasets_location, str(entity.id))
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for dataset {entity.id}: {entity.location}")
         os.makedirs(entity.location)

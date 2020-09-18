@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'slide',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('experiment_id', sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True),
+        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True),
         sa.Column('origin_id', sa.Integer(), index=True),
         sa.Column('name', sa.String(4096), index=True),
         sa.Column('width_um', sa.Integer()),
@@ -33,13 +33,13 @@ def upgrade():
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
     op.create_unique_constraint(
-        'uq_slide_experiment_id_and_name',
+        'uq_slide_project_id_and_name',
         'slide',
-        ['experiment_id', 'name']
+        ['project_id', 'name']
     )
 
 
 def downgrade():
     op.drop_table('slide')
-    op.drop_unique_constraint('uq_slide_experiment_id_and_name')
+    op.drop_unique_constraint('uq_slide_project_id_and_name')
 

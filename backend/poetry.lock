@@ -1021,7 +1021,7 @@ description = "PyCharm Debugger (used in PyCharm and PyDev)"
 name = "pydevd-pycharm"
 optional = false
 python-versions = "*"
-version = "202.7319.37"
+version = "202.7319.64"
 
 [[package]]
 category = "dev"
@@ -1679,7 +1679,7 @@ description = "Very basic event publishing system"
 name = "zope.event"
 optional = false
 python-versions = "*"
-version = "4.4"
+version = "4.5.0"
 
 [package.dependencies]
 setuptools = "*"
@@ -2634,7 +2634,7 @@ pydantic = [
     {file = "pydantic-1.6.1.tar.gz", hash = "sha256:54122a8ed6b75fe1dd80797f8251ad2063ea348a03b77218d73ea9fe19bd4e73"},
 ]
 pydevd-pycharm = [
-    {file = "pydevd-pycharm-202.7319.37.tar.gz", hash = "sha256:2690591e2b86e563567d94abb4608f638d711fb5b19f9aadfa71410cb427fc32"},
+    {file = "pydevd-pycharm-202.7319.64.tar.gz", hash = "sha256:473222c8b2af06ecc011221d25aeee36522a0e1fd28c45e426c9239f6b360630"},
 ]
 pyflakes = [
     {file = "pyflakes-2.2.0-py2.py3-none-any.whl", hash = "sha256:0d94e0e05a19e57a99444b6ddcf9a6eb2e5c68d3ca1e98e90707af8152c90a92"},
@@ -3079,8 +3079,8 @@ xtiff = [
     {file = "xtiff-0.6.2.tar.gz", hash = "sha256:ec070246fdb6c99481e7afd970428a58815d7e110e4c0f1a48f8d29036df330d"},
 ]
 "zope.event" = [
-    {file = "zope.event-4.4-py2.py3-none-any.whl", hash = "sha256:d8e97d165fd5a0997b45f5303ae11ea3338becfe68c401dd88ffd2113fe5cae7"},
-    {file = "zope.event-4.4.tar.gz", hash = "sha256:69c27debad9bdacd9ce9b735dad382142281ac770c4a432b533d6d65c4614bcf"},
+    {file = "zope.event-4.5.0-py2.py3-none-any.whl", hash = "sha256:2666401939cdaa5f4e0c08cf7f20c9b21423b95e88f4675b1443973bdb080c42"},
+    {file = "zope.event-4.5.0.tar.gz", hash = "sha256:5e76517f5b9b119acf37ca8819781db6c16ea433f7e2062c4afc2b6fbedb1330"},
 ]
 "zope.interface" = [
     {file = "zope.interface-5.1.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:645a7092b77fdbc3f68d3cc98f9d3e71510e419f54019d6e282328c0dd140dcd"},

@@ -14,23 +14,25 @@ logger = logging.getLogger(__name__)
 
 
 @remove_location_upon_delete
-class ExperimentModel(Base):
-    """An *experiment* is the secondary organizational unit of `histoCAT`."""
+class ProjectModel(Base):
+    """An *project* is the secondary organizational unit of `histoCAT`."""
 
-    __tablename__ = "experiment"
+    __tablename__ = "project"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
     group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True)
+    member_id = sa.Column(sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True)
     name = sa.Column(sa.String(), index=True)
     description = sa.Column(sa.Text())
     tags = sa.Column(ARRAY(sa.String(64)))
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    group = sa.orm.relationship("GroupModel", back_populates="experiments")
-    slides = sa.orm.relationship("SlideModel", back_populates="experiment", cascade="all, delete, delete-orphan")
-    datasets = sa.orm.relationship("DatasetModel", back_populates="experiment", cascade="all, delete, delete-orphan")
-    presets = sa.orm.relationship("PresetModel", back_populates="experiment", cascade="all, delete, delete-orphan")
+    group = sa.orm.relationship("GroupModel", back_populates="projects")
+    member = sa.orm.relationship("MemberModel", back_populates="projects")
+    slides = sa.orm.relationship("SlideModel", back_populates="project", cascade="all, delete, delete-orphan")
+    datasets = sa.orm.relationship("DatasetModel", back_populates="project", cascade="all, delete, delete-orphan")
+    presets = sa.orm.relationship("PresetModel", back_populates="project", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
     def slides_location(self) -> str:

@@ -24,14 +24,14 @@ def get_by_id(
     return item
 
 
-@router.get("/experiments/{experiment_id}/presets", response_model=Sequence[PresetDto])
-def get_experiment_presets(
-    experiment_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+@router.get("/projects/{project_id}/presets", response_model=Sequence[PresetDto])
+def get_project_presets(
+    project_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
-    Get all experiment presets
+    Get all project presets
     """
-    item = service.get_experiment_presets(db, experiment_id=experiment_id)
+    item = service.get_project_presets(db, project_id=project_id)
     return item
 
 

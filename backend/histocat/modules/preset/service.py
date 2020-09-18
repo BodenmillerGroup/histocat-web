@@ -14,10 +14,10 @@ def get_by_id(session: Session, *, id: int) -> Optional[PresetModel]:
     return session.query(PresetModel).filter(PresetModel.id == id).first()
 
 
-def get_experiment_presets(session: Session, *, experiment_id: int) -> Sequence[PresetModel]:
+def get_project_presets(session: Session, *, project_id: int) -> Sequence[PresetModel]:
     return (
         session.query(PresetModel.id, PresetModel.name, PresetModel.description, PresetModel.created_at)
-        .filter(PresetModel.experiment_id == experiment_id)
+        .filter(PresetModel.project_id == project_id)
         .all()
     )
 

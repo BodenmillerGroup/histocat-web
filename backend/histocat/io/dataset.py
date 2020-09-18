@@ -17,7 +17,7 @@ from histocat.modules.acquisition import service as acquisition_service
 from histocat.modules.dataset import service as dataset_service
 from histocat.modules.dataset.dto import DatasetCreateDto, DatasetUpdateDto
 from histocat.modules.dataset.models import DatasetModel
-from histocat.modules.experiment import service as experiment_service
+from histocat.modules.project import service as project_service
 from histocat.modules.slide import service as slide_service
 
 logger = logging.getLogger(__name__)
@@ -36,15 +36,15 @@ CHANNELS_FULL_CSV_ENDING = "_ac_full.csv"
 PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
-def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, experiment_id: int):
+def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, project_id: int):
     """Import dataset from the folder compatible with 'cpout' IMC pipeline folders."""
 
-    experiment = experiment_service.get(db, id=experiment_id)
-    if not experiment:
-        logger.warning(f"Cannot import dataset: experiment [id: {experiment_id}] does not exist.")
+    project = project_service.get(db, id=project_id)
+    if not project:
+        logger.warning(f"Cannot import dataset: project [id: {project_id}] does not exist.")
         return
 
-    create_params = DatasetCreateDto(experiment_id=experiment_id, status="importing")
+    create_params = DatasetCreateDto(project_id=project_id, status="importing")
     dataset = dataset_service.create(db, params=create_params)
     meta = {}
 
@@ -95,7 +95,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, exper
 
     update_params = DatasetUpdateDto(status="ready", meta=meta)
     dataset = dataset_service.update(db, item=dataset, params=update_params)
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "dataset_imported"))
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(project_id, "dataset_imported"))
 
 
 def _import_image_csv(db: Session, src_folder: Path, dst_folder: Path):
@@ -223,7 +223,7 @@ def _import_probabilities_mask(db: Session, src_folder: Path, row: pd.Series, da
     )
     name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(filename)[0]
 
-    slide = slide_service.get_by_name(db, experiment_id=dataset.experiment_id, name=name)
+    slide = slide_service.get_by_name(db, project_id=dataset.project_id, name=name)
     if slide is None:
         return None
     acquisition = acquisition_service.get_by_origin_id(db, slide_id=slide.id, origin_id=acquisition_origin_id)

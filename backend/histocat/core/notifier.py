@@ -6,17 +6,17 @@ from starlette.websockets import WebSocket
 
 @dataclass
 class Message:
-    experiment_id: int
+    project_id: int
     type: str
     payload: Any = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]):
-        return Message(json.get("experiment_id"), json.get("type"), json.get("payload"))
+        return Message(json.get("project_id"), json.get("type"), json.get("payload"))
 
     def to_json(self):
         return {
-            "experiment_id": self.experiment_id,
+            "project_id": self.project_id,
             "type": self.type,
             "payload": self.payload,
         }
@@ -42,27 +42,27 @@ class Notifier:
     async def push(self, message: Message):
         await self.generator.asend(message)
 
-    async def connect(self, websocket: WebSocket, experiment_id: int):
+    async def connect(self, websocket: WebSocket, project_id: int):
         await websocket.accept()
-        if experiment_id not in self.connections:
-            self.connections[experiment_id] = []
-        self.connections.get(experiment_id).append(websocket)
+        if project_id not in self.connections:
+            self.connections[project_id] = []
+        self.connections.get(project_id).append(websocket)
 
-    def remove(self, websocket: WebSocket, experiment_id: int):
-        if experiment_id in self.connections:
-            self.connections.get(experiment_id).remove(websocket)
+    def remove(self, websocket: WebSocket, project_id: int):
+        if project_id in self.connections:
+            self.connections.get(project_id).remove(websocket)
 
     async def _notify(self, message: Message):
         living_connections = []
         json = message.to_json()
-        if message.experiment_id in self.connections:
-            while len(self.connections.get(message.experiment_id)) > 0:
+        if message.project_id in self.connections:
+            while len(self.connections.get(message.project_id)) > 0:
                 # Looping like this is necessary in case a disconnection is handled
                 # during await websocket.send_text(message)
-                websocket = self.connections.get(message.experiment_id).pop()
+                websocket = self.connections.get(message.project_id).pop()
                 await websocket.send_json(json)
                 living_connections.append(websocket)
-            self.connections[message.experiment_id] = living_connections
+            self.connections[message.project_id] = living_connections
 
 
 notifier = Notifier()

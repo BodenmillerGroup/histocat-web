@@ -122,7 +122,7 @@ class PhenographDto(BaseModel):
 class RegionStatsSubmissionDto(BaseModel):
     """Region's stats submission model."""
 
-    experiment_id: int
+    project_id: int
     acquisition_id: int
     region_polygon: Sequence[Any]
 

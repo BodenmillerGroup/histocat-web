@@ -24,7 +24,7 @@ from histocat.modules.slide.models import SlideModel
 logger = logging.getLogger(__name__)
 
 
-def import_imcfolder(db: Session, session_filename: str, experiment_id: int):
+def import_imcfolder(db: Session, session_filename: str, project_id: int):
     """
     Import slides from the folder compatible with IMC pipeline
     """
@@ -38,12 +38,12 @@ def import_imcfolder(db: Session, session_filename: str, experiment_id: int):
     for slide_key, slide_item in session.slides.items():
         if slide_key is None:
             continue
-        item = slide_service.get_by_name(db, experiment_id=experiment_id, name=basename)
+        item = slide_service.get_by_name(db, project_id=project_id, name=basename)
         if item:
-            logger.warning(f"The slide with the name [{basename}] already exists in the experiment [{experiment_id}]")
+            logger.warning(f"The slide with the name [{basename}] already exists in the project [{project_id}]")
             return
 
-        slide = _import_slide(db, slide_item, experiment_id, basename)
+        slide = _import_slide(db, slide_item, project_id, basename)
         slide_map[slide.origin_id] = slide
 
         origin_location = os.path.join(slide.location, "origin")
@@ -65,12 +65,12 @@ def import_imcfolder(db: Session, session_filename: str, experiment_id: int):
         acquisition = _import_acquisition(db, acquisition_item, slide, basename)
         acquisition_map[acquisition.origin_id] = acquisition
 
-    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(experiment_id, "slide_imported"))
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(project_id, "slide_imported"))
 
 
-def _import_slide(db: Session, item: data.Slide, experiment_id: int, name: str):
+def _import_slide(db: Session, item: data.Slide, project_id: int, name: str):
     params = SlideCreateDto(
-        experiment_id=experiment_id,
+        project_id=project_id,
         name=name,
         origin_id=item.id,
         width_um=item.width_um,

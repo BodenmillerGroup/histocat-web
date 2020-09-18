@@ -14,10 +14,10 @@ from histocat.modules.member.models import MemberModel
 
 from . import service
 from .dto import (
-    ExperimentCreateDto,
-    ExperimentDatasetDto,
-    ExperimentDto,
-    ExperimentUpdateDto,
+    ProjectCreateDto,
+    ProjectFullDto,
+    ProjectDto,
+    ProjectUpdateDto,
 )
 
 logger = logging.getLogger(__name__)
@@ -27,88 +27,88 @@ router = APIRouter()
 @router.get("/groups/{group_id}/tags", response_model=Set[str])
 def get_tags(group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)):
     """
-    Get group experiments tags
+    Get projects tags
     """
     items = service.get_tags(db, group_id=group_id)
     return items
 
 
-@router.get("/groups/{group_id}/experiments", response_model=Sequence[ExperimentDto])
-def get_group_experiments(
+@router.get("/groups/{group_id}/projects", response_model=Sequence[ProjectDto])
+def get_group_projects(
     group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)
 ):
     """
-    Get group experiments
+    Get group projects
     """
-    items = service.get_group_experiments(db, group_id=group_id)
+    items = service.get_group_projects(db, group_id=group_id)
     return items
 
 
-@router.post("/groups/{group_id}/experiments", response_model=ExperimentDto)
+@router.post("/groups/{group_id}/projects", response_model=ProjectDto)
 def create(
     group_id: int,
-    params: ExperimentCreateDto,
+    params: ProjectCreateDto,
     db: Session = Depends(get_db),
     member: MemberModel = Depends(get_active_member),
 ):
     """
-    Create new experiment
+    Create new project
     """
     item = service.get_by_name(db, name=params.name)
     if item:
         raise HTTPException(
-            status_code=400, detail="The experiment with this name already exists in the system.",
+            status_code=400, detail="The project with this name already exists.",
         )
     item = service.create(db, group_id=group_id, params=params)
     return item
 
 
-@router.get("/groups/{group_id}/experiments/{experiment_id}", response_model=ExperimentDto)
+@router.get("/groups/{group_id}/projects/{project_id}", response_model=ProjectDto)
 def get_by_id(
-    group_id: int, experiment_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
-    Get experiment by id
+    Get project by id
     """
-    item = service.get(db, id=experiment_id)
+    item = service.get(db, id=project_id)
     return item
 
 
-@router.delete("/groups/{group_id}/experiments/{experiment_id}", response_model=ExperimentDto)
+@router.delete("/groups/{group_id}/projects/{project_id}", response_model=ProjectDto)
 def delete_by_id(
-    group_id: int, experiment_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
+    group_id: int, project_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
 ):
     """
-    Delete a specific experiment by id
+    Delete project by id
     """
-    item = service.remove(db, id=experiment_id)
+    item = service.remove(db, id=project_id)
     return item
 
 
-@router.put("/groups/{group_id}/experiments/{experiment_id}", response_model=ExperimentDto)
+@router.put("/groups/{group_id}/projects/{project_id}", response_model=ProjectDto)
 def update(
     group_id: int,
-    experiment_id: int,
-    params: ExperimentUpdateDto,
+    project_id: int,
+    params: ProjectUpdateDto,
     member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
     """
-    Update an experiment
+    Update project
     """
-    item = service.get(db, id=experiment_id)
+    item = service.get(db, id=project_id)
     if not item:
         raise HTTPException(
-            status_code=404, detail="The experiment with this id does not exist in the system",
+            status_code=404, detail="The project with this id does not exist.",
         )
     item = service.update(db, item=item, params=params)
     return item
 
 
-@router.post("/groups/{group_id}/experiments/{experiment_id}/upload")
+@router.post("/groups/{group_id}/projects/{project_id}/upload")
 def upload_data(
     group_id: int,
-    experiment_id: int,
+    project_id: int,
     file: UploadFile = File(None),
     member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
@@ -119,16 +119,16 @@ def upload_data(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_data.send(uri, experiment_id)
+    worker.import_data.send(uri, project_id)
     return {"uri": uri}
 
 
-@router.get("/groups/{group_id}/experiments/{experiment_id}/data", response_model=ExperimentDatasetDto)
+@router.get("/groups/{group_id}/projects/{project_id}/data", response_model=ProjectFullDto)
 async def read_data(
-    group_id: int, experiment_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
-    Get all experiment data
+    Get all project data
     """
-    item = service.get_data(db, id=experiment_id)
+    item = service.get_data(db, id=project_id)
     return item

@@ -1,4 +1,4 @@
-"""Add experiment table
+"""Add project table
 
 Revision ID: af7cd5a143a9
 Revises: e1c9291e68ae
@@ -19,9 +19,10 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        'experiment',
+        'project',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True),
+        sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
         sa.Column('description', sa.String()),
         sa.Column('tags', ARRAY(sa.String(64)), index=True),
@@ -31,4 +32,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table('experiment')
+    op.drop_table('project')

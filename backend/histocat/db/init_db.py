@@ -2,7 +2,7 @@ from histocat.config import config
 from histocat.db.base import Base  # noqa
 from histocat.modules.acquisition.models import AcquisitionModel  # noqa
 from histocat.modules.dataset.models import DatasetModel  # noqa
-from histocat.modules.experiment.models import ExperimentModel  # noqa
+from histocat.modules.project.models import ProjectModel  # noqa
 from histocat.modules.gate.models import GateModel  # noqa
 from histocat.modules.group.models import GroupModel  # noqa
 from histocat.modules.member.models import MemberModel  # noqa

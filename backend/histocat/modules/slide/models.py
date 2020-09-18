@@ -8,19 +8,16 @@ from histocat.db.base import Base
 
 logger = logging.getLogger(__name__)
 
-#: Format string for slide locations
-SLIDE_LOCATION_FORMAT = "slide_{id}"
-
 
 @remove_location_upon_delete
 class SlideModel(Base):
     """Slide."""
 
     __tablename__ = "slide"
-    __table_args__ = (sa.UniqueConstraint("experiment_id", "name", name="uq_experiment_slide_name"),)
+    __table_args__ = (sa.UniqueConstraint("project_id", "name", name="uq_slide_project_id_and_name"),)
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    experiment_id = sa.Column(sa.Integer(), sa.ForeignKey("experiment.id", ondelete="CASCADE"), index=True)
+    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True)
     origin_id = sa.Column(sa.Integer(), index=True)
     name = sa.Column(sa.String(4096))
     width_um = sa.Column(sa.Integer())
@@ -31,7 +28,7 @@ class SlideModel(Base):
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
-    experiment = sa.orm.relationship("ExperimentModel", back_populates="slides")
+    project = sa.orm.relationship("ProjectModel", back_populates="slides")
     panoramas = sa.orm.relationship("PanoramaModel", back_populates="slide", cascade="all, delete, delete-orphan")
     acquisitions = sa.orm.relationship("AcquisitionModel", back_populates="slide", cascade="all, delete, delete-orphan")
 

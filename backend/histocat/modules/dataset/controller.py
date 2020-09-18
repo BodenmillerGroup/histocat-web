@@ -22,14 +22,14 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/groups/{group_id}/experiments/{experiment_id}/datasets", response_model=Sequence[DatasetDto])
-def get_experiment_datasets(
-    group_id: int, experiment_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
+@router.get("/groups/{group_id}/projects/{project_id}/datasets", response_model=Sequence[DatasetDto])
+def get_project_datasets(
+    group_id: int, project_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
 ):
     """
-    Retrieve own datasets for specified experiment
+    Retrieve own project's datasets
     """
-    items = service.get_experiment_datasets(db, experiment_id=experiment_id)
+    items = service.get_project_datasets(db, project_id=project_id)
     return items
 
 
