@@ -18,7 +18,7 @@ export interface IDatasetPhenoGraphOutput {
 
 export interface IDataset {
   id: number;
-  experiment_id: number;
+  project_id: number;
   user_id: number;
   uid: string;
   name: string;

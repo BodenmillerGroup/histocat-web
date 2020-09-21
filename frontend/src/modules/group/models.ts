@@ -1,4 +1,4 @@
-import { IExperiment } from "@/modules/experiment/models";
+import { IProject } from "@/modules/projects/models";
 import { IMember } from "@/modules/member/models";
 
 export interface IGroupCreate {
@@ -27,5 +27,5 @@ export interface IGroup {
   created_at: string;
 
   members: IMember[];
-  experiments: IExperiment[];
+  projects: IProject[];
 }

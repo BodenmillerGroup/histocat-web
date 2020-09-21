@@ -104,7 +104,7 @@ export interface IRegionChannelData {
 }
 
 export interface IRegionStatsSubmission {
-  experiment_id: number;
+  project_id: number;
   acquisition_id: number;
   region_polygon: any[];
 }

@@ -21,9 +21,9 @@ def upgrade():
     op.create_table(
         'result',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True),
-        sa.Column('type', sa.String(64), nullable=False, index=True),
-        sa.Column('status', sa.String(64), nullable=False, index=True),
+        sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True, nullable=False),
+        sa.Column('type', sa.String(64), index=True, nullable=False),
+        sa.Column('status', sa.String(64), index=True, nullable=False),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
         sa.Column('params', JSONB()),

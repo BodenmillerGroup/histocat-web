@@ -1,24 +1,24 @@
 import { Module } from "vuex-smart-module";
-import { PresetActions } from "./actions";
-import { PresetGetters } from "./getters";
+import { PresetsActions } from "./actions";
+import { PresetsGetters } from "./getters";
 import { IPreset } from "./models";
-import { PresetMutations } from "./mutations";
+import { PresetsMutations } from "./mutations";
 import { schema } from "normalizr";
 
 export const presetSchema = new schema.Entity("presets");
 export const presetListSchema = [presetSchema];
 
-export class PresetState {
+export class PresetsState {
   ids: ReadonlyArray<number> = [];
   entities: { [key: number]: IPreset } = {};
   activePresetId: number | null = null;
 }
 
-export const presetModule = new Module({
+export const presetsModule = new Module({
   namespaced: true,
 
-  state: PresetState,
-  getters: PresetGetters,
-  mutations: PresetMutations,
-  actions: PresetActions,
+  state: PresetsState,
+  getters: PresetsGetters,
+  mutations: PresetsMutations,
+  actions: PresetsActions,
 });

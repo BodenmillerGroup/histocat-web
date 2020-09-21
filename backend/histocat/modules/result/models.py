@@ -16,7 +16,7 @@ class ResultModel(Base):
     __tablename__ = "result"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    dataset_id = sa.Column(sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True)
+    dataset_id = sa.Column(sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True, nullable=False)
     type = sa.Column(sa.String(64), nullable=False, index=True)
     status = sa.Column(sa.String(64), nullable=False, index=True)
     name = sa.Column(sa.String())

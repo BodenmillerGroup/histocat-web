@@ -3,8 +3,9 @@ from typing import Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 
-from .dto import AcquisitionCreateDto
+from .dto import AcquisitionCreateDto, ChannelUpdateDto
 from .models import AcquisitionModel
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,19 @@ def get_by_origin_id(session: Session, *, slide_id: int, origin_id: int) -> Opti
 def create(session: Session, params: AcquisitionCreateDto) -> AcquisitionModel:
     data = jsonable_encoder(params)
     item = AcquisitionModel(**data)
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
+
+
+def update_custom_label(session: Session, *, item: AcquisitionModel, params: ChannelUpdateDto) -> AcquisitionModel:
+    channel_data = item.channels.get(params.name)
+    channel_data["customLabel"] = params.customLabel
+    item.channels[params.name] = channel_data
+
+    # TODO: https://stackoverflow.com/questions/42559434/updates-to-json-field-dont-persist-to-db
+    flag_modified(item, "channels")
     session.add(item)
     session.commit()
     session.refresh(item)

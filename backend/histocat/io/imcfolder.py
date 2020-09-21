@@ -116,6 +116,7 @@ def _import_acquisition(db: Session, item: data.Acquisition, slide: SlideModel, 
     for channel_key, channel_item in item.channels.items():
         channel_data = channel_item.__getstate__()
         del channel_data["metadata"]
+        channel_data["customLabel"] = channel_item.label
         channels[channel_item.name] = channel_data
 
     params = AcquisitionCreateDto(

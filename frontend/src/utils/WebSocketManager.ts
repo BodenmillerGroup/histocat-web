@@ -1,11 +1,11 @@
-import { datasetModule, DatasetState } from "@/modules/datasets";
-import { DatasetActions } from "@/modules/datasets/actions";
-import { DatasetGetters } from "@/modules/datasets/getters";
-import { DatasetMutations } from "@/modules/datasets/mutations";
-import { experimentModule, ExperimentState } from "@/modules/experiment";
-import { ExperimentActions } from "@/modules/experiment/actions";
-import { ExperimentGetters } from "@/modules/experiment/getters";
-import { ExperimentMutations } from "@/modules/experiment/mutations";
+import { datasetsModule, DatasetsState } from "@/modules/datasets";
+import { DatasetsActions } from "@/modules/datasets/actions";
+import { DatasetsGetters } from "@/modules/datasets/getters";
+import { DatasetsMutations } from "@/modules/datasets/mutations";
+import { projectsModule, ProjectsState } from "@/modules/projects";
+import { ProjectsActions } from "@/modules/projects/actions";
+import { ProjectsGetters } from "@/modules/projects/getters";
+import { ProjectsMutations } from "@/modules/projects/mutations";
 import { mainModule, MainState } from "@/modules/main";
 import { MainActions } from "@/modules/main/actions";
 import { MainGetters } from "@/modules/main/getters";
@@ -13,33 +13,33 @@ import { MainMutations } from "@/modules/main/mutations";
 import { WebSocketMessage } from "@/utils/WebSocketMessage";
 import { Store } from "vuex";
 import { Context, Module } from "vuex-smart-module";
-import { resultModule, ResultState } from "@/modules/results";
-import { ResultGetters } from "@/modules/results/getters";
-import { ResultMutations } from "@/modules/results/mutations";
-import { ResultActions } from "@/modules/results/actions";
+import { resultsModule, ResultsState } from "@/modules/results";
+import { ResultsGetters } from "@/modules/results/getters";
+import { ResultsMutations } from "@/modules/results/mutations";
+import { ResultsActions } from "@/modules/results/actions";
 
 export class WebSocketManager {
   static mainContext: Context<Module<MainState, MainGetters, MainMutations, MainActions>>;
-  static experimentContext: Context<Module<ExperimentState, ExperimentGetters, ExperimentMutations, ExperimentActions>>;
-  static datasetContext: Context<Module<DatasetState, DatasetGetters, DatasetMutations, DatasetActions>>;
-  static resultContext: Context<Module<ResultState, ResultGetters, ResultMutations, ResultActions>>;
+  static projectsContext: Context<Module<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions>>;
+  static datasetContext: Context<Module<DatasetsState, DatasetsGetters, DatasetsMutations, DatasetsActions>>;
+  static resultContext: Context<Module<ResultsState, ResultsGetters, ResultsMutations, ResultsActions>>;
   static socket: WebSocket;
   static token: string;
   static protocol: string;
 
   static init(store: Store<any>) {
     WebSocketManager.mainContext = mainModule.context(store);
-    WebSocketManager.experimentContext = experimentModule.context(store);
-    WebSocketManager.datasetContext = datasetModule.context(store);
-    WebSocketManager.resultContext = resultModule.context(store);
+    WebSocketManager.projectsContext = projectsModule.context(store);
+    WebSocketManager.datasetContext = datasetsModule.context(store);
+    WebSocketManager.resultContext = resultsModule.context(store);
     WebSocketManager.token = WebSocketManager.mainContext.getters.token;
     WebSocketManager.protocol = self.location.protocol === "https:" ? "wss:" : "ws:";
   }
 
-  static connect(experimentId: number) {
+  static connect(projectId: number) {
     // Dispose previous connections due to login/logout
     WebSocketManager.close();
-    const url = `${WebSocketManager.protocol}//${location.hostname}/ws/${experimentId}?token=${WebSocketManager.token}`;
+    const url = `${WebSocketManager.protocol}//${location.hostname}/ws/${projectId}?token=${WebSocketManager.token}`;
 
     WebSocketManager.socket = new WebSocket(url);
     WebSocketManager.socket.onopen = (event: Event) => {
@@ -49,7 +49,7 @@ export class WebSocketManager {
     WebSocketManager.socket.onclose = (event: CloseEvent) => {
       console.log("WebSocket is closed. Reconnecting...", event.reason);
       setTimeout(() => {
-        WebSocketManager.connect(experimentId);
+        WebSocketManager.connect(projectId);
       }, 1000);
     };
 
@@ -57,10 +57,10 @@ export class WebSocketManager {
       const json = JSON.parse(event.data);
       const message = new WebSocketMessage(json);
       console.log(message);
-      if (message.experimentId === WebSocketManager.experimentContext.getters.activeExperimentId) {
+      if (message.projectId === WebSocketManager.projectsContext.getters.activeProjectId) {
         switch (message.type) {
           case "slide_imported": {
-            WebSocketManager.experimentContext.actions.getExperimentData(message.experimentId);
+            WebSocketManager.projectsContext.actions.getProjectData(message.projectId);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "Slide successfully imported",
               color: "success",
@@ -68,7 +68,7 @@ export class WebSocketManager {
             break;
           }
           case "dataset_imported": {
-            WebSocketManager.datasetContext.actions.getExperimentDatasets(message.experimentId);
+            WebSocketManager.datasetContext.actions.getProjectDatasets(message.projectId);
             WebSocketManager.mainContext.mutations.addNotification({
               content: "Dataset successfully imported",
               color: "success",

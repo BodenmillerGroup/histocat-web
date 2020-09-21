@@ -1,7 +1,7 @@
 import { Getters } from "vuex-smart-module";
-import { PresetState } from ".";
+import { PresetsState } from ".";
 
-export class PresetGetters extends Getters<PresetState> {
+export class PresetsGetters extends Getters<PresetsState> {
   get presets() {
     return this.state.ids.map((id) => this.state.entities[id]);
   }

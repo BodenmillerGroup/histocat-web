@@ -10,10 +10,14 @@ class ChannelStatsDto(BaseModel):
     bins: Sequence[int]
 
 
+class ChannelUpdateDto(BaseModel):
+    name: str
+    customLabel: str
+
+
 class ChannelSettingsDto(BaseModel):
     name: str
     color: Optional[str]
-    customLabel: Optional[str]
     min: Optional[float]
     max: Optional[float]
 

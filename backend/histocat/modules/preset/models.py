@@ -14,8 +14,8 @@ class PresetModel(Base):
     __tablename__ = "preset"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True)
-    member_id = sa.Column(sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True)
+    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True, nullable=False)
+    member_id = sa.Column(sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True, nullable=False)
     name = sa.Column(sa.String())
     description = sa.Column(sa.String())
     data = sa.Column(JSONB())

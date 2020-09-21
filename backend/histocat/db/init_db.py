@@ -2,12 +2,12 @@ from histocat.config import config
 from histocat.db.base import Base  # noqa
 from histocat.modules.acquisition.models import AcquisitionModel  # noqa
 from histocat.modules.dataset.models import DatasetModel  # noqa
-from histocat.modules.project.models import ProjectModel  # noqa
 from histocat.modules.gate.models import GateModel  # noqa
 from histocat.modules.group.models import GroupModel  # noqa
 from histocat.modules.member.models import MemberModel  # noqa
 from histocat.modules.panorama.models import PanoramaModel  # noqa
 from histocat.modules.preset.models import PresetModel  # noqa
+from histocat.modules.project.models import ProjectModel  # noqa
 from histocat.modules.result.models import ResultModel  # noqa
 from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service

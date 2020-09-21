@@ -1,7 +1,7 @@
 import { Getters } from "vuex-smart-module";
-import { GateState } from ".";
+import { GatesState } from ".";
 
-export class GateGetters extends Getters<GateState> {
+export class GatesGetters extends Getters<GatesState> {
   get gates() {
     return this.state.ids.map((id) => this.state.entities[id]);
   }

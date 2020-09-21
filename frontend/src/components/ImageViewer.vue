@@ -9,9 +9,9 @@
 import { settingsModule } from "@/modules/settings";
 import createScatterplot from "regl-scatterplot";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { experimentModule } from "@/modules/experiment";
+import { projectsModule } from "@/modules/projects";
 import { analysisModule } from "@/modules/analysis";
-import { datasetModule } from "@/modules/datasets";
+import { datasetsModule } from "@/modules/datasets";
 import { transformCoords } from "@/utils/webglUtils";
 import { centroidsModule } from "@/modules/centroids";
 import { CellPoint } from "@/data/CellPoint";
@@ -23,8 +23,8 @@ import { mainModule } from "@/modules/main";
 export default class ImageViewer extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
-  readonly datasetContext = datasetModule.context(this.$store);
-  readonly experimentContext = experimentModule.context(this.$store);
+  readonly datasetContext = datasetsModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly centroidsContext = centroidsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
@@ -53,7 +53,7 @@ export default class ImageViewer extends Vue {
   }
 
   get activeAcquisitionId() {
-    return this.experimentContext.getters.activeAcquisitionId;
+    return this.projectsContext.getters.activeAcquisitionId;
   }
 
   get activeDataset() {
@@ -61,11 +61,11 @@ export default class ImageViewer extends Vue {
   }
 
   get activeAcquisition() {
-    return this.experimentContext.getters.activeAcquisition;
+    return this.projectsContext.getters.activeAcquisition;
   }
 
   get channelStackImage() {
-    return this.experimentContext.getters.channelStackImage;
+    return this.projectsContext.getters.channelStackImage;
   }
 
   get centroids() {
@@ -73,7 +73,7 @@ export default class ImageViewer extends Vue {
   }
 
   get selectedChannels() {
-    return this.experimentContext.getters.selectedChannels;
+    return this.projectsContext.getters.selectedChannels;
   }
 
   onIntersect(entries, observer, isIntersecting) {
@@ -167,12 +167,12 @@ export default class ImageViewer extends Vue {
       }
       this.selectionContext.actions.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
-        this.experimentContext.actions.getChannelStackImage();
+        this.projectsContext.actions.getChannelStackImage();
       }
     } else {
       this.selectionContext.actions.setSelectedCells([]);
       if (this.applyMask) {
-        this.experimentContext.actions.getChannelStackImage();
+        this.projectsContext.actions.getChannelStackImage();
       }
     }
   }
@@ -197,10 +197,7 @@ export default class ImageViewer extends Vue {
     ctx.font = `${textHeight}pt sans-serif`;
     let maxTextWidth = 0;
     this.selectedChannels.forEach((v, i) => {
-      const channelSettings = this.activeAcquisitionId
-        ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name)
-        : undefined;
-      const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
+      const text = v.customLabel;
       const textWidth = ctx.measureText(text).width;
       if (textWidth > maxTextWidth) {
         maxTextWidth = textWidth;
@@ -214,13 +211,10 @@ export default class ImageViewer extends Vue {
     }
 
     this.selectedChannels.forEach((v, i) => {
-      const color = this.settingsContext.getters.colorMap[v.name]
-        ? this.settingsContext.getters.colorMap[v.name]
+      const color = this.settingsContext.getters.channelsSettings[v.name]
+        ? this.settingsContext.getters.channelsSettings[v.name].color
         : "#ffffff";
-      const channelSettings = this.activeAcquisitionId
-        ? this.settingsContext!.getters.getChannelSettings(this.activeAcquisitionId, v.name)
-        : undefined;
-      const text = channelSettings && channelSettings.customLabel ? channelSettings.customLabel : v.label;
+      const text = v.customLabel;
       ctx.fillStyle = color!;
       ctx.fillText(text, 10, (textHeight + 10) * (i + 1) + 5);
     });

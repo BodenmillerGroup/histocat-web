@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'panorama',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('slide_id', sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True),
+        sa.Column('slide_id', sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('origin_id', sa.Integer(), index=True),
         sa.Column('image_type', sa.String()),
         sa.Column('description', sa.String()),

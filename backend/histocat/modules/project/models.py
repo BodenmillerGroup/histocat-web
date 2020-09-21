@@ -20,8 +20,8 @@ class ProjectModel(Base):
     __tablename__ = "project"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True)
-    member_id = sa.Column(sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True)
+    group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True, nullable=False)
+    member_id = sa.Column(sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True, nullable=False)
     name = sa.Column(sa.String(), index=True)
     description = sa.Column(sa.Text())
     tags = sa.Column(ARRAY(sa.String(64)))

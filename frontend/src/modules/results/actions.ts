@@ -1,13 +1,13 @@
 import { mainModule } from "@/modules/main";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
-import { ResultState } from ".";
+import { ResultsState } from ".";
 import { api } from "./api";
-import { ResultGetters } from "./getters";
-import { ResultMutations } from "./mutations";
+import { ResultsGetters } from "./getters";
+import { ResultsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 
-export class ResultActions extends Actions<ResultState, ResultGetters, ResultMutations, ResultActions> {
+export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;

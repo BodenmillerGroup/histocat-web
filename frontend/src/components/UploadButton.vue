@@ -9,12 +9,12 @@
 </template>
 
 <script lang="ts">
-import { experimentModule } from "@/modules/experiment";
+import { projectsModule } from "@/modules/projects";
 import { Component, Emit, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class UploadButton extends Vue {
-  experimentContext = experimentModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
 
   @Prop(Number) id!: number;
   @Prop({ default: false }) multiple!: boolean;
@@ -25,7 +25,7 @@ export default class UploadButton extends Vue {
     const file = e.target.files[0];
     formData.append("file", file, file.name);
     e.target.value = "";
-    await this.experimentContext.actions.upload({ id: this.id, data: formData });
+    await this.projectsContext.actions.upload({ id: this.id, data: formData });
     return e.target.files;
   }
 

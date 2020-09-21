@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'gate',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), nullable=False, index=True),
+        sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
         sa.Column('acquisition_ids', ARRAY(sa.Integer())),

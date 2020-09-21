@@ -1,7 +1,7 @@
 import { Getters } from "vuex-smart-module";
-import { ResultState } from ".";
+import { ResultsState } from ".";
 
-export class ResultGetters extends Getters<ResultState> {
+export class ResultsGetters extends Getters<ResultsState> {
   get results() {
     return this.state.ids.map((id) => this.state.entities[id]);
   }

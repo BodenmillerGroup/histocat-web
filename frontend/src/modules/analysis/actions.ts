@@ -1,4 +1,4 @@
-import { experimentModule } from "@/modules/experiment";
+import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { Store } from "vuex";
@@ -21,14 +21,14 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
-  experiment?: Context<typeof experimentModule>;
+  projects?: Context<typeof projectsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
-    this.experiment = experimentModule.context(store);
+    this.projects = projectsModule.context(store);
   }
 
   async getScatterPlotData(payload: {

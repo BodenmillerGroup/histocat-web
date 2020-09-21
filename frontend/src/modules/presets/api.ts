@@ -9,8 +9,8 @@ export const api = {
       })
       .json<IPreset>();
   },
-  async getExperimentPresets(experimentId: number) {
-    return ApiManager.api.get(`experiments/${experimentId}/presets`).json<IPreset[]>();
+  async getProjectPresets(projectId: number) {
+    return ApiManager.api.get(`projectIds/${projectId}/presets`).json<IPreset[]>();
   },
   async getPreset(id: number) {
     return ApiManager.api.get(`presets/${id}`).json<IPreset>();

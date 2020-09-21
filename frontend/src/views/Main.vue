@@ -13,24 +13,24 @@
         <v-col>
           <v-list nav dense>
             <v-list-item
-              v-if="activeGroupId && !activeExperimentId"
-              :to="{ name: 'group-experiments', params: { groupId: activeGroupId } }"
+              v-if="activeGroupId && !activeProjectId"
+              :to="{ name: 'group-projects', params: { groupId: activeGroupId } }"
             >
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
                   </template>
-                  <span>Experiments</span>
+                  <span>Projects</span>
                 </v-tooltip>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>Experiments</v-list-item-title>
+                <v-list-item-title>Projects</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
             <v-list-item
-              v-if="activeGroupId && !activeExperimentId"
+              v-if="activeGroupId && !activeProjectId"
               :to="{ name: 'group-members', params: { groupId: activeGroupId } }"
             >
               <v-list-item-icon>
@@ -46,7 +46,7 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item v-if="activeGroupId && activeExperimentId" @click="showData(false)">
+            <v-list-item v-if="activeGroupId && activeProjectId" @click="showData(false)">
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
@@ -60,7 +60,7 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item v-if="activeGroupId && activeExperimentId" @click="showData(true)">
+            <v-list-item v-if="activeGroupId && activeProjectId" @click="showData(true)">
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
@@ -74,26 +74,26 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-divider v-if="activeGroupId && activeExperimentId" />
+            <v-divider v-if="activeGroupId && activeProjectId" />
 
             <v-list-item
-              v-if="activeGroupId && activeExperimentId"
-              @click="$router.push({ name: 'group-experiments', params: { groupId: activeGroupId } }, () => {})"
+              v-if="activeGroupId && activeProjectId"
+              @click="$router.push({ name: 'group-projects', params: { groupId: activeGroupId } }, () => {})"
             >
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
                   </template>
-                  <span>Experiments</span>
+                  <span>Projects</span>
                 </v-tooltip>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title>Experiments</v-list-item-title>
+                <v-list-item-title>Projects</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item v-if="!activeGroupId && !activeExperimentId && isAdmin" :to="{ name: 'admin-users' }">
+            <v-list-item v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-users' }">
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
@@ -116,13 +116,7 @@
         appName
       }}</v-toolbar-title>
       <v-spacer />
-      <v-btn-toggle
-        v-if="activeGroupId && activeExperimentId"
-        v-model="views"
-        multiple
-        background-color="primary"
-        group
-      >
+      <v-btn-toggle v-if="activeGroupId && activeProjectId" v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" value="workspace" color="primary">
@@ -185,7 +179,7 @@ import { BroadcastManager } from "@/utils/BroadcastManager";
 import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
-import { experimentModule } from "@/modules/experiment";
+import { projectsModule } from "@/modules/projects";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === "/main") {
@@ -201,7 +195,7 @@ const routeGuardMain = async (to, from, next) => {
 export default class Main extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly groupContext = groupModule.context(this.$store);
-  readonly experimentContext = experimentModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
 
   readonly appName = appName;
   views: string[] = ["workspace", "options"];
@@ -258,8 +252,8 @@ export default class Main extends Vue {
     return this.groupContext.getters.activeGroupId;
   }
 
-  get activeExperimentId() {
-    return this.experimentContext.getters.activeExperimentId;
+  get activeProjectId() {
+    return this.projectsContext.getters.activeProjectId;
   }
 
   async logout() {

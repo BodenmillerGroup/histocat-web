@@ -7,8 +7,8 @@ class MemberModel(Base):
     __tablename__ = "member"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True)
-    user_id = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True)
+    group_id = sa.Column(sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True, nullable=False)
+    user_id = sa.Column(sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
     role = sa.Column(sa.Integer(), default=0, nullable=False)
     is_active = sa.Column(sa.Boolean(), default=False, nullable=False)
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)

@@ -1,9 +1,9 @@
 import { Mutations } from "vuex-smart-module";
-import { presetListSchema, PresetState } from ".";
+import { presetListSchema, PresetsState } from ".";
 import { IPreset } from "./models";
 import { normalize } from "normalizr";
 
-export class PresetMutations extends Mutations<PresetState> {
+export class PresetsMutations extends Mutations<PresetsState> {
   setActivePresetId(id: number | null) {
     this.state.activePresetId = id;
   }
@@ -40,7 +40,7 @@ export class PresetMutations extends Mutations<PresetState> {
 
   reset() {
     // acquire initial state
-    const s = new PresetState();
+    const s = new PresetsState();
     Object.keys(s).forEach((key) => {
       this.state[key] = s[key];
     });

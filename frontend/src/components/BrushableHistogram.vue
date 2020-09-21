@@ -1,12 +1,6 @@
 <template>
   <div class="root">
     <div class="container">
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn x-small elevation="1" v-on="on" class="mr-2" @click.stop="setSharedChannelLevels"> Share </v-btn>
-        </template>
-        <span>Share levels and color</span>
-      </v-tooltip>
       <input type="color" v-model.lazy="color" @click.stop />
     </div>
     <svg :width="width" :height="height" id="svg" ref="svg" />
@@ -25,8 +19,8 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import * as d3 from "d3";
 import memoize from "memoize-one";
 import { settingsModule } from "@/modules/settings";
-import { experimentModule } from "@/modules/experiment";
-import { IChannel, IChannelStats } from "@/modules/experiment/models";
+import { projectsModule } from "@/modules/projects";
+import { IChannel, IChannelStats } from "@/modules/projects/models";
 
 function clamp(val, rng) {
   return Math.max(Math.min(val, rng[1]), rng[0]);
@@ -35,7 +29,7 @@ function clamp(val, rng) {
 @Component
 export default class BrushableHistogram extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly experimentContext = experimentModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
 
   @Prop(Object) readonly channel!: IChannel;
 
@@ -61,32 +55,25 @@ export default class BrushableHistogram extends Vue {
       : [this.channel.min_intensity, this.channel.max_intensity];
 
   get metalColor() {
-    const colorMap = this.settingsContext.getters.colorMap;
-    const color = colorMap[this.channel.name];
-    return color ? color : "#ffffff";
+    return this.settings ? this.settings.color : "#ffffff";
   }
 
   get activeAcquisitionId() {
-    return this.experimentContext.getters.activeAcquisitionId;
+    return this.projectsContext.getters.activeAcquisitionId;
   }
 
   get settings() {
-    return this.activeAcquisitionId
-      ? this.settingsContext.getters.getChannelSettings(this.activeAcquisitionId, this.channel.name)
-      : undefined;
+    return this.settingsContext.getters.channelsSettings[this.channel.name];
   }
 
   get label() {
-    return this.settings && this.settings.customLabel ? this.settings.customLabel : this.channel.label;
+    return this.channel.customLabel;
   }
 
   @Watch("color")
   onColorChanged(color: string) {
-    this.settingsContext.actions.setMetalColor({
-      metal: this.channel.name,
-      color: color,
-    });
-    this.experimentContext.actions.getChannelStackImage();
+    this.settingsContext.mutations.setChannelColor({ channelName: this.channel.name, color: color });
+    this.projectsContext.actions.getChannelStackImage();
   }
 
   calcHistogramCache = memoize((stats: IChannelStats) => {
@@ -212,32 +199,11 @@ export default class BrushableHistogram extends Vue {
     if (!this.activeAcquisitionId) {
       return;
     }
-    let settings = this.settings;
-    if (!settings) {
-      settings = {
-        acquisitionId: this.activeAcquisitionId,
-        name: this.channel.name,
-        customLabel: this.channel.label,
-        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-      };
-    } else {
-      settings = {
-        ...settings,
-        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-      };
-    }
-    this.settingsContext.actions.setChannelSettings(settings);
-    this.experimentContext.actions.getChannelStackImage();
-  }
-
-  setSharedChannelLevels() {
-    const metal = this.channel.name;
-    const settings = this.settings;
-    const levels =
-      settings && settings.levels
-        ? [settings.levels.min, settings.levels.max]
-        : [this.channel.min_intensity, this.channel.max_intensity];
-    this.experimentContext.actions.setSharedChannelLevels({ metal: metal, levels: levels });
+    this.settingsContext.mutations.setChannelLevels({
+      channelName: this.channel.name,
+      levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+    });
+    this.projectsContext.actions.getChannelStackImage();
   }
 
   renderHistogram(histogram) {
@@ -322,9 +288,9 @@ export default class BrushableHistogram extends Vue {
   }
 
   async mounted() {
-    if (this.experimentContext.getters.activeAcquisitionId) {
-      const stats = await this.experimentContext.actions.getChannelStats({
-        acquisitionId: this.experimentContext.getters.activeAcquisitionId,
+    if (this.projectsContext.getters.activeAcquisitionId) {
+      const stats = await this.projectsContext.actions.getChannelStats({
+        acquisitionId: this.projectsContext.getters.activeAcquisitionId,
         channelName: this.channel.name,
       });
       const histogram = this.calcHistogramCache(stats);

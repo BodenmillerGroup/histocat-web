@@ -1,9 +1,9 @@
 import { Mutations } from "vuex-smart-module";
-import { resultListSchema, ResultState } from ".";
+import { resultListSchema, ResultsState } from ".";
 import { IResult } from "./models";
 import { normalize } from "normalizr";
 
-export class ResultMutations extends Mutations<ResultState> {
+export class ResultsMutations extends Mutations<ResultsState> {
   setActiveResultId(id: number | null) {
     this.state.activeResultId = id;
   }
@@ -40,7 +40,7 @@ export class ResultMutations extends Mutations<ResultState> {
 
   reset() {
     // acquire initial state
-    const s = new ResultState();
+    const s = new ResultsState();
     Object.keys(s).forEach((key) => {
       this.state[key] = s[key];
     });

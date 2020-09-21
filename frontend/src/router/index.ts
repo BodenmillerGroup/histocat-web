@@ -52,35 +52,31 @@ export default new Router({
               path: "groups/:groupId",
               name: "group",
               component: () => import(/* webpackChunkName: "group" */ "@/views/group/GroupView.vue"),
-              redirect: "groups/:groupId/experiments",
+              redirect: "groups/:groupId/projects",
               children: [
                 {
-                  path: "experiments",
-                  name: "group-experiments",
+                  path: "projects",
+                  name: "group-projects",
                   component: () =>
-                    import(/* webpackChunkName: "group-experiments" */ "@/views/group/experiment/ExperimentsView.vue"),
+                    import(/* webpackChunkName: "group-projects" */ "@/views/group/project/ProjectsView.vue"),
                 },
                 {
-                  path: "experiments/create",
-                  name: "group-experiments-create",
+                  path: "projects/create",
+                  name: "group-projects-create",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "group-experiments-create" */ "@/views/group/experiment/CreateExperiment.vue"
-                    ),
+                    import(/* webpackChunkName: "group-projects-create" */ "@/views/group/project/CreateProject.vue"),
                 },
                 {
-                  path: "experiments/:experimentId/edit",
-                  name: "group-experiments-edit",
+                  path: "projects/:projectId/edit",
+                  name: "group-projects-edit",
                   component: () =>
-                    import(
-                      /* webpackChunkName: "group-experiments-edit" */ "@/views/group/experiment/EditExperiment.vue"
-                    ),
+                    import(/* webpackChunkName: "group-projects-edit" */ "@/views/group/project/EditProject.vue"),
                 },
                 {
-                  path: "experiments/:experimentId",
-                  name: "group-experiment",
+                  path: "projects/:projectId",
+                  name: "group-project",
                   component: () =>
-                    import(/* webpackChunkName: "group-experiment" */ "@/views/group/experiment/ExperimentView.vue"),
+                    import(/* webpackChunkName: "group-projects" */ "@/views/group/project/ProjectView.vue"),
                 },
 
                 {

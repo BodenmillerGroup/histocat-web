@@ -21,8 +21,8 @@ def upgrade():
     op.create_table(
         'project',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True),
-        sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True),
+        sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True, nullable=False),
+        sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
         sa.Column('description', sa.String()),
         sa.Column('tags', ARRAY(sa.String(64)), index=True),

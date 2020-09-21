@@ -1,24 +1,24 @@
 import { Module } from "vuex-smart-module";
-import { GateActions } from "./actions";
-import { GateGetters } from "./getters";
+import { GatesActions } from "./actions";
+import { GatesGetters } from "./getters";
 import { IGate } from "./models";
-import { GateMutations } from "./mutations";
+import { GatesMutations } from "./mutations";
 import { schema } from "normalizr";
 
 export const gateSchema = new schema.Entity("gates");
 export const gateListSchema = [gateSchema];
 
-export class GateState {
+export class GatesState {
   ids: ReadonlyArray<number> = [];
   entities: { [key: number]: IGate } = {};
   activeGateId: number | null = null;
 }
 
-export const gateModule = new Module({
+export const gatesModule = new Module({
   namespaced: true,
 
-  state: GateState,
-  getters: GateGetters,
-  mutations: GateMutations,
-  actions: GateActions,
+  state: GatesState,
+  getters: GatesGetters,
+  mutations: GatesMutations,
+  actions: GatesActions,
 });

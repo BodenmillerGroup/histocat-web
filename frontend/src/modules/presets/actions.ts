@@ -2,29 +2,29 @@ import { IPresetCreate } from "./models";
 import { mainModule } from "@/modules/main";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
-import { PresetState } from ".";
+import { PresetsState } from ".";
 import { api } from "./api";
-import { PresetGetters } from "./getters";
-import { PresetMutations } from "./mutations";
+import { PresetsGetters } from "./getters";
+import { PresetsMutations } from "./mutations";
 import { settingsModule } from "@/modules/settings";
-import { experimentModule } from "@/modules/experiment";
+import { projectsModule } from "@/modules/projects";
 
-export class PresetActions extends Actions<PresetState, PresetGetters, PresetMutations, PresetActions> {
+export class PresetsActions extends Actions<PresetsState, PresetsGetters, PresetsMutations, PresetsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
-  experiment?: Context<typeof experimentModule>;
+  projects?: Context<typeof projectsModule>;
   settings?: Context<typeof settingsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
-    this.experiment = experimentModule.context(store);
+    this.projects = projectsModule.context(store);
     this.settings = settingsModule.context(store);
   }
 
-  async getPresets(experimentId: number) {
+  async getPresets(projectId: number) {
     try {
-      const data = await api.getExperimentPresets(experimentId);
+      const data = await api.getProjectPresets(projectId);
       if (data) {
         this.mutations.setEntities(data);
       }
@@ -35,14 +35,13 @@ export class PresetActions extends Actions<PresetState, PresetGetters, PresetMut
 
   async createPreset(name: string) {
     try {
-      const experimentId = this.experiment!.getters.activeExperimentId;
+      const projectId = this.projects!.getters.activeProjectId;
       const presetData = {
-        colorMap: this.settings!.getters.colorMap,
-        channelSettings: this.settings!.getters.channelSettings,
+        channelsSettings: this.settings!.getters.channelsSettings,
       };
       const payload: IPresetCreate = {
         name: name,
-        experiment_id: experimentId!,
+        project_id: projectId!,
         data: presetData,
       };
       const data = await api.createPreset(payload);

@@ -22,9 +22,8 @@ def upgrade():
     op.create_table(
         'dataset',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True),
-        sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True),
-        sa.Column('uid', UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True),
+        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True, nullable=False),
+        sa.Column('uid', UUID(), server_default=text("uuid_generate_v4()"), index=True, nullable=False),
         sa.Column('status', sa.String(64), nullable=False, index=True),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),

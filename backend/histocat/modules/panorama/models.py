@@ -14,7 +14,7 @@ class PanoramaModel(Base):
     __tablename__ = "panorama"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    slide_id = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True)
+    slide_id = sa.Column(sa.Integer(), sa.ForeignKey("slide.id", ondelete="CASCADE"), index=True, nullable=False)
     origin_id = sa.Column(sa.Integer(), index=True)
     image_type = sa.Column(sa.String())
     description = sa.Column(sa.String())

@@ -2,17 +2,8 @@ import { Getters } from "vuex-smart-module";
 import { SettingsState } from ".";
 
 export class SettingsGetters extends Getters<SettingsState> {
-  getChannelSettings(acquisitionId: number, channelName: string) {
-    const acquisitionSettings = this.state.channelSettings[acquisitionId];
-    return acquisitionSettings ? acquisitionSettings[channelName] : undefined;
-  }
-
-  get channelSettings() {
-    return this.state.channelSettings;
-  }
-
-  get colorMap() {
-    return this.state.colorMap;
+  get channelsSettings() {
+    return this.state.channelsSettings;
   }
 
   get filter() {

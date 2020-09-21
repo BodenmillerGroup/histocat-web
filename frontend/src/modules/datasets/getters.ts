@@ -1,7 +1,7 @@
 import { Getters } from "vuex-smart-module";
-import { DatasetState } from ".";
+import { DatasetsState } from ".";
 
-export class DatasetGetters extends Getters<DatasetState> {
+export class DatasetsGetters extends Getters<DatasetsState> {
   get datasets() {
     return this.state.ids.map((id) => this.state.entities[id]);
   }

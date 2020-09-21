@@ -21,9 +21,9 @@ class DatasetModel(Base):
     __tablename__ = "dataset"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True)
-    uid = sa.Column(UUID(), server_default=text("uuid_generate_v4()"), nullable=False, index=True)
-    status = sa.Column(sa.String(64), nullable=False, index=True)
+    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True, nullable=False)
+    uid = sa.Column(UUID(), server_default=text("uuid_generate_v4()"), index=True, nullable=False)
+    status = sa.Column(sa.String(64), index=True, nullable=False)
     name = sa.Column(sa.String())
     description = sa.Column(sa.String())
     meta = sa.Column(JSONB())

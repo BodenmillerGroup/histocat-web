@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Sequence, Tuple, List
 
 import cv2
 import numpy as np
@@ -56,7 +56,6 @@ RESULT_TYPE_MASK = "mask"
 
 def get_additive_image(db: Session, params: ChannelStackDto):
     additive_image: Optional[np.ndarray] = None
-    legend_labels: Sequence[Tuple[str, str, float]] = list()
 
     acquisition = acquisition_crud.get_by_id(db, id=params.acquisitionId)
     if not acquisition:
@@ -77,13 +76,10 @@ def get_additive_image(db: Session, params: ChannelStackDto):
         color = channel.color if channel.color else "#ffffff"
         image = colorize(data, color)
 
-        label = channel.customLabel if channel.customLabel else item.label
-        legend_labels.append((label, color, levels[1]))
-
         if additive_image is None:
             additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
         additive_image += image
-    return additive_image, legend_labels
+    return additive_image
 
 
 @router.post("/analysis/segmentation/image")

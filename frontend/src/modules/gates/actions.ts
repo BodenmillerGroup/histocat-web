@@ -2,26 +2,26 @@ import { IGateCreate } from "./models";
 import { mainModule } from "@/modules/main";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
-import { GateState } from ".";
+import { GatesState } from ".";
 import { api } from "./api";
-import { GateGetters } from "./getters";
-import { GateMutations } from "./mutations";
-import { datasetModule } from "@/modules/datasets";
+import { GatesGetters } from "./getters";
+import { GatesMutations } from "./mutations";
+import { datasetsModule } from "@/modules/datasets";
 import { selectionModule } from "@/modules/selection";
 import { SelectedCell } from "@/modules/selection/models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_ACTIVE_GATE_ID } from "./events";
 
-export class GateActions extends Actions<GateState, GateGetters, GateMutations, GateActions> {
+export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutations, GatesActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
-  dataset?: Context<typeof datasetModule>;
+  dataset?: Context<typeof datasetsModule>;
   selection?: Context<typeof selectionModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
-    this.dataset = datasetModule.context(store);
+    this.dataset = datasetsModule.context(store);
     this.selection = selectionModule.context(store);
   }
 

@@ -20,8 +20,8 @@ def upgrade():
     op.create_table(
         'member',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True),
-        sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True),
+        sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True, nullable=False),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('role', sa.Integer(), default=0, nullable=False),
         sa.Column('is_active', sa.Boolean(), default=False, nullable=False),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),

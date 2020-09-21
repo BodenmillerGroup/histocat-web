@@ -13,12 +13,7 @@ from histocat.config import config
 from histocat.modules.member.models import MemberModel
 
 from . import service
-from .dto import (
-    ProjectCreateDto,
-    ProjectFullDto,
-    ProjectDto,
-    ProjectUpdateDto,
-)
+from .dto import ProjectCreateDto, ProjectDto, ProjectFullDto, ProjectUpdateDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -34,9 +29,7 @@ def get_tags(group_id: int, db: Session = Depends(get_db), member: MemberModel =
 
 
 @router.get("/groups/{group_id}/projects", response_model=Sequence[ProjectDto])
-def get_group_projects(
-    group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)
-):
+def get_group_projects(group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)):
     """
     Get group projects
     """
@@ -59,7 +52,7 @@ def create(
         raise HTTPException(
             status_code=400, detail="The project with this name already exists.",
         )
-    item = service.create(db, group_id=group_id, params=params)
+    item = service.create(db, group_id=group_id, params=params, member=member)
     return item
 
 

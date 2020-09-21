@@ -14,7 +14,7 @@ class GateModel(Base):
     __tablename__ = "gate"
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    dataset_id = sa.Column(sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True)
+    dataset_id = sa.Column(sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True, nullable=False)
     name = sa.Column(sa.String())
     description = sa.Column(sa.String())
     acquisition_ids = sa.Column("acquisition_ids", ARRAY(sa.Integer()))

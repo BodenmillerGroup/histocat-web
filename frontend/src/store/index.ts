@@ -1,6 +1,6 @@
 import { analysisModule } from "@/modules/analysis";
-import { datasetModule } from "@/modules/datasets";
-import { experimentModule } from "@/modules/experiment";
+import { datasetsModule } from "@/modules/datasets";
+import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { userModule } from "@/modules/user";
@@ -14,11 +14,11 @@ import { responsiveModule } from "@/modules/responsive";
 import { RootActions } from "@/store/actions";
 import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
-import { presetModule } from "@/modules/presets";
-import { gateModule } from "@/modules/gates";
+import { presetsModule } from "@/modules/presets";
+import { gatesModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
-import { resultModule } from "@/modules/results";
+import { resultsModule } from "@/modules/results";
 
 Vue.use(Vuex);
 
@@ -29,17 +29,17 @@ const rootModule = new Module({
     group: groupModule,
     member: memberModule,
     analysis: analysisModule,
-    dataset: datasetModule,
-    results: resultModule,
-    experiment: experimentModule,
+    dataset: datasetsModule,
+    results: resultsModule,
+    projects: projectsModule,
     main: mainModule,
     responsive: responsiveModule,
     settings: settingsModule,
     user: userModule,
     selection: selectionModule,
     centroids: centroidsModule,
-    presets: presetModule,
-    gates: gateModule,
+    presets: presetsModule,
+    gates: gatesModule,
   },
   actions: RootActions,
 });

@@ -55,24 +55,6 @@ def update(session: Session, *, item: DatasetModel, params: DatasetUpdateDto) ->
     return item
 
 
-def update_output(session: Session, *, dataset_id: int, result_type: str, result: dict) -> DatasetModel:
-    item = session.query(DatasetModel).filter(DatasetModel.id == dataset_id).first()
-    session.refresh(item, attribute_names=["output"])
-
-    output = item.output if item.output else {}
-    result_output = output.get(result_type) if result_type in output else {}
-    result_output[result.get("name")] = result
-    output[result_type] = result_output
-    item.output = output
-
-    # TODO: https://stackoverflow.com/questions/42559434/updates-to-json-field-dont-persist-to-db
-    flag_modified(item, "output")
-    session.add(item)
-    session.commit()
-    session.refresh(item)
-    return item
-
-
 def remove(session: Session, *, id: int):
     item = session.query(DatasetModel).filter(DatasetModel.id == id).first()
     if item:

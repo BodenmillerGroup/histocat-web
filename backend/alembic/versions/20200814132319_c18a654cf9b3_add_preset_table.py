@@ -21,8 +21,8 @@ def upgrade():
     op.create_table(
         'preset',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), nullable=False, index=True),
-        sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True),
+        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True, nullable=False),
+        sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
         sa.Column('data', JSONB()),

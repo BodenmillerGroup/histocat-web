@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
-import { experimentModule } from "@/modules/experiment";
+import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
@@ -20,7 +20,7 @@ import { linearRegression, linearRegressionLine } from "simple-statistics";
 @Component
 export default class Scatter2D extends Vue {
   readonly mainContext = mainModule.context(this.$store);
-  readonly experimentContext = experimentModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
 
@@ -234,13 +234,13 @@ export default class Scatter2D extends Vue {
           });
           this.selectionContext.actions.setSelectedCells(newSelectedCells);
           if (this.applyMask) {
-            this.experimentContext.actions.getChannelStackImage();
+            this.projectsContext.actions.getChannelStackImage();
           }
         } else {
           if (this.selectionContext.getters.selectedCells !== null) {
             this.selectionContext.actions.setSelectedCells([]);
             if (this.applyMask) {
-              this.experimentContext.actions.getChannelStackImage();
+              this.projectsContext.actions.getChannelStackImage();
             }
           }
         }

@@ -5,8 +5,7 @@ import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSett
 import { SettingsMutations } from "./mutations";
 
 export class SettingsState {
-  channelSettings: { [acquisitionId: number]: { [channelName: string]: IChannelSettings } } = {};
-  colorMap: { [markerName: string]: string } = {};
+  channelsSettings: { [channelName: string]: IChannelSettings } = {};
   filter: IImageFilter = {
     apply: false,
     type: "gaussian",

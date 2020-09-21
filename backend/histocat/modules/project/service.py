@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from .dto import ProjectCreateDto, ProjectUpdateDto
 from .models import ProjectModel
+from histocat.modules.member.models import MemberModel
 
 logger = logging.getLogger(__name__)
 
@@ -20,23 +21,16 @@ def get_by_name(session: Session, *, name: str) -> Optional[ProjectModel]:
 
 
 def get_group_projects(session: Session, *, group_id: int) -> List[Optional[ProjectModel]]:
-    return (
-        session.query(ProjectModel)
-        .order_by(ProjectModel.id.desc())
-        .filter(ProjectModel.group_id == group_id)
-        .all()
-    )
+    return session.query(ProjectModel).order_by(ProjectModel.id.desc()).filter(ProjectModel.group_id == group_id).all()
 
 
 def get_tags(session: Session, *, group_id: int) -> Set[str]:
-    items = (
-        session.query(func.unnest(ProjectModel.tags)).filter(ProjectModel.group_id == group_id).distinct().all()
-    )
+    items = session.query(func.unnest(ProjectModel.tags)).filter(ProjectModel.group_id == group_id).distinct().all()
     return {e[0] for e in items}
 
 
-def create(session: Session, *, group_id: int, params: ProjectCreateDto) -> ProjectModel:
-    entity = ProjectModel(group_id=group_id, name=params.name, description=params.description, tags=params.tags)
+def create(session: Session, *, group_id: int, params: ProjectCreateDto, member: MemberModel) -> ProjectModel:
+    entity = ProjectModel(group_id=group_id, name=params.name, description=params.description, tags=params.tags, member_id=member.id)
     session.add(entity)
     session.commit()
     session.refresh(entity)

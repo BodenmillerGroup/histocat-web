@@ -8,18 +8,14 @@ import {
   SET_FILTER,
   SET_LEGEND,
   SET_MASK_SETTINGS,
-  SET_METAL_COLOR,
   SET_SCALEBAR,
-  SET_SHARED_CHANNEL_SETTINGS,
 } from "@/modules/settings/events";
 import { IPreset } from "@/modules/presets/models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
   constructor() {
     super();
-    BroadcastManager.subscribe(SET_SHARED_CHANNEL_SETTINGS, (payload) => this.setSharedChannelSettings(payload));
     BroadcastManager.subscribe(SET_CHANNEL_SETTINGS, (payload) => this.setChannelSettings(payload));
-    BroadcastManager.subscribe(SET_METAL_COLOR, (payload) => this.setMetalColor(payload));
     BroadcastManager.subscribe(SET_FILTER, (payload) => this.setFilter(payload));
     BroadcastManager.subscribe(SET_LEGEND, (payload) => this.setLegend(payload));
     BroadcastManager.subscribe(SET_SCALEBAR, (payload) => this.setScalebar(payload));
@@ -27,30 +23,29 @@ export class SettingsMutations extends Mutations<SettingsState> {
     BroadcastManager.subscribe(SET_PRESET, (payload) => this.setPreset(payload));
   }
 
-  setSharedChannelSettings(payload: IChannelSettings[]) {
-    let newState = { ...this.state.channelSettings };
-    for (const item of payload) {
-      let acquisitionChannelSettings = this.state.channelSettings[item.acquisitionId];
-      if (!acquisitionChannelSettings) {
-        acquisitionChannelSettings = {};
-      }
-      acquisitionChannelSettings[item.name] = item;
-      newState[item.acquisitionId] = acquisitionChannelSettings;
-    }
-    this.state.channelSettings = newState;
+  setChannelSettings(payload: { channelName: string; settings: IChannelSettings }) {
+    this.state.channelsSettings = { ...this.state.channelsSettings, [payload.channelName]: payload.settings };
   }
 
-  setChannelSettings(payload: IChannelSettings) {
-    let acquisitionChannelSettings = this.state.channelSettings[payload.acquisitionId];
-    if (!acquisitionChannelSettings) {
-      acquisitionChannelSettings = {};
-    }
-    acquisitionChannelSettings[payload.name] = payload;
-    this.state.channelSettings = { ...this.state.channelSettings, [payload.acquisitionId]: acquisitionChannelSettings };
+  setChannelColor(payload: { channelName: string; color: string }) {
+    const existingLevels =
+      this.state.channelsSettings[payload.channelName] && this.state.channelsSettings[payload.channelName].levels
+        ? this.state.channelsSettings[payload.channelName].levels
+        : undefined;
+    this.state.channelsSettings = {
+      ...this.state.channelsSettings,
+      [payload.channelName]: { levels: existingLevels, color: payload.color },
+    };
   }
 
-  setMetalColor(payload: { metal: string; color: string }) {
-    this.state.colorMap = { ...this.state.colorMap, [payload.metal]: payload.color };
+  setChannelLevels(payload: { channelName: string; levels: { min: number; max: number } }) {
+    const existingColor = this.state.channelsSettings[payload.channelName]
+      ? this.state.channelsSettings[payload.channelName].color
+      : "#ffffff";
+    this.state.channelsSettings = {
+      ...this.state.channelsSettings,
+      [payload.channelName]: { levels: payload.levels, color: existingColor },
+    };
   }
 
   setFilter(payload: IImageFilter) {
@@ -70,8 +65,7 @@ export class SettingsMutations extends Mutations<SettingsState> {
   }
 
   setPreset(preset: IPreset) {
-    this.state.channelSettings = preset.data["channelSettings"];
-    this.state.colorMap = preset.data["colorMap"];
+    this.state.channelsSettings = preset.data["channelsSettings"];
   }
 
   reset() {

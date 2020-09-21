@@ -4,7 +4,7 @@ from typing import Optional
 import cv2
 import numpy as np
 import orjson
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from sqlalchemy.orm import Session
@@ -12,7 +12,7 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user
+from histocat.api.security import get_active_user, get_active_member
 from histocat.core.image import (
     apply_filter,
     colorize,
@@ -23,8 +23,9 @@ from histocat.core.image import (
 from histocat.core.redis_manager import redis_manager
 from histocat.core.utils import stream_bytes
 from histocat.modules.acquisition import service as acquisition_service
-from histocat.modules.acquisition.dto import ChannelStackDto, ChannelStatsDto
+from histocat.modules.acquisition.dto import ChannelStackDto, ChannelStatsDto, ChannelUpdateDto, AcquisitionDto
 from histocat.modules.analysis.controller import get_additive_image
+from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,26 @@ async def read_channel_stats(
     content = {"bins": hist.tolist()}
     await redis_manager.cache.set(request.url.path, orjson.dumps(content))
     return ORJSONResponse(content)
+
+
+@router.put("/groups/{group_id}/acquisitions/{acquisition_id}", response_model=AcquisitionDto)
+def update(
+    group_id: int,
+    acquisition_id: int,
+    params: ChannelUpdateDto,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    """
+    Update channel's custom label
+    """
+    item = acquisition_service.get_by_id(db, acquisition_id)
+    if not item:
+        raise HTTPException(
+            status_code=404, detail="The acquisition with this id does not exist.",
+        )
+    item = acquisition_service.update_custom_label(db, item=item, params=params)
+    return item
 
 
 @router.get("/acquisitions/{acquisition_id}/{channel_name}/image", responses={200: {"content": {"image/png": {}}}})
@@ -100,7 +121,7 @@ async def download_channel_stack(
     params: ChannelStackDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """Download channel stack (additive) image."""
-    additive_image, legend_labels = get_additive_image(db, params)
+    additive_image= get_additive_image(db, params)
 
     # TODO: Bright-field effect
     # additive_image = additive_image[..., ::-1]

@@ -1,49 +1,49 @@
 import { Actions, Context } from "vuex-smart-module";
 import { Store } from "vuex";
 import { analysisModule } from "@/modules/analysis";
-import { datasetModule } from "@/modules/datasets";
-import { experimentModule } from "@/modules/experiment";
+import { datasetsModule } from "@/modules/datasets";
+import { projectsModule } from "@/modules/projects";
 import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
-import { presetModule } from "@/modules/presets";
-import { gateModule } from "@/modules/gates";
+import { presetsModule } from "@/modules/presets";
+import { gatesModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
-import { resultModule } from "@/modules/results";
+import { resultsModule } from "@/modules/results";
 
 export class RootActions extends Actions {
   group?: Context<typeof groupModule>;
   member?: Context<typeof memberModule>;
   analysis?: Context<typeof analysisModule>;
-  dataset?: Context<typeof datasetModule>;
-  results?: Context<typeof resultModule>;
-  experiment?: Context<typeof experimentModule>;
+  datasets?: Context<typeof datasetsModule>;
+  results?: Context<typeof resultsModule>;
+  projects?: Context<typeof projectsModule>;
   selection?: Context<typeof selectionModule>;
   centroids?: Context<typeof centroidsModule>;
-  presets?: Context<typeof presetModule>;
-  gates?: Context<typeof gateModule>;
+  presets?: Context<typeof presetsModule>;
+  gates?: Context<typeof gatesModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.group = groupModule.context(store);
     this.member = memberModule.context(store);
     this.analysis = analysisModule.context(store);
-    this.dataset = datasetModule.context(store);
-    this.results = resultModule.context(store);
-    this.experiment = experimentModule.context(store);
+    this.datasets = datasetsModule.context(store);
+    this.results = resultsModule.context(store);
+    this.projects = projectsModule.context(store);
     this.selection = selectionModule.context(store);
     this.centroids = centroidsModule.context(store);
-    this.presets = presetModule.context(store);
-    this.gates = gateModule.context(store);
+    this.presets = presetsModule.context(store);
+    this.gates = gatesModule.context(store);
   }
 
-  // Reset experiment store
-  resetExperiment() {
+  // Reset project store
+  resetProject() {
     this.member?.mutations.reset();
     this.analysis?.mutations.reset();
-    this.dataset?.mutations.reset();
+    this.datasets?.mutations.reset();
     this.results?.mutations.reset();
-    this.experiment?.mutations.reset();
+    this.projects?.mutations.reset();
     this.selection?.mutations.reset();
     this.centroids?.mutations.reset();
     this.presets?.mutations.reset();
@@ -52,7 +52,7 @@ export class RootActions extends Actions {
 
   // Reset global store
   reset() {
-    this.resetExperiment();
+    this.resetProject();
     this.group?.mutations.reset();
   }
 }

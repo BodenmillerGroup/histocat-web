@@ -1,5 +1,5 @@
 export interface IPresetCreate {
-  experiment_id: number;
+  project_id: number;
   name: string;
   description?: string;
   data?: object;
@@ -7,7 +7,7 @@ export interface IPresetCreate {
 
 export interface IPreset {
   id: number;
-  experiment_id: number;
+  project_id: number;
   name: string;
   description: string;
   data: object;

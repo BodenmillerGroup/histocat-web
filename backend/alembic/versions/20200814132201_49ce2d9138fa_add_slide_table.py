@@ -21,7 +21,7 @@ def upgrade():
     op.create_table(
         'slide',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
-        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True),
+        sa.Column('project_id', sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('origin_id', sa.Integer(), index=True),
         sa.Column('name', sa.String(4096), index=True),
         sa.Column('width_um', sa.Integer()),

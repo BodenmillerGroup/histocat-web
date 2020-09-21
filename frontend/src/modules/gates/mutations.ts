@@ -1,11 +1,11 @@
 import { Mutations } from "vuex-smart-module";
-import { gateListSchema, GateState } from ".";
+import { gateListSchema, GatesState } from ".";
 import { IGate } from "./models";
 import { normalize } from "normalizr";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_ACTIVE_GATE_ID } from "./events";
 
-export class GateMutations extends Mutations<GateState> {
+export class GatesMutations extends Mutations<GatesState> {
   constructor() {
     super();
     BroadcastManager.subscribe(SET_ACTIVE_GATE_ID, (payload) => this.setActiveGateId(payload));
@@ -47,7 +47,7 @@ export class GateMutations extends Mutations<GateState> {
 
   reset() {
     // acquire initial state
-    const s = new GateState();
+    const s = new GatesState();
     Object.keys(s).forEach((key) => {
       this.state[key] = s[key];
     });

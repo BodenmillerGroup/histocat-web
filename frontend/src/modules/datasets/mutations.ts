@@ -1,12 +1,11 @@
-import { WebSocketMessage } from "@/utils/WebSocketMessage";
 import { Mutations } from "vuex-smart-module";
-import { datasetListSchema, DatasetState } from ".";
+import { datasetListSchema, DatasetsState } from ".";
 import { IDataset } from "./models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_ACTIVE_DATASET_ID, SET_DATASETS } from "./events";
 import { normalize } from "normalizr";
 
-export class DatasetMutations extends Mutations<DatasetState> {
+export class DatasetsMutations extends Mutations<DatasetsState> {
   constructor() {
     super();
     BroadcastManager.subscribe(SET_ACTIVE_DATASET_ID, (payload) => this.setActiveDatasetId(payload));
@@ -47,66 +46,9 @@ export class DatasetMutations extends Mutations<DatasetState> {
     this.state.entities = entities;
   }
 
-  updateDatasetTSNEOutput(message: WebSocketMessage) {
-    const newState = { ...this.state.entities };
-    const dataset = newState[message.payload.params.dataset_id];
-    if (dataset) {
-      if (!dataset.output) {
-        dataset.output = {
-          tsne: {},
-          umap: {},
-          phenograph: {},
-        };
-      }
-      if (!dataset.output.tsne) {
-        dataset.output.tsne = {};
-      }
-      dataset.output.tsne[message.payload.name] = message.payload;
-      this.state.entities = newState;
-    }
-  }
-
-  updateDatasetUMAPOutput(message: WebSocketMessage) {
-    const newState = { ...this.state.entities };
-    const dataset = newState[message.payload.params.dataset_id];
-    if (dataset) {
-      if (!dataset.output) {
-        dataset.output = {
-          tsne: {},
-          umap: {},
-          phenograph: {},
-        };
-      }
-      if (!dataset.output.umap) {
-        dataset.output.umap = {};
-      }
-      dataset.output.umap[message.payload.name] = message.payload;
-      this.state.entities = newState;
-    }
-  }
-
-  updateDatasetPhenoGraphOutput(message: WebSocketMessage) {
-    const newState = { ...this.state.entities };
-    const dataset = newState[message.payload.params.dataset_id];
-    if (dataset) {
-      if (!dataset.output) {
-        dataset.output = {
-          tsne: {},
-          umap: {},
-          phenograph: {},
-        };
-      }
-      if (!dataset.output.phenograph) {
-        dataset.output.phenograph = {};
-      }
-      dataset.output.phenograph[message.payload.name] = message.payload;
-      this.state.entities = newState;
-    }
-  }
-
   reset() {
     // acquire initial state
-    const s = new DatasetState();
+    const s = new DatasetsState();
     Object.keys(s).forEach((key) => {
       this.state[key] = s[key];
     });

@@ -5,9 +5,7 @@ import { SettingsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
   SET_PRESET,
-  SET_SHARED_CHANNEL_SETTINGS,
   SET_CHANNEL_SETTINGS,
-  SET_METAL_COLOR,
   SET_FILTER,
   SET_LEGEND,
   SET_SCALEBAR,
@@ -17,16 +15,8 @@ import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSett
 import { IPreset } from "@/modules/presets/models";
 
 export class SettingsActions extends Actions<SettingsState, SettingsGetters, SettingsMutations, SettingsActions> {
-  setSharedChannelSettings(payload: IChannelSettings[], isGlobal = true) {
-    BroadcastManager.publish(SET_SHARED_CHANNEL_SETTINGS, payload, isGlobal);
-  }
-
-  setChannelSettings(payload: IChannelSettings, isGlobal = true) {
+   setChannelSettings(payload: { channelName: string, settings: IChannelSettings }, isGlobal = true) {
     BroadcastManager.publish(SET_CHANNEL_SETTINGS, payload, isGlobal);
-  }
-
-  setMetalColor(payload: { metal: string; color: string }, isGlobal = true) {
-    BroadcastManager.publish(SET_METAL_COLOR, payload, isGlobal);
   }
 
   setFilter(payload: IImageFilter, isGlobal = true) {

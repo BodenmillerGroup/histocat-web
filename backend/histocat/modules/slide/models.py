@@ -17,7 +17,7 @@ class SlideModel(Base):
     __table_args__ = (sa.UniqueConstraint("project_id", "name", name="uq_slide_project_id_and_name"),)
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
-    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True)
+    project_id = sa.Column(sa.Integer(), sa.ForeignKey("project.id", ondelete="CASCADE"), index=True, nullable=False)
     origin_id = sa.Column(sa.Integer(), index=True)
     name = sa.Column(sa.String(4096))
     width_um = sa.Column(sa.Integer())
