@@ -22,8 +22,9 @@ def get_project_presets(session: Session, *, project_id: int) -> Sequence[Preset
     )
 
 
-def create(session: Session, *, params: PresetCreateDto) -> PresetModel:
+def create(session: Session, *, params: PresetCreateDto, member_id: int) -> PresetModel:
     data = jsonable_encoder(params)
+    data["member_id"] = member_id
     entity = PresetModel(**data)
     session.add(entity)
     session.commit()

@@ -4,7 +4,6 @@ import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { userModule } from "@/modules/user";
-import localforage from "localforage";
 import Vue from "vue";
 import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
@@ -46,8 +45,8 @@ const rootModule = new Module({
 
 const vuexStorage = new VuexPersistence<typeof rootModule>({
   strictMode: debug,
-  storage: localforage as any,
-  asyncStorage: true,
+  storage: window.localStorage,
+  asyncStorage: false,
   modules: ["settings"],
 });
 

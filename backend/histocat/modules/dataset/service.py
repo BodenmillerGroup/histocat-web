@@ -2,11 +2,10 @@ import logging
 import os
 from typing import List, Optional
 
-import pandas as pd
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from sqlalchemy.orm.attributes import flag_modified
+import anndata as ad
 
 from .dto import DatasetCreateDto, DatasetUpdateDto
 from .models import DatasetModel
@@ -69,12 +68,12 @@ def get_centroids(dataset: DatasetModel):
     if not cell_input:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
-    df = pd.read_feather(cell_input.get("location"))
+    adata = ad.read_h5ad(cell_input.get("location"))
     output = {
-        "acquisitionIds": df["AcquisitionId"].tolist(),
-        "cellIds": df["CellId"].tolist(),
-        "objectNumbers": df["ObjectNumber"].tolist(),
-        "x": df["CentroidX"].round(2).tolist(),
-        "y": df["CentroidY"].round(2).tolist(),
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "x": adata.obs["CentroidX"].round(2).tolist(),
+        "y": adata.obs["CentroidY"].round(2).tolist(),
     }
     return output

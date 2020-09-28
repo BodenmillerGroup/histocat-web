@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "histocat"
-version = "2020.09.21"
+version = "2020.09.24"
 description = "histoCAT for Web"
 authors = ["Anton Rau <anton.rau@uzh.ch>"]
 
@@ -22,7 +22,7 @@ imctools = "^2.0.1"  # "^1.0.8"
 jinja2 = "^2.11.2"
 mahotas = "^1.4.11"
 matplotlib = "^3.3.1"
-opencv-python-headless = "^4.4.0.42"
+opencv-python-headless = "^4.4.0.44"
 orjson = "^3.3.1"
 pandas = "^1.1.2"
 passlib = { version = "^1.7.2", extras = ["bcrypt"] }
@@ -30,9 +30,9 @@ phenograph = "1.5.3"  # { git = "https://github.com/jacoblevine/phenograph.git" 
 psycopg2-binary = "^2.8.6"
 ptvsd = "^4.3.2"
 pyarrow = "^1.0.1"
-pydevd-pycharm = "^202.*"
+pydevd-pycharm = "^203.*"
 PyJWT = "^1.7.1"
-pynndescent = "^0.4.8"
+pynndescent = "^0.5.0"
 python-multipart = { version = "^0.0.5", optional = true }
 redis = { version = "^3.5.3", extras = ["hiredis"] }
 requests = "^2.24.0"

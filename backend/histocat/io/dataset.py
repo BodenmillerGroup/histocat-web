@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Dict
 
 import pandas as pd
-from anndata import AnnData
+import numpy as np
+import anndata as ad
 from sqlalchemy.orm import Session
 
 from histocat.core.notifier import Message
@@ -59,6 +60,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     probability_masks = {}
     image_map = {}
     image_number_to_acquisition_id = {}
+    image_number_to_scaling = {}
     for index, row in image_df.iterrows():
         mask_meta = _import_probabilities_mask(db, src_folder, row, dataset)
         if mask_meta is not None:
@@ -67,6 +69,9 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
             image_number = mask_meta.get("image_number")
             image_map[acquisition_id] = image_number
             image_number_to_acquisition_id[image_number] = acquisition_id
+
+            scaling = int(row["Scaling_FullStack"])
+            image_number_to_scaling[image_number] = scaling
     meta["probability_masks"] = probability_masks
     # Map acquisition database ID to ImageNumber column
     meta["image_map"] = image_map
@@ -81,7 +86,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     if object_relationships_input:
         meta["object_relationships"] = object_relationships_input
 
-    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id, channels_input)
+    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id, image_number_to_scaling, channels_input)
     if cell_input:
         meta["cell"] = cell_input
 
@@ -147,6 +152,7 @@ def _import_cell_csv(
     src_folder: Path,
     dst_folder: Path,
     image_number_to_acquisition_id: Dict[int, int],
+    image_number_to_scaling: Dict[int, int],
     channels_input: Dict[str, int],
 ):
     src_uri = src_folder / f"{CELL_FILENAME}{CSV_FILE_EXTENSION}"
@@ -154,30 +160,8 @@ def _import_cell_csv(
     if not src_uri.exists():
         return None, None
 
-    dst_uri = dst_folder / f"{CELL_FILENAME}{FEATHER_FILE_EXTENSION}"
+    dst_uri = dst_folder / f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
-
-    df_preprocessed = pd.DataFrame()
-    df_preprocessed["CellId"] = df.index
-    df_preprocessed["AcquisitionId"] = df["ImageNumber"]
-    df_preprocessed["AcquisitionId"].replace(image_number_to_acquisition_id, inplace=True)
-    df_preprocessed["ImageNumber"] = df["ImageNumber"]
-    df_preprocessed["ObjectNumber"] = df["ObjectNumber"]
-    df_preprocessed["CentroidX"] = df["Location_Center_X"]
-    df_preprocessed["CentroidY"] = df["Location_Center_Y"]
-    for key, value in channels_input.items():
-        # TODO: check intensity multiplier
-        df_preprocessed[key] = df[f"Intensity_MeanIntensity_FullStack_c{value}"] * 2 ** 16
-
-    neighbors_cols = [col for col in df.columns if "Neighbors_" in col]
-    for col in neighbors_cols:
-        col_name = col.split("_")[1]
-        if col_name:
-            df_preprocessed[col_name] = df[col]
-            if col_name == "NumberOfNeighbors":
-                df_preprocessed[col_name] = df_preprocessed[col_name].astype("int64")
-
-    df_preprocessed.to_feather(dst_uri)
 
     obs = pd.DataFrame()
     obs["CellId"] = df.index
@@ -200,14 +184,16 @@ def _import_cell_csv(
     x_df = pd.DataFrame()
     for key, value in channels_input.items():
         # TODO: check intensity multiplier
-        x_df[key] = df[f"Intensity_MeanIntensity_FullStack_c{value}"] * 2 ** 16
+        x_df[key] = df[f"Intensity_MeanIntensity_FullStackFiltered_c{value}"] * 2 ** 16
         var_names.append(key)
     var = pd.DataFrame(index=var_names)
-    X = x_df.to_numpy()
+    var["Channel"] = var.index
+    X_counts = x_df.to_numpy()
+    cofactor = 5
+    X_expr = np.arcsinh(X_counts / cofactor)
 
-    ad = AnnData(X, obs=obs, var=var, dtype="float32")
-    filename = dst_folder / f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}"
-    ad.write_h5ad(filename)
+    adata = ad.AnnData(X_counts, obs=obs, var=var, layers={"expr": X_expr}, dtype="float32")
+    adata.write_h5ad(dst_uri)
 
     artifact = {"location": str(dst_uri)}
     return df, artifact

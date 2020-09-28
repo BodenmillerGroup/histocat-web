@@ -1,12 +1,9 @@
 from typing import List, Optional
 
-import pandas as pd
+import scanpy as sc
 from fastapi import HTTPException
-from sklearn import preprocessing
-from sklearn.decomposition import PCA
 from sqlalchemy.orm import Session
 
-from histocat.core.image import normalize_embedding
 from histocat.modules.dataset import service
 
 
@@ -29,26 +26,20 @@ def process_pca(
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
-    df = pd.read_feather(cell_input.get("location"))
-    df = df[df["AcquisitionId"].isin(acquisition_ids)]
+    adata = sc.read_h5ad(cell_input.get("location"))
 
-    pca = PCA(n_components=n_components)
+    # Subset observations for selected acquisitions
+    adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
-    # Get a numpy array instead of DataFrame
-    feature_values = df[markers].values
+    # Subset selected channels
+    feature_values = adata[:, adata.var.index.isin(markers)].layers["expr"]
 
-    # Normalize data
-    min_max_scaler = preprocessing.MinMaxScaler()
-    feature_values_scaled = min_max_scaler.fit_transform(feature_values)
-
-    # Run PCA
-    result = pca.fit_transform(feature_values_scaled)
-    result = normalize_embedding(result)
+    result = sc.tl.pca(feature_values, n_comps=n_components, copy=True)
 
     output = {
-        "acquisitionIds": df["AcquisitionId"].tolist(),
-        "cellIds": df["CellId"].tolist(),
-        "objectNumbers": df["ObjectNumber"].tolist(),
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
         "x": {"label": "PC1", "data": result[:, 0].tolist()},
         "y": {"label": "PC2", "data": result[:, 1].tolist()},
     }
@@ -57,6 +48,7 @@ def process_pca(
         output["z"] = {"label": "PC3", "data": result[:, 2].tolist()}
 
     if heatmap_type and heatmap:
-        output["heatmap"] = {"label": heatmap, "data": df[heatmap].tolist()}
+        heatmap_values = adata.layers["expr"][:, adata.var.index == heatmap]
+        output["heatmap"] = {"label": heatmap, "data": heatmap_values[:, 0].tolist()}
 
     return output

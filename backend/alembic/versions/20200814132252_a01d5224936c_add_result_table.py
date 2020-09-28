@@ -22,6 +22,7 @@ def upgrade():
         'result',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True, nullable=False),
+        sa.Column('parent_id', sa.Integer(), sa.ForeignKey("result.id", ondelete="CASCADE"), index=True, nullable=True),
         sa.Column('type', sa.String(64), index=True, nullable=False),
         sa.Column('status', sa.String(64), index=True, nullable=False),
         sa.Column('name', sa.String()),

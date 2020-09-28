@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.25
+    image: dpage/pgadmin4:4.26
     depends_on:
       - db
     environment:
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.2.11
+    image: library/traefik:2.3.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

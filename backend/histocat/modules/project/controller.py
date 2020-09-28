@@ -52,7 +52,7 @@ def create(
         raise HTTPException(
             status_code=400, detail="The project with this name already exists.",
         )
-    item = service.create(db, group_id=group_id, params=params, member=member)
+    item = service.create(db, group_id=group_id, params=params, member_id=member.id)
     return item
 
 

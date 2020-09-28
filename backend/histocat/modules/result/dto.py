@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 class ResultCreateDto(BaseModel):
     dataset_id: int
+    parent_id: Optional[int]
     type: str
     status: str
     name: Optional[str]
@@ -23,6 +24,7 @@ class ResultUpdateDto(BaseModel):
 class ResultDto(BaseModel):
     id: int
     dataset_id: int
+    parent_id: Optional[int]
     type: str
     status: str
     name: Optional[str]

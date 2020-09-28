@@ -198,7 +198,7 @@ export default class ProjectsView extends Vue {
     if (item.description.toLowerCase().indexOf(normalizedSearchTerm) !== -1) {
       return true;
     }
-    return item.member.user.name.toLowerCase().indexOf(normalizedSearchTerm) !== -1;
+    return item.member.user.name ? item.member.user.name.toLowerCase().indexOf(normalizedSearchTerm) !== -1 : false;
   }
 
   removeTagFilter(item) {

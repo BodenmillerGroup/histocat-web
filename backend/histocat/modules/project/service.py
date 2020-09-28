@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from .dto import ProjectCreateDto, ProjectUpdateDto
 from .models import ProjectModel
-from histocat.modules.member.models import MemberModel
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +28,8 @@ def get_tags(session: Session, *, group_id: int) -> Set[str]:
     return {e[0] for e in items}
 
 
-def create(session: Session, *, group_id: int, params: ProjectCreateDto, member: MemberModel) -> ProjectModel:
-    entity = ProjectModel(group_id=group_id, name=params.name, description=params.description, tags=params.tags, member_id=member.id)
+def create(session: Session, *, group_id: int, params: ProjectCreateDto, member_id: int) -> ProjectModel:
+    entity = ProjectModel(group_id=group_id, name=params.name, description=params.description, tags=params.tags, member_id=member_id)
     session.add(entity)
     session.commit()
     session.refresh(entity)

@@ -4,11 +4,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user
+from histocat.api.security import get_active_user, get_active_member
 from histocat.modules.user.models import UserModel
 
 from . import service
 from .dto import PresetCreateDto, PresetDto
+from histocat.modules.member.models import MemberModel
 
 router = APIRouter()
 
@@ -35,14 +36,14 @@ def get_project_presets(
     return item
 
 
-@router.post("/presets", response_model=PresetDto)
+@router.post("/groups/{group_id}/presets", response_model=PresetDto)
 def create(
-    *, db: Session = Depends(get_db), params: PresetCreateDto, user: UserModel = Depends(get_active_user),
+    group_id: int, params: PresetCreateDto, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
 ):
     """
     Create new preset
     """
-    items = service.create(db, params=params)
+    items = service.create(db, params=params, member_id=member.id)
     return items
 
 
