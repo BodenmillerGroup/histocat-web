@@ -32,7 +32,7 @@ def process_pca(
     adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
     # Subset selected channels
-    feature_values = adata[:, adata.var.index.isin(markers)].layers["expr"]
+    feature_values = adata[:, adata.var.index.isin(markers)].layers["exprs"]
 
     result = sc.tl.pca(feature_values, n_comps=n_components, copy=True)
 
@@ -48,7 +48,7 @@ def process_pca(
         output["z"] = {"label": "PC3", "data": result[:, 2].tolist()}
 
     if heatmap_type and heatmap:
-        heatmap_values = adata.layers["expr"][:, adata.var.index == heatmap]
+        heatmap_values = adata.layers["exprs"][:, adata.var.index == heatmap]
         output["heatmap"] = {"label": heatmap, "data": heatmap_values[:, 0].tolist()}
 
     return output

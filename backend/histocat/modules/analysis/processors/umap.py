@@ -3,15 +3,12 @@ import pickle
 from datetime import datetime
 from typing import List, Optional
 
-import numpy as np
-import pandas as pd
+import scanpy as sc
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sklearn import preprocessing
 from sqlalchemy.orm import Session
 from umap import UMAP
 
-from histocat.core.image import normalize_embedding
 from histocat.core.notifier import Message
 from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
@@ -41,17 +38,13 @@ def process_umap(
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
-    df = pd.read_feather(cell_input.get("location"))
-    df = df[df["AcquisitionId"].isin(acquisition_ids)]
+    adata = sc.read_h5ad(cell_input.get("location"))
 
-    # Get a numpy array instead of DataFrame
-    feature_values = df[markers].values
+    # Subset observations for selected acquisitions
+    adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
-    # Normalize data
-    feature_values = np.arcsinh(feature_values / 5, out=feature_values)
-
-    min_max_scaler = preprocessing.MinMaxScaler()
-    feature_values_scaled = min_max_scaler.fit_transform(feature_values)
+    # Subset selected channels
+    feature_values = adata[:, adata.var.index.isin(markers)].layers["exprs"]
 
     # umap-learn implementation
     umap = UMAP(
@@ -62,10 +55,10 @@ def process_umap(
         verbose=6,
         random_state=77,
     )
-    umap_result = umap.fit_transform(feature_values_scaled)
-    acquisitionIds = df["AcquisitionId"]
-    cellIds = df["CellId"]
-    objectNumbers = df["ObjectNumber"]
+    umap_result = umap.fit_transform(feature_values)
+    acquisitionIds = adata.obs["AcquisitionId"].tolist()
+    cellIds = adata.obs["CellId"].tolist()
+    objectNumbers = adata.obs["ObjectNumber"].tolist()
 
     result_create_params = ResultCreateDto(
         dataset_id=dataset_id,
@@ -122,12 +115,10 @@ def get_umap_result(
     objectNumbers = r.get("objectNumbers")
     umap_result = r.get("umap_result")
 
-    umap_result = normalize_embedding(umap_result)
-
     output = {
-        "acquisitionIds": acquisitionIds.tolist(),
-        "cellIds": cellIds.tolist(),
-        "objectNumbers": objectNumbers.tolist(),
+        "acquisitionIds": acquisitionIds,
+        "cellIds": cellIds,
+        "objectNumbers": objectNumbers,
         "x": {"label": "C1", "data": umap_result[:, 0].tolist()},
         "y": {"label": "C2", "data": umap_result[:, 1].tolist()},
     }
@@ -141,9 +132,12 @@ def get_umap_result(
         acquisition_ids = params.get("acquisition_ids")
         cell_input = result.dataset.meta.get("cell")
 
-        df = pd.read_feather(cell_input.get("location"))
-        df = df[df["AcquisitionId"].isin(acquisition_ids)]
+        adata = sc.read_h5ad(cell_input.get("location"))
 
-        output["heatmap"] = {"label": heatmap, "data": df[heatmap].tolist()}
+        # Subset observations for selected acquisitions
+        adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
+
+        heatmap_values = adata.layers["exprs"][:, adata.var.index == heatmap]
+        output["heatmap"] = {"label": heatmap, "data": heatmap_values[:, 0].tolist()}
 
     return output

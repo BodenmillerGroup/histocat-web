@@ -1,30 +1,20 @@
 import logging
-from typing import Optional, Sequence, Tuple, List
+from typing import Optional, Sequence
 
+import anndata as ad
 import cv2
 import numpy as np
-import pandas as pd
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
-from matplotlib.colors import to_rgba
 from skimage.measure import regionprops
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from starlette.responses import StreamingResponse
 
 from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user
-from histocat.core.image import (
-    apply_filter,
-    apply_morphology,
-    colorize,
-    draw_scalebar,
-    get_mask,
-    scale_image,
-)
-from histocat.core.utils import stream_bytes
+from histocat.core.image import colorize, scale_image
 from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import pca, phenograph, tsne, umap
@@ -33,7 +23,6 @@ from histocat.modules.gate import service as gate_service
 from histocat.modules.user.models import UserModel
 
 from .dto import (
-    AnalysisDto,
     PcaDto,
     PhenographDto,
     PhenographSubmissionDto,
@@ -82,62 +71,6 @@ def get_additive_image(db: Session, params: ChannelStackDto):
     return additive_image
 
 
-@router.post("/analysis/segmentation/image")
-async def produce_segmentation_image(
-    params: AnalysisDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
-):
-    """
-    Produce segmentation image
-    """
-    additive_image, _ = get_additive_image(db, params.channels)
-
-    if params.filter.apply:
-        additive_image = apply_filter(additive_image, params.filter)
-
-    if params.scalebar.apply:
-        additive_image = draw_scalebar(additive_image, params.scalebar)
-
-    mask = get_mask(additive_image, params.settings)
-
-    if params.settings.iterations > 0:
-        mask = apply_morphology(mask, params.settings)
-
-    if params.settings.result_type == RESULT_TYPE_ORIGIN:
-        r, g, b, a = to_rgba(params.settings.mask_color)
-        additive_image[mask == 0] = (r * 255, g * 255, b * 255, a * 255)
-        additive_image = cv2.cvtColor(additive_image, cv2.COLOR_BGRA2RGBA)
-    elif params.settings.result_type == RESULT_TYPE_MASK:
-        additive_image = mask
-    else:
-        pass
-
-    format = params.format if params.format is not None else "png"
-    status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)
-    return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")
-
-
-@router.post("/analysis/segmentation/contours")
-async def produce_segmentation_contours(
-    params: AnalysisDto, request: Request, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
-):
-    """
-    Produce segmentation image
-    """
-    additive_image, _ = get_additive_image(db, params.channels)
-
-    if params.filter.apply:
-        additive_image = apply_filter(additive_image, params.filter)
-
-    mask = get_mask(additive_image, params.settings)
-
-    if params.settings.iterations > 0:
-        mask = apply_morphology(mask, params.settings)
-
-    contours0, hierarchy = cv2.findContours(cv2.flip(mask, 0), mode=cv2.RETR_LIST, method=cv2.CHAIN_APPROX_SIMPLE)
-    contours = [cv2.approxPolyDP(cnt, 3, True).tolist() for cnt in contours0]
-    return ORJSONResponse(contours)
-
-
 @router.get("/analysis/scatterplot")
 async def get_scatter_plot_data(
     dataset_id: int,
@@ -163,25 +96,30 @@ async def get_scatter_plot_data(
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
-    df = pd.read_feather(cell_input.get("location"))
-    df = df[df["AcquisitionId"].isin(acquisition_ids)]
+    adata = ad.read_h5ad(cell_input.get("location"))
+
+    # Subset observations for selected acquisitions
+    adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
     output = {
-        "acquisitionIds": df["AcquisitionId"].tolist(),
-        "cellIds": df["CellId"].tolist(),
-        "objectNumbers": df["ObjectNumber"].tolist(),
-        "x": {"label": marker_x, "data": df[marker_x].tolist(),},
-        "y": {"label": marker_y, "data": df[marker_y].tolist(),},
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "x": {"label": marker_x, "data": adata.layers["exprs"][:, adata.var.index == marker_x][:, 0].tolist(),},
+        "y": {"label": marker_y, "data": adata.layers["exprs"][:, adata.var.index == marker_y][:, 0].tolist(),},
     }
 
     if marker_z:
         output["z"] = {
             "label": marker_z,
-            "data": df[marker_z].tolist(),
+            "data": adata.layers["exprs"][:, adata.var.index == marker_z][:, 0].tolist(),
         }
 
     if heatmap_type and heatmap:
-        output["heatmap"] = {"label": heatmap, "data": df[heatmap].tolist()}
+        output["heatmap"] = {
+            "label": heatmap,
+            "data": adata.layers["exprs"][:, adata.var.index == heatmap][:, 0].tolist(),
+        }
 
     return ORJSONResponse(output)
 
@@ -205,18 +143,19 @@ async def get_box_plot_data(
     if not cell_input or (not gate_id and len(acquisition_ids) == 0):
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
+    adata = ad.read_h5ad(cell_input.get("location"))
+
     content = []
-    df = pd.read_feather(cell_input.get("location"))
 
     if gate_id:
         gate = gate_service.get_by_id(db, id=gate_id)
-        df = df[df["CellId"].isin(gate.cell_ids)]
+        adata = adata[adata.obs["CellId"].isin(gate.cell_ids)]
     else:
-        df = df[df["AcquisitionId"].isin(acquisition_ids)]
+        adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
     for marker in markers:
         content.append(
-            {"label": marker, "data": df[marker].tolist(),}
+            {"label": marker, "data": adata.layers["exprs"][:, adata.var.index == marker][:, 0].tolist(),}
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))

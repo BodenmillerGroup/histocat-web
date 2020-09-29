@@ -6,9 +6,9 @@ import re
 from pathlib import Path
 from typing import Dict
 
-import pandas as pd
-import numpy as np
 import anndata as ad
+import numpy as np
+import pandas as pd
 from sqlalchemy.orm import Session
 
 from histocat.core.notifier import Message
@@ -86,7 +86,9 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     if object_relationships_input:
         meta["object_relationships"] = object_relationships_input
 
-    cell_df, cell_input = _import_cell_csv(db, src_folder, dst_folder, image_number_to_acquisition_id, image_number_to_scaling, channels_input)
+    cell_df, cell_input = _import_cell_csv(
+        db, src_folder, dst_folder, image_number_to_acquisition_id, image_number_to_scaling, channels_input
+    )
     if cell_input:
         meta["cell"] = cell_input
 
@@ -190,9 +192,9 @@ def _import_cell_csv(
     var["Channel"] = var.index
     X_counts = x_df.to_numpy()
     cofactor = 5
-    X_expr = np.arcsinh(X_counts / cofactor)
+    X_exprs = np.arcsinh(X_counts / cofactor)
 
-    adata = ad.AnnData(X_counts, obs=obs, var=var, layers={"expr": X_expr}, dtype="float32")
+    adata = ad.AnnData(X_counts, obs=obs, var=var, layers={"exprs": X_exprs}, dtype="float32")
     adata.write_h5ad(dst_uri)
 
     artifact = {"location": str(dst_uri)}

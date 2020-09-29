@@ -29,7 +29,9 @@ def get_tags(session: Session, *, group_id: int) -> Set[str]:
 
 
 def create(session: Session, *, group_id: int, params: ProjectCreateDto, member_id: int) -> ProjectModel:
-    entity = ProjectModel(group_id=group_id, name=params.name, description=params.description, tags=params.tags, member_id=member_id)
+    entity = ProjectModel(
+        group_id=group_id, name=params.name, description=params.description, tags=params.tags, member_id=member_id
+    )
     session.add(entity)
     session.commit()
     session.refresh(entity)

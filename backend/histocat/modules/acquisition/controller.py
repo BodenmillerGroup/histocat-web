@@ -12,7 +12,7 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user, get_active_member
+from histocat.api.security import get_active_member, get_active_user
 from histocat.core.image import (
     apply_filter,
     colorize,
@@ -23,7 +23,12 @@ from histocat.core.image import (
 from histocat.core.redis_manager import redis_manager
 from histocat.core.utils import stream_bytes
 from histocat.modules.acquisition import service as acquisition_service
-from histocat.modules.acquisition.dto import ChannelStackDto, ChannelStatsDto, ChannelUpdateDto, AcquisitionDto
+from histocat.modules.acquisition.dto import (
+    AcquisitionDto,
+    ChannelStackDto,
+    ChannelStatsDto,
+    ChannelUpdateDto,
+)
 from histocat.modules.analysis.controller import get_additive_image
 from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
@@ -121,7 +126,7 @@ async def download_channel_stack(
     params: ChannelStackDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """Download channel stack (additive) image."""
-    additive_image= get_additive_image(db, params)
+    additive_image = get_additive_image(db, params)
 
     # TODO: Bright-field effect
     # additive_image = additive_image[..., ::-1]

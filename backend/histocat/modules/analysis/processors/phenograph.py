@@ -3,11 +3,10 @@ import pickle
 from datetime import datetime
 from typing import List
 
-import pandas as pd
 import phenograph
+import scanpy as sc
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sklearn import preprocessing
 from sqlalchemy.orm import Session
 
 from histocat.core.notifier import Message
@@ -40,19 +39,17 @@ def process_phenograph(
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
-    df = pd.read_feather(cell_input.get("location"))
-    df = df[df["AcquisitionId"].isin(acquisition_ids)]
+    adata = sc.read_h5ad(cell_input.get("location"))
 
-    # Get a numpy array instead of DataFrame
-    feature_values = df[markers].values
+    # Subset observations for selected acquisitions
+    adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
-    # Normalize data
-    min_max_scaler = preprocessing.MinMaxScaler()
-    feature_values_scaled = min_max_scaler.fit_transform(feature_values)
+    # Subset selected channels
+    feature_values = sc.get.obs_df(adata, layer="exprs", keys=markers)
 
     # PhenoGraph implementation
     communities, graph, Q = phenograph.cluster(
-        feature_values_scaled,
+        feature_values,
         clustering_algo=clustering_algo,
         n_jobs=1,
         k=nearest_neighbors,
@@ -61,7 +58,7 @@ def process_phenograph(
         min_cluster_size=min_cluster_size,
     )
 
-    phenograph_result = df[markers]
+    phenograph_result = feature_values
     phenograph_result = phenograph_result.assign(community=communities)
     phenograph_result = phenograph_result.groupby("community", as_index=False).mean()
 

@@ -3,16 +3,12 @@ import pickle
 from datetime import datetime
 from typing import List, Optional
 
-import numpy as np
-import pandas as pd
 import scanpy as sc
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from sklearn import preprocessing
 from sklearn.manifold import TSNE
 from sqlalchemy.orm import Session
 
-from histocat.core.image import normalize_embedding
 from histocat.core.notifier import Message
 from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
@@ -50,7 +46,7 @@ def process_tsne(
     adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
     # Subset selected channels
-    feature_values = adata[:, adata.var.index.isin(markers)].layers["expr"]
+    feature_values = adata[:, adata.var.index.isin(markers)].layers["exprs"]
 
     # scikit-learn implementation
     tsne = TSNE(
@@ -146,7 +142,7 @@ def get_tsne_result(
         # Subset observations for selected acquisitions
         adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
 
-        heatmap_values = adata.layers["expr"][:, adata.var.index == heatmap]
+        heatmap_values = adata.layers["exprs"][:, adata.var.index == heatmap]
         output["heatmap"] = {"label": heatmap, "data": heatmap_values[:, 0].tolist()}
 
     return output

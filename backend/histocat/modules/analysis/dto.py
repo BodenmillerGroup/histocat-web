@@ -2,24 +2,6 @@ from typing import Any, Optional, Sequence
 
 from pydantic import BaseModel
 
-from histocat.modules.acquisition.dto import ChannelSettingsDto, FilterDto, ScalebarDto
-
-
-class SegmentationSettingsDto(BaseModel):
-    algorithm: str
-    iterations: int
-    kernel_size: int
-    mask_color: str
-    result_type: str
-
-
-class AnalysisDto(BaseModel):
-    filter: FilterDto
-    scalebar: ScalebarDto
-    channels: Sequence[ChannelSettingsDto]
-    format: Optional[str] = "png"
-    settings: SegmentationSettingsDto
-
 
 class PlotSeriesDto(BaseModel):
     """Scatter plot axis model."""

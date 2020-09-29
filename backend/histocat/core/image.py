@@ -11,7 +11,6 @@ from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage.color import label2rgb
 
 from histocat.modules.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
-from histocat.modules.analysis.dto import SegmentationSettingsDto
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
 
@@ -152,59 +151,6 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
 #             cv2.LINE_AA,
 #         )
 #     return image
-
-
-def otsu_grayscale(image_rgb):
-    image_gray = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2GRAY)
-    _, mask = cv2.threshold(image_gray.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    return mask
-
-
-def _otsu_hls(image_rgb, channel_name: str, flip: bool):
-    image_gray = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2HLS)
-    hue, lightness, saturation = np.split(image_gray, 3, axis=2)
-
-    hsl = locals()[channel_name]
-    hsl = hsl.reshape((hsl.shape[0], hsl.shape[1]))
-
-    _, mask = cv2.threshold(hsl.astype(np.uint8), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    if flip:
-        mask = ~mask
-
-    return mask
-
-
-def otsu_hue(image_rgb):
-    return _otsu_hls(image_rgb, channel_name="hue", flip=False)
-
-
-def otsu_saturation(image_rgb):
-    return _otsu_hls(image_rgb, channel_name="saturation", flip=False)
-
-
-def otsu_lightness(image_rgb):
-    return _otsu_hls(image_rgb, channel_name="lightness", flip=False)
-
-
-def get_mask(image_rgb, settings: SegmentationSettingsDto):
-    if settings.algorithm == OTSU_GRAYSCALE:
-        return otsu_grayscale(image_rgb)
-    elif settings.algorithm == OTSU_HUE_ALGORITHM:
-        return otsu_hue(image_rgb)
-    elif settings.algorithm == OTSU_SATURATION_ALGORITHM:
-        return otsu_saturation(image_rgb)
-    elif settings.algorithm == OTSU_LIGHTNESS_ALGORITHM:
-        return otsu_lightness(image_rgb)
-    return image_rgb
-
-
-def apply_morphology(mask, settings: SegmentationSettingsDto):
-    kernel = np.ones((settings.kernel_size, settings.kernel_size), np.uint8)
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=settings.iterations)
-    mask = cv2.erode(mask, kernel, iterations=2)
-    mask = cv2.dilate(mask, kernel, iterations=5)
-    return mask
 
 
 def get_heatmap_colors(values: np.ndarray, categorical_values: bool):
