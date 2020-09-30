@@ -1,8 +1,8 @@
 """Add member table
 
-Revision ID: e1c9291e68ae
-Revises: 4bec27c370f0
-Create Date: 2020-08-14 13:21:46.721573
+Revision ID: ee2d279cae47
+Revises: e0e586eec464
+Create Date: 2020-09-30 11:19:13.281166
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e1c9291e68ae'
-down_revision = '4bec27c370f0'
+revision = 'ee2d279cae47'
+down_revision = 'e0e586eec464'
 branch_labels = None
 depends_on = None
 

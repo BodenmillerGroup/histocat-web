@@ -9,6 +9,7 @@ from histocat.modules.panorama.models import PanoramaModel  # noqa
 from histocat.modules.preset.models import PresetModel  # noqa
 from histocat.modules.project.models import ProjectModel  # noqa
 from histocat.modules.result.models import ResultModel  # noqa
+from histocat.modules.pipeline.models import PipelineModel  # noqa
 from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto

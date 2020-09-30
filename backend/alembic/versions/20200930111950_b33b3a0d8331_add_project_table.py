@@ -1,8 +1,8 @@
 """Add project table
 
-Revision ID: af7cd5a143a9
-Revises: e1c9291e68ae
-Create Date: 2020-08-14 13:21:54.388521
+Revision ID: b33b3a0d8331
+Revises: ee2d279cae47
+Create Date: 2020-09-30 11:19:50.982825
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 
 
 # revision identifiers, used by Alembic.
-revision = 'af7cd5a143a9'
-down_revision = 'e1c9291e68ae'
+revision = 'b33b3a0d8331'
+down_revision = 'ee2d279cae47'
 branch_labels = None
 depends_on = None
 

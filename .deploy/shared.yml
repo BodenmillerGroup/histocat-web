@@ -75,7 +75,7 @@ services:
 
   db:
     restart: always
-    image: postgres:12.4-alpine
+    image: postgres:13.0-alpine
     environment:
       - POSTGRES_SERVER
       - POSTGRES_USER
@@ -103,7 +103,7 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.8.8-alpine
+    image: rabbitmq:3.8.9-alpine
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.3.0
+    image: library/traefik:2.3.1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

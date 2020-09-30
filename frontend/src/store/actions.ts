@@ -10,6 +10,7 @@ import { gatesModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
 import { resultsModule } from "@/modules/results";
+import { pipelinesModule } from "@/modules/pipelines";
 
 export class RootActions extends Actions {
   group?: Context<typeof groupModule>;
@@ -22,6 +23,7 @@ export class RootActions extends Actions {
   centroids?: Context<typeof centroidsModule>;
   presets?: Context<typeof presetsModule>;
   gates?: Context<typeof gatesModule>;
+  pipelines?: Context<typeof pipelinesModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -35,6 +37,7 @@ export class RootActions extends Actions {
     this.centroids = centroidsModule.context(store);
     this.presets = presetsModule.context(store);
     this.gates = gatesModule.context(store);
+    this.pipelines = pipelinesModule.context(store);
   }
 
   // Reset project store
@@ -48,6 +51,7 @@ export class RootActions extends Actions {
     this.centroids?.mutations.reset();
     this.presets?.mutations.reset();
     this.gates?.mutations.reset();
+    this.pipelines?.mutations.reset();
   }
 
   // Reset global store

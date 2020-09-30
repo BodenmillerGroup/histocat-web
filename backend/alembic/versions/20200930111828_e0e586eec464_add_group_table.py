@@ -1,8 +1,8 @@
 """Add group table
 
-Revision ID: c72fcc1bfbaf
-Revises: a4d621b5f66c
-Create Date: 2020-08-14 13:21:20.332666
+Revision ID: e0e586eec464
+Revises: 219260649256
+Create Date: 2020-09-30 11:18:28.563462
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 
 
 # revision identifiers, used by Alembic.
-revision = 'c72fcc1bfbaf'
-down_revision = 'a4d621b5f66c'
+revision = 'e0e586eec464'
+down_revision = '219260649256'
 branch_labels = None
 depends_on = None
 

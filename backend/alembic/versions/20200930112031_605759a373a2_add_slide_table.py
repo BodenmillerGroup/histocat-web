@@ -1,8 +1,8 @@
 """Add slide table
 
-Revision ID: 49ce2d9138fa
-Revises: af7cd5a143a9
-Create Date: 2020-08-14 13:22:01.723775
+Revision ID: 605759a373a2
+Revises: b33b3a0d8331
+Create Date: 2020-09-30 11:20:31.970564
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 
 # revision identifiers, used by Alembic.
-revision = '49ce2d9138fa'
-down_revision = 'af7cd5a143a9'
+revision = '605759a373a2'
+down_revision = 'b33b3a0d8331'
 branch_labels = None
 depends_on = None
 
@@ -42,4 +42,3 @@ def upgrade():
 def downgrade():
     op.drop_table('slide')
     op.drop_unique_constraint('uq_slide_project_id_and_name')
-

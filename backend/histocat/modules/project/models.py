@@ -33,6 +33,7 @@ class ProjectModel(Base):
     slides = sa.orm.relationship("SlideModel", back_populates="project", cascade="all, delete, delete-orphan")
     datasets = sa.orm.relationship("DatasetModel", back_populates="project", cascade="all, delete, delete-orphan")
     presets = sa.orm.relationship("PresetModel", back_populates="project", cascade="all, delete, delete-orphan")
+    pipelines = sa.orm.relationship("PipelineModel", back_populates="project", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
     def slides_location(self) -> str:

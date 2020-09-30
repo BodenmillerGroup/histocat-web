@@ -1,17 +1,16 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel
 
 
 class ResultCreateDto(BaseModel):
     dataset_id: int
-    parent_id: Optional[int]
-    type: str
     status: str
     name: Optional[str]
     description: Optional[str]
-    params: dict
+    pipeline: Any
+    input: Any
 
 
 class ResultUpdateDto(BaseModel):
@@ -24,12 +23,11 @@ class ResultUpdateDto(BaseModel):
 class ResultDto(BaseModel):
     id: int
     dataset_id: int
-    parent_id: Optional[int]
-    type: str
     status: str
     name: Optional[str]
     description: Optional[str]
-    params: dict
+    pipeline: Any
+    input: Any
     location: Optional[str]
     created_at: datetime
 

@@ -1,8 +1,8 @@
 """Add panorama table
 
-Revision ID: 19404c6188e2
-Revises: 49ce2d9138fa
-Create Date: 2020-08-14 13:22:17.981270
+Revision ID: 69e599da5845
+Revises: 605759a373a2
+Create Date: 2020-09-30 11:21:17.093851
 
 """
 from alembic import op
@@ -11,8 +11,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 
 # revision identifiers, used by Alembic.
-revision = '19404c6188e2'
-down_revision = '49ce2d9138fa'
+revision = '69e599da5845'
+down_revision = '605759a373a2'
 branch_labels = None
 depends_on = None
 
