@@ -7,7 +7,7 @@ import { Actions, Context } from "vuex-smart-module";
 import { ProjectsState } from ".";
 import { api } from "./api";
 import { ProjectsGetters } from "./getters";
-import {ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate} from "./models";
+import { ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate } from "./models";
 import { ProjectsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { IChannelSettings } from "@/modules/settings/models";
@@ -237,7 +237,9 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.updateChannel(groupId, payload.acquisitionId, payload.data);
-      await this.actions.getProjectData(this.getters.activeProjectId!);
+      if (data) {
+        this.mutations.setProjectData(data);
+      }
       await this.actions.getChannelStackImage();
       this.main!.mutations.addNotification({ content: "Channel successfully updated", color: "success" });
     } catch (error) {

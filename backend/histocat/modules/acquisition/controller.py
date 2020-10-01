@@ -31,6 +31,7 @@ from histocat.modules.acquisition.dto import (
 )
 from histocat.modules.analysis.controller import get_additive_image
 from histocat.modules.member.models import MemberModel
+from histocat.modules.project.dto import ProjectFullDto
 from histocat.modules.user.models import UserModel
 
 logger = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ async def read_channel_stats(
     return ORJSONResponse(content)
 
 
-@router.put("/groups/{group_id}/acquisitions/{acquisition_id}", response_model=AcquisitionDto)
+@router.put("/groups/{group_id}/acquisitions/{acquisition_id}", response_model=ProjectFullDto)
 def update(
     group_id: int,
     acquisition_id: int,

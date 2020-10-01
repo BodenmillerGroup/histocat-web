@@ -108,6 +108,6 @@ export const api = {
       .put(`groups/${groupId}/acquisitions/${acquisitionId}`, {
         json: data,
       })
-      .json<IAcquisition>();
+      .json<IProjectData>();
   },
 };
