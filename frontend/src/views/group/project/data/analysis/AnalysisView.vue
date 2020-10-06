@@ -1,11 +1,15 @@
 <template>
   <v-tabs v-model="tab">
+    <v-tab>Pipeline</v-tab>
     <v-tab>Scatter Plot</v-tab>
     <v-tab>Box Plot</v-tab>
     <v-tab>PCA</v-tab>
     <v-tab>t-SNE</v-tab>
     <v-tab>UMAP</v-tab>
     <v-tab>PhenoGraph</v-tab>
+    <v-tab-item>
+      <PipelineView />
+    </v-tab-item>
     <v-tab-item>
       <ScatterPlotTab />
     </v-tab-item>
@@ -35,9 +39,11 @@ import TSNETab from "@/views/group/project/data/analysis/tsne/TSNETab.vue";
 import ScatterPlotTab from "@/views/group/project/data/analysis/scatter/ScatterPlotTab.vue";
 import UMAPTab from "@/views/group/project/data/analysis/umap/UMAPTab.vue";
 import { Component, Vue } from "vue-property-decorator";
+import PipelineView from "@/views/group/project/data/analysis/pipeline/PipelineView.vue";
 
 @Component({
   components: {
+    PipelineView,
     ScatterPlotTab,
     PhenoGraphTab,
     UMAPTab,

@@ -1,3 +1,5 @@
+export type PipelineStepType = "transformation" | "tsne";
+
 export interface IPipelineCreate {
   project_id: number;
   name: string;

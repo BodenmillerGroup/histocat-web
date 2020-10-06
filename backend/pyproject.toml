@@ -49,11 +49,11 @@ uvicorn = { version = "^0.12.1", extras = ["standard"], optional = true }
 [tool.poetry.dev-dependencies]
 autoflake = "^1.4"
 black = "^19.10b0"
-flake8 = "^3.8.3"
+flake8 = "^3.8.4"
 isort = "^5.5.4"
 mypy = "*"
 pylint = "^2.6.0"
-pytest = "^6.1.0"
+pytest = "^6.1.1"
 sqlalchemy-stubs = "^0.3"
 vulture = "^2.1"
 
