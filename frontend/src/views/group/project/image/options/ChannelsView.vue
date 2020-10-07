@@ -43,7 +43,6 @@ import { IChannel } from "@/modules/projects/models";
 import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
 import { Component, Vue } from "vue-property-decorator";
-import { IChannelSettings } from "@/modules/settings/models";
 
 @Component
 export default class ChannelsView extends Vue {

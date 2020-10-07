@@ -9,13 +9,24 @@
           </v-btn>
         </template>
         <v-list dense>
+          <v-subheader>Preprocessing</v-subheader>
           <v-list-item @click="addStep('transformation')">
             <v-list-item-title>Transformation</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="addStep('scale')">
+            <v-list-item-title>Scale</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="addStep('regressOut')">
+            <v-list-item-title>Regress Out</v-list-item-title>
+          </v-list-item>
+          <v-subheader>Embeddings</v-subheader>
+          <v-list-item @click="addStep('pca')">
+            <v-list-item-title>PCA</v-list-item-title>
           </v-list-item>
           <v-list-item @click="addStep('tsne')">
             <v-list-item-title>t-SNE</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="addStep('umap')">
+          <v-list-item @click="addStep('umap')">p-
             <v-list-item-title>UMAP</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -28,12 +39,24 @@
         </template>
         <span>Clear pipeline</span>
       </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn small elevation="1" v-on="on" @click="printPipeline" class="ml-2" :disabled="steps.length === 0">
+            Print
+          </v-btn>
+        </template>
+        <span>Clear pipeline</span>
+      </v-tooltip>
     </v-toolbar>
-    <v-timeline dense class="mx-2">
+    <v-timeline dense class="mr-2">
       <v-slide-x-reverse-transition group hide-on-leave>
-        <v-timeline-item v-for="step in steps" :key="step.id" :color="step.color" small fill-dot>
+        <v-timeline-item v-for="step in steps" :key="step.id" color="blue" :icon="icons[step.type]" fill-dot>
           <TransformationStepEditor v-if="step.type === `transformation`" :step="step" :deleteStep="deleteStep" />
+          <ScaleStepEditor v-if="step.type === `scale`" :step="step" :deleteStep="deleteStep" />
+          <RegressOutStepEditor v-if="step.type === `regressOut`" :step="step" :deleteStep="deleteStep" />
+          <PcaStepEditor v-else-if="step.type === `pca`" :step="step" :deleteStep="deleteStep" />
           <TsneStepEditor v-else-if="step.type === `tsne`" :step="step" :deleteStep="deleteStep" />
+          <UmapStepEditor v-else-if="step.type === `umap`" :step="step" :deleteStep="deleteStep" />
         </v-timeline-item>
       </v-slide-x-reverse-transition>
     </v-timeline>
@@ -49,11 +72,18 @@ import { Component, Vue } from "vue-property-decorator";
 import { mainModule } from "@/modules/main";
 import { pipelinesModule } from "@/modules/pipelines";
 import { PipelineStepType } from "@/modules/pipelines/models";
+import { v4 as uuidv4 } from "uuid";
 import TransformationStepEditor from "@/views/group/project/data/analysis/pipeline/steps/TransformationStepEditor.vue";
 import TsneStepEditor from "@/views/group/project/data/analysis/pipeline/steps/TsneStepEditor.vue";
+import UmapStepEditor from "@/views/group/project/data/analysis/pipeline/steps/UmapStepEditor.vue";
+import PcaStepEditor from "@/views/group/project/data/analysis/pipeline/steps/PcaStepEditor.vue";
+import ScaleStepEditor from "@/views/group/project/data/analysis/pipeline/steps/ScaleStepEditor.vue";
+import RegressOutStepEditor from "@/views/group/project/data/analysis/pipeline/steps/RegressOutStepEditor.vue";
 
 @Component({
-  components: {TsneStepEditor, TransformationStepEditor}
+  components: {
+    RegressOutStepEditor,
+    ScaleStepEditor, PcaStepEditor, UmapStepEditor, TsneStepEditor, TransformationStepEditor },
 })
 export default class PipelineView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
@@ -63,33 +93,102 @@ export default class PipelineView extends Vue {
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly pipelinesContext = pipelinesModule.context(this.$store);
 
+  readonly icons = {
+    transformation: "mdi-label-variant-outline",
+    scale: "mdi-label-variant-outline",
+    regressOut: "mdi-label-variant-outline",
+    pca: "mdi-chart-scatter-plot",
+    tsne: "mdi-chart-scatter-plot",
+    umap: "mdi-chart-scatter-plot",
+  };
+
   steps: any[] = [];
 
   get dataset() {
     return this.datasetsContext.getters.activeDataset;
   }
 
+  addTransformationStep() {
+    return {
+      id: uuidv4(),
+      type: "transformation",
+      mode: "arcsinh",
+      cofactor: 5,
+      variables: [],
+    };
+  }
+
+  addScaleStep() {
+    return {
+      id: uuidv4(),
+      type: "scale",
+      maxValue: undefined,
+      variables: [],
+    };
+  }
+
+  addRegressOutStep() {
+    return {
+      id: uuidv4(),
+      type: "regressOut",
+      variables: [],
+    };
+  }
+
+  addPcaStep() {
+    return {
+      id: uuidv4(),
+      type: "pca",
+      svdSolver: "arpack",
+      variables: [],
+    };
+  }
+
+  addTsneStep() {
+    return {
+      id: uuidv4(),
+      type: "tsne",
+      perplexity: 30,
+      earlyExaggeration: 12,
+      learningRate: 1000,
+      variables: [],
+    };
+  }
+
+  addUmapStep() {
+    return {
+      id: uuidv4(),
+      type: "umap",
+      minDist: 0.5,
+      spread: 1.0,
+      variables: [],
+    };
+  }
+
   addStep(type: PipelineStepType) {
     switch (type) {
       case "transformation": {
-        const step = {
-          id: "transformation",
-          type: "transformation",
-          color: "blue",
-          icon: "mdi-information",
-          cofactor: 5,
-        };
-        this.steps.push(step);
+        this.steps.push(this.addTransformationStep());
+        break;
+      }
+      case "scale": {
+        this.steps.push(this.addScaleStep());
+        break;
+      }
+      case "regressOut": {
+        this.steps.push(this.addRegressOutStep());
+        break;
+      }
+      case "pca": {
+        this.steps.push(this.addPcaStep());
         break;
       }
       case "tsne": {
-        const step = {
-          id: "tsne",
-          type: "tsne",
-          color: "blue",
-          icon: "mdi-information",
-        };
-        this.steps.push(step);
+        this.steps.push(this.addTsneStep());
+        break;
+      }
+      case "umap": {
+        this.steps.push(this.addUmapStep());
         break;
       }
     }
@@ -101,6 +200,10 @@ export default class PipelineView extends Vue {
 
   clearPipeline() {
     this.steps = [];
+  }
+
+  printPipeline() {
+    console.log(this.steps);
   }
 }
 </script>

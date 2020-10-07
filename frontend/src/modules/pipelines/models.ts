@@ -1,4 +1,4 @@
-export type PipelineStepType = "transformation" | "tsne";
+export type PipelineStepType = "transformation" | "scale" | "regressOut" | "tsne" | "umap" | "pca";
 
 export interface IPipelineCreate {
   project_id: number;

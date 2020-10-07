@@ -12,26 +12,13 @@
             <span>Delete step</span>
           </v-tooltip>
         </template>
-        Transformation
+        Regress Out
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-card flat>
           <v-row dense no-gutters>
             <v-col cols="4">
-              <v-radio-group label="Mode" v-model="step.mode">
-                <v-radio label="arcsinh" value="arcsinh" />
-                <v-radio label="log1p" value="log1p" />
-              </v-radio-group>
-              <v-text-field
-                label="Cofactor"
-                :disabled="step.mode !== 'arcsinh'"
-                v-model.number="step.cofactor"
-                type="number"
-                min="0"
-                step="1"
-                :rules="cofactorRules"
-                class="mt-2 text-field"
-              />
+
             </v-col>
             <v-col>
               <VariablesSelector :step="step" />
@@ -45,17 +32,17 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { positiveNumber, required } from "@/utils/validators";
+import { required } from "@/utils/validators";
 import VariablesSelector from "@/views/group/project/data/analysis/pipeline/steps/VariablesSelector.vue";
 
 @Component({
   components: { VariablesSelector },
 })
-export default class TransformationStepEditor extends Vue {
+export default class RegressOutStepEditor extends Vue {
   @Prop(Object) step;
   @Prop(Function) deleteStep;
 
-  readonly cofactorRules = [required, positiveNumber];
+  readonly required = required;
 }
 </script>
 
