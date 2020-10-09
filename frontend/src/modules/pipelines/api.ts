@@ -4,7 +4,7 @@ import { ApiManager } from "@/utils/api";
 export const api = {
   async createPipeline(groupId: number, data: IPipelineCreate) {
     return ApiManager.api
-      .post(`groups/${groupId}/piplines`, {
+      .post(`groups/${groupId}/pipelines`, {
         json: data,
       })
       .json<IPipeline>();

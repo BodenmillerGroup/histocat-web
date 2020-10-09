@@ -17,7 +17,7 @@
       <v-expansion-panel-content>
         <v-card flat>
           <v-row dense no-gutters>
-            <v-col cols="4">
+            <v-col>
               <v-text-field
                 label="Perplexity"
                 hint="The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms. Larger datasets usually require a larger perplexity. Consider selecting a value between 5 and 50. The choice is not extremely critical since t-SNE is quite insensitive to this parameter."
@@ -29,6 +29,8 @@
                 :rules="[required]"
                 class="text-field"
               />
+            </v-col>
+            <v-col>
               <v-text-field
                 label="Early exaggeration"
                 hint="Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them. For larger values, the space between natural clusters will be larger in the embedded space. Again, the choice of this parameter is not very critical. If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high."
@@ -39,6 +41,8 @@
                 :rules="[required]"
                 class="text-field"
               />
+            </v-col>
+            <v-col>
               <v-text-field
                 label="Learning rate"
                 hint="Note that the R-package “Rtsne” uses a default of 200. The learning rate can be a critical parameter. It should be between 100 and 1000. If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high. If the cost function gets stuck in a bad local minimum increasing the learning rate helps sometimes."
@@ -51,9 +55,6 @@
                 class="text-field"
               />
             </v-col>
-            <v-col>
-              <VariablesSelector :step="step" />
-            </v-col>
           </v-row>
         </v-card>
       </v-expansion-panel-content>
@@ -64,11 +65,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { required } from "@/utils/validators";
-import VariablesSelector from "@/views/group/project/data/analysis/pipeline/steps/VariablesSelector.vue";
 
-@Component({
-  components: { VariablesSelector },
-})
+@Component
 export default class TsneStepEditor extends Vue {
   @Prop(Object) step;
   @Prop(Function) deleteStep;

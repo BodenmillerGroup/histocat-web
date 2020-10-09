@@ -17,11 +17,13 @@
       <v-expansion-panel-content>
         <v-card flat>
           <v-row dense no-gutters>
-            <v-col cols="4">
+            <v-col>
               <v-radio-group label="Mode" v-model="step.mode">
                 <v-radio label="arcsinh" value="arcsinh" />
                 <v-radio label="log1p" value="log1p" />
               </v-radio-group>
+            </v-col>
+            <v-col>
               <v-text-field
                 label="Cofactor"
                 :disabled="step.mode !== 'arcsinh'"
@@ -33,9 +35,6 @@
                 class="mt-2 text-field"
               />
             </v-col>
-            <v-col>
-              <VariablesSelector :step="step" />
-            </v-col>
           </v-row>
         </v-card>
       </v-expansion-panel-content>
@@ -46,11 +45,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { positiveNumber, required } from "@/utils/validators";
-import VariablesSelector from "@/views/group/project/data/analysis/pipeline/steps/VariablesSelector.vue";
 
-@Component({
-  components: { VariablesSelector },
-})
+@Component
 export default class TransformationStepEditor extends Vue {
   @Prop(Object) step;
   @Prop(Function) deleteStep;

@@ -1,7 +1,7 @@
 <template>
   <v-card tile>
     <v-card-title>
-      Variables
+      Markers
       <v-spacer />
       <v-text-field v-model="search" label="Search" clearable single-line hide-details>
         <template v-slot:append>
@@ -32,7 +32,7 @@ import { equals } from "rambda";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class VariablesSelector extends Vue {
+export default class MarkersSelector extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
@@ -83,22 +83,22 @@ export default class VariablesSelector extends Vue {
     });
   }
 
-  get variables() {
-    return this.step.variables;
+  get markers() {
+    return this.step.markers;
   }
 
   get selected() {
     return this.items.filter((channel) => {
-      if (this.variables.includes(channel.name)) {
+      if (this.markers.includes(channel.name)) {
         return channel;
       }
     }) as any;
   }
 
   set selected(items: IChannel[]) {
-    const selectedVariables = items.map((item) => item.name);
-    if (!equals(this.variables, selectedVariables)) {
-      this.step.variables = selectedVariables;
+    const selectedMarkers = items.map((item) => item.name);
+    if (!equals(this.markers, selectedMarkers)) {
+      this.step.markers = selectedMarkers;
     }
   }
 }

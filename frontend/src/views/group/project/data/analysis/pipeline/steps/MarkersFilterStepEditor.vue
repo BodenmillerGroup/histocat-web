@@ -12,20 +12,11 @@
             <span>Delete step</span>
           </v-tooltip>
         </template>
-        Scale
+        Markers Filter
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-card flat>
-          <v-text-field
-            label="Max value"
-            hint="Clip (truncate) to this value after scaling. If empty, do not clip."
-            v-model.number="step.maxValue"
-            type="number"
-            min="0"
-            step="1"
-            clearable
-            class="text-field"
-          />
+          <MarkersSelector :step="step" />
         </v-card>
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -34,16 +25,13 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import MarkersSelector from "@/views/group/project/data/analysis/pipeline/steps/MarkersSelector.vue";
 
-@Component
-export default class ScaleStepEditor extends Vue {
+@Component({
+  components: { MarkersSelector },
+})
+export default class MarkersFilterStepEditor extends Vue {
   @Prop(Object) step;
   @Prop(Function) deleteStep;
 }
 </script>
-
-<style scoped>
-.text-field {
-  margin-right: 20px;
-}
-</style>

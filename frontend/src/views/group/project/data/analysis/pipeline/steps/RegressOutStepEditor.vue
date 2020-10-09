@@ -16,14 +16,7 @@
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-card flat>
-          <v-row dense no-gutters>
-            <v-col cols="4">
 
-            </v-col>
-            <v-col>
-              <VariablesSelector :step="step" />
-            </v-col>
-          </v-row>
         </v-card>
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -32,22 +25,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { required } from "@/utils/validators";
-import VariablesSelector from "@/views/group/project/data/analysis/pipeline/steps/VariablesSelector.vue";
 
-@Component({
-  components: { VariablesSelector },
-})
+@Component
 export default class RegressOutStepEditor extends Vue {
   @Prop(Object) step;
   @Prop(Function) deleteStep;
-
-  readonly required = required;
 }
 </script>
-
-<style scoped>
-.text-field {
-  margin-right: 20px;
-}
-</style>

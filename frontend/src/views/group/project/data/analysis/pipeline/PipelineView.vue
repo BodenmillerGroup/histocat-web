@@ -10,6 +10,9 @@
         </template>
         <v-list dense>
           <v-subheader>Preprocessing</v-subheader>
+          <v-list-item @click="addStep('markersFilter')">
+            <v-list-item-title>Markers Filter</v-list-item-title>
+          </v-list-item>
           <v-list-item @click="addStep('transformation')">
             <v-list-item-title>Transformation</v-list-item-title>
           </v-list-item>
@@ -19,6 +22,9 @@
           <v-list-item @click="addStep('regressOut')">
             <v-list-item-title>Regress Out</v-list-item-title>
           </v-list-item>
+          <v-list-item @click="addStep('neighbors')">
+            <v-list-item-title>Neighbors</v-list-item-title>
+          </v-list-item>
           <v-subheader>Embeddings</v-subheader>
           <v-list-item @click="addStep('pca')">
             <v-list-item-title>PCA</v-list-item-title>
@@ -26,7 +32,7 @@
           <v-list-item @click="addStep('tsne')">
             <v-list-item-title>t-SNE</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="addStep('umap')">p-
+          <v-list-item @click="addStep('umap')">
             <v-list-item-title>UMAP</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -51,9 +57,11 @@
     <v-timeline dense class="mr-2">
       <v-slide-x-reverse-transition group hide-on-leave>
         <v-timeline-item v-for="step in steps" :key="step.id" color="blue" :icon="icons[step.type]" fill-dot>
-          <TransformationStepEditor v-if="step.type === `transformation`" :step="step" :deleteStep="deleteStep" />
-          <ScaleStepEditor v-if="step.type === `scale`" :step="step" :deleteStep="deleteStep" />
-          <RegressOutStepEditor v-if="step.type === `regressOut`" :step="step" :deleteStep="deleteStep" />
+          <MarkersFilterStepEditor v-if="step.type === `markersFilter`" :step="step" :deleteStep="deleteStep" />
+          <TransformationStepEditor v-else-if="step.type === `transformation`" :step="step" :deleteStep="deleteStep" />
+          <ScaleStepEditor v-else-if="step.type === `scale`" :step="step" :deleteStep="deleteStep" />
+          <RegressOutStepEditor v-else-if="step.type === `regressOut`" :step="step" :deleteStep="deleteStep" />
+          <NeighborsStepEditor v-else-if="step.type === `neighbors`" :step="step" :deleteStep="deleteStep" />
           <PcaStepEditor v-else-if="step.type === `pca`" :step="step" :deleteStep="deleteStep" />
           <TsneStepEditor v-else-if="step.type === `tsne`" :step="step" :deleteStep="deleteStep" />
           <UmapStepEditor v-else-if="step.type === `umap`" :step="step" :deleteStep="deleteStep" />
@@ -79,11 +87,20 @@ import UmapStepEditor from "@/views/group/project/data/analysis/pipeline/steps/U
 import PcaStepEditor from "@/views/group/project/data/analysis/pipeline/steps/PcaStepEditor.vue";
 import ScaleStepEditor from "@/views/group/project/data/analysis/pipeline/steps/ScaleStepEditor.vue";
 import RegressOutStepEditor from "@/views/group/project/data/analysis/pipeline/steps/RegressOutStepEditor.vue";
+import MarkersFilterStepEditor from "@/views/group/project/data/analysis/pipeline/steps/MarkersFilterStepEditor.vue";
+import NeighborsStepEditor from "@/views/group/project/data/analysis/pipeline/steps/NeighborsStepEditor.vue";
 
 @Component({
   components: {
+    NeighborsStepEditor,
+    MarkersFilterStepEditor,
     RegressOutStepEditor,
-    ScaleStepEditor, PcaStepEditor, UmapStepEditor, TsneStepEditor, TransformationStepEditor },
+    ScaleStepEditor,
+    PcaStepEditor,
+    UmapStepEditor,
+    TsneStepEditor,
+    TransformationStepEditor,
+  },
 })
 export default class PipelineView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
@@ -94,9 +111,11 @@ export default class PipelineView extends Vue {
   readonly pipelinesContext = pipelinesModule.context(this.$store);
 
   readonly icons = {
+    markersFilter: "mdi-filter-outline",
     transformation: "mdi-label-variant-outline",
     scale: "mdi-label-variant-outline",
     regressOut: "mdi-label-variant-outline",
+    neighbors: "mdi-graph-outline",
     pca: "mdi-chart-scatter-plot",
     tsne: "mdi-chart-scatter-plot",
     umap: "mdi-chart-scatter-plot",
@@ -108,13 +127,20 @@ export default class PipelineView extends Vue {
     return this.datasetsContext.getters.activeDataset;
   }
 
+  addMarkersFilterStep() {
+    return {
+      id: uuidv4(),
+      type: "markersFilter",
+      markers: [],
+    };
+  }
+
   addTransformationStep() {
     return {
       id: uuidv4(),
       type: "transformation",
       mode: "arcsinh",
       cofactor: 5,
-      variables: [],
     };
   }
 
@@ -123,7 +149,6 @@ export default class PipelineView extends Vue {
       id: uuidv4(),
       type: "scale",
       maxValue: undefined,
-      variables: [],
     };
   }
 
@@ -131,7 +156,17 @@ export default class PipelineView extends Vue {
     return {
       id: uuidv4(),
       type: "regressOut",
-      variables: [],
+    };
+  }
+
+  addNeighborsStep() {
+    return {
+      id: uuidv4(),
+      type: "neighbors",
+      nNeighbors: 15,
+      knn: true,
+      method: "umap",
+      metric: "euclidean",
     };
   }
 
@@ -140,7 +175,6 @@ export default class PipelineView extends Vue {
       id: uuidv4(),
       type: "pca",
       svdSolver: "arpack",
-      variables: [],
     };
   }
 
@@ -151,7 +185,6 @@ export default class PipelineView extends Vue {
       perplexity: 30,
       earlyExaggeration: 12,
       learningRate: 1000,
-      variables: [],
     };
   }
 
@@ -161,12 +194,15 @@ export default class PipelineView extends Vue {
       type: "umap",
       minDist: 0.5,
       spread: 1.0,
-      variables: [],
     };
   }
 
   addStep(type: PipelineStepType) {
     switch (type) {
+      case "markersFilter": {
+        this.steps.push(this.addMarkersFilterStep());
+        break;
+      }
       case "transformation": {
         this.steps.push(this.addTransformationStep());
         break;
@@ -177,6 +213,10 @@ export default class PipelineView extends Vue {
       }
       case "regressOut": {
         this.steps.push(this.addRegressOutStep());
+        break;
+      }
+      case "neighbors": {
+        this.steps.push(this.addNeighborsStep());
         break;
       }
       case "pca": {
