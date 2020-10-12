@@ -1,8 +1,5 @@
 <template>
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
-    Please select acquisition(s)
-  </v-banner>
   <div v-else :class="layoutClass">
     <Scatter2D
       v-if="!markerZ"
@@ -128,10 +125,6 @@ export default class ScatterPlotTab extends Vue {
     return this.datasetContext.getters.activeDataset;
   }
 
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
   get items() {
     return this.activeDataset && this.activeDataset.meta["channel_map"]
       ? Object.keys(this.activeDataset.meta["channel_map"])
@@ -141,12 +134,8 @@ export default class ScatterPlotTab extends Vue {
   async submit() {
     if ((this.$refs.form as any).validate()) {
       const heatmap = this.heatmap ? this.heatmap.label : "";
-      const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
 
       await this.analysisContext.actions.getScatterPlotData({
-        datasetId: this.activeDataset!.id,
-        acquisitionIds: acquisitionIds,
         markerX: this.markerX!,
         markerY: this.markerY!,
         markerZ: this.markerZ ? this.markerZ : "",

@@ -8,6 +8,14 @@ export class PipelinesMutations extends Mutations<PipelinesState> {
     this.state.activePipelineId = id;
   }
 
+  setSteps(steps: any[]) {
+    this.state.steps = steps;
+  }
+
+  setSelectedAcquisitionIds(ids: number[]) {
+    this.state.selectedAcquisitionIds = ids;
+  }
+
   setEntities(payload: IPipeline[]) {
     const normalizedData = normalize<IPipeline>(payload, pipelineListSchema);
     this.state.ids = normalizedData.result;

@@ -1,8 +1,5 @@
 <template>
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
-    Please select acquisition(s)
-  </v-banner>
   <div v-else :class="layoutClass">
     <Scatter2D v-if="nComponents === '2'" plot-id="pca2D" :data="pcaData" title="2D PCA" />
     <Scatter3D v-else plot-id="pca3D" :data="pcaData" :show-regression="false" title="3D PCA" />
@@ -95,10 +92,6 @@ export default class PCATab extends Vue {
     return this.projectsContext.getters.activeAcquisition;
   }
 
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
   get activeDataset() {
     return this.datasetContext.getters.activeDataset;
   }
@@ -120,18 +113,18 @@ export default class PCATab extends Vue {
   }
 
   async submit() {
-    const heatmap = this.heatmap ? this.heatmap.label : "";
-    const acquisitionIds =
-      this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
-
-    await this.analysisContext.actions.getPCAData({
-      dataset_id: this.activeDataset!.id,
-      acquisition_ids: acquisitionIds,
-      n_components: parseInt(this.nComponents, 10),
-      heatmapType: this.heatmap ? this.heatmap.type : "",
-      heatmap: heatmap,
-      markers: this.selectedChannels,
-    });
+    // const heatmap = this.heatmap ? this.heatmap.label : "";
+    // const acquisitionIds =
+    //   this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+    //
+    // await this.analysisContext.actions.getPCAData({
+    //   dataset_id: this.activeDataset!.id,
+    //   acquisition_ids: acquisitionIds,
+    //   n_components: parseInt(this.nComponents, 10),
+    //   heatmapType: this.heatmap ? this.heatmap.type : "",
+    //   heatmap: heatmap,
+    //   markers: this.selectedChannels,
+    // });
   }
 }
 </script>

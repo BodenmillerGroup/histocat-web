@@ -6,17 +6,20 @@ import { api } from "./api";
 import { ResultsGetters } from "./getters";
 import { ResultsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
+import {pipelinesModule} from "@/modules/pipelines";
 
 export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
+  pipelines?: Context<typeof pipelinesModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     // Create and retain main module context
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
+    this.pipelines = pipelinesModule.context(store);
   }
 
   async getDatasetResults(datasetId: number) {
@@ -29,11 +32,13 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     }
   }
 
-  async getResult(resultId: number) {
+  async loadResult(resultId: number) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getResult(groupId, resultId);
       this.mutations.setEntity(data);
+      this.pipelines?.mutations.setSteps(data.pipeline);
+      this.pipelines?.mutations.setSelectedAcquisitionIds(data.input);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

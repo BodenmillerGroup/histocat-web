@@ -1,8 +1,5 @@
 <template>
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
-    Please select acquisition(s)
-  </v-banner>
   <div v-else :class="layoutClass">
     <Scatter2D v-if="nComponents === '2'" plot-id="umap2D" :data="umapData" title="2D UMAP" />
     <Scatter3D v-else plot-id="umap3D" :data="umapData" title="3D UMAP" />
@@ -162,10 +159,6 @@ export default class UMAPTab extends Vue {
     return this.projectsContext.getters.activeAcquisition;
   }
 
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
   get activeDataset() {
     return this.datasetContext.getters.activeDataset;
   }
@@ -191,20 +184,20 @@ export default class UMAPTab extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate()) {
-      const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
-
-      await this.analysisContext.actions.submitUMAP({
-        dataset_id: this.activeDataset!.id,
-        acquisition_ids: acquisitionIds,
-        n_components: parseInt(this.nComponents, 10),
-        markers: this.selectedChannels,
-        n_neighbors: this.nNeighbors,
-        min_dist: this.minDist,
-        metric: this.metric,
-      });
-    }
+    // if ((this.$refs.form as any).validate()) {
+    //   const acquisitionIds =
+    //     this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+    //
+    //   await this.analysisContext.actions.submitUMAP({
+    //     dataset_id: this.activeDataset!.id,
+    //     acquisition_ids: acquisitionIds,
+    //     n_components: parseInt(this.nComponents, 10),
+    //     markers: this.selectedChannels,
+    //     n_neighbors: this.nNeighbors,
+    //     min_dist: this.minDist,
+    //     metric: this.metric,
+    //   });
+    // }
   }
 
   resultChanged(result) {
@@ -215,7 +208,7 @@ export default class UMAPTab extends Vue {
       this.metric = result.params.metric;
       this.selectedChannels = result.params.markers;
 
-      this.projectsContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
+      // this.projectsContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 

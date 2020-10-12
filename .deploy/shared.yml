@@ -118,7 +118,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.7.0
+    image: redislabs/redisinsight:1.7.1
     depends_on:
       - redis
     ports:

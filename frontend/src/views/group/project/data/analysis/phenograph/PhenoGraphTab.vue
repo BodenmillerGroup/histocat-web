@@ -1,8 +1,5 @@
 <template>
   <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
-    Please select acquisition(s)
-  </v-banner>
   <div v-else :class="layoutClass">
     <PhenoGraphView plot-id="phenographHeatmap" :data="phenographData" title="PhenoGraph Clustering" />
     <div v-if="showOptions">
@@ -131,10 +128,6 @@ export default class PhenoGraphTab extends Vue {
     return this.projectsContext.getters.activeAcquisitionId;
   }
 
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
   get activeDatasetId() {
     return this.datasetContext.getters.activeDatasetId;
   }
@@ -156,21 +149,21 @@ export default class PhenoGraphTab extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate()) {
-      const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
-
-      await this.analysisContext.actions.submitPhenoGraph({
-        dataset_id: this.activeDatasetId!,
-        acquisition_ids: acquisitionIds,
-        markers: this.selectedChannels,
-        clustering_algo: this.clusteringAlgo,
-        jaccard: this.jaccard === "jaccard",
-        min_cluster_size: this.minClusterSize,
-        nearest_neighbors: this.nearestNeighbors,
-        primary_metric: this.primaryMetric,
-      });
-    }
+    // if ((this.$refs.form as any).validate()) {
+    //   const acquisitionIds =
+    //     this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
+    //
+    //   await this.analysisContext.actions.submitPhenoGraph({
+    //     dataset_id: this.activeDatasetId!,
+    //     acquisition_ids: acquisitionIds,
+    //     markers: this.selectedChannels,
+    //     clustering_algo: this.clusteringAlgo,
+    //     jaccard: this.jaccard === "jaccard",
+    //     min_cluster_size: this.minClusterSize,
+    //     nearest_neighbors: this.nearestNeighbors,
+    //     primary_metric: this.primaryMetric,
+    //   });
+    // }
   }
 
   resultChanged(result) {
@@ -182,7 +175,7 @@ export default class PhenoGraphTab extends Vue {
       this.clusteringAlgo = result.params.clustering_algo;
       this.jaccard = result.params.jaccard ? "jaccard" : "gaussian";
 
-      this.projectsContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
+      // this.projectsContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 

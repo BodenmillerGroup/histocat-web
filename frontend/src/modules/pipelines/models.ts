@@ -21,3 +21,9 @@ export interface IPipeline {
   steps: any[];
   created_at: string;
 }
+
+export interface IProcessPipeline {
+  dataset_id: number;
+  acquisition_ids: number[];
+  steps: any[];
+}

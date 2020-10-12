@@ -1,12 +1,11 @@
 export interface IResult {
   id: number;
   dataset_id: number;
-  parent_id?: number;
-  type: string;
+  status: string;
   name: string;
   description: string;
-  status: string;
-  params: any;
+  pipeline: any;
+  input: number[];
   location: string;
   created_at: string;
 }

@@ -1,7 +1,7 @@
 import logging
 import os
 import shutil
-from typing import List
+from typing import List, Sequence
 
 import dramatiq
 import emails
@@ -15,6 +15,7 @@ from histocat.core.errors import SlideImportError
 from histocat.db.session import db_session
 from histocat.io import mcd, zip
 from histocat.modules.analysis.processors import phenograph, tsne, umap
+from histocat.modules.pipeline.processors import pipeline_processor
 
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
 dramatiq.set_broker(rabbitmq_broker)
@@ -160,6 +161,21 @@ def process_phenograph(
             primary_metric,
             min_cluster_size,
         )
+    except Exception as error:
+        logger.warning(error)
+    finally:
+        pass
+
+
+@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
+def process_pipeline(
+    dataset_id: int,
+    acquisition_ids: Sequence[int],
+    steps: Sequence[str],
+):
+    logger.info(f"Processing pipeline for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
+    try:
+        pipeline_processor.process_pipeline(db_session, dataset_id=dataset_id, acquisition_ids=acquisition_ids, steps=steps)
     except Exception as error:
         logger.warning(error)
     finally:

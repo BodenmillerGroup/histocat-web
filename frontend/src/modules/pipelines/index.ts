@@ -12,6 +12,9 @@ export class PipelinesState {
   ids: ReadonlyArray<number> = [];
   entities: { [key: number]: IPipeline } = {};
   activePipelineId: number | null = null;
+
+  selectedAcquisitionIds: number[] = [];
+  steps: any[] = [];
 }
 
 export const pipelinesModule = new Module({

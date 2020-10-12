@@ -1,5 +1,6 @@
 import logging
 from typing import Optional, Sequence
+import os
 
 import anndata as ad
 import cv2
@@ -19,6 +20,7 @@ from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import pca, phenograph, tsne, umap
 from histocat.modules.dataset import service as dataset_service
+from histocat.modules.result import service as result_service
 from histocat.modules.gate import service as gate_service
 from histocat.modules.user.models import UserModel
 
@@ -34,6 +36,7 @@ from .dto import (
     UmapDto,
     UmapSubmissionDto,
 )
+from ...io.dataset import ANNDATA_FILE_EXTENSION
 
 logger = logging.getLogger(__name__)
 
@@ -76,49 +79,47 @@ async def get_scatter_plot_data(
     dataset_id: int,
     marker_x: str,
     marker_y: str,
-    acquisition_ids: Sequence[int] = Query(None),
+    result_id: Optional[int] = None,
     marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
-    """
-    Read scatter plot data from the dataset
-    """
-    # content = await redis_manager.cache.get(request.url.path)
-    # if content:
-    #     return UJSONResponse(content=ujson.loads(content))
+    """Read scatter plot data from the dataset."""
 
-    dataset = dataset_service.get(db, id=dataset_id)
-    cell_input = dataset.meta.get("cell")
+    if result_id:
+        result = result_service.get(db, id=result_id)
+        if not result:
+            raise HTTPException(status_code=404, detail="Result not found.")
+        location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+    else:
+        dataset = dataset_service.get(db, id=dataset_id)
+        if not dataset:
+            raise HTTPException(status_code=404, detail="Dataset not found.")
+        cell_input = dataset.meta.get("cell")
+        location = cell_input.get("location")
 
-    if not cell_input or len(acquisition_ids) == 0:
-        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
-
-    adata = ad.read_h5ad(cell_input.get("location"))
-
-    # Subset observations for selected acquisitions
-    adata = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
+    adata = ad.read_h5ad(location)
 
     output = {
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": marker_x, "data": adata.layers["exprs"][:, adata.var.index == marker_x][:, 0].tolist(),},
-        "y": {"label": marker_y, "data": adata.layers["exprs"][:, adata.var.index == marker_y][:, 0].tolist(),},
+        "x": {"label": marker_x, "data": adata.X[:, adata.var.index == marker_x][:, 0].tolist(),},
+        "y": {"label": marker_y, "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),},
     }
 
     if marker_z:
         output["z"] = {
             "label": marker_z,
-            "data": adata.layers["exprs"][:, adata.var.index == marker_z][:, 0].tolist(),
+            "data": adata.X[:, adata.var.index == marker_z][:, 0].tolist(),
         }
 
     if heatmap_type and heatmap:
         output["heatmap"] = {
             "label": heatmap,
-            "data": adata.layers["exprs"][:, adata.var.index == heatmap][:, 0].tolist(),
+            "data": adata.X[:, adata.var.index == heatmap][:, 0].tolist(),
         }
 
     return ORJSONResponse(output)

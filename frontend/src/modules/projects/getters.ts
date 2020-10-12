@@ -50,10 +50,6 @@ export class ProjectsGetters extends Getters<ProjectsState> {
     }
   }
 
-  get selectedAcquisitionIds() {
-    return this.state.selectedAcquisitionIds;
-  }
-
   get activeAcquisitionId() {
     return this.state.activeAcquisitionId;
   }

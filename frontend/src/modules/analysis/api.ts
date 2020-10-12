@@ -17,16 +17,18 @@ import { ApiManager } from "@/utils/api";
 export const api = {
   async getScatterPlotData(
     datasetId: number,
-    acquisitionIds: number[],
+    resultId: number | null,
     markerX: string,
     markerY: string,
     markerZ: string,
     heatmapType: string,
     heatmap: string
   ) {
-    const acquisitionIdsArray = acquisitionIds.map((acquisition_id) => `&acquisition_ids=${acquisition_id}`);
-    const acquisition_ids = acquisitionIdsArray.join("");
-    let url = `analysis/scatterplot?dataset_id=${datasetId}&marker_x=${markerX}&marker_y=${markerY}${acquisition_ids}`;
+    let url = `analysis/scatterplot?dataset_id=${datasetId}`;
+    if (resultId) {
+      url += `&result_id=${resultId}`;
+    }
+    url += `&marker_x=${markerX}&marker_y=${markerY}`;
     if (markerZ) {
       url += `&marker_z=${markerZ}`;
     }

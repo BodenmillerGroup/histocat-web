@@ -17,7 +17,6 @@ export class ProjectsState {
   activeProjectId: number | null = null;
   activeAcquisitionId: number | null = null;
   activeWorkspaceNode: object | null = null;
-  selectedAcquisitionIds: number[] = [];
   selectedMetals: string[] = [];
   channelStackImage: string | ArrayBuffer | null = null;
 

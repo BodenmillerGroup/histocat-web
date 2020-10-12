@@ -17,16 +17,4 @@ export class ResultsGetters extends Getters<ResultsState> {
   get activeResult() {
     return this.getters.activeResultId ? this.getters.getResult(this.getters.activeResultId) : null;
   }
-
-  get tsneResults() {
-    return this.getters.results.filter((v) => v.type === "tsne");
-  }
-
-  get umapResults() {
-    return this.getters.results.filter((v) => v.type === "umap");
-  }
-
-  get phenographResults() {
-    return this.getters.results.filter((v) => v.type === "phenograph");
-  }
 }

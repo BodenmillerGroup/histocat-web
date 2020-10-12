@@ -1,8 +1,5 @@
 <template>
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-banner v-else-if="!activeAcquisitionId && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
-    Please select acquisition
-  </v-banner>
   <div v-else :class="layoutClass">
     <BoxPlotView plot-id="boxPlot" :data="boxPlotData" title="BoxPlot" />
     <div v-if="showOptions">
@@ -63,10 +60,6 @@ export default class BoxPlotTab extends Vue {
     return this.projectsContext.getters.activeAcquisitionId;
   }
 
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
   get activeDataset() {
     return this.datasetContext.getters.activeDataset;
   }
@@ -86,17 +79,17 @@ export default class BoxPlotTab extends Vue {
   }
 
   async submit() {
-    const acquisitionIds =
-      this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
-
-    const gateId = this.gateContext.getters.activeGateId;
-
-    await this.analysisContext.actions.getBoxPlotData({
-      datasetId: this.activeDataset!.id,
-      gateId: gateId,
-      acquisitionIds: acquisitionIds,
-      markers: this.selectedItems,
-    });
+    // const acquisitionIds =
+    //   this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisitionId!];
+    //
+    // const gateId = this.gateContext.getters.activeGateId;
+    //
+    // await this.analysisContext.actions.getBoxPlotData({
+    //   datasetId: this.activeDataset!.id,
+    //   gateId: gateId,
+    //   acquisitionIds: acquisitionIds,
+    //   markers: this.selectedItems,
+    // });
   }
 
   get boxPlotData() {

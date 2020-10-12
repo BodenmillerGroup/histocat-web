@@ -51,8 +51,26 @@
             Print
           </v-btn>
         </template>
-        <span>Clear pipeline</span>
+        <span>Print pipeline</span>
       </v-tooltip>
+      <v-dialog v-model="dialog" scrollable max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn small elevation="1" color="primary" v-bind="attrs" v-on="on" class="ml-2" :disabled="steps.length === 0">Process</v-btn>
+        </template>
+        <v-card>
+          <v-card-title>Select Acquisitions</v-card-title>
+          <v-divider />
+          <v-card-text style="height: 300px">
+            <AcquisitionsSelector />
+          </v-card-text>
+          <v-divider />
+          <v-card-actions>
+            <v-spacer />
+            <v-btn text @click="dialog = false">Cancel</v-btn>
+            <v-btn color="primary" text @click="processPipeline">Process</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-toolbar>
     <v-timeline dense class="mr-2">
       <v-slide-x-reverse-transition group hide-on-leave>
@@ -89,9 +107,11 @@ import ScaleStepEditor from "@/views/group/project/data/analysis/pipeline/steps/
 import RegressOutStepEditor from "@/views/group/project/data/analysis/pipeline/steps/RegressOutStepEditor.vue";
 import MarkersFilterStepEditor from "@/views/group/project/data/analysis/pipeline/steps/MarkersFilterStepEditor.vue";
 import NeighborsStepEditor from "@/views/group/project/data/analysis/pipeline/steps/NeighborsStepEditor.vue";
+import AcquisitionsSelector from "@/views/group/project/data/analysis/pipeline/AcquisitionsSelector.vue";
 
 @Component({
   components: {
+    AcquisitionsSelector,
     NeighborsStepEditor,
     MarkersFilterStepEditor,
     RegressOutStepEditor,
@@ -121,7 +141,11 @@ export default class PipelineView extends Vue {
     umap: "mdi-chart-scatter-plot",
   };
 
-  steps: any[] = [];
+  dialog = false;
+
+  get steps() {
+    return this.pipelinesContext.getters.steps;
+  }
 
   get dataset() {
     return this.datasetsContext.getters.activeDataset;
@@ -235,15 +259,20 @@ export default class PipelineView extends Vue {
   }
 
   deleteStep(step) {
-    this.steps = this.steps.filter((item) => item !== step);
+    this.pipelinesContext.mutations.setSteps(this.steps.filter((item) => item !== step));
   }
 
   clearPipeline() {
-    this.steps = [];
+    this.pipelinesContext.mutations.setSteps([]);
   }
 
   printPipeline() {
     console.log(this.steps);
+  }
+
+  async processPipeline() {
+    this.dialog = false;
+    await this.pipelinesContext.actions.processPipeline();
   }
 }
 </script>

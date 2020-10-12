@@ -6,6 +6,14 @@ export class PipelinesGetters extends Getters<PipelinesState> {
     return this.state.ids.map((id) => this.state.entities[id]);
   }
 
+  get selectedAcquisitionIds() {
+    return this.state.selectedAcquisitionIds;
+  }
+
+  get steps() {
+    return this.state.steps;
+  }
+
   getPipeline(id: number) {
     return this.state.entities[id];
   }

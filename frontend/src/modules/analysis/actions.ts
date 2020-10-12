@@ -15,6 +15,8 @@ import {
 } from "./models";
 import { AnalysisMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
+import {datasetsModule} from "@/modules/datasets";
+import {resultsModule} from "@/modules/results";
 
 export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, AnalysisMutations, AnalysisActions> {
   // Declare context type
@@ -22,6 +24,8 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   projects?: Context<typeof projectsModule>;
+  datasets?: Context<typeof datasetsModule>;
+  results?: Context<typeof resultsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -29,11 +33,11 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.projects = projectsModule.context(store);
+    this.datasets = datasetsModule.context(store);
+    this.results = resultsModule.context(store);
   }
 
   async getScatterPlotData(payload: {
-    datasetId: number;
-    acquisitionIds: number[];
     markerX: string;
     markerY: string;
     markerZ: string;
@@ -41,9 +45,11 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     heatmap: string;
   }) {
     try {
+      const datasetId = this.datasets!.getters.activeDatasetId!;
+      const resultId = this.results!.getters.activeResultId;
       const response = await api.getScatterPlotData(
-        payload.datasetId,
-        payload.acquisitionIds,
+        datasetId,
+        resultId,
         payload.markerX,
         payload.markerY,
         payload.markerZ,

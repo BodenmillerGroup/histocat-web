@@ -10,12 +10,10 @@ import { ProjectsGetters } from "./getters";
 import { ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate } from "./models";
 import { ProjectsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { IChannelSettings } from "@/modules/settings/models";
 import {
   SET_CHANNEL_STACK_IMAGE,
   SET_ACTIVE_ACQUISITION_ID,
   SET_ACTIVE_WORKSPACE_NODE,
-  SET_SELECTED_ACQUISITION_IDS,
   SET_SELECTED_METALS,
 } from "./events";
 import { selectionModule } from "@/modules/selection";
@@ -44,10 +42,6 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
 
   setActiveWorkspaceNode(node?: { id: number; type: string }, isGlobal = true) {
     BroadcastManager.publish(SET_ACTIVE_WORKSPACE_NODE, node, isGlobal);
-  }
-
-  setSelectedAcquisitionIds(ids: number[], isGlobal = true) {
-    BroadcastManager.publish(SET_SELECTED_ACQUISITION_IDS, ids, isGlobal);
   }
 
   setSelectedMetals(metals: string[], isGlobal = true) {

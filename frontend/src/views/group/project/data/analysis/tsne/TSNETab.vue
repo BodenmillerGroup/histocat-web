@@ -1,8 +1,5 @@
 <template>
   <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-banner v-else-if="!activeAcquisition && selectedAcquisitionIds.length === 0" icon="mdi-alert-circle-outline">
-    Please select acquisition(s)
-  </v-banner>
   <div v-else :class="layoutClass">
     <Scatter2D v-if="nComponents === '2'" plot-id="tsne2D" :data="tsneData" title="2D tSNE" />
     <Scatter3D v-else plot-id="tsne3D" :data="tsneData" title="3D tSNE" />
@@ -184,10 +181,6 @@ export default class TSNETab extends Vue {
     return this.projectsContext.getters.activeAcquisition;
   }
 
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
   get activeDataset() {
     return this.datasetContext.getters.activeDataset;
   }
@@ -213,22 +206,22 @@ export default class TSNETab extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate()) {
-      const acquisitionIds =
-        this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
-
-      await this.analysisContext.actions.submitTSNE({
-        dataset_id: this.activeDataset!.id,
-        acquisition_ids: acquisitionIds,
-        n_components: parseInt(this.nComponents, 10),
-        markers: this.selectedChannels,
-        perplexity: this.perplexity,
-        learning_rate: this.learningRate,
-        iterations: this.iterations,
-        theta: this.theta,
-        init: this.init,
-      });
-    }
+    // if ((this.$refs.form as any).validate()) {
+    //   const acquisitionIds =
+    //     this.selectedAcquisitionIds.length > 0 ? this.selectedAcquisitionIds : [this.activeAcquisition!.id];
+    //
+    //   await this.analysisContext.actions.submitTSNE({
+    //     dataset_id: this.activeDataset!.id,
+    //     acquisition_ids: acquisitionIds,
+    //     n_components: parseInt(this.nComponents, 10),
+    //     markers: this.selectedChannels,
+    //     perplexity: this.perplexity,
+    //     learning_rate: this.learningRate,
+    //     iterations: this.iterations,
+    //     theta: this.theta,
+    //     init: this.init,
+    //   });
+    // }
   }
 
   resultChanged(result) {
@@ -241,7 +234,7 @@ export default class TSNETab extends Vue {
       this.theta = result.params.theta;
       this.init = result.params.init;
 
-      this.projectsContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
+      // this.projectsContext.actions.setSelectedAcquisitionIds(result.params.acquisition_ids);
     }
   }
 

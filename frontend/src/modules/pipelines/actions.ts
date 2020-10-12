@@ -9,12 +9,14 @@ import { PipelinesMutations } from "./mutations";
 import { settingsModule } from "@/modules/settings";
 import { projectsModule } from "@/modules/projects";
 import { groupModule } from "@/modules/group";
+import {datasetsModule} from "@/modules/datasets";
 
 export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, PipelinesMutations, PipelinesActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
   projects?: Context<typeof projectsModule>;
+  datasets?: Context<typeof datasetsModule>;
   settings?: Context<typeof settingsModule>;
 
   // Called after the module is initialized
@@ -22,6 +24,7 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.projects = projectsModule.context(store);
+    this.datasets = datasetsModule.context(store);
     this.settings = settingsModule.context(store);
   }
 
@@ -40,7 +43,7 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const projectId = this.projects!.getters.activeProjectId;
-      const steps = [];
+      const steps = this.getters.steps;
       const payload: IPipelineCreate = {
         name: name,
         project_id: projectId!,
@@ -65,11 +68,11 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
     }
   }
 
-  async applyPreset(id: number) {
+  async loadPipeline(id: number) {
     try {
       const pipeline = await api.getPipeline(id);
       if (pipeline) {
-        // this.settings?.actions.setPreset(pipeline);
+        this.mutations.setSteps(pipeline.steps);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -81,6 +84,23 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
       const data = await api.deletePipeline(id);
       this.mutations.deleteEntity(data);
       this.main!.mutations.addNotification({ content: "Pipeline successfully deleted", color: "success" });
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async processPipeline() {
+    try {
+      const groupId = this.group?.getters.activeGroupId!;
+      const datasetId = this.datasets?.getters.activeDatasetId!;
+      const selectedAcquisitionsIds = this.getters.selectedAcquisitionIds;
+      const steps = this.getters.steps;
+      const data = await api.processPipeline(groupId, {
+        dataset_id: datasetId,
+        acquisition_ids: selectedAcquisitionsIds,
+        steps: steps,
+      });
+      this.main!.mutations.addNotification({ content: "Pipeline successfully submitted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

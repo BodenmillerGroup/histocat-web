@@ -20,7 +20,6 @@
       </v-text-field>
     </v-toolbar>
     <v-treeview
-      v-model="selected"
       :items="items"
       :search="search"
       :filter="filter"
@@ -30,7 +29,6 @@
       activatable
       transition
       return-object
-      selectable
       class="overflow-y-auto scroll-view"
     >
       <template v-slot:prepend="{ item }">
@@ -72,8 +70,7 @@ import UploadButton from "@/components/UploadButton.vue";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { IProjectData } from "@/modules/projects/models";
-import { equals } from "rambda";
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component({
   components: { UploadButton, InfoCard },
@@ -84,9 +81,6 @@ export default class ImageWorkspaceView extends Vue {
 
   @Prop(Object) readonly projectData!: IProjectData;
 
-  mutex = false;
-
-  selected: any[] = [];
   search = null;
 
   readonly icons = {
@@ -109,36 +103,6 @@ export default class ImageWorkspaceView extends Vue {
     if (node.type === "acquisition") {
       this.projectsContext.actions.setActiveAcquisitionId(node.id);
       this.projectsContext.actions.getChannelStackImage();
-    }
-  }
-
-  get selectedAcquisitionIds() {
-    return this.projectsContext.getters.selectedAcquisitionIds;
-  }
-
-  @Watch("selected")
-  async selectedChanged(items: any[]) {
-    this.mutex = true;
-    const ids = items.filter((item) => item.type === "acquisition").map((acquisition) => acquisition.id);
-    this.projectsContext.actions.setSelectedAcquisitionIds(ids);
-    this.mutex = false;
-  }
-
-  @Watch("selectedAcquisitionIds")
-  selectedAcquisitionIdsChanged(newIds: number[], oldIds: number[]) {
-    if (!this.mutex && !equals(newIds, oldIds)) {
-      const items: any[] = [];
-      const nodes = {
-        children: this.items,
-      };
-
-      for (const id of newIds) {
-        const item = this.searchTree(nodes, id);
-        if (item) {
-          items.push(item);
-        }
-      }
-      this.selected = items;
     }
   }
 

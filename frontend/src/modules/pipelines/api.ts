@@ -1,4 +1,4 @@
-import { IPipeline, IPipelineCreate, IPipelineUpdate } from "./models";
+import {IPipeline, IPipelineCreate, IPipelineUpdate, IProcessPipeline} from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {
@@ -24,5 +24,12 @@ export const api = {
   },
   async deletePipeline(id: number) {
     return ApiManager.api.delete(`pipelines/${id}`).json<number>();
+  },
+  async processPipeline(groupId: number, data: IProcessPipeline) {
+    return ApiManager.api
+      .post(`groups/${groupId}/pipelines/process`, {
+        json: data,
+      })
+      .json();
   },
 };

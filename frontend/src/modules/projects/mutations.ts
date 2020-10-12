@@ -7,7 +7,6 @@ import {
   SET_ACTIVE_ACQUISITION_ID,
   SET_ACTIVE_WORKSPACE_NODE,
   SET_CHANNEL_STACK_IMAGE,
-  SET_SELECTED_ACQUISITION_IDS,
   SET_SELECTED_METALS,
 } from "./events";
 import { normalize } from "normalizr";
@@ -20,7 +19,6 @@ export class ProjectsMutations extends Mutations<ProjectsState> {
     BroadcastManager.subscribe(SET_SELECTED_METALS, (payload) => this.setSelectedMetals(payload));
     BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
     BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
-    BroadcastManager.subscribe(SET_SELECTED_ACQUISITION_IDS, (payload) => this.setSelectedAcquisitionIds(payload));
   }
 
   setActiveProjectId(id: number | null) {
@@ -73,12 +71,6 @@ export class ProjectsMutations extends Mutations<ProjectsState> {
 
   setSelectedMetals(metals: string[]) {
     this.state.selectedMetals = metals;
-  }
-
-  setSelectedAcquisitionIds(ids: number[]) {
-    if (!equals(ids, this.state.selectedAcquisitionIds)) {
-      this.state.selectedAcquisitionIds = ids;
-    }
   }
 
   setActiveWorkspaceNode(node: { id: number; type: string } | null) {

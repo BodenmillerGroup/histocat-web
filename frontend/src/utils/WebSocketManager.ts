@@ -75,28 +75,14 @@ export class WebSocketManager {
             });
             break;
           }
-          case "tsne_result_ready": {
-            WebSocketManager.resultContext.mutations.addEntity(message.payload);
-            WebSocketManager.mainContext.mutations.addNotification({
-              content: "t-SNE result is ready",
-              color: "success",
-            });
-            break;
-          }
-          case "umap_result_ready": {
-            WebSocketManager.resultContext.mutations.addEntity(message.payload);
-            WebSocketManager.mainContext.mutations.addNotification({
-              content: "UMAP result is ready",
-              color: "success",
-            });
-            break;
-          }
-          case "phenograph_result_ready": {
-            WebSocketManager.resultContext.mutations.addEntity(message.payload);
-            WebSocketManager.mainContext.mutations.addNotification({
-              content: "PhenoGraph result is ready",
-              color: "success",
-            });
+          case "result_ready": {
+            if (message.payload.dataset_id === WebSocketManager.datasetContext.getters.activeDatasetId) {
+              WebSocketManager.resultContext.mutations.addEntity(message.payload);
+              WebSocketManager.mainContext.mutations.addNotification({
+                content: "Pipeline processing result is ready",
+                color: "success",
+              });
+            }
             break;
           }
         }

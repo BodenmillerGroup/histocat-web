@@ -191,10 +191,8 @@ def _import_cell_csv(
     var = pd.DataFrame(index=var_names)
     var["Channel"] = var.index
     X_counts = x_df.to_numpy()
-    cofactor = 5
-    X_exprs = np.arcsinh(X_counts / cofactor)
 
-    adata = ad.AnnData(X_counts, obs=obs, var=var, layers={"exprs": X_exprs}, dtype="float32")
+    adata = ad.AnnData(X_counts, obs=obs, var=var, dtype="float32")
     adata.write_h5ad(dst_uri)
 
     artifact = {"location": str(dst_uri)}

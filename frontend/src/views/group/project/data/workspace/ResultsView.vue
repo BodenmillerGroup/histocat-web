@@ -1,15 +1,15 @@
 <template>
-  <v-card tile>
+  <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
+  <v-card v-else tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <v-btn @click="savePipeline" color="primary" elevation="1" small>Save pipeline</v-btn>
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon small v-on="on" @click="refreshPipelines">
+          <v-btn icon small v-on="on" @click="refreshResults">
             <v-icon small>mdi-refresh</v-icon>
           </v-btn>
         </template>
-        <span>Refresh pipelines</span>
+        <span>Refresh results</span>
       </v-tooltip>
     </v-toolbar>
     <v-list dense two-line class="overflow-y-auto scroll-view pa-0">
@@ -23,21 +23,21 @@
           <v-list-item-action>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on" download color="primary lighten-3" @click="loadPipeline(item.id)">
+                <v-btn icon v-on="on" download color="primary lighten-3" @click="loadResult(item.id)">
                   <v-icon>mdi-refresh-circle</v-icon>
                 </v-btn>
               </template>
-              <span>Load pipeline</span>
+              <span>Load result</span>
             </v-tooltip>
           </v-list-item-action>
           <v-list-item-action>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
-                <v-btn icon v-on="on" color="secondary lighten-3" @click.stop="deletePipeline(item.id)">
+                <v-btn icon v-on="on" color="secondary lighten-3" @click.stop="deleteResult(item.id)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </template>
-              <span>Delete pipeline</span>
+              <span>Delete result</span>
             </v-tooltip>
           </v-list-item-action>
         </v-list-item>
@@ -50,67 +50,60 @@
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
-import { pipelinesModule } from "@/modules/pipelines";
+import {resultsModule} from "@/modules/results";
 
 @Component
-export default class PipelinesView extends Vue {
+export default class ResultsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly pipelinesContext = pipelinesModule.context(this.$store);
+  readonly resultsContext = resultsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
 
   selected?: number | null = null;
 
-  get activeProjectId() {
-    return this.projectsContext.getters.activeProjectId;
-  }
-
   @Watch("selected")
-  pipelineChanged(index: number | null) {
+  resultChanged(index: number | null) {
     if (index !== null && index !== undefined) {
-      const pipeline = this.pipelines[index];
-      this.pipelinesContext.mutations.setActivePipelineId(pipeline.id);
+      const result = this.results[index];
+      this.resultsContext.mutations.setActiveResultId(result.id);
     } else {
-      this.pipelinesContext.mutations.setActivePipelineId(null);
+      this.resultsContext.mutations.setActiveResultId(null);
     }
   }
 
-  get pipelines() {
-    return this.pipelinesContext.getters.pipelines;
+  get activeDatasetId() {
+    return this.datasetContext.getters.activeDatasetId;
+  }
+
+  get results() {
+    return this.resultsContext.getters.results;
   }
 
   get items() {
-    return this.pipelines.map((pipeline) => {
-      return Object.assign({}, pipeline, {
-        createdAt: new Date(pipeline.created_at).toUTCString(),
+    return this.results.map((gate) => {
+      return Object.assign({}, gate, {
+        createdAt: new Date(gate.created_at).toUTCString(),
       });
     });
   }
 
-  async loadPipeline(id: number) {
-    await this.pipelinesContext.actions.loadPipeline(id);
+  async loadResult(id: number) {
+    await this.resultsContext.actions.loadResult(id);
   }
 
-  async deletePipeline(id: number) {
-    if (self.confirm("Do you really want to delete pipeline?")) {
-      await this.pipelinesContext.actions.deletePipeline(id);
+  async deleteResult(id: number) {
+    if (self.confirm("Do you really want to delete result?")) {
+      await this.resultsContext.actions.deleteResult(id);
     }
   }
 
-  async savePipeline() {
-    const name = self.prompt("Please enter pipeline name:");
-    if (name) {
-      await this.pipelinesContext.actions.createPipeline(name);
-    }
-  }
-
-  async refreshPipelines() {
-    if (this.activeProjectId) {
-      await this.pipelinesContext.actions.getPipelines(this.activeProjectId);
+  async refreshResults() {
+    if (this.activeDatasetId) {
+      await this.resultsContext.actions.getDatasetResults(this.activeDatasetId);
     }
   }
 
   mounted() {
-    this.refreshPipelines();
+    this.refreshResults();
   }
 }
 </script>
