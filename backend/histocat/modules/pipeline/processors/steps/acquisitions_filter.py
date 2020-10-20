@@ -3,9 +3,9 @@ from typing import Sequence
 from anndata import AnnData
 
 
-def filter_acquisitions(adata: AnnData, acquisition_ids: Sequence[int]):
+def process(adata: AnnData, acquisition_ids: Sequence[int]):
     """
-    Calculate Principal Component Analysis data
+    Subset observations for selected acquisitions
     """
     output = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
     return output

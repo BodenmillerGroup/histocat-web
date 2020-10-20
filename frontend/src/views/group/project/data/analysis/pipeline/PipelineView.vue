@@ -19,9 +19,6 @@
           <v-list-item @click="addStep('scale')">
             <v-list-item-title>Scale</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="addStep('regressOut')">
-            <v-list-item-title>Regress Out</v-list-item-title>
-          </v-list-item>
           <v-list-item @click="addStep('neighbors')">
             <v-list-item-title>Neighbors</v-list-item-title>
           </v-list-item>
@@ -78,7 +75,6 @@
           <MarkersFilterStepEditor v-if="step.type === `markersFilter`" :step="step" :deleteStep="deleteStep" />
           <TransformationStepEditor v-else-if="step.type === `transformation`" :step="step" :deleteStep="deleteStep" />
           <ScaleStepEditor v-else-if="step.type === `scale`" :step="step" :deleteStep="deleteStep" />
-          <RegressOutStepEditor v-else-if="step.type === `regressOut`" :step="step" :deleteStep="deleteStep" />
           <NeighborsStepEditor v-else-if="step.type === `neighbors`" :step="step" :deleteStep="deleteStep" />
           <PcaStepEditor v-else-if="step.type === `pca`" :step="step" :deleteStep="deleteStep" />
           <TsneStepEditor v-else-if="step.type === `tsne`" :step="step" :deleteStep="deleteStep" />
@@ -104,7 +100,6 @@ import TsneStepEditor from "@/views/group/project/data/analysis/pipeline/steps/T
 import UmapStepEditor from "@/views/group/project/data/analysis/pipeline/steps/UmapStepEditor.vue";
 import PcaStepEditor from "@/views/group/project/data/analysis/pipeline/steps/PcaStepEditor.vue";
 import ScaleStepEditor from "@/views/group/project/data/analysis/pipeline/steps/ScaleStepEditor.vue";
-import RegressOutStepEditor from "@/views/group/project/data/analysis/pipeline/steps/RegressOutStepEditor.vue";
 import MarkersFilterStepEditor from "@/views/group/project/data/analysis/pipeline/steps/MarkersFilterStepEditor.vue";
 import NeighborsStepEditor from "@/views/group/project/data/analysis/pipeline/steps/NeighborsStepEditor.vue";
 import AcquisitionsSelector from "@/views/group/project/data/analysis/pipeline/AcquisitionsSelector.vue";
@@ -114,7 +109,6 @@ import AcquisitionsSelector from "@/views/group/project/data/analysis/pipeline/A
     AcquisitionsSelector,
     NeighborsStepEditor,
     MarkersFilterStepEditor,
-    RegressOutStepEditor,
     ScaleStepEditor,
     PcaStepEditor,
     UmapStepEditor,
@@ -134,7 +128,6 @@ export default class PipelineView extends Vue {
     markersFilter: "mdi-filter-outline",
     transformation: "mdi-label-variant-outline",
     scale: "mdi-label-variant-outline",
-    regressOut: "mdi-label-variant-outline",
     neighbors: "mdi-graph-outline",
     pca: "mdi-chart-scatter-plot",
     tsne: "mdi-chart-scatter-plot",
@@ -173,13 +166,6 @@ export default class PipelineView extends Vue {
       id: uuidv4(),
       type: "scale",
       maxValue: undefined,
-    };
-  }
-
-  addRegressOutStep() {
-    return {
-      id: uuidv4(),
-      type: "regressOut",
     };
   }
 
@@ -233,10 +219,6 @@ export default class PipelineView extends Vue {
       }
       case "scale": {
         this.steps.push(this.addScaleStep());
-        break;
-      }
-      case "regressOut": {
-        this.steps.push(this.addRegressOutStep());
         break;
       }
       case "neighbors": {

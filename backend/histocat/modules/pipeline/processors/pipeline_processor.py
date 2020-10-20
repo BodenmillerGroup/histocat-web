@@ -12,9 +12,12 @@ from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
 from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from histocat.modules.dataset import service as dataset_service
-from histocat.modules.pipeline.processors.steps.filter_acquisitions import filter_acquisitions
 from histocat.modules.result import service as result_service
 from histocat.modules.result.dto import ResultCreateDto
+from histocat.modules.pipeline.processors.steps import acquisitions_filter, markers_filter, transformation, pca
+
+
+processors = {"markersFilter": markers_filter, "transformation": transformation, "pca": pca}
 
 
 @timeit
@@ -32,7 +35,12 @@ def process_pipeline(db: Session, dataset_id: int, acquisition_ids: Sequence[int
     adata = sc.read_h5ad(cell_input.get("location"))
 
     # Subset observations for selected acquisitions
-    adata = filter_acquisitions(adata, acquisition_ids)
+    adata = acquisitions_filter.process(adata, acquisition_ids)
+
+    for step in steps:
+        processor = processors.get(step.get("type"))
+        if processor:
+            adata = processor.process(adata, step)
 
     result_create_params = ResultCreateDto(
         dataset_id=dataset_id, status="ready", name=str(datetime.utcnow()), input=acquisition_ids, pipeline=steps
