@@ -172,7 +172,7 @@ export default class UMAPTab extends Vue {
   }
 
   get results() {
-    return this.resultContext.getters.umapResults;
+    return []; // this.resultContext.getters.umapResults;
   }
 
   selectAll() {

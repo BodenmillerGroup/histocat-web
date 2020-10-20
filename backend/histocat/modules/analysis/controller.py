@@ -1,6 +1,6 @@
 import logging
-from typing import Optional, Sequence
 import os
+from typing import Optional, Sequence
 
 import anndata as ad
 import cv2
@@ -20,10 +20,11 @@ from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import pca, phenograph, tsne, umap
 from histocat.modules.dataset import service as dataset_service
-from histocat.modules.result import service as result_service
 from histocat.modules.gate import service as gate_service
+from histocat.modules.result import service as result_service
 from histocat.modules.user.models import UserModel
 
+from ...io.dataset import ANNDATA_FILE_EXTENSION
 from .dto import (
     PcaDto,
     PhenographDto,
@@ -36,7 +37,6 @@ from .dto import (
     UmapDto,
     UmapSubmissionDto,
 )
-from ...io.dataset import ANNDATA_FILE_EXTENSION
 
 logger = logging.getLogger(__name__)
 

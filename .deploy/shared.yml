@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.26
+    image: dpage/pgadmin4:4.27
     depends_on:
       - db
     environment:

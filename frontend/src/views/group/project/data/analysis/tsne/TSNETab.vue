@@ -194,7 +194,7 @@ export default class TSNETab extends Vue {
   }
 
   get results() {
-    return this.resultContext.getters.tsneResults;
+    return []; // this.resultContext.getters.tsneResults;
   }
 
   selectAll() {

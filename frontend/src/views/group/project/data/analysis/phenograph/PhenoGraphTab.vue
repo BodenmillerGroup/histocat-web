@@ -137,7 +137,7 @@ export default class PhenoGraphTab extends Vue {
   }
 
   get results() {
-    return this.resultContext.getters.phenographResults;
+    return []; // this.resultContext.getters.phenographResults;
   }
 
   selectAll() {

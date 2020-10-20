@@ -7,6 +7,7 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from histocat.modules.project import service as project_service
 from histocat.modules.project.dto import ProjectFullDto
+
 from .dto import AcquisitionCreateDto, ChannelUpdateDto
 from .models import AcquisitionModel
 

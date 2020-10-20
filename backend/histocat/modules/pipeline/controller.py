@@ -11,7 +11,7 @@ from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
 
 from . import service
-from .dto import PipelineCreateDto, PipelineUpdateDto, PipelineDto, PipelineProcessDto
+from .dto import PipelineCreateDto, PipelineDto, PipelineProcessDto, PipelineUpdateDto
 
 router = APIRouter()
 
@@ -94,8 +94,6 @@ def process(
     Process pipeline
     """
     worker.process_pipeline.send(
-        params.dataset_id,
-        params.acquisition_ids,
-        params.steps,
+        params.dataset_id, params.acquisition_ids, params.steps,
     )
     return ORJSONResponse({"status": "submitted"})

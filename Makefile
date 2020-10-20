@@ -1,7 +1,7 @@
 PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
-init:
+bootstrap:
 	cd backend && poetry install --extras backend
 	cd frontend && yarn install
 
@@ -25,6 +25,9 @@ clean:
 	find . -type d -name .pytest_cache -exec rm -r {} \+
 	find . -type d -name .mypy_cache -exec rm -r {} \+
 	rm docker-stack.yml
+
+serve-frontend:
+	cd frontend && yarn run serve
 
 update-frontend:
 	cd frontend && ncu -u && yarn install

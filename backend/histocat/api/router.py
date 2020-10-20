@@ -9,9 +9,9 @@ from histocat.modules.gate import controller as gate_controller
 from histocat.modules.group import controller as group_controller
 from histocat.modules.member import controller as member_controller
 from histocat.modules.panorama import controller as panorama_controller
+from histocat.modules.pipeline import controller as pipeline_controller
 from histocat.modules.preset import controller as preset_controller
 from histocat.modules.project import controller as project_controller
-from histocat.modules.pipeline import controller as pipeline_controller
 from histocat.modules.result import controller as result_controller
 from histocat.modules.slide import controller as slide_controller
 from histocat.modules.user import controller as user_controller
