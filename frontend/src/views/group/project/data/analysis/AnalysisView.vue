@@ -1,6 +1,7 @@
 <template>
   <v-tabs v-model="tab">
     <v-tab>Pipeline</v-tab>
+    <v-tab>Result</v-tab>
     <v-tab>Scatter Plot</v-tab>
     <v-tab>Box Plot</v-tab>
     <v-tab>PCA</v-tab>
@@ -9,6 +10,9 @@
     <v-tab>PhenoGraph</v-tab>
     <v-tab-item>
       <PipelineView />
+    </v-tab-item>
+    <v-tab-item>
+      <ResultGridView />
     </v-tab-item>
     <v-tab-item>
       <ScatterPlotTab />
@@ -40,9 +44,11 @@ import ScatterPlotTab from "@/views/group/project/data/analysis/scatter/ScatterP
 import UMAPTab from "@/views/group/project/data/analysis/umap/UMAPTab.vue";
 import { Component, Vue } from "vue-property-decorator";
 import PipelineView from "@/views/group/project/data/analysis/pipeline/PipelineView.vue";
+import ResultGridView from "@/views/group/project/data/analysis/ResultGridView.vue";
 
 @Component({
   components: {
+    ResultGridView,
     PipelineView,
     ScatterPlotTab,
     PhenoGraphTab,
@@ -56,19 +62,3 @@ export default class AnalysisView extends Vue {
   tab = 0;
 }
 </script>
-
-<style>
-/**
-   * The default size is 600px×400px, for responsive charts
-   * you may need to set percentage values as follows (also
-   * don't forget to provide a size for the container).
-   */
-.echarts {
-  width: 100%;
-  height: 100%;
-}
-
-.v-slide-group__prev {
-  min-width: 0;
-}
-</style>

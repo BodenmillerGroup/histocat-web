@@ -8,6 +8,10 @@ export class ResultsMutations extends Mutations<ResultsState> {
     this.state.activeResultId = id;
   }
 
+  setHeatmap(heatmap: { type: string; label: string } | null) {
+    this.state.heatmap = heatmap;
+  }
+
   setEntities(payload: IResult[]) {
     const normalizedData = normalize<IResult>(payload, resultListSchema);
     this.state.ids = normalizedData.result;

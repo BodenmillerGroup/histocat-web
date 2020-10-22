@@ -10,15 +10,6 @@ export interface IScatterPlotData {
   heatmap?: IPlotSeries;
 }
 
-export interface IPCASubmission {
-  dataset_id: number;
-  acquisition_ids: number[];
-  n_components: number;
-  markers: string[];
-  heatmapType: string;
-  heatmap: string;
-}
-
 export interface IChart3DData {
   x: IPlotSeries;
   y: IPlotSeries;

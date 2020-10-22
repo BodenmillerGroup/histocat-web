@@ -7,12 +7,14 @@ import { ResultsGetters } from "./getters";
 import { ResultsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 import {pipelinesModule} from "@/modules/pipelines";
+import {analysisModule} from "@/modules/analysis";
 
 export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
   pipelines?: Context<typeof pipelinesModule>;
+  analysis?: Context<typeof analysisModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -20,6 +22,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.pipelines = pipelinesModule.context(store);
+    this.analysis = analysisModule.context(store);
   }
 
   async getDatasetResults(datasetId: number) {
@@ -39,6 +42,15 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
       this.mutations.setEntity(data);
       this.pipelines?.mutations.setSteps(data.pipeline);
       this.pipelines?.mutations.setSelectedAcquisitionIds(data.input);
+      if (data.output.pca) {
+        this.analysis?.actions.getPcaData(resultId);
+      }
+      if (data.output.tsne) {
+        this.analysis?.actions.getTsneResult(resultId);
+      }
+      if (data.output.umap) {
+        this.analysis?.actions.getUmapResult(resultId);
+      }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

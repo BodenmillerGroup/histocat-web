@@ -5,10 +5,12 @@ import numpy as np
 import scanpy as sc
 
 
-def process(adata: AnnData, step: Dict[str, Any]):
+def process(adata: AnnData, step: Dict[str, Any], output: Dict[str, Any]):
     """
     Transform data
     """
+    output["transformation"] = True
+
     mode = step.get("mode")
     if mode == "arcsinh":
         cofactor = step.get("cofactor")

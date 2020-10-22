@@ -27,6 +27,7 @@ def upgrade():
         sa.Column('description', sa.String()),
         sa.Column('pipeline', JSONB()),
         sa.Column('input', JSONB()),
+        sa.Column('output', JSONB()),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )

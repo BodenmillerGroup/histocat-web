@@ -26,7 +26,6 @@ from histocat.modules.user.models import UserModel
 
 from ...io.dataset import ANNDATA_FILE_EXTENSION
 from .dto import (
-    PcaDto,
     PhenographDto,
     PhenographSubmissionDto,
     PlotSeriesDto,
@@ -80,7 +79,6 @@ async def get_scatter_plot_data(
     marker_x: str,
     marker_y: str,
     result_id: Optional[int] = None,
-    marker_z: Optional[str] = None,
     heatmap_type: Optional[str] = None,
     heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
@@ -109,12 +107,6 @@ async def get_scatter_plot_data(
         "x": {"label": marker_x, "data": adata.X[:, adata.var.index == marker_x][:, 0].tolist(),},
         "y": {"label": marker_y, "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),},
     }
-
-    if marker_z:
-        output["z"] = {
-            "label": marker_z,
-            "data": adata.X[:, adata.var.index == marker_z][:, 0].tolist(),
-        }
 
     if heatmap_type and heatmap:
         output["heatmap"] = {
@@ -160,25 +152,6 @@ async def get_box_plot_data(
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return ORJSONResponse(content)
-
-
-@router.get("/analysis/pca", response_model=PcaDto)
-async def get_pca_data(
-    dataset_id: int,
-    n_components: int,
-    acquisition_ids: Sequence[int] = Query(None),
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    markers: Sequence[str] = Query(None),
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """
-    Calculate Principal Component Analysis data for the dataset
-    """
-
-    content = pca.process_pca(db, dataset_id, acquisition_ids, n_components, markers, heatmap_type, heatmap)
     return ORJSONResponse(content)
 
 

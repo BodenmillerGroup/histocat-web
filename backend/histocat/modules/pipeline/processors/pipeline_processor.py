@@ -14,10 +14,27 @@ from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from histocat.modules.dataset import service as dataset_service
 from histocat.modules.result import service as result_service
 from histocat.modules.result.dto import ResultCreateDto
-from histocat.modules.pipeline.processors.steps import acquisitions_filter, markers_filter, transformation, pca
+from histocat.modules.pipeline.processors.steps import (
+    acquisitions_filter,
+    markers_filter,
+    transformation,
+    pca,
+    scale,
+    neighbors,
+    tsne,
+    umap,
+)
 
 
-processors = {"markersFilter": markers_filter, "transformation": transformation, "pca": pca}
+processors = {
+    "markersFilter": markers_filter,
+    "transformation": transformation,
+    "scale": scale,
+    "neighbors": neighbors,
+    "pca": pca,
+    "tsne": tsne,
+    "umap": umap,
+}
 
 
 @timeit
@@ -33,17 +50,24 @@ def process_pipeline(db: Session, dataset_id: int, acquisition_ids: Sequence[int
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     adata = sc.read_h5ad(cell_input.get("location"))
+    output = dict()
 
     # Subset observations for selected acquisitions
-    adata = acquisitions_filter.process(adata, acquisition_ids)
+    adata = acquisitions_filter.process(adata, acquisition_ids=acquisition_ids, output=output)
 
     for step in steps:
-        processor = processors.get(step.get("type"))
+        step_type = step.get("type")
+        processor = processors.get(step_type)
         if processor:
-            adata = processor.process(adata, step)
+            adata = processor.process(adata, step=step, output=output)
 
     result_create_params = ResultCreateDto(
-        dataset_id=dataset_id, status="ready", name=str(datetime.utcnow()), input=acquisition_ids, pipeline=steps
+        dataset_id=dataset_id,
+        status="ready",
+        name=str(datetime.utcnow()),
+        pipeline=steps,
+        input=acquisition_ids,
+        output=output,
     )
     result = result_service.create(db, params=result_create_params)
 

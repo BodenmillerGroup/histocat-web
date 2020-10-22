@@ -1,14 +1,15 @@
 from typing import Any, Dict
 
 from anndata import AnnData
+import scanpy as sc
 
 
 def process(adata: AnnData, step: Dict[str, Any], output: Dict[str, Any]):
     """
-    Subset variables for selected markers
+    Scale data
     """
-    output["markersFilter"] = True
+    output["scale"] = True
 
-    markers = step.get("markers")
-    result = adata[:, adata.var.index.isin(markers)]
+    max_value = step.get("maxValue")
+    result = sc.pp.scale(adata, max_value=max_value, copy=True)
     return result

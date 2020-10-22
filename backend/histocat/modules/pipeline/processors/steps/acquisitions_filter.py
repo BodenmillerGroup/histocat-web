@@ -1,11 +1,11 @@
-from typing import Sequence
+from typing import Sequence, Dict, Any
 
 from anndata import AnnData
 
 
-def process(adata: AnnData, acquisition_ids: Sequence[int]):
+def process(adata: AnnData, acquisition_ids: Sequence[int], output: Dict[str, Any]):
     """
     Subset observations for selected acquisitions
     """
-    output = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
-    return output
+    result = adata[adata.obs["AcquisitionId"].isin(acquisition_ids)]
+    return result

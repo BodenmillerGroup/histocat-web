@@ -7,11 +7,7 @@ import { AnalysisState } from ".";
 import { api } from "./api";
 import { AnalysisGetters } from "./getters";
 import {
-  IPCASubmission,
-  IPhenoGraphSubmission,
   IRegionStatsSubmission,
-  ITSNESubmission,
-  IUMAPSubmission,
 } from "./models";
 import { AnalysisMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
@@ -40,23 +36,21 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
   async getScatterPlotData(payload: {
     markerX: string;
     markerY: string;
-    markerZ: string;
     heatmapType: string;
     heatmap: string;
   }) {
     try {
       const datasetId = this.datasets!.getters.activeDatasetId!;
       const resultId = this.results!.getters.activeResultId;
-      const response = await api.getScatterPlotData(
+      const data = await api.getScatterPlotData(
         datasetId,
         resultId,
         payload.markerX,
         payload.markerY,
-        payload.markerZ,
         payload.heatmapType,
         payload.heatmap
       );
-      this.mutations.setScatterPlotData(response);
+      this.mutations.setScatterPlotData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -81,60 +75,31 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getPCAData(payload: IPCASubmission) {
-    try {
-      const response = await api.getPCAData(payload);
-      this.mutations.setPCAData(response);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async submitTSNE(payload: ITSNESubmission) {
-    try {
-      const response = await api.submitTSNE(payload);
-      const notification = { content: "t-SNE processing started. This may take a while..." };
-      this.main!.mutations.addNotification(notification);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getTSNEResult(payload: { resultId: number; heatmapType: string; heatmap: string }) {
+  async getPcaData(resultId: number) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const data = await api.getTSNEData(groupId, payload.resultId, payload.heatmapType, payload.heatmap);
-      this.mutations.setTSNEData(data);
+      const response = await api.getPcaData(groupId, resultId);
+      this.mutations.setPcaData(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  async submitUMAP(payload: IUMAPSubmission) {
-    try {
-      const response = await api.submitUMAP(payload);
-      const notification = { content: "UMAP processing started. This may take a while..." };
-      this.main!.mutations.addNotification(notification);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getUMAPResult(payload: { resultId: number; heatmapType: string; heatmap: string }) {
+  async getTsneResult(resultId: number) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const data = await api.getUMAPData(groupId, payload.resultId, payload.heatmapType, payload.heatmap);
-      this.mutations.setUMAPData(data);
+      const data = await api.getTsneData(groupId, resultId);
+      this.mutations.setTsneData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
   }
 
-  async submitPhenoGraph(payload: IPhenoGraphSubmission) {
+  async getUmapResult(resultId: number) {
     try {
-      const response = await api.submitPhenoGraph(payload);
-      const notification = { content: "PhenoGraph processing started. This may take a while..." };
-      this.main!.mutations.addNotification(notification);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getUmapData(groupId, resultId);
+      this.mutations.setUmapData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

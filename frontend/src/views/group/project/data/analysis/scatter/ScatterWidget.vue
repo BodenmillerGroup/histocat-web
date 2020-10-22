@@ -1,7 +1,11 @@
 <template>
-  <v-banner v-if="!activeDataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <div v-else>
-    <v-toolbar dense class="ma-1">
+  <v-card tile class="widget-container">
+    <v-card-title class="widget-title">
+      <v-icon left>mdi-drag</v-icon>
+      <span class="subtitle-1 font-weight-light">Scatter</span>
+    </v-card-title>
+    <v-divider />
+    <v-toolbar dense flat>
       x:
       <v-select
         :items="markers"
@@ -28,10 +32,14 @@
       />
       <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />
     </v-toolbar>
-    <div class="plot-container">
-      <ScatterPlot2d plot-id="scatterPlot" :data="plotData" :show-regression="showRegression" title="Scatter Plot" />
-    </div>
-  </div>
+    <ScatterPlot2d
+      plot-id="scatterPlot"
+      :data="plotData"
+      :show-regression="showRegression"
+      title="Scatter Plot"
+      class="plot"
+    />
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -47,14 +55,13 @@ import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
 @Component({
   components: { ScatterPlot2d, Scatter2D, Scatter3D },
 })
-export default class ScatterPlotTab extends Vue {
+export default class ScatterWidget extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly resultsContext = resultsModule.context(this.$store);
 
   readonly required = required;
 
-  valid = false;
   showRegression = false;
   markerX: string | null = null;
   markerY: string | null = null;
@@ -106,8 +113,13 @@ export default class ScatterPlotTab extends Vue {
 </script>
 
 <style scoped>
-.plot-container {
-  height: calc(100vh - 198px);
+.widget-container {
+  width: 100%;
+  height: 100%;
+}
+.plot {
+  width: 100%;
+  height: calc(100% - 86px);
 }
 .select-input {
   max-width: 200px;

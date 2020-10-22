@@ -20,15 +20,15 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
     this.state.boxPlotData = data;
   }
 
-  setPCAData(data: IPCAData | null) {
+  setPcaData(data: IPCAData | null) {
     this.state.pcaData = Object.freeze(data);
   }
 
-  setTSNEData(data: ITSNEData | null) {
+  setTsneData(data: ITSNEData | null) {
     this.state.tsneData = Object.freeze(data);
   }
 
-  setUMAPData(data: IUMAPData | null) {
+  setUmapData(data: IUMAPData | null) {
     this.state.umapData = Object.freeze(data);
   }
 

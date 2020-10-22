@@ -11,6 +11,7 @@ class ResultCreateDto(BaseModel):
     description: Optional[str]
     pipeline: Any
     input: Any
+    output: Any
 
 
 class ResultUpdateDto(BaseModel):
@@ -28,6 +29,7 @@ class ResultDto(BaseModel):
     description: Optional[str]
     pipeline: Any
     input: Any
+    output: Any
     location: Optional[str]
     created_at: datetime
 

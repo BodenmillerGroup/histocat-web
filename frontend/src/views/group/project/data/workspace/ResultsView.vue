@@ -2,6 +2,18 @@
   <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
   <v-card v-else tile>
     <v-toolbar flat dense color="grey lighten-4">
+      <v-select
+        :items="heatmaps"
+        v-model="heatmap"
+        label="Heatmap"
+        item-text="label"
+        return-object
+        hide-details
+        solo
+        flat
+        clearable
+        dense
+      />
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -33,6 +45,23 @@
           <v-list-item-action>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">
+                <v-btn
+                  icon
+                  v-on="on"
+                  download
+                  color="primary lighten-3"
+                  @click.stop=""
+                  :href="`${apiUrl}/results/${item.id}/download`"
+                >
+                  <v-icon>mdi-download</v-icon>
+                </v-btn>
+              </template>
+              <span>Download result</span>
+            </v-tooltip>
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
                 <v-btn icon v-on="on" color="secondary lighten-3" @click.stop="deleteResult(item.id)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
@@ -50,7 +79,8 @@
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
-import {resultsModule} from "@/modules/results";
+import { resultsModule } from "@/modules/results";
+import { apiUrl } from "@/env";
 
 @Component
 export default class ResultsView extends Vue {
@@ -58,16 +88,33 @@ export default class ResultsView extends Vue {
   readonly resultsContext = resultsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
 
+  readonly apiUrl = apiUrl;
+
   selected?: number | null = null;
 
   @Watch("selected")
-  resultChanged(index: number | null) {
+  resultChanged(index: number | null | undefined) {
     if (index !== null && index !== undefined) {
       const result = this.results[index];
       this.resultsContext.mutations.setActiveResultId(result.id);
     } else {
       this.resultsContext.mutations.setActiveResultId(null);
     }
+  }
+
+  get heatmaps() {
+    return this.datasetContext.getters.heatmaps;
+  }
+
+  get heatmap() {
+    return this.resultsContext.getters.heatmap;
+  }
+
+  set heatmap(value) {
+    if (value === undefined) {
+      value = null;
+    }
+    this.resultsContext.mutations.setHeatmap(value);
   }
 
   get activeDatasetId() {

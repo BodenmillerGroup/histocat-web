@@ -6,6 +6,7 @@ export interface IResult {
   description: string;
   pipeline: any;
   input: number[];
+  output: any;
   location: string;
   created_at: string;
 }

@@ -1,8 +1,14 @@
 import logging
+import os
+from io import BytesIO
 from typing import Sequence
+from zipfile import ZipFile, ZIP_DEFLATED
 
+import anndata as ad
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
+from starlette.responses import StreamingResponse
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
@@ -11,6 +17,9 @@ from histocat.modules.user.models import UserModel
 
 from . import service
 from .dto import ResultDto, ResultUpdateDto
+from ..analysis.dto import PcaDto, TsneDto, UmapDto
+from ...core.utils import stream_bytes
+from ...io.dataset import ANNDATA_FILE_EXTENSION
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -67,3 +76,104 @@ def delete_by_id(
     """
     item = service.remove(db, id=result_id)
     return item
+
+
+@router.get("/results/{result_id}/download")
+async def download_by_id(result_id: int, db: Session = Depends(get_db)):
+    """
+    Download result by id
+    """
+    item = service.get(db, id=result_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail=f"Cannot find result [{result_id}]")
+
+    file_name = f"{item.name}.zip"
+    abs_src = os.path.abspath(item.location)
+    buffer = BytesIO()
+    with ZipFile(buffer, "w", ZIP_DEFLATED) as zip:
+        for folderName, _, filenames in os.walk(item.location):
+            for filename in filenames:
+                absname = os.path.abspath(os.path.join(folderName, filename))
+                arcname = absname[len(abs_src) + 1 :]
+                zip.write(absname, arcname)
+
+    headers = {"Content-Disposition": f'attachment; filename="{file_name}"'}
+    return StreamingResponse(stream_bytes(buffer.getvalue()), media_type="application/zip", headers=headers)
+
+
+@router.get("/results/{result_id}/pca", response_model=PcaDto)
+async def get_pca_data(
+    result_id: int,
+    user: UserModel = Depends(get_active_user),
+    db: Session = Depends(get_db),
+):
+    """Get PCA data"""
+
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found.")
+    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+
+    adata = ad.read_h5ad(location)
+
+    output = {
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(), },
+        "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(), },
+    }
+
+    return ORJSONResponse(output)
+
+
+@router.get("/results/{result_id}/tsne", response_model=TsneDto)
+async def get_tsne_data(
+    result_id: int,
+    user: UserModel = Depends(get_active_user),
+    db: Session = Depends(get_db),
+):
+    """Get tSNE data"""
+
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found.")
+    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+
+    adata = ad.read_h5ad(location)
+
+    output = {
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "x": {"label": "tSNE1", "data": adata.obsm["X_tsne"][:, 0].tolist(), },
+        "y": {"label": "tSNE2", "data": adata.obsm["X_tsne"][:, 1].tolist(), },
+    }
+
+    return ORJSONResponse(output)
+
+
+@router.get("/results/{result_id}/umap", response_model=UmapDto)
+async def get_umap_data(
+    result_id: int,
+    user: UserModel = Depends(get_active_user),
+    db: Session = Depends(get_db),
+):
+    """Get UMAP data"""
+
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Result not found.")
+    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+
+    adata = ad.read_h5ad(location)
+
+    output = {
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "x": {"label": "tSNE1", "data": adata.obsm["X_umap"][:, 0].tolist(), },
+        "y": {"label": "tSNE2", "data": adata.obsm["X_umap"][:, 1].tolist(), },
+    }
+
+    return ORJSONResponse(output)

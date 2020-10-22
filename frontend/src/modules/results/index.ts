@@ -12,6 +12,8 @@ export class ResultsState {
   ids: ReadonlyArray<number> = [];
   entities: { [key: number]: IResult } = {};
   activeResultId: number | null = null;
+
+  heatmap: { type: string; label: string } | null = null;
 }
 
 export const resultsModule = new Module({

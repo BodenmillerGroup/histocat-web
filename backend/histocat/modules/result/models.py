@@ -22,6 +22,7 @@ class ResultModel(Base):
     description = sa.Column(sa.String())
     pipeline = sa.Column(JSONB())
     input = sa.Column(JSONB())
+    output = sa.Column(JSONB())
     location = sa.Column(sa.String(4096))
     created_at = sa.Column(sa.DateTime(), default=sa.sql.func.now(), nullable=False)
 
