@@ -10,3 +10,8 @@ export interface IResult {
   location: string;
   created_at: string;
 }
+
+export interface IResultUpdate {
+  name?: string | null;
+  description?: string | null;
+}

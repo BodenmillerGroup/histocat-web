@@ -13,6 +13,11 @@ class GateCreateDto(BaseModel):
     cell_ids: Sequence[int]
 
 
+class GateUpdateDto(BaseModel):
+    name: Optional[str]
+    description: Optional[str]
+
+
 class GateDto(BaseModel):
     id: int
     dataset_id: int

@@ -1,6 +1,5 @@
 import { apiUrl } from "@/env";
 import {
-  IAcquisition,
   IChannelStack,
   IChannelStats,
   IChannelUpdate,

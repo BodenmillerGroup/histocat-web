@@ -226,11 +226,11 @@ export default class UMAPTab extends Vue {
     const heatmap = this.heatmap ? this.heatmap.label : "";
 
     if (this.result) {
-      await this.analysisContext.actions.getUmapResult({
-        resultId: this.result.id,
-        heatmapType: this.heatmap ? this.heatmap.type : "",
-        heatmap: heatmap,
-      });
+      // await this.analysisContext.actions.getUmapResult({
+      //   resultId: this.result.id,
+      //   heatmapType: this.heatmap ? this.heatmap.type : "",
+      //   heatmap: heatmap,
+      // });
     }
   }
 }

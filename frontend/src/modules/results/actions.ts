@@ -8,6 +8,7 @@ import { ResultsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 import {pipelinesModule} from "@/modules/pipelines";
 import {analysisModule} from "@/modules/analysis";
+import {IResultUpdate} from "@/modules/results/models";
 
 export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
@@ -39,18 +40,34 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getResult(groupId, resultId);
+      this.analysis?.mutations.reset();
       this.mutations.setEntity(data);
       this.pipelines?.mutations.setSteps(data.pipeline);
       this.pipelines?.mutations.setSelectedAcquisitionIds(data.input);
+      const actions: any[] = [];
       if (data.output.pca) {
-        this.analysis?.actions.getPcaData(resultId);
+        actions.push(this.analysis?.actions.getPcaData(resultId));
       }
       if (data.output.tsne) {
-        this.analysis?.actions.getTsneResult(resultId);
+        actions.push(this.analysis?.actions.getTsneResult(resultId));
       }
       if (data.output.umap) {
-        this.analysis?.actions.getUmapResult(resultId);
+        actions.push(this.analysis?.actions.getUmapResult(resultId));
       }
+      if (actions.length > 0) {
+        Promise.all(actions);
+      }
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async updateResult(payload: { resultId: number; data: IResultUpdate }) {
+    try {
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.updateResult(groupId, payload.resultId, payload.data);
+      this.mutations.updateEntity(data);
+      this.main!.mutations.addNotification({ content: "Result successfully updated", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
+from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
@@ -60,9 +61,7 @@ def update(
     """
     item = service.get(db, id=result_id)
     if not item:
-        raise HTTPException(
-            status_code=404, detail="Result not found",
-        )
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
     item = service.update(db, item=item, params=params)
     return item
 
@@ -172,8 +171,8 @@ async def get_umap_data(
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "tSNE1", "data": adata.obsm["X_umap"][:, 0].tolist(), },
-        "y": {"label": "tSNE2", "data": adata.obsm["X_umap"][:, 1].tolist(), },
+        "x": {"label": "UMAP1", "data": adata.obsm["X_umap"][:, 0].tolist(), },
+        "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(), },
     }
 
     return ORJSONResponse(output)

@@ -1,4 +1,4 @@
-import {IPipeline, IPipelineCreate, IPipelineUpdate, IProcessPipeline} from "./models";
+import { IPipeline, IPipelineCreate, IPipelineUpdate, IProcessPipeline } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {
@@ -11,7 +11,7 @@ export const api = {
   },
   async updatePipeline(groupId: number, pipelineId: number, data: IPipelineUpdate) {
     return ApiManager.api
-      .put(`groups/${groupId}/pipelines/${pipelineId}`, {
+      .patch(`groups/${groupId}/pipelines/${pipelineId}`, {
         json: data,
       })
       .json<IPipeline>();

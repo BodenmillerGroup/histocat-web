@@ -5,7 +5,6 @@
 <script lang="ts">
 import { IChart2DData } from "@/modules/analysis/models";
 import { projectsModule } from "@/modules/projects";
-import { mainModule } from "@/modules/main";
 import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
@@ -17,7 +16,6 @@ import { linearRegression, linearRegressionLine } from "simple-statistics";
 
 @Component
 export default class ScatterPlot2d extends Vue {
-  readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly selectionContext = selectionModule.context(this.$store);
@@ -33,30 +31,12 @@ export default class ScatterPlot2d extends Vue {
   yAxisTitle = "";
   points = new Map<number, CellPoint[]>();
 
-  get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.mainContext.getters.showOptions;
-  }
-
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
   }
 
   get selectedCells() {
     return this.selectionContext.getters.selectedCells;
-  }
-
-  @Watch("showWorkspace")
-  showWorkspaceChanged(value: boolean) {
-    this.refresh();
-  }
-
-  @Watch("showOptions")
-  showOptionsChanged(value: boolean) {
-    this.refresh();
   }
 
   refresh() {
@@ -151,10 +131,13 @@ export default class ScatterPlot2d extends Vue {
           title: this.yAxisTitle,
         },
         hovermode: "closest",
+        dragmode: "lasso",
         autosize: true,
       };
 
       Plotly.react(this.plotId, traces, layout);
+    } else {
+      Plotly.react(this.plotId, [], {});
     }
   }
 
@@ -194,6 +177,9 @@ export default class ScatterPlot2d extends Vue {
         yaxis: {
           title: this.yAxisTitle,
         },
+        hovermode: "closest",
+        dragmode: "lasso",
+        autosize: true,
       };
 
       Plotly.react(this.plotId, traces, layout);
@@ -207,13 +193,15 @@ export default class ScatterPlot2d extends Vue {
       title: this.title,
       showlegend: true,
       hovermode: "closest",
+      dragmode: "lasso",
+      autosize: true,
     };
 
     const initConfig = {
       scrollZoom: true,
       displaylogo: false,
       displayModeBar: true,
-      modeBarButtonsToRemove: ["toggleSpikelines"],
+      modeBarButtonsToRemove: ["toggleSpikelines", "hoverCompareCartesian"],
       responsive: true,
     };
 

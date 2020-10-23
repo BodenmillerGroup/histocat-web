@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
-from .dto import GateCreateDto
+from .dto import GateCreateDto, GateUpdateDto
 from .models import GateModel
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,18 @@ def create(session: Session, *, params: GateCreateDto) -> GateModel:
     session.commit()
     session.refresh(entity)
     return entity
+
+
+def update(session: Session, *, item: GateModel, params: GateUpdateDto) -> GateModel:
+    data = item.as_dict()
+    update_data = params.dict(exclude_unset=True)
+    for field in data:
+        if field in update_data:
+            setattr(item, field, update_data[field])
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item
 
 
 def delete_by_id(session: Session, *, id: int) -> int:

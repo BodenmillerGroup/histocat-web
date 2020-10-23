@@ -9,7 +9,7 @@ import { PipelinesMutations } from "./mutations";
 import { settingsModule } from "@/modules/settings";
 import { projectsModule } from "@/modules/projects";
 import { groupModule } from "@/modules/group";
-import {datasetsModule} from "@/modules/datasets";
+import { datasetsModule } from "@/modules/datasets";
 
 export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, PipelinesMutations, PipelinesActions> {
   // Declare context type
@@ -57,10 +57,10 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
     }
   }
 
-  async updatePipeline(payload: { id: number; data: IPipelineUpdate }) {
+  async updatePipeline(payload: { pipelineId: number; data: IPipelineUpdate }) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const data = await api.updatePipeline(groupId, payload.id, payload.data);
+      const data = await api.updatePipeline(groupId, payload.pipelineId, payload.data);
       this.mutations.updateEntity(data);
       this.main!.mutations.addNotification({ content: "Pipeline successfully updated", color: "success" });
     } catch (error) {

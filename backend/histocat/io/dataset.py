@@ -100,7 +100,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     if acquisition_metadata_input:
         meta["acquisition_metadata"] = acquisition_metadata_input
 
-    update_params = DatasetUpdateDto(status="ready", meta=meta)
+    update_params = DatasetUpdateDto(name=f"Dataset {dataset.id}", status="ready", meta=meta)
     dataset = dataset_service.update(db, item=dataset, params=update_params)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(project_id, "dataset_imported"))
 

@@ -52,7 +52,7 @@ def create(
     return items
 
 
-@router.put("/groups/{group_id}/pipelines/{pipeline_id}", response_model=PipelineDto)
+@router.patch("/groups/{group_id}/pipelines/{pipeline_id}", response_model=PipelineDto)
 def update(
     group_id: int,
     pipeline_id: int,

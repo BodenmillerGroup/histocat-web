@@ -11,6 +11,7 @@ import { DatasetsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_DATASETS, SET_ACTIVE_DATASET_ID } from "./events";
 import { groupModule } from "@/modules/group";
+import {IDatasetUpdate} from "@/modules/datasets/models";
 
 export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, DatasetsMutations, DatasetsActions> {
   // Declare context type
@@ -37,6 +38,26 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getProjectDatasets(groupId, projectId);
       BroadcastManager.publish(SET_DATASETS, data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getDataset(id: number) {
+    try {
+      const data = await api.getDataset(id);
+      this.mutations.setEntity(data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async updateDataset(payload: { datasetId: number; data: IDatasetUpdate }) {
+    try {
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.updateDataset(groupId, payload.datasetId, payload.data);
+      this.mutations.updateEntity(data);
+      this.main!.mutations.addNotification({ content: "Dataset successfully updated", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

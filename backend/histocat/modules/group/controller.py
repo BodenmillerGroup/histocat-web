@@ -21,15 +21,13 @@ router = APIRouter()
 
 @router.get("/groups/tags", response_model=Set[str])
 def get_tags(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
-    """
-    Get groups tags
-    """
+    """Get groups tags"""
     return service.get_tags(db)
 
 
 @router.get("/groups", response_model=Sequence[GroupDto])
 def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
-    """Get all groups."""
+    """Get all groups"""
     items = service.get_all(db, user_id=user.id)
     return items
 
@@ -38,7 +36,7 @@ def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_active_
 def create(
     params: GroupCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
 ):
-    """Create new group."""
+    """Create new group"""
     item = service.get_by_name(db, name=params.name)
     if item:
         raise HTTPException(
@@ -50,7 +48,7 @@ def create(
 
 @router.get("/groups/{group_id}", response_model=GroupDto)
 def get_by_id(group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)):
-    """Get group by id."""
+    """Get group by id"""
     item = service.get_by_id(db, group_id)
     return item
 
@@ -62,7 +60,7 @@ def update(
     db: Session = Depends(get_db),
     member: MemberModel = Depends(get_group_admin),
 ):
-    """Update the group."""
+    """Update the group"""
     item = service.get_by_id(db, group_id)
     item = service.update(db, item=item, params=params)
     return item
@@ -80,22 +78,20 @@ def join(
 def delete_by_id(
     group_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
 ):
-    """
-    Delete group by id
-    """
+    """Delete group by id"""
     item = service.delete_by_id(db, id=group_id)
     return item.id
 
 
 @router.get("/groups/{group_id}/members/me", response_model=MemberDto)
 def get_own_member(group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)):
-    """Get own member of the group."""
+    """Get own member of the group"""
     item = get_by_group_id_and_user_id(db, group_id=group_id, user_id=member.user.id)
     return item
 
 
 @router.get("/groups/{group_id}/members", response_model=Sequence[MemberDto])
 def find_group_members(group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)):
-    """Get group's members."""
+    """Get group's members"""
     items = get_group_members(db, group_id=group_id)
     return items

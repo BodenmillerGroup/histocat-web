@@ -8,9 +8,8 @@ export interface IPipelineCreate {
 }
 
 export interface IPipelineUpdate {
-  name: string;
-  description?: string;
-  steps: any[];
+  name?: string | null;
+  description?: string | null;
 }
 
 export interface IPipeline {

@@ -15,8 +15,6 @@ class ResultCreateDto(BaseModel):
 
 
 class ResultUpdateDto(BaseModel):
-    dataset_id: int
-    status: Optional[str]
     name: Optional[str]
     description: Optional[str]
 

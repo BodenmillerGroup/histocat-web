@@ -16,6 +16,11 @@ export interface IDatasetPhenoGraphOutput {
   params: any;
 }
 
+export interface IDatasetUpdate {
+  name?: string | null;
+  description?: string | null;
+}
+
 export interface IDataset {
   id: number;
   project_id: number;

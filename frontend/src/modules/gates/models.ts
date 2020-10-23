@@ -7,6 +7,11 @@ export interface IGateCreate {
   cell_ids: number[];
 }
 
+export interface IGateUpdate {
+  name?: string | null;
+  description?: string | null;
+}
+
 export interface IGate {
   id: number;
   dataset_id: number;

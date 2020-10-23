@@ -13,7 +13,7 @@ class DatasetCreateDto(BaseModel):
 
 
 class DatasetUpdateDto(BaseModel):
-    status: str
+    status: Optional[str]
     name: Optional[str]
     description: Optional[str]
     meta: Optional[dict]

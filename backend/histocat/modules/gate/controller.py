@@ -1,14 +1,16 @@
 from typing import Sequence
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user
+from histocat.api.security import get_active_user, get_active_member
 from histocat.modules.user.models import UserModel
 
 from . import service
-from .dto import GateCreateDto, GateDto
+from .dto import GateCreateDto, GateDto, GateUpdateDto
+from ..member.models import MemberModel
 
 router = APIRouter()
 
@@ -44,6 +46,24 @@ def create(
     """
     items = service.create(db, params=params)
     return items
+
+
+@router.patch("/groups/{group_id}/gates/{gate_id}", response_model=GateDto)
+def update(
+    group_id: int,
+    gate_id: int,
+    params: GateUpdateDto,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    """
+    Update pipeline
+    """
+    item = service.get_by_id(db, id=gate_id)
+    if not item:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Gate id:{gate_id} not found")
+    item = service.update(db, item=item, params=params)
+    return item
 
 
 @router.delete("/gates/{gate_id}", response_model=int)
