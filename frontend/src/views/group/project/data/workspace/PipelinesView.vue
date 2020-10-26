@@ -31,35 +31,25 @@
                 </template>
                 <span>Load pipeline</span>
               </v-tooltip>
-              <v-dialog v-model="dialog" scrollable max-width="600px">
-                <template v-slot:activator="{ on, attrs }">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
                   <v-btn
                     icon
                     small
-                    v-bind="attrs"
                     v-on="on"
                     color="primary lighten-2"
-                    @click="
+                    @click.stop="
+                      activeId = item.id;
                       name = item.name;
                       description = item.description;
+                      dialog = true;
                     "
                   >
                     <v-icon small>mdi-pencil-outline</v-icon>
                   </v-btn>
                 </template>
-                <v-card>
-                  <v-card-title>Edit pipeline</v-card-title>
-                  <v-card-text>
-                    <v-text-field label="Name" v-model="name" />
-                    <v-text-field label="Description" v-model="description" />
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn text @click="dialog = false">Cancel</v-btn>
-                    <v-btn color="primary" text @click="updatePipeline(item.id)">Update</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+                <span>Edit pipeline</span>
+              </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-btn icon small v-on="on" color="secondary lighten-2" @click.stop="deletePipeline(item.id)">
@@ -73,6 +63,20 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
+    <v-dialog v-model="dialog" scrollable max-width="600px">
+      <v-card>
+        <v-card-title>Edit Pipeline</v-card-title>
+        <v-card-text>
+          <v-text-field label="Name" v-model="name" />
+          <v-text-field label="Description" v-model="description" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="dialog = false">Cancel</v-btn>
+          <v-btn color="primary" text @click="updatePipeline()">Update</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -89,6 +93,7 @@ export default class PipelinesView extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);
 
   dialog = false;
+  activeId: number | null = null;
   name: string | null = null;
   description: string | null = null;
 
@@ -143,12 +148,14 @@ export default class PipelinesView extends Vue {
     }
   }
 
-  async updatePipeline(pipelineId: number) {
+  async updatePipeline() {
     this.dialog = false;
-    await this.pipelinesContext.actions.updatePipeline({
-      pipelineId: pipelineId,
-      data: { name: this.name, description: this.description },
-    });
+    if (this.activeId) {
+      await this.pipelinesContext.actions.updatePipeline({
+        pipelineId: this.activeId,
+        data: { name: this.name, description: this.description },
+      });
+    }
   }
 
   mounted() {

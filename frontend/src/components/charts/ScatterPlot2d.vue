@@ -188,15 +188,7 @@ export default class ScatterPlot2d extends Vue {
 
   private initPlot() {
     const initData = [];
-
-    const initLayout = {
-      title: this.title,
-      showlegend: true,
-      hovermode: "closest",
-      dragmode: "lasso",
-      autosize: true,
-    };
-
+    const initLayout = {};
     const initConfig = {
       scrollZoom: true,
       displaylogo: false,

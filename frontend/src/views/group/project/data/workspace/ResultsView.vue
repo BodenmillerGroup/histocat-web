@@ -36,13 +36,13 @@
           <v-list-item-action>
             <v-row>
               <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn icon small v-on="on" download color="primary lighten-2" @click="loadResult(item.id)">
-                  <v-icon small>mdi-refresh-circle</v-icon>
-                </v-btn>
-              </template>
-              <span>Load result</span>
-            </v-tooltip>
+                <template v-slot:activator="{ on }">
+                  <v-btn icon small v-on="on" download color="primary lighten-2" @click="loadResult(item.id)">
+                    <v-icon small>mdi-refresh-circle</v-icon>
+                  </v-btn>
+                </template>
+                <span>Load result</span>
+              </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-btn
@@ -59,25 +59,25 @@
                 </template>
                 <span>Download result</span>
               </v-tooltip>
-              <v-dialog v-model="dialog" scrollable max-width="600px">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn icon small v-bind="attrs" v-on="on" color="primary lighten-2" @click="name = item.name; description = item.description">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    small
+                    v-on="on"
+                    color="primary lighten-2"
+                    @click.stop="
+                      activeId = item.id;
+                      name = item.name;
+                      description = item.description;
+                      dialog = true;
+                    "
+                  >
                     <v-icon small>mdi-pencil-outline</v-icon>
                   </v-btn>
                 </template>
-                <v-card>
-                  <v-card-title>Edit Result</v-card-title>
-                  <v-card-text>
-                    <v-text-field label="Name" v-model="name" />
-                    <v-text-field label="Description" v-model="description" />
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn text @click="dialog = false">Cancel</v-btn>
-                    <v-btn color="primary" text @click="updateResult(item.id)">Update</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+                <span>Edit result</span>
+              </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-btn icon small v-on="on" color="secondary lighten-2" @click.stop="deleteResult(item.id)">
@@ -91,6 +91,20 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
+    <v-dialog v-model="dialog" scrollable max-width="600px">
+      <v-card>
+        <v-card-title>Edit Result</v-card-title>
+        <v-card-text>
+          <v-text-field label="Name" v-model="name" />
+          <v-text-field label="Description" v-model="description" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="dialog = false">Cancel</v-btn>
+          <v-btn color="primary" text @click="updateResult()">Update</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -110,6 +124,7 @@ export default class ResultsView extends Vue {
   readonly apiUrl = apiUrl;
 
   dialog = false;
+  activeId: number | null = null;
   name: string | null = null;
   description: string | null = null;
 
@@ -172,12 +187,14 @@ export default class ResultsView extends Vue {
     }
   }
 
-  async updateResult(resultId: number) {
+  async updateResult() {
     this.dialog = false;
-    await this.resultsContext.actions.updateResult({
-      resultId: resultId,
-      data: { name: this.name, description: this.description },
-    });
+    if (this.activeId) {
+      await this.resultsContext.actions.updateResult({
+        resultId: this.activeId,
+        data: { name: this.name, description: this.description },
+      });
+    }
   }
 
   mounted() {

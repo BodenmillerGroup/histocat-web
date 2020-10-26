@@ -11,9 +11,10 @@
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="items"
+      :items="channels"
       :search="search"
       v-model="selected"
+      item-key="name"
       show-select
       hide-default-footer
       class="overflow-y-auto scroll-view"
@@ -30,10 +31,12 @@ import { IChannel } from "@/modules/projects/models";
 import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { datasetsModule } from "@/modules/datasets";
 
 @Component
 export default class MarkersSelector extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
+  readonly datasetsContext = datasetsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
   @Prop(Object) step;
@@ -64,32 +67,23 @@ export default class MarkersSelector extends Vue {
     return this.projectsContext.getters.activeAcquisitionId;
   }
 
+  get availableMarkers() {
+    return this.datasetsContext.getters.channels;
+  }
+
   get channels() {
     const acquisition = this.projectsContext.getters.activeAcquisition;
-    return acquisition ? Object.values(acquisition.channels).sort((a, b) => a.mass - b.mass) : [];
-  }
-
-  get items() {
-    if (!this.activeAcquisitionId) {
-      return [];
-    }
-    return this.channels.map((channel) => {
-      return {
-        id: channel.name,
-        customLabel: channel.customLabel,
-        name: channel.name,
-        mass: channel.mass,
-      };
-    });
-  }
-
-  get markers() {
-    return this.step.markers;
+    const availableMarkers = this.availableMarkers;
+    return acquisition
+      ? Object.values(acquisition.channels)
+          .filter((v) => availableMarkers.includes(v.name))
+          .sort((a, b) => a.mass - b.mass)
+      : [];
   }
 
   get selected() {
-    return this.items.filter((channel) => {
-      if (this.markers.includes(channel.name)) {
+    return this.channels.filter((channel) => {
+      if (this.step.markers.includes(channel.name)) {
         return channel;
       }
     }) as any;
@@ -97,7 +91,7 @@ export default class MarkersSelector extends Vue {
 
   set selected(items: IChannel[]) {
     const selectedMarkers = items.map((item) => item.name);
-    if (!equals(this.markers, selectedMarkers)) {
+    if (!equals(this.step.markers, selectedMarkers)) {
       this.step.markers = selectedMarkers;
     }
   }

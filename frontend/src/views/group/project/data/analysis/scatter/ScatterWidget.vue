@@ -49,7 +49,6 @@ import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import Scatter3D from "@/components/charts/Scatter3D.vue";
 import Scatter2D from "@/components/charts/Scatter2D.vue";
-import { resultsModule } from "@/modules/results";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
 
 @Component({
@@ -58,17 +57,12 @@ import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
 export default class ScatterWidget extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
 
   readonly required = required;
 
   showRegression = false;
   markerX: string | null = null;
   markerY: string | null = null;
-
-  get heatmap() {
-    return this.resultsContext.getters.heatmap;
-  }
 
   get plotData() {
     return this.analysisContext.getters.scatterPlotData;
@@ -104,8 +98,6 @@ export default class ScatterWidget extends Vue {
       await this.analysisContext.actions.getScatterPlotData({
         markerX: this.markerX,
         markerY: this.markerY,
-        heatmapType: this.heatmap ? this.heatmap.type : "",
-        heatmap: this.heatmap ? this.heatmap.label : "",
       });
     }
   }

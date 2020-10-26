@@ -16,8 +16,8 @@ export const api = {
     resultId: number | null,
     markerX: string,
     markerY: string,
-    heatmapType: string,
-    heatmap: string
+    heatmapType?: string,
+    heatmap?: string
   ) {
     let url = `analysis/scatterplot?dataset_id=${datasetId}`;
     if (resultId) {
@@ -39,24 +39,26 @@ export const api = {
       )
       .json<IPlotSeries[]>();
   },
-  async getPcaData(groupId: number, resultId: number) {
-    return ApiManager.api
-      .get(
-        `results/${resultId}/pca`
-      )
-      .json<IPCAData>();
+  async getPcaData(groupId: number, resultId: number, heatmapType?: string, heatmap?: string) {
+    let url = `results/${resultId}/pca`;
+    if (heatmapType && heatmap) {
+      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+    }
+    return ApiManager.api.get(url).json<IPCAData>();
   },
-  async getTsneData(groupId: number, resultId: number) {
-    return ApiManager.api
-      .get(
-        `results/${resultId}/tsne`
-      ).json<ITSNEData>();
+  async getTsneData(groupId: number, resultId: number, heatmapType?: string, heatmap?: string) {
+    let url = `results/${resultId}/tsne`;
+    if (heatmapType && heatmap) {
+      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+    }
+    return ApiManager.api.get(url).json<ITSNEData>();
   },
-  async getUmapData(groupId: number, resultId: number) {
-    return ApiManager.api
-      .get(
-        `results/${resultId}/umap`
-      ).json<IUMAPData>();
+  async getUmapData(groupId: number, resultId: number, heatmapType?: string, heatmap?: string) {
+    let url = `results/${resultId}/umap`;
+    if (heatmapType && heatmap) {
+      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
+    }
+    return ApiManager.api.get(url).json<IUMAPData>();
   },
   async getPhenoGraphData(groupId: number, resultId: number) {
     return ApiManager.api.get(`groups/${groupId}/results/${resultId}/phenograph`).json<IPhenoGraphData>();

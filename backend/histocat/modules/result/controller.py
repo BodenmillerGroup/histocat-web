@@ -1,14 +1,14 @@
 import logging
 import os
 from io import BytesIO
-from typing import Sequence
-from zipfile import ZipFile, ZIP_DEFLATED
+from typing import Optional, Sequence
+from zipfile import ZIP_DEFLATED, ZipFile
 
 import anndata as ad
+import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import ORJSONResponse, FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
-from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
@@ -16,11 +16,11 @@ from histocat.api.security import get_active_member, get_active_user
 from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
 
-from . import service
-from .dto import ResultDto, ResultUpdateDto
-from ..analysis.dto import PcaDto, TsneDto, UmapDto
 from ...core.utils import stream_bytes
 from ...io.dataset import ANNDATA_FILE_EXTENSION
+from ..analysis.dto import PcaDto, TsneDto, UmapDto
+from . import service
+from .dto import ResultDto, ResultUpdateDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -83,8 +83,8 @@ async def download_by_id(result_id: int, db: Session = Depends(get_db)):
     Download result by id
     """
     item = service.get(db, id=result_id)
-    if item is None:
-        raise HTTPException(status_code=404, detail=f"Cannot find result [{result_id}]")
+    if not item:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
 
     file_name = f"{item.name}.zip"
     abs_src = os.path.abspath(item.location)
@@ -103,6 +103,8 @@ async def download_by_id(result_id: int, db: Session = Depends(get_db)):
 @router.get("/results/{result_id}/pca", response_model=PcaDto)
 async def get_pca_data(
     result_id: int,
+    heatmap_type: Optional[str] = None,
+    heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
@@ -110,7 +112,7 @@ async def get_pca_data(
 
     result = service.get(db, id=result_id)
     if not result:
-        raise HTTPException(status_code=404, detail="Result not found.")
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
     location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
 
     adata = ad.read_h5ad(location)
@@ -119,9 +121,22 @@ async def get_pca_data(
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(), },
-        "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(), },
+        "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(),},
+        "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(),},
     }
+
+    if heatmap:
+        if heatmap_type == "channel":
+            heatmap_values = adata.X[:, adata.var.index == heatmap]
+            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
+        elif heatmap_type == "neighbor":
+            heatmap = "louvain"
+            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
+            output["heatmap"] = {
+                "label": heatmap,
+                "heatmap_type": heatmap_type,
+                "data": heatmap_values[heatmap].tolist(),
+            }
 
     return ORJSONResponse(output)
 
@@ -129,6 +144,8 @@ async def get_pca_data(
 @router.get("/results/{result_id}/tsne", response_model=TsneDto)
 async def get_tsne_data(
     result_id: int,
+    heatmap_type: Optional[str] = None,
+    heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
@@ -136,7 +153,7 @@ async def get_tsne_data(
 
     result = service.get(db, id=result_id)
     if not result:
-        raise HTTPException(status_code=404, detail="Result not found.")
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
     location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
 
     adata = ad.read_h5ad(location)
@@ -145,9 +162,22 @@ async def get_tsne_data(
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "tSNE1", "data": adata.obsm["X_tsne"][:, 0].tolist(), },
-        "y": {"label": "tSNE2", "data": adata.obsm["X_tsne"][:, 1].tolist(), },
+        "x": {"label": "tSNE1", "data": adata.obsm["X_tsne"][:, 0].tolist(),},
+        "y": {"label": "tSNE2", "data": adata.obsm["X_tsne"][:, 1].tolist(),},
     }
+
+    if heatmap:
+        if heatmap_type == "channel":
+            heatmap_values = adata.X[:, adata.var.index == heatmap]
+            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
+        elif heatmap_type == "neighbor":
+            heatmap = "louvain"
+            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
+            output["heatmap"] = {
+                "label": heatmap,
+                "heatmap_type": heatmap_type,
+                "data": heatmap_values[heatmap].tolist(),
+            }
 
     return ORJSONResponse(output)
 
@@ -155,6 +185,8 @@ async def get_tsne_data(
 @router.get("/results/{result_id}/umap", response_model=UmapDto)
 async def get_umap_data(
     result_id: int,
+    heatmap_type: Optional[str] = None,
+    heatmap: Optional[str] = None,
     user: UserModel = Depends(get_active_user),
     db: Session = Depends(get_db),
 ):
@@ -162,7 +194,7 @@ async def get_umap_data(
 
     result = service.get(db, id=result_id)
     if not result:
-        raise HTTPException(status_code=404, detail="Result not found.")
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
     location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
 
     adata = ad.read_h5ad(location)
@@ -171,8 +203,39 @@ async def get_umap_data(
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "UMAP1", "data": adata.obsm["X_umap"][:, 0].tolist(), },
-        "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(), },
+        "x": {"label": "UMAP1", "data": adata.obsm["X_umap"][:, 0].tolist(),},
+        "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(),},
     }
 
+    if heatmap:
+        if heatmap_type == "channel":
+            heatmap_values = adata.X[:, adata.var.index == heatmap]
+            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
+        elif heatmap_type == "neighbor":
+            heatmap = "louvain"
+            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
+            output["heatmap"] = {
+                "label": heatmap,
+                "heatmap_type": heatmap_type,
+                "data": heatmap_values[heatmap].tolist(),
+            }
+
     return ORJSONResponse(output)
+
+
+@router.get("/results/{result_id}/plot", responses={200: {"content": {"image/png": {}}}})
+async def get_plot_image(
+    result_id: int,
+    plot_name: Optional[str] = None,
+    # user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    """Get plot image by name"""
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
+
+    filename = f"{plot_name}.png"
+    location = os.path.join(result.location, filename)
+
+    return FileResponse(location, media_type="image/png", filename=filename)

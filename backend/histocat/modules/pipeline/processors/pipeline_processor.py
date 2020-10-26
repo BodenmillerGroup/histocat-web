@@ -12,19 +12,20 @@ from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
 from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from histocat.modules.dataset import service as dataset_service
-from histocat.modules.result import service as result_service
-from histocat.modules.result.dto import ResultCreateDto
 from histocat.modules.pipeline.processors.steps import (
     acquisitions_filter,
+    leiden,
+    louvain,
     markers_filter,
-    transformation,
+    neighbors,
     pca,
     scale,
-    neighbors,
+    transformation,
     tsne,
     umap,
 )
-
+from histocat.modules.result import service as result_service
+from histocat.modules.result.dto import ResultCreateDto, ResultUpdateDto
 
 processors = {
     "markersFilter": markers_filter,
@@ -34,6 +35,8 @@ processors = {
     "pca": pca,
     "tsne": tsne,
     "umap": umap,
+    "leiden": leiden,
+    "louvain": louvain,
 }
 
 
@@ -49,6 +52,23 @@ def process_pipeline(db: Session, dataset_id: int, acquisition_ids: Sequence[int
     if not cell_input or len(acquisition_ids) == 0:
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
+    result_create_params = ResultCreateDto(
+        dataset_id=dataset_id,
+        status="ready",
+        name=str(datetime.utcnow()),
+        pipeline=steps,
+        input=acquisition_ids,
+    )
+    result = result_service.create(db, params=result_create_params)
+
+    # Set ScanPy default settings
+    sc.settings.autosave = False
+    sc.settings.autoshow = False
+    sc.settings.figdir = result.location
+    sc.settings.datasetdir = result.location
+    sc.settings.cachedir = result.location
+    sc.settings.writedir = result.location
+
     adata = sc.read_h5ad(cell_input.get("location"))
     output = dict()
 
@@ -61,18 +81,13 @@ def process_pipeline(db: Session, dataset_id: int, acquisition_ids: Sequence[int
         if processor:
             adata = processor.process(adata, step=step, output=output)
 
-    result_create_params = ResultCreateDto(
-        dataset_id=dataset_id,
-        status="ready",
-        name=str(datetime.utcnow()),
-        pipeline=steps,
-        input=acquisition_ids,
-        output=output,
-    )
-    result = result_service.create(db, params=result_create_params)
+    # location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+    sc.write("output", adata=adata)
 
-    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
-    sc.write(location, adata=adata)
+    result_update_params = ResultUpdateDto(
+        output=output
+    )
+    result = result_service.update(db, item=result, params=result_update_params)
 
     redis_manager.publish(
         UPDATES_CHANNEL_NAME, Message(dataset.project_id, "result_ready", jsonable_encoder(result)),

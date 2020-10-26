@@ -11,12 +11,12 @@ class ResultCreateDto(BaseModel):
     description: Optional[str]
     pipeline: Any
     input: Any
-    output: Any
 
 
 class ResultUpdateDto(BaseModel):
     name: Optional[str]
     description: Optional[str]
+    output: Optional[Any]
 
 
 class ResultDto(BaseModel):

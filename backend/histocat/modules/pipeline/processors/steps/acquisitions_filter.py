@@ -1,4 +1,4 @@
-from typing import Sequence, Dict, Any
+from typing import Any, Dict, Sequence
 
 from anndata import AnnData
 

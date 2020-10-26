@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-from anndata import AnnData
 import numpy as np
 import scanpy as sc
+from anndata import AnnData
 
 
 def process(adata: AnnData, step: Dict[str, Any], output: Dict[str, Any]):

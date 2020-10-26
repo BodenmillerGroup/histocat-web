@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 import anndata as ad
 import cv2
 import numpy as np
+import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
@@ -108,11 +109,18 @@ async def get_scatter_plot_data(
         "y": {"label": marker_y, "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),},
     }
 
-    if heatmap_type and heatmap:
-        output["heatmap"] = {
-            "label": heatmap,
-            "data": adata.X[:, adata.var.index == heatmap][:, 0].tolist(),
-        }
+    if heatmap:
+        if heatmap_type == "channel":
+            heatmap_values = adata.X[:, adata.var.index == heatmap]
+            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
+        elif heatmap_type == "neighbor":
+            heatmap = "louvain"
+            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
+            output["heatmap"] = {
+                "label": heatmap,
+                "heatmap_type": heatmap_type,
+                "data": heatmap_values[heatmap].tolist(),
+            }
 
     return ORJSONResponse(output)
 

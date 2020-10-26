@@ -19,9 +19,13 @@ export class DatasetsGetters extends Getters<DatasetsState> {
   }
 
   get channels() {
-    return this.getters.activeDataset && this.getters.activeDataset.meta["channel_map"]
-      ? Object.keys(this.getters.activeDataset.meta["channel_map"])
-      : [];
+    if (this.getters.activeDataset && this.getters.activeDataset.meta["channel_map"]) {
+      const dict = this.getters.activeDataset.meta["channel_map"];
+      return Object.keys(dict).sort((a, b) => {
+        return dict[a] - dict[b];
+      });
+    }
+    return [];
   }
 
   get heatmaps() {

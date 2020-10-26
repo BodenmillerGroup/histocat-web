@@ -32,6 +32,13 @@
           <v-list-item @click="addStep('umap')">
             <v-list-item-title>UMAP</v-list-item-title>
           </v-list-item>
+          <v-subheader>Clustering</v-subheader>
+          <v-list-item @click="addStep('leiden')">
+            <v-list-item-title>Leiden</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="addStep('louvain')">
+            <v-list-item-title>Louvain</v-list-item-title>
+          </v-list-item>
         </v-list>
       </v-menu>
       <v-tooltip bottom>
@@ -79,6 +86,8 @@
           <PcaStepEditor v-else-if="step.type === `pca`" :step="step" :deleteStep="deleteStep" />
           <TsneStepEditor v-else-if="step.type === `tsne`" :step="step" :deleteStep="deleteStep" />
           <UmapStepEditor v-else-if="step.type === `umap`" :step="step" :deleteStep="deleteStep" />
+          <LeidenStepEditor v-else-if="step.type === `leiden`" :step="step" :deleteStep="deleteStep" />
+          <LouvainStepEditor v-else-if="step.type === `louvain`" :step="step" :deleteStep="deleteStep" />
         </v-timeline-item>
       </v-slide-x-reverse-transition>
     </v-timeline>
@@ -103,9 +112,13 @@ import ScaleStepEditor from "@/views/group/project/data/analysis/pipeline/steps/
 import MarkersFilterStepEditor from "@/views/group/project/data/analysis/pipeline/steps/MarkersFilterStepEditor.vue";
 import NeighborsStepEditor from "@/views/group/project/data/analysis/pipeline/steps/NeighborsStepEditor.vue";
 import AcquisitionsSelector from "@/views/group/project/data/analysis/pipeline/AcquisitionsSelector.vue";
+import LeidenStepEditor from "@/views/group/project/data/analysis/pipeline/steps/LeidenStepEditor.vue";
+import LouvainStepEditor from "@/views/group/project/data/analysis/pipeline/steps/LouvainStepEditor.vue";
 
 @Component({
   components: {
+    LouvainStepEditor,
+    LeidenStepEditor,
     AcquisitionsSelector,
     NeighborsStepEditor,
     MarkersFilterStepEditor,
@@ -132,6 +145,8 @@ export default class PipelineView extends Vue {
     pca: "mdi-chart-scatter-plot",
     tsne: "mdi-chart-scatter-plot",
     umap: "mdi-chart-scatter-plot",
+    leiden: "mdi-dots-hexagon",
+    louvain: "mdi-dots-hexagon",
   };
 
   dialog = false;
@@ -165,6 +180,7 @@ export default class PipelineView extends Vue {
     return {
       id: uuidv4(),
       type: "scale",
+      zeroCenter: true,
       maxValue: undefined,
     };
   }
@@ -207,6 +223,27 @@ export default class PipelineView extends Vue {
     };
   }
 
+  addLeidenStep() {
+    return {
+      id: uuidv4(),
+      type: "leiden",
+      resolution: 1.0,
+      directed: true,
+      useWeights: true,
+    };
+  }
+
+  addLouvainStep() {
+    return {
+      id: uuidv4(),
+      type: "louvain",
+      resolution: 1.0,
+      flavor: "vtraag",
+      directed: true,
+      useWeights: false,
+    };
+  }
+
   addStep(type: PipelineStepType) {
     switch (type) {
       case "markersFilter": {
@@ -235,6 +272,14 @@ export default class PipelineView extends Vue {
       }
       case "umap": {
         this.steps.push(this.addUmapStep());
+        break;
+      }
+      case "leiden": {
+        this.steps.push(this.addLeidenStep());
+        break;
+      }
+      case "louvain": {
+        this.steps.push(this.addLouvainStep());
         break;
       }
     }

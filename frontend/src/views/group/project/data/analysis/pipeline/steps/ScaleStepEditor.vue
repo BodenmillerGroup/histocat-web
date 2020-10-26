@@ -16,16 +16,24 @@
       </v-expansion-panel-header>
       <v-expansion-panel-content>
         <v-card flat>
-          <v-text-field
-            label="Max value"
-            hint="Clip (truncate) to this value after scaling. If empty, do not clip."
-            v-model.number="step.maxValue"
-            type="number"
-            min="0"
-            step="1"
-            clearable
-            class="text-field"
-          />
+          <v-row dense>
+            <v-checkbox
+              label="Center"
+              hint="Variables zero-centering."
+              persistent-hint
+              v-model="step.zeroCenter"
+            />
+            <v-text-field
+              label="Max value"
+              hint="Clip (truncate) to this value after scaling. If empty, do not clip."
+              v-model.number="step.maxValue"
+              type="number"
+              min="0"
+              step="1"
+              clearable
+              class="text-field"
+            />
+          </v-row>
         </v-card>
       </v-expansion-panel-content>
     </v-expansion-panel>
@@ -44,6 +52,7 @@ export default class ScaleStepEditor extends Vue {
 
 <style scoped>
 .text-field {
-  margin-right: 20px;
+  margin-left: 40px;
+  max-width: 350px;
 }
 </style>

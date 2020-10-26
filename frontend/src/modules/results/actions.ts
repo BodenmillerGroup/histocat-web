@@ -38,6 +38,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
 
   async loadResult(resultId: number) {
     try {
+      this.mutations.setActiveResultId(resultId);
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getResult(groupId, resultId);
       this.analysis?.mutations.reset();

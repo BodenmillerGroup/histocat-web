@@ -5,12 +5,12 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user, get_active_member
+from histocat.api.security import get_active_member, get_active_user
 from histocat.modules.user.models import UserModel
 
+from ..member.models import MemberModel
 from . import service
 from .dto import GateCreateDto, GateDto, GateUpdateDto
-from ..member.models import MemberModel
 
 router = APIRouter()
 
