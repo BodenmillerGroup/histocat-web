@@ -12,7 +12,7 @@ def process(adata: AnnData, step: Dict[str, Any], output: Dict[str, Any]):
     directed = step.get("directed")
     use_weights = step.get("useWeights")
     result = sc.tl.leiden(adata, resolution=resolution, directed=directed, use_weights=use_weights, copy=True)
-    sc.pl.stacked_violin(result, var_names=result.var_names, groupby=["leiden"], save="leiden.png")
-    # sc.pl.dotplot(result, var_names=result.var_names, groupby=["leiden"], save="leiden.png")
-    # sc.pl.heatmap(result, var_names=result.var_names, groupby=["leiden"], save="leiden.png")
+    sc.pl.stacked_violin(result, var_names=result.var_names, groupby=["leiden"], save="leiden.png", dendrogram=True)
+    sc.pl.dotplot(result, var_names=result.var_names, groupby=["leiden"], save="leiden.png", dendrogram=True)
+    # sc.pl.heatmap(result, var_names=result.var_names, groupby="leiden", save="leiden.png")
     return result

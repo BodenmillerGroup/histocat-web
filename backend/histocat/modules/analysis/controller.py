@@ -113,8 +113,7 @@ async def get_scatter_plot_data(
         if heatmap_type == "channel":
             heatmap_values = adata.X[:, adata.var.index == heatmap]
             output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
-        elif heatmap_type == "neighbor":
-            heatmap = "louvain"
+        elif heatmap_type == "neighbor" or heatmap_type == "clustering":
             heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
             output["heatmap"] = {
                 "label": heatmap,

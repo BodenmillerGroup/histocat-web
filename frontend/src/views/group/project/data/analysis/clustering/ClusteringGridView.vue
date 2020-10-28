@@ -19,9 +19,29 @@
       :i="item.i"
       :key="item.i"
       drag-allow-from=".widget-title"
+      @resized="resizedEvent"
+      @container-resized="containerResizedEvent"
     >
-      <PlotWidget v-if="item.i === `leiden`" title="Leiden" :src="`${url}?plot_name=stacked_violin_leiden`" />
-      <PlotWidget v-else-if="item.i === `louvain`" title="Louvain" :src="`${url}?plot_name=stacked_violin_louvain`" />
+      <PlotWidget
+        v-if="item.i === `leidenViolin`"
+        title="Leiden (violin)"
+        :src="`${url}?plot_name=stacked_violin_leiden`"
+      />
+      <PlotWidget
+        v-else-if="item.i === `louvainViolin`"
+        title="Louvain (violin)"
+        :src="`${url}?plot_name=stacked_violin_louvain`"
+      />
+      <PlotWidget
+        v-else-if="item.i === `leidenDotplot`"
+        title="Leiden (dotplot)"
+        :src="`${url}?plot_name=dotplot_leiden`"
+      />
+      <PlotWidget
+        v-else-if="item.i === `louvainDotplot`"
+        title="Louvain (dotplot)"
+        :src="`${url}?plot_name=dotplot_louvain`"
+      />
     </grid-item>
   </grid-layout>
 </template>
@@ -30,8 +50,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import VueGridLayout from "vue-grid-layout";
 import PlotWidget from "@/components/PlotWidget.vue";
-import {resultsModule} from "@/modules/results";
-import {apiUrl} from "@/env";
+import { resultsModule } from "@/modules/results";
+import { apiUrl } from "@/env";
 
 @Component({
   components: {
@@ -40,12 +60,14 @@ import {apiUrl} from "@/env";
     GridItem: VueGridLayout.GridItem,
   },
 })
-export default class PlotsGridView extends Vue {
+export default class ClusteringGridView extends Vue {
   readonly resultsContext = resultsModule.context(this.$store);
 
   readonly layout = [
-    { x: 0, y: 0, w: 6, h: 1, i: "leiden" },
-    { x: 6, y: 0, w: 6, h: 1, i: "louvain" },
+    { x: 0, y: 0, w: 6, h: 1, i: "leidenViolin" },
+    { x: 6, y: 0, w: 6, h: 1, i: "louvainViolin" },
+    { x: 0, y: 1, w: 6, h: 1, i: "leidenDotplot" },
+    { x: 6, y: 1, w: 6, h: 1, i: "louvainDotplot" },
   ];
 
   get activeResultId() {
@@ -55,6 +77,14 @@ export default class PlotsGridView extends Vue {
   get url() {
     return `${apiUrl}/results/${this.activeResultId}/plot`;
   }
+
+  resizedEvent(i: string, newH: number, newW: number, newHPx: number, newWPx: number) {
+    // console.log("RESIZED i=" + i + ", H=" + newH + ", W=" + newW + ", H(px)=" + newHPx + ", W(px)=" + newWPx);
+  }
+
+  containerResizedEvent(i: string, newH: number, newW: number, newHPx: number, newWPx: number) {
+    // console.log("CONTAINER RESIZED i=" + i + ", H=" + newH + ", W=" + newW + ", H(px)=" + newHPx + ", W(px)=" + newWPx);
+  }
 }
 </script>
 
@@ -63,7 +93,7 @@ export default class PlotsGridView extends Vue {
   background: #eee;
 }
 .vue-grid-item:not(.vue-grid-placeholder) {
-  background: #ccc;
+  background: #ffffff;
 }
 .vue-grid-item .resizing {
   opacity: 0.9;
@@ -107,5 +137,12 @@ export default class PlotsGridView extends Vue {
   background-origin: content-box;
   box-sizing: border-box;
   cursor: pointer;
+}
+</style>
+
+<style>
+.widget-title {
+  margin: 0;
+  padding: 0 0 0 10px;
 }
 </style>

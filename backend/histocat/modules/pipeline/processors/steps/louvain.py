@@ -15,7 +15,7 @@ def process(adata: AnnData, step: Dict[str, Any], output: Dict[str, Any]):
     result = sc.tl.louvain(
         adata, resolution=resolution, flavor=flavor, directed=directed, use_weights=use_weights, copy=True
     )
-    sc.pl.stacked_violin(result, var_names=result.var_names, groupby=["louvain"], save="louvain.png")
-    # sc.pl.dotplot(result, var_names=result.var_names, groupby=["louvain"], save="louvain.png")
-    # sc.pl.heatmap(result, var_names=result.var_names, groupby=["louvain"], save="louvain.png")
+    sc.pl.stacked_violin(result, var_names=result.var_names, groupby=["louvain"], save="louvain.png", dendrogram=True)
+    sc.pl.dotplot(result, var_names=result.var_names, groupby=["louvain"], save="louvain.png", dendrogram=True)
+    # sc.pl.heatmap(result, var_names=result.var_names, groupby="louvain", save="louvain.png")
     return result

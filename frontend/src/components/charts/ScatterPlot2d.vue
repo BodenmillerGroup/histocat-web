@@ -156,7 +156,8 @@ export default class ScatterPlot2d extends Vue {
           y: v.map((v) => v.y),
           text: v.map((v) => `Cell ID: ${v.cellId}`),
           customdata: v,
-          selectedpoints: data.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1),
+          selectedpoints:
+            this.selection.length > 0 ? data.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1) : null,
           marker: this.hasHeatmap
             ? {
                 size: 3,
@@ -215,14 +216,14 @@ export default class ScatterPlot2d extends Vue {
           if (this.applyMask) {
             this.projectsContext.actions.getChannelStackImage();
           }
-        } else {
-          if (this.selectionContext.getters.selectedCells !== null) {
-            this.selectionContext.actions.setSelectedCells([]);
-            if (this.applyMask) {
-              this.projectsContext.actions.getChannelStackImage();
-            }
-          }
         }
+      }
+    });
+
+    plot.on("plotly_deselect", () => {
+      this.selectionContext.actions.setSelectedCells([]);
+      if (this.applyMask) {
+        this.projectsContext.actions.getChannelStackImage();
       }
     });
   }

@@ -37,7 +37,7 @@
             <v-row>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" download color="primary lighten-2" @click="loadResult(item.id)">
+                  <v-btn icon small v-on="on" download color="primary lighten-2" @click.stop="loadResult(item.id)">
                     <v-icon small>mdi-refresh-circle</v-icon>
                   </v-btn>
                 </template>
@@ -141,7 +141,38 @@ export default class ResultsView extends Vue {
   }
 
   get heatmaps() {
-    return this.datasetContext.getters.heatmaps;
+    if (
+      !this.datasetContext.getters.activeDataset ||
+      !this.datasetContext.getters.activeDataset.meta["neighbors_columns"]
+    ) {
+      return [];
+    }
+    const channelItems = this.datasetContext.getters.channels.map((item) => {
+      return {
+        type: "channel",
+        label: item,
+      };
+    });
+    const neighborItems = this.datasetContext.getters.activeDataset.meta["neighbors_columns"].map((item) => {
+      return {
+        type: "neighbor",
+        label: item,
+      };
+    });
+    const clusteringItems: any[] = [];
+    if (this.resultsContext.getters.activeResult?.output.leiden) {
+      clusteringItems.push({
+        type: "clustering",
+        label: "leiden",
+      });
+    }
+    if (this.resultsContext.getters.activeResult?.output.louvain) {
+      clusteringItems.push({
+        type: "clustering",
+        label: "louvain",
+      });
+    }
+    return channelItems.concat(neighborItems, clusteringItems);
   }
 
   get heatmap() {

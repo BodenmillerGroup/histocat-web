@@ -27,23 +27,4 @@ export class DatasetsGetters extends Getters<DatasetsState> {
     }
     return [];
   }
-
-  get heatmaps() {
-    if (!this.getters.activeDataset || !this.getters.activeDataset.meta["neighbors_columns"]) {
-      return [];
-    }
-    const channelItems = this.getters.channels.map((item) => {
-      return {
-        type: "channel",
-        label: item,
-      };
-    });
-    const neighborItems = this.getters.activeDataset.meta["neighbors_columns"].map((item) => {
-      return {
-        type: "neighbor",
-        label: item,
-      };
-    });
-    return channelItems.concat(neighborItems);
-  }
 }
