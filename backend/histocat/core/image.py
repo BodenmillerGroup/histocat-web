@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Sequence, Tuple
+from typing import Sequence, Tuple, Optional
 
 import cv2
 import numpy as np
@@ -8,6 +8,7 @@ import tifffile
 from mahotas import bwperim
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
+from skimage import img_as_ubyte
 from skimage.color import label2rgb
 
 from histocat.modules.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
@@ -42,7 +43,7 @@ def colorize(image: np.ndarray, color: str):
         channel_color = to_rgb("#ffffff")
     channel_colormap = LinearSegmentedColormap.from_list(None, [(0, 0, 0), channel_color])
     result = channel_colormap(image)
-    return result * 255.0
+    return result
 
 
 def scale_image(image: np.ndarray, levels: Tuple[float, float]):
@@ -51,10 +52,33 @@ def scale_image(image: np.ndarray, levels: Tuple[float, float]):
     return np.clip(channel_image, 0, 1, out=channel_image)
 
 
-def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto):
+def normalize_image(image: np.ndarray):
+    """Normalize image to [0, 1] range"""
+    return (image - np.min(image)) / (np.max(image) - np.min(image))
+
+
+def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: Optional[dict] = None):
     mask = tifffile.imread(mask_settings.location)
-    if mask_settings.colorize:
-        return label2rgb(mask, image=image, alpha=0.3, bg_label=0, image_alpha=1, kind="avg")
+    if not mask_settings.colorize:
+        if mask_settings.gated:
+            m = np.isin(mask, mask_settings.cell_ids)
+            mask[~m] = 0
+            # if heatmap_dict:
+            #     mask = replace_with_dict(mask, heatmap_dict)
+            # nlabel = len(np.unique(mask))
+            # colors = [tuple(map(tuple, np.random.rand(1, 3)))[0] for i in range(0, nlabel)]
+            colors = ("darkorange", "darkorange")
+            img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1,
+                            kind="overlay")
+            return img
+        else:
+            # if heatmap_dict:
+            #     mask = replace_with_dict(mask, heatmap_dict)
+            # nlabel = len(np.unique(mask))
+            # colors = [tuple(map(tuple, np.random.rand(1, 3)))[0] for i in range(0, nlabel)]
+            colors = ("darkorange", "darkorange")
+            img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay")
+            return img
     else:
         if mask_settings.gated:
             return mask_gated_img(image, mask, mask_settings.cell_ids)
@@ -62,7 +86,7 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto):
             return mask_color_img(image, mask)
 
 
-def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(255, 255, 100), alpha=0.8):
+def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(0, 146, 63, 100), alpha=0.8):
     """
     img: cv2 image
     mask: bool or np.where
@@ -77,12 +101,12 @@ def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int],
     # bit_mask = mask == 0
     mask_layer = image.copy()
     mask_layer[mask] = color
-    cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
+    # cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
     # cv2.add(image, mask_layer, image)
-    return image
+    return np.clip(mask_layer + image, 0, 1)
 
 
-def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 100), alpha=0.3):
+def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(0, 146, 63, 100), alpha=0.3):
     """
     img: cv2 image
     mask: bool or np.where
@@ -95,12 +119,13 @@ def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(255, 255, 100), a
     # bit_mask = mask == 0
     mask_layer = image.copy()
     mask_layer[mask] = color
-    cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
+    # cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
     # cv2.add(image, mask_layer, image)
-    return image
+    return np.clip(mask_layer + image, 0, 1)
 
 
 def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
+    image = img_as_ubyte(image)
     height, width, _ = image.shape
     length = 64
     cv2.line(
@@ -183,3 +208,18 @@ def normalize_embedding(embedding):
 
     normalized_layout = normalized_layout.astype(dtype=np.float32)
     return normalized_layout
+
+
+def replace_with_dict(ar, dic):
+    # Extract out keys and values
+    k = np.array(list(dic.keys()))
+    v = np.array(list(dic.values()))
+
+    # Get argsort indices
+    sidx = k.argsort()
+
+    # Drop the magic bomb with searchsorted to get the corresponding
+    # places for a in keys (using sorter since a is not necessarily sorted).
+    # Then trace it back to original order with indexing into sidx
+    # Finally index into values for desired output.
+    return v[sidx[np.searchsorted(k,ar,sorter=sidx)]]

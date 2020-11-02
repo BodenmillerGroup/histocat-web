@@ -18,7 +18,6 @@ export class ProjectsMutations extends Mutations<ProjectsState> {
     BroadcastManager.subscribe(SET_ACTIVE_WORKSPACE_NODE, (payload) => this.setActiveWorkspaceNode(payload));
     BroadcastManager.subscribe(SET_SELECTED_METALS, (payload) => this.setSelectedMetals(payload));
     BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
-    BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
   }
 
   setActiveProjectId(id: number | null) {

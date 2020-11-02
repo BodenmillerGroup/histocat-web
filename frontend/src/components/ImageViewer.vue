@@ -232,6 +232,7 @@ export default class ImageViewer extends Vue {
       pointSize: 2,
       pointSizeSelected: 1,
       pointOutlineWidth: 1,
+      pointColor: [255, 140, 0],
       lassoMinDelay: 15,
     });
 

@@ -16,7 +16,7 @@ from starlette.requests import Request
 from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user
-from histocat.core.image import colorize, scale_image
+from histocat.core.image import colorize, scale_image, normalize_image
 from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import pca, phenograph, tsne, umap
@@ -24,6 +24,7 @@ from histocat.modules.dataset import service as dataset_service
 from histocat.modules.gate import service as gate_service
 from histocat.modules.result import service as result_service
 from histocat.modules.user.models import UserModel
+from starlette.status import HTTP_404_NOT_FOUND
 
 from ...io.dataset import ANNDATA_FILE_EXTENSION
 from .dto import (
@@ -51,7 +52,7 @@ def get_additive_image(db: Session, params: ChannelStackDto):
 
     acquisition = acquisition_crud.get_by_id(db, id=params.acquisitionId)
     if not acquisition:
-        raise HTTPException(status_code=400, detail="Acquisition not found.")
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Acquisition not found.")
     parser = OmeTiffParser(acquisition.location)
     acq = parser.get_acquisition_data()
 
@@ -69,9 +70,9 @@ def get_additive_image(db: Session, params: ChannelStackDto):
         image = colorize(data, color)
 
         if additive_image is None:
-            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=data.dtype)
+            additive_image = np.zeros(shape=(data.shape[0], data.shape[1], 4), dtype=np.float32)
         additive_image += image
-    return additive_image
+    return np.clip(additive_image, 0, 1, out=additive_image)
 
 
 @router.get("/analysis/scatterplot")
@@ -95,7 +96,7 @@ async def get_scatter_plot_data(
     else:
         dataset = dataset_service.get(db, id=dataset_id)
         if not dataset:
-            raise HTTPException(status_code=404, detail="Dataset not found.")
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Dataset not found.")
         cell_input = dataset.meta.get("cell")
         location = cell_input.get("location")
 

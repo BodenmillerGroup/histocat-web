@@ -38,6 +38,8 @@ class MaskSettingsDto(BaseModel):
     colorize: Optional[bool]
     gated: Optional[bool]
     cell_ids: Optional[Sequence[int]]
+    resultId: Optional[int]
+    marker: Optional[str]
     location: str
     settings: Optional[dict]
 

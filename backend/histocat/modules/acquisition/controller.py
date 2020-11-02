@@ -1,15 +1,21 @@
 import logging
+import os
+from io import BytesIO
 from typing import Optional
 
 import cv2
 import numpy as np
 import orjson
+import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
+from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse
+from skimage.util import img_as_ubyte
+import imageio
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
@@ -23,8 +29,8 @@ from histocat.core.image import (
 from histocat.core.redis_manager import redis_manager
 from histocat.core.utils import stream_bytes
 from histocat.modules.acquisition import service as acquisition_service
+from histocat.modules.result import service as result_service
 from histocat.modules.acquisition.dto import (
-    AcquisitionDto,
     ChannelStackDto,
     ChannelStatsDto,
     ChannelUpdateDto,
@@ -33,6 +39,7 @@ from histocat.modules.analysis.controller import get_additive_image
 from histocat.modules.member.models import MemberModel
 from histocat.modules.project.dto import ProjectFullDto
 from histocat.modules.user.models import UserModel
+from starlette.status import HTTP_404_NOT_FOUND
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -81,7 +88,7 @@ def update(
     item = acquisition_service.get_by_id(db, acquisition_id)
     if not item:
         raise HTTPException(
-            status_code=404, detail="The acquisition with this id does not exist.",
+            status_code=HTTP_404_NOT_FOUND, detail="The acquisition with this id does not exist.",
         )
     item = acquisition_service.update_custom_label(db, item=item, params=params)
     return item
@@ -116,10 +123,10 @@ async def read_channel_image(
     color = f"#{color}" if color else "#ffffff"
     image = colorize(data, color)
 
-    image = cv2.cvtColor(image.astype(data.dtype), cv2.COLOR_BGR2RGB)
-
-    status, result = cv2.imencode(".png", image)
-    return StreamingResponse(stream_bytes(result), media_type="image/png")
+    image = img_as_ubyte(image)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    status, buffer = cv2.imencode(".png", image)
+    return StreamingResponse(stream_bytes(buffer), media_type="image/png")
 
 
 @router.post("/acquisitions/stack")
@@ -132,17 +139,32 @@ async def download_channel_stack(
     # TODO: Bright-field effect
     # additive_image = additive_image[..., ::-1]
 
-    additive_image = cv2.cvtColor(additive_image, cv2.COLOR_BGR2RGB)
-
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)
 
     if params.datasetId and params.mask and params.mask.apply:
-        additive_image = draw_mask(additive_image, params.mask)
+        heatmap_dict = None
+        # if params.mask.resultId and params.mask.marker:
+        #     result = result_service.get(db, id=params.mask.resultId)
+        #     location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+        #     adata = sc.read_h5ad(location)
+        #     heatmap_values = sc.get.obs_df(adata, keys=[params.mask.marker])
+        #     heatmap_dict = dict(zip(heatmap_values.index, heatmap_values[params.mask.marker].astype("uint")))
+        #     heatmap_dict.pop('0', None)
+        additive_image = draw_mask(additive_image, params.mask, heatmap_dict)
 
     if params.scalebar.apply:
         additive_image = draw_scalebar(additive_image, params.scalebar)
 
     format = params.format if params.format is not None else "png"
-    status, result = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)
-    return StreamingResponse(stream_bytes(result), media_type=f"image/{format}")
+
+    # buffer = BytesIO()
+    # imageio.imwrite(buffer, additive_image, format=format)
+    # buffer.seek(0)
+    #
+    # return StreamingResponse(buffer, media_type=f"image/{format}")
+
+    additive_image = img_as_ubyte(additive_image)
+    additive_image = cv2.cvtColor(additive_image, cv2.COLOR_BGR2RGB)
+    status, buffer = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)
+    return StreamingResponse(stream_bytes(buffer), media_type=f"image/{format}")
