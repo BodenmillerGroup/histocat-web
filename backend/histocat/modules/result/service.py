@@ -16,7 +16,7 @@ def get(session: Session, *, id: int) -> Optional[ResultModel]:
 
 
 def get_dataset_results(session: Session, *, dataset_id: int) -> List[ResultModel]:
-    return session.query(ResultModel).filter(ResultModel.dataset_id == dataset_id).all()
+    return session.query(ResultModel).filter(ResultModel.dataset_id == dataset_id, ResultModel.status == "ready").all()
 
 
 def create(session: Session, *, params: ResultCreateDto) -> ResultModel:

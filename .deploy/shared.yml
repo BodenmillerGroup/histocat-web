@@ -109,7 +109,7 @@ services:
 
   redis:
     restart: always
-    image: redis:6.0.8-alpine3.12
+    image: redis:6.0.9-alpine3.12
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.3.1
+    image: library/traefik:2.3.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
