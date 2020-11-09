@@ -107,92 +107,66 @@ export default class BrushableHistogram extends Vue {
     return histogramCache;
   });
 
-  onBrush(x, eventType) {
-    const type = `continuous metadata histogram ${eventType}`;
-    return () => {
-      // const { dispatch, field, isObs, isUserDefined, isDiffExp } = this.props;
+  onBrush(event, x) {
+    // const { dispatch, field, isObs, isUserDefined, isDiffExp } = this.props;
 
-      // ignore programmatically generated events
-      if (!d3.event.sourceEvent) return;
-      // ignore cascading events, which are programmatically generated
-      if (d3.event.sourceEvent.sourceEvent) return;
+    // ignore programmatically generated events
+    if (!event.sourceEvent) return;
+    // ignore cascading events, which are programmatically generated
+    if (event.sourceEvent.sourceEvent) return;
 
-      if (d3.event.selection) {
-        // dispatch({
-        //   type,
-        //   selection: field,
-        //   continuousNamespace: {
-        //     isObs,
-        //     isUserDefined,
-        //     isDiffExp,
-        //   },
-        //   range: [x(d3.event.selection[0]), x(d3.event.selection[1])],
-        // });
-      } else {
-        // dispatch({
-        //   type,
-        //   selection: field,
-        //   continuousNamespace: {
-        //     isObs,
-        //     isUserDefined,
-        //     isDiffExp,
-        //   },
-        //   range: null,
-        // });
-      }
-    };
+    if (event.selection) {
+      // dispatch({
+      //   type,
+      //   selection: field,
+      //   continuousNamespace: {
+      //     isObs,
+      //     isUserDefined,
+      //     isDiffExp,
+      //   },
+      //   range: [x(d3.event.selection[0]), x(d3.event.selection[1])],
+      // });
+    } else {
+      // dispatch({
+      //   type,
+      //   selection: field,
+      //   continuousNamespace: {
+      //     isObs,
+      //     isUserDefined,
+      //     isDiffExp,
+      //   },
+      //   range: null,
+      // });
+    }
   }
 
-  onBrushEnd(x) {
-    return () => {
-      const minAllowedBrushSize = 10;
-      const smallAmountToAvoidInfiniteLoop = 0.1;
+  onBrushEnd(event, x) {
+    const minAllowedBrushSize = 10;
+    const smallAmountToAvoidInfiniteLoop = 0.1;
 
-      // ignore programmatically generated events
-      if (!d3.event.sourceEvent) return;
-      // ignore cascading events, which are programmatically generated
-      if (d3.event.sourceEvent.sourceEvent) return;
+    // ignore programmatically generated events
+    if (!event.sourceEvent) return;
+    // ignore cascading events, which are programmatically generated
+    if (event.sourceEvent.sourceEvent) return;
 
-      if (d3.event.selection) {
-        let _range;
+    if (event.selection) {
+      let _range;
 
-        if (d3.event.selection[1] - d3.event.selection[0] > minAllowedBrushSize) {
-          _range = [x(d3.event.selection[0]), x(d3.event.selection[1])];
-        } else {
-          /* the user selected range is too small and will be hidden #587, so take control of it procedurally */
-          /* https://stackoverflow.com/questions/12354729/d3-js-limit-size-of-brush */
-
-          const procedurallyResizedBrushWidth =
-            d3.event.selection[0] + minAllowedBrushSize + smallAmountToAvoidInfiniteLoop; //
-
-          _range = [x(d3.event.selection[0]), x(procedurallyResizedBrushWidth)];
-        }
-
-        this.submitRange(_range);
-
-        // dispatch({
-        //   type: "continuous metadata histogram end",
-        //   selection: field,
-        //   continuousNamespace: {
-        //     isObs,
-        //     isUserDefined,
-        //     isDiffExp,
-        //   },
-        //   range: _range,
-        // });
+      if (event.selection[1] - event.selection[0] > minAllowedBrushSize) {
+        _range = [x(event.selection[0]), x(event.selection[1])];
       } else {
-        this.submitRange([this.channel.min_intensity, this.channel.max_intensity]);
-        // dispatch({
-        //   type: "continuous metadata histogram cancel",
-        //   selection: field,
-        //   continuousNamespace: {
-        //     isObs,
-        //     isUserDefined,
-        //     isDiffExp,
-        //   },
-        // });
+        /* the user selected range is too small and will be hidden #587, so take control of it procedurally */
+        /* https://stackoverflow.com/questions/12354729/d3-js-limit-size-of-brush */
+
+        const procedurallyResizedBrushWidth = event.selection[0] + minAllowedBrushSize + smallAmountToAvoidInfiniteLoop; //
+
+        _range = [x(event.selection[0]), x(procedurallyResizedBrushWidth)];
       }
-    };
+
+      this.submitRange(_range);
+    } else {
+      this.submitRange([this.channel.min_intensity, this.channel.max_intensity]);
+    }
   }
 
   submitRange(range: number[]) {
@@ -248,9 +222,9 @@ export default class BrushableHistogram extends Vue {
       emit start so that the Undoable history can save an undo point
       upon drag start, and ignore the subsequent intermediate drag events.
       */
-      .on("start", this.onBrush(x.invert, "start").bind(this))
-      .on("brush", this.onBrush(x.invert, "brush").bind(this))
-      .on("end", this.onBrushEnd(x.invert).bind(this));
+      .on("start", (event) => this.onBrush(event, x.invert))
+      .on("brush", (event) => this.onBrush(event, x.invert))
+      .on("end", (event) => this.onBrushEnd(event, x.invert));
 
     const brushXselection = container.insert("g").attr("class", "brush").call(brushX);
 
