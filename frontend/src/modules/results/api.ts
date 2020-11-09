@@ -1,4 +1,4 @@
-import {IResult, IResultUpdate} from "./models";
+import { IResult, IResultUpdate } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {

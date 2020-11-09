@@ -62,10 +62,6 @@ export default class LouvainStepEditor extends Vue {
 
   readonly required = required;
 
-  readonly flavors = [
-    "vtraag",
-    "igraph",
-    "rapids",
-  ];
+  readonly flavors = ["vtraag", "igraph", "rapids"];
 }
 </script>

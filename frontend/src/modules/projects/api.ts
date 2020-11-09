@@ -7,7 +7,7 @@ import {
   IProjectCreate,
   IProjectData,
   IProjectUpdate,
-  ISlide
+  ISlide,
 } from "./models";
 import { ApiManager } from "@/utils/api";
 

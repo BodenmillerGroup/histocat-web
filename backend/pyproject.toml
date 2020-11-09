@@ -18,6 +18,7 @@ email-validator = "^1.1.1"
 emails = "^0.6"
 fastapi = "^0.61.2"
 gunicorn = { version = "^20.0.4", optional = true }
+h5py = "2.10.0"
 imctools = "^2.1.0"  # "^1.0.8"
 jinja2 = "^2.11.2"
 mahotas = "^1.4.11"

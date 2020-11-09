@@ -121,8 +121,8 @@ export default class ChannelsView extends Vue {
       acquisitionId: this.activeAcquisitionId,
       data: {
         name: item.name,
-        customLabel: item.customLabel
-      }
+        customLabel: item.customLabel,
+      },
     });
   }
 }

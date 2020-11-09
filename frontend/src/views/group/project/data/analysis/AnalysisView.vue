@@ -19,7 +19,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import PipelineView from "@/views/group/project/data/analysis/pipeline/PipelineView.vue";
 import ResultGridView from "@/views/group/project/data/analysis/ResultGridView.vue";
-import {resultsModule} from "@/modules/results";
+import { resultsModule } from "@/modules/results";
 import ClusteringGridView from "@/views/group/project/data/analysis/clustering/ClusteringGridView.vue";
 
 @Component({

@@ -29,13 +29,13 @@
                 :rules="[required]"
                 class="mr-4"
               />
-<!--              <v-checkbox-->
-<!--                label="k-NN"-->
-<!--                hint="If True, use a hard threshold to restrict the number of neighbors to n_neighbors, that is, consider a k-nearest neighbors graph. Otherwise, use a Gaussian Kernel to assign low weights to neighbors more distant than the n_neighbors nearest neighbor."-->
-<!--                persistent-hint-->
-<!--                v-model="step.knn"-->
-<!--                class="mr-4"-->
-<!--              />-->
+              <!--              <v-checkbox-->
+              <!--                label="k-NN"-->
+              <!--                hint="If True, use a hard threshold to restrict the number of neighbors to n_neighbors, that is, consider a k-nearest neighbors graph. Otherwise, use a Gaussian Kernel to assign low weights to neighbors more distant than the n_neighbors nearest neighbor."-->
+              <!--                persistent-hint-->
+              <!--                v-model="step.knn"-->
+              <!--                class="mr-4"-->
+              <!--              />-->
             </v-col>
             <v-col>
               <v-select dense label="Metric" :items="metrics" v-model="step.metric" />

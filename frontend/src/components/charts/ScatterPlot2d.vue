@@ -1,5 +1,7 @@
 <template>
-  <div :id="plotId" :ref="plotId" class="plot"><!-- Plotly chart will be drawn inside this DIV --></div>
+  <div :id="plotId" :ref="plotId" class="plot" v-intersect="onIntersect" v-resize="onResize">
+    <!-- Plotly chart will be drawn inside this DIV -->
+  </div>
 </template>
 
 <script lang="ts">
@@ -37,6 +39,16 @@ export default class ScatterPlot2d extends Vue {
 
   get selectedCells() {
     return this.selectionContext.getters.selectedCells;
+  }
+
+  onIntersect(entries, observer, isIntersecting) {
+    if (isIntersecting) {
+      this.refresh();
+    }
+  }
+
+  onResize() {
+    // this.refresh();
   }
 
   refresh() {

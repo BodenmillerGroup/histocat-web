@@ -1,4 +1,13 @@
-export type PipelineStepType = "markersFilter" | "transformation" | "scale" | "neighbors" | "tsne" | "umap" | "pca" | "leiden" | "louvain";
+export type PipelineStepType =
+  | "markersFilter"
+  | "transformation"
+  | "scale"
+  | "neighbors"
+  | "tsne"
+  | "umap"
+  | "pca"
+  | "leiden"
+  | "louvain";
 
 export interface IPipelineCreate {
   project_id: number;

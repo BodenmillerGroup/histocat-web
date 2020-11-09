@@ -13,7 +13,7 @@ class PresetCreateDto(BaseModel):
 
 class PresetDto(BaseModel):
     id: int
-    project_id: int
+    project_id: Optional[int]
     name: Optional[str]
     description: Optional[str]
     data: Optional[Any]

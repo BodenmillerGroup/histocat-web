@@ -4,18 +4,18 @@ from io import BytesIO
 from typing import Optional
 
 import cv2
+import imageio
 import numpy as np
 import orjson
 import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
-from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
+from skimage.util import img_as_ubyte
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.responses import StreamingResponse
-from skimage.util import img_as_ubyte
-import imageio
+from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
@@ -28,8 +28,8 @@ from histocat.core.image import (
 )
 from histocat.core.redis_manager import redis_manager
 from histocat.core.utils import stream_bytes
+from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from histocat.modules.acquisition import service as acquisition_service
-from histocat.modules.result import service as result_service
 from histocat.modules.acquisition.dto import (
     ChannelStackDto,
     ChannelStatsDto,
@@ -38,8 +38,8 @@ from histocat.modules.acquisition.dto import (
 from histocat.modules.analysis.controller import get_additive_image
 from histocat.modules.member.models import MemberModel
 from histocat.modules.project.dto import ProjectFullDto
+from histocat.modules.result import service as result_service
 from histocat.modules.user.models import UserModel
-from starlette.status import HTTP_404_NOT_FOUND
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

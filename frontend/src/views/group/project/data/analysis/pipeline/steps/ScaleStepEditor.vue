@@ -17,12 +17,7 @@
       <v-expansion-panel-content>
         <v-card flat>
           <v-row dense>
-            <v-checkbox
-              label="Center"
-              hint="Variables zero-centering."
-              persistent-hint
-              v-model="step.zeroCenter"
-            />
+            <v-checkbox label="Center" hint="Variables zero-centering." persistent-hint v-model="step.zeroCenter" />
             <v-text-field
               label="Max value"
               hint="Clip (truncate) to this value after scaling. If empty, do not clip."

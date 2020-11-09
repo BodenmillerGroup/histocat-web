@@ -8,7 +8,7 @@ import { PresetsGetters } from "./getters";
 import { PresetsMutations } from "./mutations";
 import { settingsModule } from "@/modules/settings";
 import { projectsModule } from "@/modules/projects";
-import {groupModule} from "@/modules/group";
+import { groupModule } from "@/modules/group";
 
 export class PresetsActions extends Actions<PresetsState, PresetsGetters, PresetsMutations, PresetsActions> {
   // Declare context type

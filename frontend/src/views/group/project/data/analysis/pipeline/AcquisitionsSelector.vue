@@ -26,7 +26,7 @@ import { IAcquisition } from "@/modules/projects/models";
 import { equals } from "rambda";
 import { Component, Vue } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
-import {pipelinesModule} from "@/modules/pipelines";
+import { pipelinesModule } from "@/modules/pipelines";
 
 @Component
 export default class AcquisitionsSelector extends Vue {

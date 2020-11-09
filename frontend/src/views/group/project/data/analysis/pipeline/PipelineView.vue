@@ -59,7 +59,16 @@
       </v-tooltip>
       <v-dialog v-model="dialog" scrollable max-width="600px">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn small elevation="1" color="primary" v-bind="attrs" v-on="on" class="ml-2" :disabled="steps.length === 0">Process</v-btn>
+          <v-btn
+            small
+            elevation="1"
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            class="ml-2"
+            :disabled="steps.length === 0"
+            >Process</v-btn
+          >
         </template>
         <v-card>
           <v-card-title>Select Acquisitions</v-card-title>

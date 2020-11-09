@@ -53,11 +53,7 @@ def process_pipeline(db: Session, dataset_id: int, acquisition_ids: Sequence[int
         raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
 
     result_create_params = ResultCreateDto(
-        dataset_id=dataset_id,
-        status="ready",
-        name=str(datetime.utcnow()),
-        pipeline=steps,
-        input=acquisition_ids,
+        dataset_id=dataset_id, status="ready", name=str(datetime.utcnow()), pipeline=steps, input=acquisition_ids,
     )
     result = result_service.create(db, params=result_create_params)
 
@@ -84,9 +80,7 @@ def process_pipeline(db: Session, dataset_id: int, acquisition_ids: Sequence[int
     # location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
     sc.write("output", adata=adata)
 
-    result_update_params = ResultUpdateDto(
-        output=output
-    )
+    result_update_params = ResultUpdateDto(output=output)
     result = result_service.update(db, item=result, params=result_update_params)
 
     redis_manager.publish(

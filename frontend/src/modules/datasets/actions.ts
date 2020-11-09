@@ -11,7 +11,7 @@ import { DatasetsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_DATASETS, SET_ACTIVE_DATASET_ID } from "./events";
 import { groupModule } from "@/modules/group";
-import {IDatasetUpdate} from "@/modules/datasets/models";
+import { IDatasetUpdate } from "@/modules/datasets/models";
 
 export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, DatasetsMutations, DatasetsActions> {
   // Declare context type

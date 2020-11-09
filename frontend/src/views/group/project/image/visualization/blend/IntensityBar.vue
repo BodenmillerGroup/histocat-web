@@ -27,7 +27,9 @@ export default class IntensityBar extends Vue {
 
   get caption() {
     const channelSettings = this.settingsContext.getters.channelsSettings[this.channel.name];
-    return channelSettings && channelSettings.levels ? channelSettings.levels.max : this.channel.max_intensity.toFixed(0);
+    return channelSettings && channelSettings.levels
+      ? channelSettings.levels.max
+      : this.channel.max_intensity.toFixed(0);
   }
 
   get color() {

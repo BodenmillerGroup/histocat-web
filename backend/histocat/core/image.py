@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Sequence, Tuple, Optional
+from typing import Optional, Sequence, Tuple
 
 import cv2
 import numpy as np
@@ -68,8 +68,9 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
             # nlabel = len(np.unique(mask))
             # colors = [tuple(map(tuple, np.random.rand(1, 3)))[0] for i in range(0, nlabel)]
             colors = ("darkorange", "darkorange")
-            img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1,
-                            kind="overlay")
+            img = label2rgb(
+                label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay"
+            )
             return img
         else:
             # if heatmap_dict:
@@ -77,7 +78,9 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
             # nlabel = len(np.unique(mask))
             # colors = [tuple(map(tuple, np.random.rand(1, 3)))[0] for i in range(0, nlabel)]
             colors = ("darkorange", "darkorange")
-            img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay")
+            img = label2rgb(
+                label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay"
+            )
             return img
     else:
         if mask_settings.gated:
@@ -222,4 +225,4 @@ def replace_with_dict(ar, dic):
     # places for a in keys (using sorter since a is not necessarily sorted).
     # Then trace it back to original order with indexing into sidx
     # Finally index into values for desired output.
-    return v[sidx[np.searchsorted(k,ar,sorter=sidx)]]
+    return v[sidx[np.searchsorted(k, ar, sorter=sidx)]]

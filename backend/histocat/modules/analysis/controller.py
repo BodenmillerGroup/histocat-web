@@ -12,11 +12,12 @@ from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage.measure import regionprops
 from sqlalchemy.orm import Session
 from starlette.requests import Request
+from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user
-from histocat.core.image import colorize, scale_image, normalize_image
+from histocat.core.image import colorize, normalize_image, scale_image
 from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import pca, phenograph, tsne, umap
@@ -24,7 +25,6 @@ from histocat.modules.dataset import service as dataset_service
 from histocat.modules.gate import service as gate_service
 from histocat.modules.result import service as result_service
 from histocat.modules.user.models import UserModel
-from starlette.status import HTTP_404_NOT_FOUND
 
 from ...io.dataset import ANNDATA_FILE_EXTENSION
 from .dto import (

@@ -6,9 +6,9 @@ import { api } from "./api";
 import { ResultsGetters } from "./getters";
 import { ResultsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
-import {pipelinesModule} from "@/modules/pipelines";
-import {analysisModule} from "@/modules/analysis";
-import {IResultUpdate} from "@/modules/results/models";
+import { pipelinesModule } from "@/modules/pipelines";
+import { analysisModule } from "@/modules/analysis";
+import { IResultUpdate } from "@/modules/results/models";
 
 export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
