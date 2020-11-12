@@ -16,8 +16,8 @@ import {
   SET_ACTIVE_WORKSPACE_NODE,
   SET_SELECTED_METALS,
 } from "./events";
-import { selectionModule } from "@/modules/selection";
 import { groupModule } from "@/modules/group";
+import { resultsModule } from "@/modules/results";
 
 export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions> {
   // Declare context type
@@ -25,7 +25,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetsModule>;
-  selection?: Context<typeof selectionModule>;
+  results?: Context<typeof resultsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -33,7 +33,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetsModule.context(store);
-    this.selection = selectionModule.context(store);
+    this.results = resultsModule.context(store);
   }
 
   setActiveAcquisitionId(id?: number, isGlobal = true) {
@@ -285,7 +285,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
             location: mask.location,
           };
           // Prepare selected cell ids visualisation
-          const selectedCells = this.selection?.getters.selectedCells?.filter(
+          const selectedCells = this.results?.getters.selectedCells?.filter(
             (v) => v.acquisitionId === activeAcquisitionId
           );
           // console.log(selectedCells)

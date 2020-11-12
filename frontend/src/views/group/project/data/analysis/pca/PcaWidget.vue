@@ -5,29 +5,23 @@
       <span class="subtitle-1 font-weight-light">PCA</span>
     </v-card-title>
     <v-divider />
-    <ScatterPlot2d plot-id="pcaPlot" :data="plotData" title="PCA" class="plot" />
+    <ScatterPlot2d v-if="plotData" plot-id="pcaPlot" :data="plotData" title="PCA" class="plot" />
   </v-card>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
-import { analysisModule } from "@/modules/analysis";
 import { resultsModule } from "@/modules/results";
 
 @Component({
   components: { ScatterPlot2d },
 })
 export default class PcaWidget extends Vue {
-  readonly analysisContext = analysisModule.context(this.$store);
   readonly resultsContext = resultsModule.context(this.$store);
 
-  get heatmap() {
-    return this.resultsContext.getters.heatmap;
-  }
-
   get plotData() {
-    return this.analysisContext.getters.pcaData;
+    return this.resultsContext.getters.pcaData;
   }
 }
 </script>

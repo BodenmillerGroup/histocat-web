@@ -10,18 +10,6 @@ export class AnalysisGetters extends Getters<AnalysisState> {
     return this.state.boxPlotData;
   }
 
-  get pcaData() {
-    return this.state.pcaData;
-  }
-
-  get tsneData() {
-    return this.state.tsneData;
-  }
-
-  get umapData() {
-    return this.state.umapData;
-  }
-
   get phenographData() {
     return this.state.phenographData;
   }

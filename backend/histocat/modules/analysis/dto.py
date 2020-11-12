@@ -5,14 +5,12 @@ from pydantic import BaseModel
 
 class PlotSeriesDto(BaseModel):
     """Scatter plot axis model."""
-
     label: str
     data: Sequence[float]
 
 
 class ScatterPlotDto(BaseModel):
     """Scatter plot model."""
-
     x: PlotSeriesDto
     y: PlotSeriesDto
     z: Optional[PlotSeriesDto]
@@ -21,7 +19,6 @@ class ScatterPlotDto(BaseModel):
 
 class BoxPlotDto(BaseModel):
     """Box plot model."""
-
     series: Sequence[PlotSeriesDto]
 
 

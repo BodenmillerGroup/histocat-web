@@ -2,13 +2,10 @@ import Feature from "ol/Feature";
 import { Mutations } from "vuex-smart-module";
 import { AnalysisState } from ".";
 import {
-  IPCAData,
   IPhenoGraphData,
   IPlotSeries,
   IRegionChannelData,
   IScatterPlotData,
-  ITSNEData,
-  IUMAPData,
 } from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
@@ -18,18 +15,6 @@ export class AnalysisMutations extends Mutations<AnalysisState> {
 
   setBoxPlotData(data: IPlotSeries[]) {
     this.state.boxPlotData = data;
-  }
-
-  setPcaData(data: IPCAData | null) {
-    this.state.pcaData = Object.freeze(data);
-  }
-
-  setTsneData(data: ITSNEData | null) {
-    this.state.tsneData = Object.freeze(data);
-  }
-
-  setUmapData(data: IUMAPData | null) {
-    this.state.umapData = Object.freeze(data);
   }
 
   setPhenoGraphData(data: IPhenoGraphData | null) {

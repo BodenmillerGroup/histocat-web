@@ -7,25 +7,25 @@ import { api } from "./api";
 import { GatesGetters } from "./getters";
 import { GatesMutations } from "./mutations";
 import { datasetsModule } from "@/modules/datasets";
-import { selectionModule } from "@/modules/selection";
-import { SelectedCell } from "@/modules/selection/models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_ACTIVE_GATE_ID } from "./events";
 import { groupModule } from "@/modules/group";
+import { resultsModule } from "@/modules/results";
+import { ISelectedCell } from "@/modules/results/models";
 
 export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutations, GatesActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
   dataset?: Context<typeof datasetsModule>;
-  selection?: Context<typeof selectionModule>;
+  results?: Context<typeof resultsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.dataset = datasetsModule.context(store);
-    this.selection = selectionModule.context(store);
+    this.results = resultsModule.context(store);
   }
 
   setActiveGateId(id: number | null, isGlobal = true) {
@@ -46,11 +46,11 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
   async createGate(name: string) {
     try {
       const datasetId = this.dataset!.getters.activeDatasetId;
-      const selectedCells = this.selection!.getters.selectedCells;
+      const selectedCells = this.results!.getters.selectedCells;
       if (datasetId && selectedCells) {
         const acquisitionIds: number[] = [];
         const indices: number[] = [];
-        const cellIds: number[] = [];
+        const cellIds: string[] = [];
         selectedCells.forEach((selectedCell) => {
           acquisitionIds.push(selectedCell.acquisitionId);
           indices.push(selectedCell.objectNumber);
@@ -76,14 +76,14 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
     try {
       const data = await api.getGate(id);
       if (data) {
-        const selectedCells: SelectedCell[] = [];
+        const selectedCells: ISelectedCell[] = [];
         for (let i = 0; i < data.acquisition_ids.length; i++) {
           const acquisitionId = data.acquisition_ids[i];
           const index = data.indices[i];
           const cellId = data.cell_ids[i];
-          selectedCells.push(Object.freeze(new SelectedCell(acquisitionId, cellId, index)));
+          selectedCells.push(Object.freeze( { acquisitionId: acquisitionId, cellId: cellId, objectNumber: index }));
         }
-        this.selection?.actions.setSelectedCells(selectedCells);
+        this.results?.actions.setSelectedCells(selectedCells);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

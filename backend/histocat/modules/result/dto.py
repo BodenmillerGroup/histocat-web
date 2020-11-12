@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional, Dict, List
 
+from histocat.modules.analysis.dto import PlotSeriesDto
 from pydantic import BaseModel
 
 
@@ -33,3 +34,26 @@ class ResultDto(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class MappingDto(BaseModel):
+    """2D data mapping"""
+    x: PlotSeriesDto
+    y: PlotSeriesDto
+
+
+class ColorsDto(BaseModel):
+    """Color data mapping"""
+    type: str
+    name: str
+    data: List[Any]
+
+
+class ResultDataDto(BaseModel):
+    cellIds: List[str]
+    acquisitionIds: List[int]
+    objectNumbers: List[int]
+    x: List[float]
+    y: List[float]
+    mappings: Optional[Dict[str, MappingDto]]
+    colors: Optional[ColorsDto]

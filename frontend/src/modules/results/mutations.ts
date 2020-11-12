@@ -1,9 +1,16 @@
 import { Mutations } from "vuex-smart-module";
 import { resultListSchema, ResultsState } from ".";
-import { IResult } from "./models";
+import { ICellData, IRawResultData, IResult, ISelectedCell } from "./models";
 import { normalize } from "normalizr";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_SELECTED_CELLS } from "./events";
 
 export class ResultsMutations extends Mutations<ResultsState> {
+  constructor() {
+    super();
+    BroadcastManager.subscribe(SET_SELECTED_CELLS, (payload) => this.setSelectedCells(payload));
+  }
+
   setActiveResultId(id: number | null) {
     this.state.activeResultId = id;
   }
@@ -40,6 +47,39 @@ export class ResultsMutations extends Mutations<ResultsState> {
     const entities = { ...this.state.entities };
     delete entities[id];
     this.state.entities = entities;
+  }
+
+  setCells(payload: IRawResultData) {
+    const cells = new Map<string, ICellData>();
+    for (let i = 0; i < payload.cellIds.length; i++) {
+      const cellData: ICellData = {
+        cellId: payload.cellIds[i],
+        acquisitionId: payload.acquisitionIds[i],
+        objectNumber: payload.objectNumbers[i],
+        x: payload.x[i],
+        y: payload.y[i],
+      };
+      if (payload.mappings) {
+        const mappings: { [key: string]: { x: number; y: number } } = {};
+        if (payload.mappings.pca) {
+          mappings.pca = { x: payload.mappings.pca.x.data[i], y: payload.mappings.pca.y.data[i] };
+        }
+        if (payload.mappings.tsne) {
+          mappings.tsne = { x: payload.mappings.tsne.x.data[i], y: payload.mappings.tsne.y.data[i] };
+        }
+        if (payload.mappings.umap) {
+          mappings.umap = { x: payload.mappings.umap.x.data[i], y: payload.mappings.umap.y.data[i] };
+        }
+        cellData.mappings = mappings;
+      }
+      cellData.color = payload.colors ? Number(payload.colors.data[i]) : cellData.acquisitionId;
+      cells.set(cellData.cellId, cellData);
+    }
+    this.state.cells = Object.freeze(cells);
+  }
+
+  setSelectedCells(payload: ISelectedCell[]) {
+    this.state.selectedCells = payload;
   }
 
   reset() {

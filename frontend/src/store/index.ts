@@ -11,7 +11,6 @@ import { createStore, Module } from "vuex-smart-module";
 import createLogger from "vuex/dist/logger";
 import { responsiveModule } from "@/modules/responsive";
 import { RootActions } from "@/store/actions";
-import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
 import { presetsModule } from "@/modules/presets";
 import { gatesModule } from "@/modules/gates";
@@ -36,7 +35,6 @@ const rootModule = new Module({
     responsive: responsiveModule,
     settings: settingsModule,
     user: userModule,
-    selection: selectionModule,
     centroids: centroidsModule,
     presets: presetsModule,
     gates: gatesModule,

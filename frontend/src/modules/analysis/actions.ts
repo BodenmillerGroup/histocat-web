@@ -70,42 +70,6 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async getPcaData(resultId: number) {
-    try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const heatmapType = this.results!.getters.heatmap ? this.results!.getters.heatmap.type : undefined;
-      const heatmap = this.results!.getters.heatmap ? this.results!.getters.heatmap.label : undefined;
-      const response = await api.getPcaData(groupId, resultId, heatmapType, heatmap);
-      this.mutations.setPcaData(response);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getTsneResult(resultId: number) {
-    try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const heatmapType = this.results!.getters.heatmap ? this.results!.getters.heatmap.type : undefined;
-      const heatmap = this.results!.getters.heatmap ? this.results!.getters.heatmap.label : undefined;
-      const data = await api.getTsneData(groupId, resultId, heatmapType, heatmap);
-      this.mutations.setTsneData(data);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getUmapResult(resultId: number) {
-    try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const heatmapType = this.results!.getters.heatmap ? this.results!.getters.heatmap.type : undefined;
-      const heatmap = this.results!.getters.heatmap ? this.results!.getters.heatmap.label : undefined;
-      const data = await api.getUmapData(groupId, resultId, heatmapType, heatmap);
-      this.mutations.setUmapData(data);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
   async getPhenoGraphResult(payload: { resultId: number }) {
     try {
       const groupId = this.group?.getters.activeGroupId!;

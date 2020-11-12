@@ -20,7 +20,7 @@ from ...core.utils import stream_bytes
 from ...io.dataset import ANNDATA_FILE_EXTENSION
 from ..analysis.dto import PcaDto, TsneDto, UmapDto
 from . import service
-from .dto import ResultDto, ResultUpdateDto
+from .dto import ResultDto, ResultUpdateDto, ResultDataDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -30,22 +30,77 @@ router = APIRouter()
 def get_dataset_results(
     group_id: int, dataset_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
 ):
-    """
-    Retrieve own results for specified dataset
-    """
+    """Retrieve own results for specified dataset"""
     items = service.get_dataset_results(db, dataset_id=dataset_id)
     return items
 
 
 @router.get("/groups/{group_id}/results/{result_id}", response_model=ResultDto)
 def get_by_id(
-    group_id: int, result_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, result_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
-    """
-    Get a specific result by id
-    """
+    """Get result by id"""
     item = service.get(db, id=result_id)
+    if not item:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
     return item
+
+
+@router.get("/groups/{group_id}/results/{result_id}/data", response_model=ResultDataDto)
+def get_result_data(
+    group_id: int, result_id: int, colors_type: Optional[str] = None,
+    colors_name: Optional[str] = None, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+):
+    """Get result data by id"""
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
+
+    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+    # Read AnnData file
+    adata = ad.read_h5ad(location)
+
+    output = {
+        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
+        "cellIds": adata.obs["CellId"].tolist(),
+        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "x": adata.obs["CentroidX"].round(2).tolist(),
+        "y": adata.obs["CentroidY"].round(2).tolist(),
+    }
+
+    mappings = {}
+    if "pca" in result.output:
+        mappings["pca"] = {
+            "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(), },
+            "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(), },
+        }
+
+    if "tsne" in result.output:
+        mappings["tsne"] = {
+            "x": {"label": "tSNE1", "data": adata.obsm["X_tsne"][:, 0].tolist(),},
+            "y": {"label": "tSNE2", "data": adata.obsm["X_tsne"][:, 1].tolist(),},
+        }
+
+    if "umap" in result.output:
+        mappings["umap"] = {
+            "x": {"label": "UMAP1", "data": adata.obsm["X_umap"][:, 0].tolist(),},
+            "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(),},
+        }
+
+    if colors_type and colors_name:
+        if colors_type == "channel":
+            colors = adata.X[:, adata.var.index == colors_name]
+            output["colors"] = {"type": colors_type, "name": colors_name, "data": colors[:, 0].tolist()}
+        elif colors_type == "neighbor" or colors_type == "clustering":
+            colors = sc.get.obs_df(adata, keys=[colors_name])
+            output["colors"] = {
+                "type": colors_type,
+                "name": colors_name,
+                "data": colors[colors_name].tolist(),
+            }
+
+    output["mappings"] = mappings
+    return ORJSONResponse(output)
 
 
 @router.patch("/groups/{group_id}/results/{result_id}", response_model=ResultDto)
@@ -56,9 +111,7 @@ def update(
     member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
-    """
-    Update result
-    """
+    """Update result"""
     item = service.get(db, id=result_id)
     if not item:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
@@ -70,18 +123,14 @@ def update(
 def delete_by_id(
     group_id: int, result_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
-    """
-    Delete a specific dataset by id
-    """
+    """Delete a specific dataset by id"""
     item = service.remove(db, id=result_id)
     return item
 
 
 @router.get("/results/{result_id}/download")
 async def download_by_id(result_id: int, db: Session = Depends(get_db)):
-    """
-    Download result by id
-    """
+    """Download result by id"""
     item = service.get(db, id=result_id)
     if not item:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
@@ -109,7 +158,6 @@ async def get_pca_data(
     db: Session = Depends(get_db),
 ):
     """Get PCA data"""
-
     result = service.get(db, id=result_id)
     if not result:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
@@ -149,7 +197,6 @@ async def get_tsne_data(
     db: Session = Depends(get_db),
 ):
     """Get tSNE data"""
-
     result = service.get(db, id=result_id)
     if not result:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
@@ -189,7 +236,6 @@ async def get_umap_data(
     db: Session = Depends(get_db),
 ):
     """Get UMAP data"""
-
     result = service.get(db, id=result_id)
     if not result:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")

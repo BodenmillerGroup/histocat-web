@@ -4,7 +4,7 @@ export interface IGateCreate {
   description?: string;
   acquisition_ids: number[];
   indices: number[];
-  cell_ids: number[];
+  cell_ids: string[];
 }
 
 export interface IGateUpdate {
@@ -19,6 +19,6 @@ export interface IGate {
   description?: string;
   acquisition_ids: number[];
   indices: number[];
-  cell_ids: number[];
+  cell_ids: string[];
   created_at: string;
 }

@@ -5,40 +5,38 @@
 </template>
 
 <script lang="ts">
-import { IChart2DData } from "@/modules/analysis/models";
 import { projectsModule } from "@/modules/projects";
 import { settingsModule } from "@/modules/settings";
 import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import { SelectedCell } from "@/modules/selection/models";
-import { selectionModule } from "@/modules/selection";
-import { CellPoint } from "@/data/CellPoint";
 import Plotly from "plotly.js/dist/plotly";
-import { linearRegression, linearRegressionLine } from "simple-statistics";
+import { ICellPoint, ISelectedCell } from "@/modules/results/models";
+import { resultsModule } from "@/modules/results";
 
 @Component
 export default class ScatterPlot2d extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly selectionContext = selectionModule.context(this.$store);
+  readonly resultsContext = resultsModule.context(this.$store);
 
   @Prop(String) plotId;
-  @Prop(Object) data;
   @Prop(String) title;
-  @Prop(Boolean) showRegression;
+  @Prop({ type: Map, required: true }) data!: Map<number, ICellPoint[]>;
 
-  selection: SelectedCell[] = [];
-  hasHeatmap = false;
+  selection: ISelectedCell[] = [];
   xAxisTitle = "";
   yAxisTitle = "";
-  points = new Map<number, CellPoint[]>();
 
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
   }
 
+  get heatmap() {
+    return this.resultsContext.getters.heatmap;
+  }
+
   get selectedCells() {
-    return this.selectionContext.getters.selectedCells;
+    return this.resultsContext.getters.selectedCells;
   }
 
   onIntersect(entries, observer, isIntersecting) {
@@ -61,50 +59,25 @@ export default class ScatterPlot2d extends Vue {
   }
 
   @Watch("data")
-  dataChanged(data: IChart2DData) {
+  dataChanged(data: Map<number, ICellPoint[]>) {
     if (data) {
-      this.hasHeatmap = !!data.heatmap;
-      this.xAxisTitle = data.x.label;
-      this.yAxisTitle = data.y.label;
-
-      this.points = new Map<number, CellPoint[]>();
-      const regressionData: number[][] = [];
-      for (let i = 0; i < data.cellIds.length; i++) {
-        const cellPoint = Object.freeze(
-          new CellPoint(
-            data.acquisitionIds[i],
-            data.cellIds[i],
-            data.objectNumbers[i],
-            data.x.data[i],
-            data.y.data[i],
-            data.heatmap ? data.heatmap.data[i] : data.acquisitionIds[i]
-          )
-        );
-        if (!this.points.has(cellPoint.acquisitionId)) {
-          this.points.set(cellPoint.acquisitionId, []);
-        }
-        const acquisitionPoints = this.points.get(cellPoint.acquisitionId)!;
-        acquisitionPoints.push(cellPoint);
-
-        if (this.showRegression) {
-          regressionData.push([cellPoint.x, cellPoint.y]);
-        }
-      }
+      this.xAxisTitle = "X"; // data.x.label;
+      this.yAxisTitle = "Y"; // data.y.label;
 
       const traces: any[] = [];
-      this.points.forEach((v, k) => {
+      data.forEach((v, k) => {
         traces.push({
           type: "scattergl",
           mode: "markers",
           name: `Acquisition ${k}`,
           x: v.map((v) => v.x),
           y: v.map((v) => v.y),
-          text: v.map((v) => `Cell ID: ${v.cellId}`),
+          text: v.map((v) => `CellID: ${v.cellId}`),
           customdata: v,
-          marker: this.hasHeatmap
+          marker: this.heatmap
             ? {
                 size: 3,
-                color: v.map((v) => v.value),
+                color: v.map((v) => v.color),
                 colorscale: "RdBu",
               }
             : {
@@ -112,26 +85,6 @@ export default class ScatterPlot2d extends Vue {
               },
         });
       });
-
-      if (this.showRegression) {
-        const regression = linearRegression(regressionData);
-        const regressionLine = linearRegressionLine(regression);
-        const xMin = Math.min(...data.x.data);
-        const xMax = Math.max(...data.x.data);
-        traces.push({
-          type: "scattergl",
-          mode: "line",
-          name: `Regression`,
-          x: [xMin, xMax],
-          y: [regressionLine(xMin), regressionLine(xMax)],
-          marker: {
-            size: 1,
-          },
-          line: {
-            width: 1,
-          },
-        });
-      }
 
       const layout = {
         title: this.title,
@@ -154,48 +107,20 @@ export default class ScatterPlot2d extends Vue {
   }
 
   @Watch("selectedCells")
-  selectedCellsChanged(data: SelectedCell[]) {
-    if (!equals(data, this.selection)) {
-      this.selection = data;
-      const traces: any[] = [];
-      this.points.forEach((v, k) => {
+  selectedCellsChanged(selectedCells: ISelectedCell[]) {
+    if (this.data && !equals(selectedCells, this.selection)) {
+      this.selection = selectedCells;
+      const updateData: any[] = [];
+      this.data.forEach((v, k) => {
         // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
-        traces.push({
-          type: "scattergl",
-          mode: "markers",
-          name: `Acquisition ${k}`,
-          x: v.map((v) => v.x),
-          y: v.map((v) => v.y),
-          text: v.map((v) => `Cell ID: ${v.cellId}`),
-          customdata: v,
-          selectedpoints:
-            this.selection.length > 0 ? data.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1) : null,
-          marker: this.hasHeatmap
-            ? {
-                size: 3,
-                color: v.map((v) => v.value),
-              }
-            : {
-                size: 3,
-              },
-        });
+        updateData.push(this.selection.length > 0
+              ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
+              : null);
       });
 
-      const layout = {
-        title: this.title,
-        showlegend: true,
-        xaxis: {
-          title: this.xAxisTitle,
-        },
-        yaxis: {
-          title: this.yAxisTitle,
-        },
-        hovermode: "closest",
-        dragmode: "lasso",
-        autosize: true,
-      };
-
-      Plotly.react(this.plotId, traces, layout);
+      Plotly.update(this.plotId, {
+        selectedpoints: updateData,
+      });
     }
   }
 
@@ -217,14 +142,16 @@ export default class ScatterPlot2d extends Vue {
       if (eventData) {
         if (eventData.points.length > 0) {
           // console.log(eventData.points);
-          const newSelectedCells: SelectedCell[] = [];
+          const newSelectedCells: ISelectedCell[] = [];
           eventData.points.forEach((point, i) => {
-            const cellPoint = point.customdata as CellPoint;
-            newSelectedCells.push(
-              Object.freeze(new SelectedCell(cellPoint.acquisitionId, cellPoint.cellId, cellPoint.objectNumber))
-            );
+            const cellPoint = point.customdata as ICellPoint;
+            newSelectedCells.push({
+              acquisitionId: cellPoint.acquisitionId,
+              cellId: cellPoint.cellId,
+              objectNumber: cellPoint.objectNumber,
+            });
           });
-          this.selectionContext.actions.setSelectedCells(newSelectedCells);
+          this.resultsContext.actions.setSelectedCells(newSelectedCells);
           if (this.applyMask) {
             this.projectsContext.actions.getChannelStackImage();
           }
@@ -233,7 +160,7 @@ export default class ScatterPlot2d extends Vue {
     });
 
     plot.on("plotly_deselect", () => {
-      this.selectionContext.actions.setSelectedCells([]);
+      this.resultsContext.actions.setSelectedCells([]);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }

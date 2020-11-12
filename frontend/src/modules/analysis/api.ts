@@ -1,12 +1,9 @@
 import {
-  IPCAData,
   IPhenoGraphData,
   IPlotSeries,
   IRegionChannelData,
   IRegionStatsSubmission,
   IScatterPlotData,
-  ITSNEData,
-  IUMAPData,
 } from "./models";
 import { ApiManager } from "@/utils/api";
 
@@ -38,27 +35,6 @@ export const api = {
         `analysis/boxplot?dataset_id=${datasetId}${gateIdArg}${acquisitionIdsArray.join("")}${markersArray.join("")}`
       )
       .json<IPlotSeries[]>();
-  },
-  async getPcaData(groupId: number, resultId: number, heatmapType?: string, heatmap?: string) {
-    let url = `results/${resultId}/pca`;
-    if (heatmapType && heatmap) {
-      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
-    }
-    return ApiManager.api.get(url).json<IPCAData>();
-  },
-  async getTsneData(groupId: number, resultId: number, heatmapType?: string, heatmap?: string) {
-    let url = `results/${resultId}/tsne`;
-    if (heatmapType && heatmap) {
-      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
-    }
-    return ApiManager.api.get(url).json<ITSNEData>();
-  },
-  async getUmapData(groupId: number, resultId: number, heatmapType?: string, heatmap?: string) {
-    let url = `results/${resultId}/umap`;
-    if (heatmapType && heatmap) {
-      url += `?heatmap_type=${heatmapType}&heatmap=${heatmap}`;
-    }
-    return ApiManager.api.get(url).json<IUMAPData>();
   },
   async getPhenoGraphData(groupId: number, resultId: number) {
     return ApiManager.api.get(`groups/${groupId}/results/${resultId}/phenograph`).json<IPhenoGraphData>();

@@ -8,7 +8,9 @@ import { ResultsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 import { pipelinesModule } from "@/modules/pipelines";
 import { analysisModule } from "@/modules/analysis";
-import { IResultUpdate } from "@/modules/results/models";
+import { IResultUpdate, ISelectedCell } from "@/modules/results/models";
+import { BroadcastManager } from "@/utils/BroadcastManager";
+import { SET_SELECTED_CELLS } from "@/modules/results/events";
 
 export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
@@ -26,6 +28,10 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     this.analysis = analysisModule.context(store);
   }
 
+  setSelectedCells(payload: ISelectedCell[], isGlobal = true) {
+    BroadcastManager.publish(SET_SELECTED_CELLS, payload, isGlobal);
+  }
+
   async getDatasetResults(datasetId: number) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
@@ -36,27 +42,19 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     }
   }
 
-  async loadResult(resultId: number) {
+  async loadResultData(resultId: number) {
     try {
       this.mutations.setActiveResultId(resultId);
-      const groupId = this.group?.getters.activeGroupId!;
-      const data = await api.getResult(groupId, resultId);
       this.analysis?.mutations.reset();
-      this.mutations.setEntity(data);
-      this.pipelines?.mutations.setSteps(data.pipeline);
-      this.pipelines?.mutations.setSelectedAcquisitionIds(data.input);
-      const actions: any[] = [];
-      if (data.output.pca) {
-        actions.push(this.analysis?.actions.getPcaData(resultId));
-      }
-      if (data.output.tsne) {
-        actions.push(this.analysis?.actions.getTsneResult(resultId));
-      }
-      if (data.output.umap) {
-        actions.push(this.analysis?.actions.getUmapResult(resultId));
-      }
-      if (actions.length > 0) {
-        Promise.all(actions);
+      const groupId = this.group?.getters.activeGroupId!;
+      const colorsType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
+      const colorsName = this.getters.heatmap ? this.getters.heatmap.label : undefined;
+      const data = await api.getResultData(groupId, resultId, colorsType, colorsName);
+      this.mutations.setCells(data);
+      const result = this.getters.activeResult;
+      if (result) {
+        this.pipelines?.mutations.setSteps(result.pipeline);
+        this.pipelines?.mutations.setSelectedAcquisitionIds(result.input);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

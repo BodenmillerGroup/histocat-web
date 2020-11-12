@@ -1,5 +1,6 @@
 import { Getters } from "vuex-smart-module";
 import { ResultsState } from ".";
+import { ICellData, ICellPoint } from "./models";
 
 export class ResultsGetters extends Getters<ResultsState> {
   get results() {
@@ -20,5 +21,91 @@ export class ResultsGetters extends Getters<ResultsState> {
 
   get heatmap() {
     return this.state.heatmap;
+  }
+
+  get cells() {
+    return this.state.cells;
+  }
+
+  get selectedCells() {
+    return this.state.selectedCells;
+  }
+
+  get cellsByAcquisition() {
+    const output = new Map<number, ICellData[]>();
+    this.state.cells?.forEach((value, key) => {
+      if (!output.has(value.acquisitionId)) {
+        output.set(value.acquisitionId, []);
+      }
+      const acquisitionPoints = output.get(value.acquisitionId)!;
+      acquisitionPoints.push(value);
+    });
+    return output;
+  }
+
+  get pcaData() {
+    if (this.getters.activeResult && this.getters.activeResult.output.pca) {
+      const output = new Map<number, ICellPoint[]>();
+      this.state.cells?.forEach((value, key) => {
+        if (!output.has(value.acquisitionId)) {
+          output.set(value.acquisitionId, []);
+        }
+        const acquisitionCells = output.get(value.acquisitionId)!;
+        acquisitionCells.push({
+          cellId: value.cellId,
+          acquisitionId: value.acquisitionId,
+          objectNumber: value.objectNumber,
+          x: value.mappings!.pca.x,
+          y: value.mappings!.pca.y,
+          color: value.color,
+        });
+      });
+      return output;
+    }
+    return null;
+  }
+
+  get tsneData() {
+    if (this.getters.activeResult && this.getters.activeResult.output.tsne) {
+      const output = new Map<number, ICellPoint[]>();
+      this.state.cells?.forEach((value, key) => {
+        if (!output.has(value.acquisitionId)) {
+          output.set(value.acquisitionId, []);
+        }
+        const acquisitionCells = output.get(value.acquisitionId)!;
+        acquisitionCells.push({
+          cellId: value.cellId,
+          acquisitionId: value.acquisitionId,
+          objectNumber: value.objectNumber,
+          x: value.mappings!.tsne.x,
+          y: value.mappings!.tsne.y,
+          color: value.color,
+        });
+      });
+      return output;
+    }
+    return null;
+  }
+
+  get umapData() {
+    if (this.getters.activeResult && this.getters.activeResult.output.umap) {
+      const output = new Map<number, ICellPoint[]>();
+      this.state.cells?.forEach((value, key) => {
+        if (!output.has(value.acquisitionId)) {
+          output.set(value.acquisitionId, []);
+        }
+        const acquisitionCells = output.get(value.acquisitionId)!;
+        acquisitionCells.push({
+          cellId: value.cellId,
+          acquisitionId: value.acquisitionId,
+          objectNumber: value.objectNumber,
+          x: value.mappings!.umap.x,
+          y: value.mappings!.umap.y,
+          color: value.color,
+        });
+      });
+      return output;
+    }
+    return null;
   }
 }

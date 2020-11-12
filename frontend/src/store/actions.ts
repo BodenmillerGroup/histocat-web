@@ -3,7 +3,6 @@ import { Store } from "vuex";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
-import { selectionModule } from "@/modules/selection";
 import { centroidsModule } from "@/modules/centroids";
 import { presetsModule } from "@/modules/presets";
 import { gatesModule } from "@/modules/gates";
@@ -19,7 +18,6 @@ export class RootActions extends Actions {
   datasets?: Context<typeof datasetsModule>;
   results?: Context<typeof resultsModule>;
   projects?: Context<typeof projectsModule>;
-  selection?: Context<typeof selectionModule>;
   centroids?: Context<typeof centroidsModule>;
   presets?: Context<typeof presetsModule>;
   gates?: Context<typeof gatesModule>;
@@ -33,7 +31,6 @@ export class RootActions extends Actions {
     this.datasets = datasetsModule.context(store);
     this.results = resultsModule.context(store);
     this.projects = projectsModule.context(store);
-    this.selection = selectionModule.context(store);
     this.centroids = centroidsModule.context(store);
     this.presets = presetsModule.context(store);
     this.gates = gatesModule.context(store);
@@ -47,7 +44,6 @@ export class RootActions extends Actions {
     this.datasets?.mutations.reset();
     this.results?.mutations.reset();
     this.projects?.mutations.reset();
-    this.selection?.mutations.reset();
     this.centroids?.mutations.reset();
     this.presets?.mutations.reset();
     this.gates?.mutations.reset();

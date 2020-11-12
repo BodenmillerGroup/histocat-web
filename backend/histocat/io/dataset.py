@@ -164,8 +164,9 @@ def _import_cell_csv(
 
     dst_uri = dst_folder / f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}"
     df = pd.read_csv(src_uri)
+    df.index.astype(str, copy=False)
 
-    obs = pd.DataFrame()
+    obs = pd.DataFrame(index=df.index)
     obs["CellId"] = df.index
     obs["AcquisitionId"] = df["ImageNumber"]
     obs["AcquisitionId"].replace(image_number_to_acquisition_id, inplace=True)

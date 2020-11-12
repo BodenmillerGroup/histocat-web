@@ -33,9 +33,9 @@
       <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />
     </v-toolbar>
     <ScatterPlot2d
+      v-if="plotData"
       plot-id="scatterPlot"
       :data="plotData"
-      :show-regression="showRegression"
       title="Scatter Plot"
       class="plot"
     />
@@ -47,12 +47,10 @@ import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import Scatter3D from "@/components/charts/Scatter3D.vue";
-import Scatter2D from "@/components/charts/Scatter2D.vue";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
 
 @Component({
-  components: { ScatterPlot2d, Scatter2D, Scatter3D },
+  components: { ScatterPlot2d },
 })
 export default class ScatterWidget extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);

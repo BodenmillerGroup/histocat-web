@@ -37,7 +37,7 @@
             <v-row>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" download color="primary lighten-2" @click.stop="loadResult(item.id)">
+                  <v-btn icon small v-on="on" download color="primary lighten-2" @click.stop="loadResultData(item.id)">
                     <v-icon small>mdi-refresh-circle</v-icon>
                   </v-btn>
                 </template>
@@ -202,8 +202,8 @@ export default class ResultsView extends Vue {
     });
   }
 
-  async loadResult(id: number) {
-    await this.resultsContext.actions.loadResult(id);
+  async loadResultData(id: number) {
+    await this.resultsContext.actions.loadResultData(id);
   }
 
   async deleteResult(id: number) {
