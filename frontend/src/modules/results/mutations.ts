@@ -1,6 +1,14 @@
 import { Mutations } from "vuex-smart-module";
 import { resultListSchema, ResultsState } from ".";
-import { ICellData, IRawResultData, IResult, ISelectedCell } from "./models";
+import {
+  ICellData,
+  IPhenoGraphData,
+  IPlotSeries,
+  IRawResultData,
+  IResult,
+  IRawScatterData,
+  ISelectedCell,
+} from "./models";
 import { normalize } from "normalizr";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_SELECTED_CELLS } from "./events";
@@ -80,6 +88,29 @@ export class ResultsMutations extends Mutations<ResultsState> {
 
   setSelectedCells(payload: ISelectedCell[]) {
     this.state.selectedCells = payload;
+  }
+
+  setScatterData(payload: IRawScatterData | null) {
+    if (payload == null) {
+      this.state.scatterData = null;
+      return;
+    }
+    const scatterPlotData = new Map<string, { x: number; y: number }>();
+    for (let i = 0; i < payload.cellIds.length; i++) {
+      scatterPlotData.set(payload.cellIds[i], {
+        x: payload.x.data[i],
+        y: payload.y.data[i]
+      });
+    }
+    this.state.scatterData = Object.freeze(scatterPlotData);
+  }
+
+  setBoxPlotData(data: IPlotSeries[]) {
+    this.state.boxPlotData = data;
+  }
+
+  setPhenoGraphData(data: IPhenoGraphData | null) {
+    this.state.phenographData = data;
   }
 
   reset() {

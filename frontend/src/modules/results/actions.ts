@@ -11,6 +11,7 @@ import { analysisModule } from "@/modules/analysis";
 import { IResultUpdate, ISelectedCell } from "@/modules/results/models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { SET_SELECTED_CELLS } from "@/modules/results/events";
+import { datasetsModule } from "@/modules/datasets";
 
 export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
   // Declare context type
@@ -18,6 +19,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
   group?: Context<typeof groupModule>;
   pipelines?: Context<typeof pipelinesModule>;
   analysis?: Context<typeof analysisModule>;
+  datasets?: Context<typeof datasetsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -26,6 +28,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     this.group = groupModule.context(store);
     this.pipelines = pipelinesModule.context(store);
     this.analysis = analysisModule.context(store);
+    this.datasets = datasetsModule.context(store);
   }
 
   setSelectedCells(payload: ISelectedCell[], isGlobal = true) {
@@ -78,6 +81,55 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
       const data = await api.deleteResult(groupId, resultId);
       this.mutations.deleteEntity(resultId);
       this.main!.mutations.addNotification({ content: "Result successfully deleted", color: "success" });
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getScatterPlotData(payload: { markerX: string; markerY: string }) {
+    try {
+      const datasetId = this.datasets!.getters.activeDatasetId!;
+      const resultId = this.getters.activeResultId;
+      const heatmapType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
+      const heatmap = this.getters.heatmap ? this.getters.heatmap.label : undefined;
+      const data = await api.getScatterPlotData(
+        datasetId,
+        resultId,
+        payload.markerX,
+        payload.markerY,
+        heatmapType,
+        heatmap
+      );
+      this.mutations.setScatterData(data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getBoxPlotData(payload: {
+    datasetId: number;
+    gateId: number | null;
+    acquisitionIds: number[];
+    markers: string[];
+  }) {
+    try {
+      const response = await api.getBoxPlotData(
+        payload.datasetId,
+        payload.gateId,
+        payload.acquisitionIds,
+        payload.markers
+      );
+      this.mutations.setBoxPlotData(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getPhenoGraphResult(payload: { resultId: number }) {
+    try {
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getPhenoGraphData(groupId, payload.resultId);
+      this.mutations.setPhenoGraphData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

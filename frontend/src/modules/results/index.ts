@@ -1,7 +1,7 @@
 import { Module } from "vuex-smart-module";
 import { ResultsActions } from "./actions";
 import { ResultsGetters } from "./getters";
-import { ICellData, IResult, ISelectedCell } from "./models";
+import { ICellData, IPhenoGraphData, IPlotSeries, IResult, ISelectedCell } from "./models";
 import { ResultsMutations } from "./mutations";
 import { schema } from "normalizr";
 
@@ -17,6 +17,10 @@ export class ResultsState {
 
   cells: Readonly<Map<string, ICellData>> | null = null;
   selectedCells: ISelectedCell[] = [];
+
+  scatterData: Readonly<Map<string, { x: number; y: number }>> | null = null;
+  boxPlotData: IPlotSeries[] = [];
+  phenographData: IPhenoGraphData | null = null;
 }
 
 export const resultsModule = new Module({

@@ -1,26 +1,9 @@
 import Feature from "ol/Feature";
 import { Mutations } from "vuex-smart-module";
 import { AnalysisState } from ".";
-import {
-  IPhenoGraphData,
-  IPlotSeries,
-  IRegionChannelData,
-  IScatterPlotData,
-} from "./models";
+import { IRegionChannelData } from "./models";
 
 export class AnalysisMutations extends Mutations<AnalysisState> {
-  setScatterPlotData(data: IScatterPlotData | null) {
-    this.state.scatterPlotData = Object.freeze(data);
-  }
-
-  setBoxPlotData(data: IPlotSeries[]) {
-    this.state.boxPlotData = data;
-  }
-
-  setPhenoGraphData(data: IPhenoGraphData | null) {
-    this.state.phenographData = data;
-  }
-
   setRegionsEnabled(state: boolean) {
     this.state.regionsEnabled = state;
   }

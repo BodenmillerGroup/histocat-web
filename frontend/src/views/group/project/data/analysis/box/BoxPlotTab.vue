@@ -25,13 +25,13 @@
 </template>
 
 <script lang="ts">
-import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import { Component, Vue } from "vue-property-decorator";
 import BoxPlotView from "@/views/group/project/data/analysis/box/BoxPlotView.vue";
 import { gatesModule } from "@/modules/gates";
+import { resultsModule } from "@/modules/results";
 
 @Component({
   components: { BoxPlotView },
@@ -40,7 +40,7 @@ export default class BoxPlotTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
-  readonly analysisContext = analysisModule.context(this.$store);
+  readonly resultsContext = resultsModule.context(this.$store);
   readonly gateContext = gatesModule.context(this.$store);
 
   selectedItems: any[] = [];
@@ -93,7 +93,7 @@ export default class BoxPlotTab extends Vue {
   }
 
   get boxPlotData() {
-    return this.analysisContext.getters.boxPlotData;
+    return this.resultsContext.getters.boxPlotData;
   }
 }
 </script>

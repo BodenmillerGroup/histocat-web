@@ -71,3 +71,18 @@ export interface ISelectedCell {
   acquisitionId: number;
   objectNumber: number;
 }
+
+export interface IPlotSeries {
+  label: string;
+  data: number[];
+}
+
+export interface IRawScatterData {
+  cellIds: string[];
+  x: IPlotSeries;
+  y: IPlotSeries;
+}
+
+export interface IPhenoGraphData {
+  community: IPlotSeries;
+}

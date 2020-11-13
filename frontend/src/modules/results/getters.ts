@@ -31,9 +31,44 @@ export class ResultsGetters extends Getters<ResultsState> {
     return this.state.selectedCells;
   }
 
+  get scatterData() {
+    return this.state.scatterData;
+  }
+
+  get scatterPlotData() {
+    if (this.getters.cells && this.getters.scatterData) {
+      const output = new Map<number, ICellPoint[]>();
+      this.getters.cells.forEach((value, key) => {
+        if (!output.has(value.acquisitionId)) {
+          output.set(value.acquisitionId, []);
+        }
+        const acquisitionCells = output.get(value.acquisitionId)!;
+        const scatterPointData = this.getters.scatterData?.get(value.cellId)!;
+        acquisitionCells.push({
+          cellId: value.cellId,
+          acquisitionId: value.acquisitionId,
+          objectNumber: value.objectNumber,
+          x: scatterPointData.x,
+          y: scatterPointData.y,
+          color: value.color,
+        });
+      });
+      return output;
+    }
+    return null;
+  }
+
+  get boxPlotData() {
+    return this.state.boxPlotData;
+  }
+
+  get phenographData() {
+    return this.state.phenographData;
+  }
+
   get cellsByAcquisition() {
     const output = new Map<number, ICellData[]>();
-    this.state.cells?.forEach((value, key) => {
+    this.getters.cells?.forEach((value, key) => {
       if (!output.has(value.acquisitionId)) {
         output.set(value.acquisitionId, []);
       }
@@ -46,7 +81,7 @@ export class ResultsGetters extends Getters<ResultsState> {
   get pcaData() {
     if (this.getters.activeResult && this.getters.activeResult.output.pca) {
       const output = new Map<number, ICellPoint[]>();
-      this.state.cells?.forEach((value, key) => {
+      this.getters.cells?.forEach((value, key) => {
         if (!output.has(value.acquisitionId)) {
           output.set(value.acquisitionId, []);
         }
@@ -68,7 +103,7 @@ export class ResultsGetters extends Getters<ResultsState> {
   get tsneData() {
     if (this.getters.activeResult && this.getters.activeResult.output.tsne) {
       const output = new Map<number, ICellPoint[]>();
-      this.state.cells?.forEach((value, key) => {
+      this.getters.cells?.forEach((value, key) => {
         if (!output.has(value.acquisitionId)) {
           output.set(value.acquisitionId, []);
         }
@@ -90,7 +125,7 @@ export class ResultsGetters extends Getters<ResultsState> {
   get umapData() {
     if (this.getters.activeResult && this.getters.activeResult.output.umap) {
       const output = new Map<number, ICellPoint[]>();
-      this.state.cells?.forEach((value, key) => {
+      this.getters.cells?.forEach((value, key) => {
         if (!output.has(value.acquisitionId)) {
           output.set(value.acquisitionId, []);
         }

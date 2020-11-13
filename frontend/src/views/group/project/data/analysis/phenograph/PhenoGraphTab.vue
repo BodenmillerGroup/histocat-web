@@ -96,7 +96,7 @@ export default class PhenoGraphTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
-  readonly resultContext = resultsModule.context(this.$store);
+  readonly resultsContext = resultsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
 
   readonly required = required;
@@ -181,14 +181,14 @@ export default class PhenoGraphTab extends Vue {
 
   async display() {
     if (this.result) {
-      await this.analysisContext.actions.getPhenoGraphResult({
+      await this.resultsContext.actions.getPhenoGraphResult({
         resultId: this.result.id,
       });
     }
   }
 
   get phenographData() {
-    return this.analysisContext.getters.phenographData;
+    return this.resultsContext.getters.phenographData;
   }
 }
 </script>

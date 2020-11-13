@@ -5,10 +5,10 @@
 </template>
 
 <script lang="ts">
-import { IPlotSeries } from "@/modules/analysis/models";
 import { mainModule } from "@/modules/main";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Plotly from "plotly.js/dist/plotly";
+import { IPlotSeries } from "@/modules/results/models";
 
 @Component
 export default class BoxPlotView extends Vue {

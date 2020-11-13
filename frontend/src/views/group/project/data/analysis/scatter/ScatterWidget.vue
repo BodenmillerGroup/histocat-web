@@ -30,10 +30,11 @@
         flat
         class="select-input"
       />
-      <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />
+<!--      <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />-->
     </v-toolbar>
     <ScatterPlot2d
       v-if="plotData"
+      :ignore-selection="true"
       plot-id="scatterPlot"
       :data="plotData"
       title="Scatter Plot"
@@ -43,18 +44,18 @@
 </template>
 
 <script lang="ts">
-import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
+import { resultsModule } from "@/modules/results";
 
 @Component({
   components: { ScatterPlot2d },
 })
 export default class ScatterWidget extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);
-  readonly analysisContext = analysisModule.context(this.$store);
+  readonly resultsContext = resultsModule.context(this.$store);
 
   readonly required = required;
 
@@ -63,7 +64,7 @@ export default class ScatterWidget extends Vue {
   markerY: string | null = null;
 
   get plotData() {
-    return this.analysisContext.getters.scatterPlotData;
+    return this.resultsContext.getters.scatterPlotData;
   }
 
   get activeDataset() {
@@ -93,7 +94,7 @@ export default class ScatterWidget extends Vue {
 
   async submit() {
     if (this.markerX && this.markerY) {
-      await this.analysisContext.actions.getScatterPlotData({
+      await this.resultsContext.actions.getScatterPlotData({
         markerX: this.markerX,
         markerY: this.markerY,
       });

@@ -5,7 +5,7 @@
       <span class="subtitle-1 font-weight-light">UMAP</span>
     </v-card-title>
     <v-divider />
-    <ScatterPlot2d v-if="plotData" plot-id="umapPlot" :data="plotData" title="UMAP" class="plot" />
+    <ScatterPlot2d v-if="plotData" plot-id="umapPlot" :ignore-selection="false" :data="plotData" title="UMAP" class="plot" />
   </v-card>
 </template>
 
