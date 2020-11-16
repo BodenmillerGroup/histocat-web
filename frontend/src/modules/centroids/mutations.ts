@@ -23,7 +23,7 @@ export class CentroidsMutations extends Mutations<CentroidsState> {
         objectNumber: payload.objectNumbers[i],
         x: payload.x[i],
         y: payload.y[i],
-        color: 0
+        color: 0,
       };
       newState.get(acquisitionId)!.push(Object.freeze(cellPoint));
     });

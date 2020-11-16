@@ -30,7 +30,7 @@
         flat
         class="select-input"
       />
-<!--      <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />-->
+      <!--      <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />-->
     </v-toolbar>
     <ScatterPlot2d
       v-if="plotData"
@@ -38,6 +38,8 @@
       plot-id="scatterPlot"
       :data="plotData"
       title="Scatter Plot"
+      :x-axis-title="markerX"
+      :y-axis-title="markerY"
       class="plot"
     />
   </v-card>

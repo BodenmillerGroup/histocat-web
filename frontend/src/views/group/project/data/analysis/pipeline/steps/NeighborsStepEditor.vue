@@ -27,22 +27,13 @@
                 max="100"
                 step="1"
                 :rules="[required]"
-                class="mr-4"
               />
-              <!--              <v-checkbox-->
-              <!--                label="k-NN"-->
-              <!--                hint="If True, use a hard threshold to restrict the number of neighbors to n_neighbors, that is, consider a k-nearest neighbors graph. Otherwise, use a Gaussian Kernel to assign low weights to neighbors more distant than the n_neighbors nearest neighbor."-->
-              <!--                persistent-hint-->
-              <!--                v-model="step.knn"-->
-              <!--                class="mr-4"-->
-              <!--              />-->
             </v-col>
             <v-col>
-              <v-select dense label="Metric" :items="metrics" v-model="step.metric" />
-              <v-radio-group label="Method" v-model="step.method">
-                <v-radio label="UMAP" value="umap" />
-                <v-radio label="Gauss" value="gauss" />
-              </v-radio-group>
+              <v-select label="Metric" :items="metrics" v-model="step.metric" />
+            </v-col>
+            <v-col>
+              <v-text-field label="Random seed" v-model.number="step.randomState" type="number" min="0" step="1" />
             </v-col>
           </v-row>
         </v-card>

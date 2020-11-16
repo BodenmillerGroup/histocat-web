@@ -81,7 +81,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
           const acquisitionId = data.acquisition_ids[i];
           const index = data.indices[i];
           const cellId = data.cell_ids[i];
-          selectedCells.push(Object.freeze( { acquisitionId: acquisitionId, cellId: cellId, objectNumber: index }));
+          selectedCells.push(Object.freeze({ acquisitionId: acquisitionId, cellId: cellId, objectNumber: index }));
         }
         this.results?.actions.setSelectedCells(selectedCells);
       }

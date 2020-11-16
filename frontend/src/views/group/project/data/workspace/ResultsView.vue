@@ -132,12 +132,12 @@ export default class ResultsView extends Vue {
 
   @Watch("selected")
   resultChanged(index: number | null | undefined) {
-    if (index !== null && index !== undefined) {
-      const result = this.results[index];
-      this.resultsContext.mutations.setActiveResultId(result.id);
-    } else {
-      this.resultsContext.mutations.setActiveResultId(null);
-    }
+    // if (index !== null && index !== undefined) {
+    //   const result = this.results[index];
+    //   this.resultsContext.mutations.setActiveResultId(result.id);
+    // } else {
+    //   this.resultsContext.mutations.setActiveResultId(null);
+    // }
   }
 
   get heatmaps() {

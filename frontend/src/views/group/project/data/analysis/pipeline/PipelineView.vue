@@ -199,9 +199,8 @@ export default class PipelineView extends Vue {
       id: uuidv4(),
       type: "neighbors",
       nNeighbors: 15,
-      knn: true,
-      method: "umap",
       metric: "euclidean",
+      randomState: 0,
     };
   }
 

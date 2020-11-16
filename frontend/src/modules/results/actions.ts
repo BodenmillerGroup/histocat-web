@@ -48,7 +48,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
   async loadResultData(resultId: number) {
     try {
       this.mutations.setActiveResultId(resultId);
-      this.analysis?.mutations.reset();
+      this.mutations.resetResultData();
       const groupId = this.group?.getters.activeGroupId!;
       const colorsType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
       const colorsName = this.getters.heatmap ? this.getters.heatmap.label : undefined;

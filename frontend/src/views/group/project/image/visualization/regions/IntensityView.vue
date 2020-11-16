@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import IntensityBar from "@/views/group/project/image/visualization/blend/IntensityBar.vue";
+import IntensityBar from "@/views/group/project/image/visualization/regions/IntensityBar.vue";
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue } from "vue-property-decorator";
 

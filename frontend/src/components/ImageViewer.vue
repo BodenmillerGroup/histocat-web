@@ -118,8 +118,8 @@ export default class ImageViewer extends Vue {
       const img = new Image();
       img.crossOrigin = "";
       img.onload = () => {
-        const regl = this.scatterplot.get("regl");
         const prevBackgroundImage = this.scatterplot.get("backgroundImage");
+        const regl = this.scatterplot.get("regl");
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
         });
@@ -162,7 +162,9 @@ export default class ImageViewer extends Vue {
       for (const i of this.selection) {
         const point = this.points[i];
         const acquisitionId = point.acquisitionId;
-        newSelectedCells.push(Object.freeze( { acquisitionId: acquisitionId, cellId: point.cellId, objectNumber: point.objectNumber}));
+        newSelectedCells.push(
+          Object.freeze({ acquisitionId: acquisitionId, cellId: point.cellId, objectNumber: point.objectNumber })
+        );
       }
       this.resultsContext.actions.setSelectedCells(newSelectedCells);
       if (this.applyMask) {

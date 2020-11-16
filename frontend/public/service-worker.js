@@ -7,7 +7,7 @@
  */
 
 //Change this value every time before you build
-const LATEST_VERSION = "2020.11.09";
+const LATEST_VERSION = "2020.11.16";
 
 workbox.core.setCacheNameDetails({ prefix: "histocat" });
 

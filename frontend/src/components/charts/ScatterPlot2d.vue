@@ -7,7 +7,6 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { settingsModule } from "@/modules/settings";
-import { equals } from "rambda";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Plotly from "plotly.js/dist/plotly";
 import { ICellPoint, ISelectedCell } from "@/modules/results/models";
@@ -19,14 +18,12 @@ export default class ScatterPlot2d extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly resultsContext = resultsModule.context(this.$store);
 
-  @Prop(String) plotId;
-  @Prop(String) title;
+  @Prop({ type: String, required: true }) plotId;
+  @Prop({ type: String, required: true }) title;
+  @Prop({ type: String, required: true }) xAxisTitle;
+  @Prop({ type: String, required: true }) yAxisTitle;
   @Prop({ type: Map, required: true }) data!: Map<number, ICellPoint[]>;
   @Prop({ type: Boolean, required: true }) ignoreSelection!: boolean;
-
-  selection: ISelectedCell[] = [];
-  xAxisTitle = "";
-  yAxisTitle = "";
 
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
@@ -62,9 +59,6 @@ export default class ScatterPlot2d extends Vue {
   @Watch("data")
   dataChanged(data: Map<number, ICellPoint[]>) {
     if (data) {
-      this.xAxisTitle = "X"; // data.x.label;
-      this.yAxisTitle = "Y"; // data.y.label;
-
       const traces: any[] = [];
       data.forEach((v, k) => {
         traces.push({
@@ -88,7 +82,6 @@ export default class ScatterPlot2d extends Vue {
       });
 
       const layout = {
-        title: this.title,
         showlegend: true,
         xaxis: {
           title: this.xAxisTitle,
@@ -109,26 +102,27 @@ export default class ScatterPlot2d extends Vue {
 
   @Watch("selectedCells")
   selectedCellsChanged(selectedCells: ISelectedCell[]) {
-    if (this.data && !equals(selectedCells, this.selection)) {
-      this.selection = selectedCells;
+    if (this.data) {
       const selectedpoints: any[] = [];
       this.data.forEach((v, k) => {
         // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
-        selectedpoints.push(this.selection.length > 0
-              ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
-              : null);
+        selectedpoints.push(
+          selectedCells.length > 0
+            ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
+            : null
+        );
       });
 
       const updatedData: any = {
         selectedpoints: selectedpoints,
-      }
+      };
 
       if (this.ignoreSelection) {
         updatedData.unselected = {
           marker: {
-            opacity: 0
-          }
-        }
+            opacity: 0,
+          },
+        };
       }
 
       Plotly.update(this.plotId, updatedData);

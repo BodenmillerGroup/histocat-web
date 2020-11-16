@@ -105,8 +105,9 @@ export class GroupActions extends Actions<GroupState, GroupGetters, GroupMutatio
     try {
       const result = await api.joinGroup(id);
       if (result) {
+        this.mutations.updateEntity(result);
         this.main!.mutations.addNotification({
-          content: "Request to join the group successfully submitted",
+          content: "You successfully joined the group",
           color: "success",
         });
       }

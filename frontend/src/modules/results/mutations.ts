@@ -99,7 +99,7 @@ export class ResultsMutations extends Mutations<ResultsState> {
     for (let i = 0; i < payload.cellIds.length; i++) {
       scatterPlotData.set(payload.cellIds[i], {
         x: payload.x.data[i],
-        y: payload.y.data[i]
+        y: payload.y.data[i],
       });
     }
     this.state.scatterData = Object.freeze(scatterPlotData);
@@ -111,6 +111,12 @@ export class ResultsMutations extends Mutations<ResultsState> {
 
   setPhenoGraphData(data: IPhenoGraphData | null) {
     this.state.phenographData = data;
+  }
+
+  resetResultData() {
+    this.state.cells = null;
+    this.state.selectedCells = [];
+    this.state.scatterData = null;
   }
 
   reset() {

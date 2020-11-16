@@ -5,7 +5,16 @@
       <span class="subtitle-1 font-weight-light">PCA</span>
     </v-card-title>
     <v-divider />
-    <ScatterPlot2d v-if="plotData" plot-id="pcaPlot" :ignore-selection="false" :data="plotData" title="PCA" class="plot" />
+    <ScatterPlot2d
+      v-if="plotData"
+      plot-id="pcaPlot"
+      :ignore-selection="false"
+      :data="plotData"
+      title="PCA"
+      x-axis-title="PC1"
+      y-axis-title="PC2"
+      class="plot"
+    />
   </v-card>
 </template>
 

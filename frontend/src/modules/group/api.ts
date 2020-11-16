@@ -30,7 +30,7 @@ export const api = {
     return ApiManager.api.delete(`groups/${id}`).json<number>();
   },
   async joinGroup(id: number) {
-    return ApiManager.api.post(`groups/${id}/join`).json<boolean>();
+    return ApiManager.api.post(`groups/${id}/join`).json<IGroup>();
   },
   async getMyMember(groupId: number) {
     return ApiManager.api.get(`groups/${groupId}/members/me`).json<IMember>();

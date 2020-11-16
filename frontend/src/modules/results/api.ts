@@ -1,11 +1,4 @@
-import {
-  IPhenoGraphData,
-  IPlotSeries,
-  IRawResultData,
-  IRawScatterData,
-  IResult,
-  IResultUpdate,
-} from "./models";
+import { IPhenoGraphData, IPlotSeries, IRawResultData, IRawScatterData, IResult, IResultUpdate } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {

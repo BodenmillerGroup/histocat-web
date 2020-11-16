@@ -1,43 +1,33 @@
 <template>
-  <div>
-    <v-toolbar dense flat>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn v-on="on" small elevation="1">
-            <v-icon left small>mdi-download</v-icon>
-            Export
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item @click="exportImage('tiff')">
-            <v-list-item-title>Export TIFF</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="exportImage('png')">
-            <v-list-item-title>Export PNG</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-switch v-model="regionsEnabled" label="Enable regions" hide-details inset class="ml-8" dense />
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn small elevation="1" v-on="on" @click="deleteRegions" class="ml-2" :disabled="!selectedRegion">
-            Delete region(s)
-          </v-btn>
-        </template>
-        <span>Delete selected regions</span>
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn small elevation="1" v-on="on" @click="calculateRegionStats" class="ml-2" :disabled="!selectedRegion">
-            Region stats
-          </v-btn>
-        </template>
-        <span>Calculate region's statistics</span>
-      </v-tooltip>
-      <v-switch v-model="applyMask" label="Mask overlay" hide-details inset class="ml-8" :disabled="!hasMask" dense />
-    </v-toolbar>
-    <ImageViewer />
-  </div>
+  <v-row no-gutters>
+    <v-col>
+      <v-toolbar dense flat>
+        <v-switch v-model="regionsEnabled" label="Enable regions" hide-details inset class="ml-8" dense />
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn small elevation="1" v-on="on" @click="deleteRegions" class="ml-2" :disabled="!selectedRegion">
+              Delete region(s)
+            </v-btn>
+          </template>
+          <span>Delete selected regions</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn small elevation="1" v-on="on" @click="calculateRegionStats" class="ml-2" :disabled="!selectedRegion">
+              Region stats
+            </v-btn>
+          </template>
+          <span>Calculate region's statistics</span>
+        </v-tooltip>
+      </v-toolbar>
+      <v-row no-gutters>
+        <v-col>
+          <RegionsView ref="regionsView" class="blend-view" />
+        </v-col>
+        <IntensityView />
+      </v-row>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
@@ -47,31 +37,22 @@ import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { ExportFormat } from "@/modules/projects/models";
 import { settingsModule } from "@/modules/settings";
+import RegionsView from "@/views/group/project/image/visualization/regions/RegionsView.vue";
+import IntensityView from "@/views/group/project/image/visualization/regions/IntensityView.vue";
 import Polygon from "ol/geom/Polygon";
 import { Component, Vue } from "vue-property-decorator";
-import ImageViewer from "@/components/ImageViewer.vue";
-import { mainModule } from "@/modules/main";
 
 @Component({
-  components: { ImageViewer },
+  components: { IntensityView, RegionsView },
 })
-export default class BlendTabNew extends Vue {
-  readonly mainContext = mainModule.context(this.$store);
+export default class RegionsTab extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly datasetsContext = datasetsModule.context(this.$store);
+  readonly datasetContext = datasetsModule.context(this.$store);
 
-  get applyMask() {
-    return this.settingsContext.getters.maskSettings.apply;
-  }
-
-  set applyMask(value: boolean) {
-    this.settingsContext.actions.setMaskSettings({
-      ...this.settingsContext.getters.maskSettings,
-      apply: value,
-    });
-    this.projectsContext.actions.getChannelStackImage();
+  get colorizeMaskInProgress() {
+    return this.projectsContext.getters.colorizeMaskInProgress;
   }
 
   get regionsEnabled() {
@@ -95,7 +76,7 @@ export default class BlendTabNew extends Vue {
   }
 
   get dataset() {
-    return this.datasetsContext.getters.activeDataset;
+    return this.datasetContext.getters.activeDataset;
   }
 
   get hasMask() {
@@ -127,8 +108,18 @@ export default class BlendTabNew extends Vue {
     this.projectsContext.actions.exportChannelStackImage(format);
   }
 
+  getColorizedMaskImage() {
+    this.projectsContext.actions.getColorizedMaskImage();
+  }
+
   deleteRegions() {
-    (this.$refs.blendView as any).deleteRegions();
+    (this.$refs.regionsView as any).deleteRegions();
   }
 }
 </script>
+
+<style scoped>
+.blend-view {
+  height: calc(100vh - 174px);
+}
+</style>

@@ -1,13 +1,13 @@
 <template>
   <v-tabs v-model="tab">
-    <v-tab>Blend New</v-tab>
     <v-tab>Blend</v-tab>
+    <v-tab>Regions</v-tab>
     <v-tab>Tiles</v-tab>
     <v-tab-item>
-      <BlendTabNew />
+      <BlendTab />
     </v-tab-item>
     <v-tab-item>
-      <BlendTab />
+      <RegionsTab />
     </v-tab-item>
     <v-tab-item>
       <TilesView />
@@ -16,15 +16,15 @@
 </template>
 
 <script lang="ts">
-import BlendTab from "@/views/group/project/image/visualization/blend/BlendTab.vue";
-import TilesView from "@/views/group/project/image//visualization/tiles/TilesView.vue";
+import RegionsTab from "@/views/group/project/image/visualization/regions/RegionsTab.vue";
+import TilesView from "@/views/group/project/image/visualization/tiles/TilesView.vue";
 import { Component, Vue } from "vue-property-decorator";
-import BlendTabNew from "@/views/group/project/image/visualization/blend/BlendTabNew.vue";
+import BlendTab from "@/views/group/project/image/visualization/blend/BlendTab.vue";
 
 @Component({
   components: {
-    BlendTabNew,
     BlendTab,
+    RegionsTab,
     TilesView,
   },
 })
