@@ -141,19 +141,27 @@ export default class ResultsView extends Vue {
   }
 
   get heatmaps() {
-    if (
-      !this.datasetContext.getters.activeDataset ||
-      !this.datasetContext.getters.activeDataset.meta["neighbors_columns"]
-    ) {
+    const activeDataset = this.datasetContext.getters.activeDataset;
+    const markers = this.resultsContext.getters.markers;
+
+    if (!activeDataset || !activeDataset.meta["neighbors_columns"]) {
       return [];
     }
-    const channelItems = this.datasetContext.getters.channels.map((item) => {
-      return {
-        type: "channel",
-        label: item,
-      };
-    });
-    const neighborItems = this.datasetContext.getters.activeDataset.meta["neighbors_columns"].map((item) => {
+    const channelItems =
+      markers.length > 0
+        ? markers.map((item) => {
+            return {
+              type: "marker",
+              label: item,
+            };
+          })
+        : this.datasetContext.getters.channels.map((item) => {
+            return {
+              type: "marker",
+              label: item,
+            };
+          });
+    const neighborItems = activeDataset.meta["neighbors_columns"].map((item) => {
       return {
         type: "neighbor",
         label: item,

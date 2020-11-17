@@ -36,6 +36,7 @@ export interface IRawResultData {
   cellIds: string[];
   acquisitionIds: number[];
   objectNumbers: number[];
+  markers: string[];
   x: number[];
   y: number[];
   mappings: { [key: string]: IResultDataMapping };

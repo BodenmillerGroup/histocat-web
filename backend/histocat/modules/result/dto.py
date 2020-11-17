@@ -53,6 +53,7 @@ class ResultDataDto(BaseModel):
     cellIds: List[str]
     acquisitionIds: List[int]
     objectNumbers: List[int]
+    markers: List[str]
     x: List[float]
     y: List[float]
     mappings: Optional[Dict[str, MappingDto]]

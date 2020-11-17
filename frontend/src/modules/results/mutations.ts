@@ -83,6 +83,7 @@ export class ResultsMutations extends Mutations<ResultsState> {
       cellData.color = payload.colors ? Number(payload.colors.data[i]) : cellData.acquisitionId;
       cells.set(cellData.cellId, cellData);
     }
+    this.state.markers = Object.freeze(payload.markers);
     this.state.cells = Object.freeze(cells);
   }
 
@@ -114,6 +115,7 @@ export class ResultsMutations extends Mutations<ResultsState> {
   }
 
   resetResultData() {
+    this.state.markers = [];
     this.state.cells = null;
     this.state.selectedCells = [];
     this.state.scatterData = null;

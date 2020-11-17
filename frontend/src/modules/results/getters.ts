@@ -19,6 +19,10 @@ export class ResultsGetters extends Getters<ResultsState> {
     return this.getters.activeResultId ? this.getters.getResult(this.getters.activeResultId) : null;
   }
 
+  get markers() {
+    return this.state.markers;
+  }
+
   get heatmap() {
     return this.state.heatmap;
   }

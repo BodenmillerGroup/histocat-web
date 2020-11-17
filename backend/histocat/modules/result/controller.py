@@ -18,7 +18,6 @@ from histocat.modules.user.models import UserModel
 
 from ...core.utils import stream_bytes
 from ...io.dataset import ANNDATA_FILE_EXTENSION
-from ..analysis.dto import PcaDto, TsneDto, UmapDto
 from . import service
 from .dto import ResultDto, ResultUpdateDto, ResultDataDto
 
@@ -64,6 +63,7 @@ def get_result_data(
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
+        "markers": adata.var_names.tolist(),
         "x": adata.obs["CentroidX"].round(2).tolist(),
         "y": adata.obs["CentroidY"].round(2).tolist(),
     }
@@ -88,7 +88,7 @@ def get_result_data(
         }
 
     if colors_type and colors_name:
-        if colors_type == "channel":
+        if colors_type == "marker":
             colors = adata.X[:, adata.var.index == colors_name]
             output["colors"] = {"type": colors_type, "name": colors_name, "data": colors[:, 0].tolist()}
         elif colors_type == "neighbor" or colors_type == "clustering":
@@ -147,123 +147,6 @@ async def download_by_id(result_id: int, db: Session = Depends(get_db)):
 
     headers = {"Content-Disposition": f'attachment; filename="{file_name}"'}
     return StreamingResponse(stream_bytes(buffer.getvalue()), media_type="application/zip", headers=headers)
-
-
-@router.get("/results/{result_id}/pca", response_model=PcaDto)
-async def get_pca_data(
-    result_id: int,
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """Get PCA data"""
-    result = service.get(db, id=result_id)
-    if not result:
-        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
-    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
-
-    adata = ad.read_h5ad(location)
-
-    output = {
-        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
-        "cellIds": adata.obs["CellId"].tolist(),
-        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(),},
-        "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(),},
-    }
-
-    if heatmap:
-        if heatmap_type == "channel":
-            heatmap_values = adata.X[:, adata.var.index == heatmap]
-            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
-        elif heatmap_type == "neighbor" or heatmap_type == "clustering":
-            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
-            output["heatmap"] = {
-                "label": heatmap,
-                "heatmap_type": heatmap_type,
-                "data": heatmap_values[heatmap].tolist(),
-            }
-
-    return ORJSONResponse(output)
-
-
-@router.get("/results/{result_id}/tsne", response_model=TsneDto)
-async def get_tsne_data(
-    result_id: int,
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """Get tSNE data"""
-    result = service.get(db, id=result_id)
-    if not result:
-        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
-    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
-
-    adata = ad.read_h5ad(location)
-
-    output = {
-        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
-        "cellIds": adata.obs["CellId"].tolist(),
-        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "tSNE1", "data": adata.obsm["X_tsne"][:, 0].tolist(),},
-        "y": {"label": "tSNE2", "data": adata.obsm["X_tsne"][:, 1].tolist(),},
-    }
-
-    if heatmap:
-        if heatmap_type == "channel":
-            heatmap_values = adata.X[:, adata.var.index == heatmap]
-            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
-        elif heatmap_type == "neighbor" or heatmap_type == "clustering":
-            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
-            output["heatmap"] = {
-                "label": heatmap,
-                "heatmap_type": heatmap_type,
-                "data": heatmap_values[heatmap].tolist(),
-            }
-
-    return ORJSONResponse(output)
-
-
-@router.get("/results/{result_id}/umap", response_model=UmapDto)
-async def get_umap_data(
-    result_id: int,
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """Get UMAP data"""
-    result = service.get(db, id=result_id)
-    if not result:
-        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
-    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
-
-    adata = ad.read_h5ad(location)
-
-    output = {
-        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
-        "cellIds": adata.obs["CellId"].tolist(),
-        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": "UMAP1", "data": adata.obsm["X_umap"][:, 0].tolist(),},
-        "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(),},
-    }
-
-    if heatmap:
-        if heatmap_type == "channel":
-            heatmap_values = adata.X[:, adata.var.index == heatmap]
-            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
-        elif heatmap_type == "neighbor" or heatmap_type == "clustering":
-            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
-            output["heatmap"] = {
-                "label": heatmap,
-                "heatmap_type": heatmap_type,
-                "data": heatmap_values[heatmap].tolist(),
-            }
-
-    return ORJSONResponse(output)
 
 
 @router.get("/results/{result_id}/plot", responses={200: {"content": {"image/png": {}}}})

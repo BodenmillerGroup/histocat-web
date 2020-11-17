@@ -56,8 +56,7 @@ export default class ScatterPlot2d extends Vue {
     });
   }
 
-  @Watch("data")
-  dataChanged(data: Map<number, ICellPoint[]>) {
+  private refreshOnDataChange(data: Map<number, ICellPoint[]>) {
     if (data) {
       const traces: any[] = [];
       data.forEach((v, k) => {
@@ -78,6 +77,11 @@ export default class ScatterPlot2d extends Vue {
             : {
                 size: 3,
               },
+          unselected: {
+            marker: {
+              opacity: 0.1
+            }
+          }
         });
       });
 
@@ -98,6 +102,11 @@ export default class ScatterPlot2d extends Vue {
     } else {
       Plotly.react(this.plotId, [], {});
     }
+  }
+
+  @Watch("data")
+  dataChanged(data: Map<number, ICellPoint[]>) {
+    this.refreshOnDataChange(data);
   }
 
   @Watch("selectedCells")
@@ -170,6 +179,10 @@ export default class ScatterPlot2d extends Vue {
         this.projectsContext.actions.getChannelStackImage();
       }
     });
+
+    if (this.data) {
+      this.refreshOnDataChange(this.data);
+    }
   }
 
   mounted() {

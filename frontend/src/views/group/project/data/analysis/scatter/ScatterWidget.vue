@@ -74,9 +74,13 @@ export default class ScatterWidget extends Vue {
   }
 
   get markers() {
-    return this.activeDataset && this.activeDataset.meta["channel_map"]
-      ? Object.keys(this.activeDataset.meta["channel_map"])
-      : [];
+    return this.resultsContext.getters.markers;
+  }
+
+  @Watch("markers")
+  markersChanged(value) {
+    this.markerX = null;
+    this.markerY = null;
   }
 
   @Watch("markerX")

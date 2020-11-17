@@ -15,6 +15,7 @@ export class ResultsState {
 
   heatmap: { type: string; label: string } | null = null;
 
+  markers: Readonly<string[]> = [];
   cells: Readonly<Map<string, ICellData>> | null = null;
   selectedCells: ISelectedCell[] = [];
 
