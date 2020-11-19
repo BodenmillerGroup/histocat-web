@@ -26,7 +26,10 @@ export interface IImageScalebar {
 export interface IMaskSettings {
   apply: boolean;
   gated?: boolean;
-  cell_ids?: number[];
+  cellIds?: number[];
+  resultId?: number;
   location?: string;
   settings?: any;
+  colorsType?: string;
+  colorsName?: string;
 }

@@ -37,7 +37,7 @@
             <v-row>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" download color="primary lighten-2" @click.stop="loadResultData(item.id)">
+                  <v-btn icon small v-on="on" download color="primary lighten-2" @click.stop="getResultData(item.id)">
                     <v-icon small>mdi-refresh-circle</v-icon>
                   </v-btn>
                 </template>
@@ -194,6 +194,11 @@ export default class ResultsView extends Vue {
     this.resultsContext.mutations.setHeatmap(value);
   }
 
+  @Watch("heatmap")
+  async heatmapChanged(value: { type: string; label: string } | null | undefined) {
+    await this.resultsContext.actions.getColorsData()
+  }
+
   get activeDatasetId() {
     return this.datasetContext.getters.activeDatasetId;
   }
@@ -210,8 +215,8 @@ export default class ResultsView extends Vue {
     });
   }
 
-  async loadResultData(id: number) {
-    await this.resultsContext.actions.loadResultData(id);
+  async getResultData(id: number) {
+    await this.resultsContext.actions.getResultData(id);
   }
 
   async deleteResult(id: number) {

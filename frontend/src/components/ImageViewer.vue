@@ -12,7 +12,7 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import { projectsModule } from "@/modules/projects";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
-import { transformCoords } from "@/utils/webglUtils";
+import { transformToWebGl, transformFromWebGl } from "@/utils/webglUtils";
 import { centroidsModule } from "@/modules/centroids";
 import { mainModule } from "@/modules/main";
 import { resultsModule } from "@/modules/results";
@@ -129,7 +129,7 @@ export default class ImageViewer extends Vue {
 
         if (this.applyMask && this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
           this.points = this.centroids.get(this.activeAcquisitionId!)!;
-          const x = transformCoords(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
+          const x = transformToWebGl(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
           this.scatterplot.draw(x);
         } else {
           this.scatterplot.draw([]);
@@ -182,6 +182,10 @@ export default class ImageViewer extends Vue {
     this.selection = [];
   }
 
+  lassoEndHandler(data: { coordinates: [number, number][] }) {
+    // console.log(transformFromWebGl(data.coordinates, 800, 800))
+  }
+
   @Watch("showLegend")
   showLegendChanged(value: boolean) {
     this.drawLegend();
@@ -226,21 +230,27 @@ export default class ImageViewer extends Vue {
     const { width, height } = canvas.getBoundingClientRect();
 
     this.scatterplot = createScatterplot({
-      canvas,
-      width,
-      height,
+      syncEvents: true,
+      canvas: canvas,
+      width: width,
+      height: height,
       opacity: 1,
       pointSize: 2,
       pointSizeSelected: 1,
       pointOutlineWidth: 1,
       pointColor: [255, 140, 0],
       lassoMinDelay: 15,
+      lassoClearEvent: "lassoEnd",
+      showRecticle: false,
+      deselectOnDblClick: true,
+      deselectOnEscape: true,
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
     // this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
+    this.scatterplot.subscribe("lassoEnd", this.lassoEndHandler);
   }
 
   mounted() {

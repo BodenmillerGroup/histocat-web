@@ -45,20 +45,51 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     }
   }
 
-  async loadResultData(resultId: number) {
+  async getResultData(resultId: number) {
     try {
       this.mutations.setActiveResultId(resultId);
       this.mutations.resetResultData();
       const groupId = this.group?.getters.activeGroupId!;
-      const colorsType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
-      const colorsName = this.getters.heatmap ? this.getters.heatmap.label : undefined;
-      const data = await api.getResultData(groupId, resultId, colorsType, colorsName);
-      this.mutations.setCells(data);
+      const data = await api.getResultData(groupId, resultId);
+      this.mutations.setData(data);
       const result = this.getters.activeResult;
       if (result) {
         this.pipelines?.mutations.setSteps(result.pipeline);
         this.pipelines?.mutations.setSelectedAcquisitionIds(result.input);
       }
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getColorsData() {
+    try {
+      const colorsType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
+      const colorsName = this.getters.heatmap ? this.getters.heatmap.label : undefined;
+      if (!colorsType || !colorsName) {
+        this.mutations.setColors(null);
+        return;
+      }
+      const groupId = this.group?.getters.activeGroupId!;
+      const resultId = this.getters.activeResultId!;
+      const data = await api.getColorsData(groupId, resultId, colorsType, colorsName);
+      this.mutations.setColors(data);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
+  }
+
+  async getScatterPlotData(payload: { markerX: string; markerY: string }) {
+    try {
+      const groupId = this.group?.getters.activeGroupId!;
+      const resultId = this.getters.activeResultId!;
+      const data = await api.getScatterPlotData(
+        groupId,
+        resultId,
+        payload.markerX,
+        payload.markerY,
+      );
+      this.mutations.setScatterData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -81,26 +112,6 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
       const data = await api.deleteResult(groupId, resultId);
       this.mutations.deleteEntity(resultId);
       this.main!.mutations.addNotification({ content: "Result successfully deleted", color: "success" });
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getScatterPlotData(payload: { markerX: string; markerY: string }) {
-    try {
-      const datasetId = this.datasets!.getters.activeDatasetId!;
-      const resultId = this.getters.activeResultId;
-      const heatmapType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
-      const heatmap = this.getters.heatmap ? this.getters.heatmap.label : undefined;
-      const data = await api.getScatterPlotData(
-        datasetId,
-        resultId,
-        payload.markerX,
-        payload.markerY,
-        heatmapType,
-        heatmap
-      );
-      this.mutations.setScatterData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

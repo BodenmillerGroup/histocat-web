@@ -8,6 +8,7 @@ import {
   IResult,
   IRawScatterData,
   ISelectedCell,
+  IRawColorsData,
 } from "./models";
 import { normalize } from "normalizr";
 import { BroadcastManager } from "@/utils/BroadcastManager";
@@ -57,7 +58,7 @@ export class ResultsMutations extends Mutations<ResultsState> {
     this.state.entities = entities;
   }
 
-  setCells(payload: IRawResultData) {
+  setData(payload: IRawResultData) {
     const cells = new Map<string, ICellData>();
     for (let i = 0; i < payload.cellIds.length; i++) {
       const cellData: ICellData = {
@@ -80,10 +81,30 @@ export class ResultsMutations extends Mutations<ResultsState> {
         }
         cellData.mappings = mappings;
       }
-      cellData.color = payload.colors ? Number(payload.colors.data[i]) : cellData.acquisitionId;
+      cellData.color = cellData.acquisitionId;
       cells.set(cellData.cellId, cellData);
     }
     this.state.markers = Object.freeze(payload.markers);
+    this.state.cells = Object.freeze(cells);
+  }
+
+  setColors(payload: IRawColorsData | null) {
+    if (!this.state.cells) {
+      return;
+    }
+    const cells = new Map<string, ICellData>();
+    if (payload === null) {
+      this.state.cells.forEach((v, k) => {
+        v.color = v.acquisitionId;
+        cells.set(k, v);
+      });
+    } else {
+      for (let i = 0; i < payload.cellIds.length; i++) {
+        const cellData = this.state.cells.get(payload.cellIds[i])!;
+        cellData.color = Number(payload.colors.data[i]);
+        cells.set(cellData.cellId, cellData);
+      }
+    }
     this.state.cells = Object.freeze(cells);
   }
 
@@ -115,6 +136,7 @@ export class ResultsMutations extends Mutations<ResultsState> {
   }
 
   resetResultData() {
+    this.state.heatmap = null;
     this.state.markers = [];
     this.state.cells = null;
     this.state.selectedCells = [];

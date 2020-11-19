@@ -6,7 +6,7 @@ export class BroadcastManager {
 
   static init(store: Store<any>) {
     // Creates a new pub-sub event listener stack.
-    BroadcastManager.pubSub = createPubSub();
+    BroadcastManager.pubSub = createPubSub({ async: false, caseInsensitive: false });
   }
 
   static publish(event: string, payload?: any, isGlobal: boolean = true) {

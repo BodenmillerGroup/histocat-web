@@ -40,7 +40,11 @@ export interface IRawResultData {
   x: number[];
   y: number[];
   mappings: { [key: string]: IResultDataMapping };
-  colors?: IResultDataColors;
+}
+
+export interface IRawColorsData {
+  cellIds: string[];
+  colors: IResultDataColors;
 }
 
 export interface ICellData {

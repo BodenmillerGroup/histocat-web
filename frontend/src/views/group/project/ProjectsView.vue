@@ -33,7 +33,7 @@
           >
             <template v-slot:selection="{ attrs, item, select, selected }">
               <v-chip v-bind="attrs" :input-value="selected" close @click="select" @click:close="removeTagFilter(item)">
-                {{ item }}
+                {{ item.text }}
               </v-chip>
             </template>
           </v-select>

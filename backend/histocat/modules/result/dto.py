@@ -57,4 +57,8 @@ class ResultDataDto(BaseModel):
     x: List[float]
     y: List[float]
     mappings: Optional[Dict[str, MappingDto]]
-    colors: Optional[ColorsDto]
+
+
+class ColorsDataDto(BaseModel):
+    cellIds: List[str]
+    colors: ColorsDto

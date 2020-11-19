@@ -72,7 +72,7 @@ export default class ScatterPlot2d extends Vue {
             ? {
                 size: 3,
                 color: v.map((v) => v.color),
-                colorscale: "RdBu",
+                colorscale: "Jet",
               }
             : {
                 size: 3,

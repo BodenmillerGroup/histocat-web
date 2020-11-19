@@ -19,7 +19,7 @@ from histocat.modules.user.models import UserModel
 from ...core.utils import stream_bytes
 from ...io.dataset import ANNDATA_FILE_EXTENSION
 from . import service
-from .dto import ResultDto, ResultUpdateDto, ResultDataDto
+from .dto import ResultDto, ResultUpdateDto, ResultDataDto, ColorsDataDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -47,8 +47,7 @@ def get_by_id(
 
 @router.get("/groups/{group_id}/results/{result_id}/data", response_model=ResultDataDto)
 def get_result_data(
-    group_id: int, result_id: int, colors_type: Optional[str] = None,
-    colors_name: Optional[str] = None, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int, result_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """Get result data by id"""
     result = service.get(db, id=result_id)
@@ -87,19 +86,43 @@ def get_result_data(
             "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(),},
         }
 
-    if colors_type and colors_name:
-        if colors_type == "marker":
-            colors = adata.X[:, adata.var.index == colors_name]
-            output["colors"] = {"type": colors_type, "name": colors_name, "data": colors[:, 0].tolist()}
-        elif colors_type == "neighbor" or colors_type == "clustering":
-            colors = sc.get.obs_df(adata, keys=[colors_name])
-            output["colors"] = {
-                "type": colors_type,
-                "name": colors_name,
-                "data": colors[colors_name].tolist(),
-            }
-
     output["mappings"] = mappings
+    return ORJSONResponse(output)
+
+
+@router.get("/groups/{group_id}/results/{result_id}/colors", response_model=ColorsDataDto)
+def get_colors_data(
+    group_id: int, result_id: int, colors_type: str,
+    colors_name: str, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+):
+    """Get colors (heatmap) data"""
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
+
+    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+    # Read AnnData file
+    adata = ad.read_h5ad(location)
+
+    output = {
+        "cellIds": adata.obs["CellId"].tolist(),
+    }
+
+    if colors_type == "marker":
+        colors = adata.X[:, adata.var.index == colors_name]
+        output["colors"] = {
+            "type": colors_type,
+            "name": colors_name,
+            "data": colors[:, 0].tolist()
+        }
+    elif colors_type == "neighbor" or colors_type == "clustering":
+        colors = sc.get.obs_df(adata, keys=[colors_name])
+        output["colors"] = {
+            "type": colors_type,
+            "name": colors_name,
+            "data": colors[colors_name].tolist(),
+        }
+
     return ORJSONResponse(output)
 
 
@@ -165,3 +188,30 @@ async def get_plot_image(
     location = os.path.join(result.location, filename)
 
     return FileResponse(location, media_type="image/png", filename=filename)
+
+
+@router.get("/groups/{group_id}/results/{result_id}/scatterplot")
+async def get_scatter_plot_data(
+    group_id: int,
+    result_id: int,
+    marker_x: str,
+    marker_y: str,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    """Read scatter plot data from the result."""
+
+    result = service.get(db, id=result_id)
+    if not result:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Result id:{result_id} not found")
+    location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+
+    adata = ad.read_h5ad(location)
+
+    output = {
+        "cellIds": adata.obs["CellId"].tolist(),
+        "x": {"label": marker_x, "data": adata.X[:, adata.var.index == marker_x][:, 0].tolist(),},
+        "y": {"label": marker_y, "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),},
+    }
+
+    return ORJSONResponse(output)

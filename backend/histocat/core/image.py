@@ -12,6 +12,7 @@ from skimage import img_as_ubyte
 from skimage.color import label2rgb
 
 from histocat.modules.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
+from sklearn.preprocessing import minmax_scale
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
 
@@ -21,6 +22,32 @@ OTSU_GRAYSCALE = "Otsu Grayscale"
 OTSU_HUE_ALGORITHM = "Otsu Hue"
 OTSU_SATURATION_ALGORITHM = "Otsu Saturation"
 OTSU_LIGHTNESS_ALGORITHM = "Otsu Lightness"
+
+
+def gen_lut():
+    """
+    https://stackoverflow.com/questions/57068382/label2rgb-implementation-for-opencv
+    Generate a label colormap compatible with opencv lookup table, based on
+    Rick Szelski algorithm in `Computer Vision: Algorithms and Applications`,
+    appendix C2 `Pseudocolor Generation`.
+    :Returns:
+    color_lut : opencv compatible color lookup table
+    """
+    tobits = lambda x, o: np.array(list(np.binary_repr(x, 24)[o::-3]), np.uint8)
+    arr = np.arange(256)
+    r = np.concatenate([np.packbits(tobits(x, -3)) for x in arr])
+    g = np.concatenate([np.packbits(tobits(x, -2)) for x in arr])
+    b = np.concatenate([np.packbits(tobits(x, -1)) for x in arr])
+    return np.concatenate([[[b]], [[g]], [[r]]]).T
+
+    # label_range = np.linspace(0, 19, 256)
+    # cmap = cm.get_cmap('jet')
+    # result = np.uint8(cmap(label_range)[:, 2::-1] * 256).reshape(256, 1, 3)  # replace viridis with a matplotlib colormap of your choice
+    # return result
+
+
+lut = gen_lut()
+cmap = cm.get_cmap('jet')
 
 
 def apply_filter(image: np.ndarray, filter: FilterDto):
@@ -59,34 +86,33 @@ def normalize_image(image: np.ndarray):
 
 def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: Optional[dict] = None):
     mask = tifffile.imread(mask_settings.location)
-    if not mask_settings.colorize:
-        if mask_settings.gated:
-            m = np.isin(mask, mask_settings.cell_ids)
-            mask[~m] = 0
-            # if heatmap_dict:
-            #     mask = replace_with_dict(mask, heatmap_dict)
-            # nlabel = len(np.unique(mask))
-            # colors = [tuple(map(tuple, np.random.rand(1, 3)))[0] for i in range(0, nlabel)]
-            colors = ("darkorange", "darkorange")
-            img = label2rgb(
-                label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay"
-            )
-            return img
-        else:
-            # if heatmap_dict:
-            #     mask = replace_with_dict(mask, heatmap_dict)
-            # nlabel = len(np.unique(mask))
-            # colors = [tuple(map(tuple, np.random.rand(1, 3)))[0] for i in range(0, nlabel)]
-            colors = ("darkorange", "darkorange")
-            img = label2rgb(
-                label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay"
-            )
-            return img
+
+    if mask_settings.gated:
+        m = np.isin(mask, mask_settings.cellIds)
+        mask[~m] = 0
+
+    if heatmap_dict:
+        mask = replace_with_dict(mask, heatmap_dict)
+
+        max_value = max(heatmap_dict.values())
+        colors = [cmap(i / max_value) for i in heatmap_dict.values()]
     else:
-        if mask_settings.gated:
-            return mask_gated_img(image, mask, mask_settings.cell_ids)
-        else:
-            return mask_color_img(image, mask)
+        colors = ("darkorange", "darkorange")
+
+    img = label2rgb(
+        label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay"
+    )
+    return img
+
+    # mask = img_as_ubyte(mask)
+    # img = labels2rgb(mask, lut)
+    # # img = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
+    # return img
+
+    # if mask_settings.gated:
+    #     return mask_gated_img(image, mask, mask_settings.cellIds)
+    # else:
+    #     return mask_color_img(image, mask)
 
 
 def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(0, 146, 63, 100), alpha=0.8):
@@ -213,7 +239,15 @@ def normalize_embedding(embedding):
     return normalized_layout
 
 
-def replace_with_dict(ar, dic):
+def replace_with_dict(a, d):
+    b = np.copy(a)
+    for old, new in d.items():
+        b[a == int(old)] = new
+    return b
+
+
+def replace_with_dict2(ar, dic):
+    # TODO: https://stackoverflow.com/questions/47171356/replace-values-in-numpy-array-based-on-dictionary-and-avoid-overlap-between-new
     # Extract out keys and values
     k = np.array(list(dic.keys()))
     v = np.array(list(dic.values()))
@@ -221,8 +255,19 @@ def replace_with_dict(ar, dic):
     # Get argsort indices
     sidx = k.argsort()
 
-    # Drop the magic bomb with searchsorted to get the corresponding
-    # places for a in keys (using sorter since a is not necessarily sorted).
-    # Then trace it back to original order with indexing into sidx
-    # Finally index into values for desired output.
-    return v[sidx[np.searchsorted(k, ar, sorter=sidx)]]
+    ks = k[sidx]
+    vs = v[sidx]
+    return vs[np.searchsorted(ks,ar)]
+
+
+def labels2rgb(labels, lut):
+    """
+    https://stackoverflow.com/questions/57068382/label2rgb-implementation-for-opencv
+    Convert a label image to an rgb image using a lookup table
+    :Parameters:
+    labels : an image of type np.uint8 2D array
+    lut : a lookup table of shape (256, 3) and type np.uint8
+    :Returns:
+    colorized_labels : a colorized label image
+    """
+    return cv2.LUT(cv2.merge((labels, labels, labels)), lut)

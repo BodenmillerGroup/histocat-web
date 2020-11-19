@@ -263,7 +263,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     const filter = this.settings!.getters.filter;
     const scalebar = this.settings!.getters.scalebar;
 
-    const result = {
+    const output = {
       acquisitionId: activeAcquisitionId,
       format: format,
       filter: filter,
@@ -273,30 +273,35 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
 
     const activeDataset = this.datasets!.getters.activeDataset;
     if (activeDataset) {
-      result["datasetId"] = activeDataset.id;
+      output["datasetId"] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
       if (activeAcquisitionId && activeDataset.meta.probability_masks) {
         const mask = activeDataset.meta.probability_masks[activeAcquisitionId];
         if (mask) {
-          result["mask"] = {
-            apply: maskSettings.apply,
+          output["mask"] = {
             colorize: false,
+            apply: maskSettings.apply,
             location: mask.location,
           };
+          if (this.results?.getters.heatmap) {
+            output["mask"]["colorsType"] = this.results.getters.heatmap.type;
+            output["mask"]["colorsName"] = this.results.getters.heatmap.label;
+          }
+          if (this.results?.getters.activeResultId) {
+            output["mask"]["resultId"] = this.results?.getters.activeResultId;
+          }
           // Prepare selected cell ids visualisation
           const selectedCells = this.results?.getters.selectedCells?.filter(
             (v) => v.acquisitionId === activeAcquisitionId
           );
-          // console.log(selectedCells)
           if (selectedCells && selectedCells.length > 0) {
-            result["mask"]["gated"] = true;
-            result["mask"]["cell_ids"] = selectedCells.map((item) => item.objectNumber);
+            output["mask"]["gated"] = true;
+            output["mask"]["cellIds"] = selectedCells.map((item) => item.objectNumber);
           }
         }
       }
     }
-
-    return result;
+    return output;
   }
 }

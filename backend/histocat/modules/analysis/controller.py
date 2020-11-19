@@ -1,11 +1,9 @@
 import logging
-import os
 from typing import Optional, Sequence
 
 import anndata as ad
 import cv2
 import numpy as np
-import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
@@ -20,23 +18,17 @@ from histocat.api.security import get_active_user
 from histocat.core.image import colorize, scale_image
 from histocat.modules.acquisition import service as acquisition_crud
 from histocat.modules.acquisition.dto import ChannelStackDto
-from histocat.modules.analysis.processors import phenograph, tsne, umap
+from histocat.modules.analysis.processors import phenograph
 from histocat.modules.dataset import service as dataset_service
 from histocat.modules.gate import service as gate_service
-from histocat.modules.result import service as result_service
 from histocat.modules.user.models import UserModel
 
-from ...io.dataset import ANNDATA_FILE_EXTENSION
 from .dto import (
     PhenographDto,
     PhenographSubmissionDto,
     PlotSeriesDto,
     RegionChannelStatsDto,
     RegionStatsSubmissionDto,
-    TsneDto,
-    TsneSubmissionDto,
-    UmapDto,
-    UmapSubmissionDto,
 )
 
 logger = logging.getLogger(__name__)
@@ -75,56 +67,6 @@ def get_additive_image(db: Session, params: ChannelStackDto):
     return np.clip(additive_image, 0, 1, out=additive_image)
 
 
-@router.get("/analysis/scatterplot")
-async def get_scatter_plot_data(
-    dataset_id: int,
-    marker_x: str,
-    marker_y: str,
-    result_id: Optional[int] = None,
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """Read scatter plot data from the dataset."""
-
-    if result_id:
-        result = result_service.get(db, id=result_id)
-        if not result:
-            raise HTTPException(status_code=404, detail="Result not found.")
-        location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
-    else:
-        dataset = dataset_service.get(db, id=dataset_id)
-        if not dataset:
-            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Dataset not found.")
-        cell_input = dataset.meta.get("cell")
-        location = cell_input.get("location")
-
-    adata = ad.read_h5ad(location)
-
-    output = {
-        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
-        "cellIds": adata.obs["CellId"].tolist(),
-        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
-        "x": {"label": marker_x, "data": adata.X[:, adata.var.index == marker_x][:, 0].tolist(),},
-        "y": {"label": marker_y, "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),},
-    }
-
-    if heatmap:
-        if heatmap_type == "channel":
-            heatmap_values = adata.X[:, adata.var.index == heatmap]
-            output["heatmap"] = {"label": heatmap, "heatmap_type": heatmap_type, "data": heatmap_values[:, 0].tolist()}
-        elif heatmap_type == "neighbor" or heatmap_type == "clustering":
-            heatmap_values = sc.get.obs_df(adata, keys=[heatmap])
-            output["heatmap"] = {
-                "label": heatmap,
-                "heatmap_type": heatmap_type,
-                "data": heatmap_values[heatmap].tolist(),
-            }
-
-    return ORJSONResponse(output)
-
-
 @router.get("/analysis/boxplot", response_model=Sequence[PlotSeriesDto])
 async def get_box_plot_data(
     dataset_id: int,
@@ -160,80 +102,6 @@ async def get_box_plot_data(
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return ORJSONResponse(content)
-
-
-@router.post("/analysis/tsne")
-def submit_tsne(
-    params: TsneSubmissionDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
-):
-    """
-    Start t-SNE data processing
-    """
-    worker.process_tsne.send(
-        params.dataset_id,
-        params.acquisition_ids,
-        params.n_components,
-        params.perplexity,
-        params.learning_rate,
-        params.iterations,
-        params.theta,
-        params.init,
-        params.markers,
-    )
-    return ORJSONResponse({"status": "submitted"})
-
-
-@router.get("/groups/{group_id}/results/{result_id}/tsne", response_model=TsneDto)
-async def get_tsne_data(
-    group_id: int,
-    result_id: int,
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """
-    Read t-SNE result data
-    """
-
-    content = tsne.get_tsne_result(db, result_id, heatmap_type, heatmap)
-    return ORJSONResponse(content)
-
-
-@router.post("/analysis/umap")
-def submit_umap(
-    params: UmapSubmissionDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
-):
-    """
-    Start UMAP data processing
-    """
-    worker.process_umap.send(
-        params.dataset_id,
-        params.acquisition_ids,
-        params.n_components,
-        params.n_neighbors,
-        params.metric,
-        params.min_dist,
-        params.markers,
-    )
-    return ORJSONResponse({"status": "submitted"})
-
-
-@router.get("/groups/{group_id}/results/{result_id}/umap", response_model=UmapDto)
-async def get_umap_data(
-    group_id: int,
-    result_id: int,
-    heatmap_type: Optional[str] = None,
-    heatmap: Optional[str] = None,
-    user: UserModel = Depends(get_active_user),
-    db: Session = Depends(get_db),
-):
-    """
-    Read UMAP result data
-    """
-
-    content = umap.get_umap_result(db, result_id, heatmap_type, heatmap)
     return ORJSONResponse(content)
 
 
