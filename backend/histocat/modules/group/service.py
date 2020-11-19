@@ -75,7 +75,7 @@ def update(session: Session, *, item: GroupModel, params: GroupUpdateDto) -> Gro
 
 def join(session: Session, *, group_id: int, user_id: int) -> Optional[GroupModel]:
     member = member_service.create(
-        session, params=MemberCreateDto(group_id=group_id, user_id=user_id, role=100, is_active=True)
+        session, params=MemberCreateDto(group_id=group_id, user_id=user_id, role=10, is_active=True)
     )
     return get_by_id(session, id=group_id)
 
