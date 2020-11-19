@@ -5,7 +5,7 @@ import {
   IRawResultData,
   IRawScatterData,
   IResult,
-  IResultUpdate
+  IResultUpdate,
 } from "./models";
 import { ApiManager } from "@/utils/api";
 
@@ -34,12 +34,7 @@ export const api = {
     let url = `groups/${groupId}/results/${resultId}/colors?colors_type=${colorsType}&colors_name=${colorsName}`;
     return ApiManager.api.get(url).json<IRawColorsData>();
   },
-  async getScatterPlotData(
-    groupId: number,
-    resultId: number,
-    markerX: string,
-    markerY: string,
-  ) {
+  async getScatterPlotData(groupId: number, resultId: number, markerX: string, markerY: string) {
     let url = `groups/${groupId}/results/${resultId}/scatterplot?marker_x=${markerX}&marker_y=${markerY}`;
     return ApiManager.api.get(url).json<IRawScatterData>();
   },

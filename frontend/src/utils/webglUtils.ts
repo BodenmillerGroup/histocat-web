@@ -9,6 +9,6 @@ export function transformToWebGl(data: ICellPoint[], width: number, height: numb
 export function transformFromWebGl(data: [number, number][], width: number, height: number) {
   // TODO: don't forget Y axis flip!
   return data.map((c, i) => {
-    return [(c[0] + 1) * width / 2, Math.abs(((c[1] + 1) * height / 2) - height)];
+    return [((c[0] + 1) * width) / 2, Math.abs(((c[1] + 1) * height) / 2 - height)];
   });
 }

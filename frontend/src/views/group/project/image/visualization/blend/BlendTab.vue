@@ -18,6 +18,7 @@
         </v-list>
       </v-menu>
       <v-switch v-model="applyMask" label="Mask overlay" hide-details inset class="ml-8" :disabled="!hasMask" dense />
+      <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
     </v-toolbar>
     <ImageViewer />
   </div>
@@ -31,6 +32,7 @@ import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import ImageViewer from "@/components/ImageViewer.vue";
 import { mainModule } from "@/modules/main";
+import { analysisModule } from "@/modules/analysis";
 
 @Component({
   components: { ImageViewer },
@@ -40,6 +42,7 @@ export default class BlendTab extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
+  readonly analysisContext = analysisModule.context(this.$store);
 
   get applyMask() {
     return this.settingsContext.getters.maskSettings.apply;
@@ -51,6 +54,14 @@ export default class BlendTab extends Vue {
       apply: value,
     });
     this.projectsContext.actions.getChannelStackImage();
+  }
+
+  get regionsEnabled() {
+    return this.analysisContext.getters.regionsEnabled;
+  }
+
+  set regionsEnabled(value: boolean) {
+    this.analysisContext.mutations.setRegionsEnabled(value);
   }
 
   get activeProjectId() {

@@ -196,7 +196,7 @@ export default class ResultsView extends Vue {
 
   @Watch("heatmap")
   async heatmapChanged(value: { type: string; label: string } | null | undefined) {
-    await this.resultsContext.actions.getColorsData()
+    await this.resultsContext.actions.getColorsData();
   }
 
   get activeDatasetId() {

@@ -17,6 +17,7 @@ import { centroidsModule } from "@/modules/centroids";
 import { mainModule } from "@/modules/main";
 import { resultsModule } from "@/modules/results";
 import { ICellPoint, ISelectedCell } from "@/modules/results/models";
+import { IRegionStatsSubmission } from "@/modules/analysis/models";
 
 @Component
 export default class ImageViewer extends Vue {
@@ -73,6 +74,14 @@ export default class ImageViewer extends Vue {
 
   get selectedChannels() {
     return this.projectsContext.getters.selectedChannels;
+  }
+
+  get activeProjectId() {
+    return this.projectsContext.getters.activeProjectId;
+  }
+
+  get regionsEnabled() {
+    return this.analysisContext.getters.regionsEnabled;
   }
 
   onIntersect(entries, observer, isIntersecting) {
@@ -182,8 +191,22 @@ export default class ImageViewer extends Vue {
     this.selection = [];
   }
 
+  calculateRegionStats(coordinates: number[][]) {
+    if (!this.activeProjectId || !this.activeAcquisitionId) {
+      return;
+    }
+    const params: IRegionStatsSubmission = {
+      project_id: this.activeProjectId,
+      acquisition_id: this.activeAcquisitionId,
+      region_polygon: coordinates,
+    };
+    return this.analysisContext.actions.calculateRegionStats(params);
+  }
+
   lassoEndHandler(data: { coordinates: [number, number][] }) {
-    // console.log(transformFromWebGl(data.coordinates, 800, 800))
+    if (this.regionsEnabled) {
+      this.calculateRegionStats(transformFromWebGl(data.coordinates, 800, 800));
+    }
   }
 
   @Watch("showLegend")

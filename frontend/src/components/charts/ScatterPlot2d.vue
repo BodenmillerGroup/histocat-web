@@ -79,9 +79,9 @@ export default class ScatterPlot2d extends Vue {
               },
           unselected: {
             marker: {
-              opacity: 0.1
-            }
-          }
+              opacity: 0.1,
+            },
+          },
         });
       });
 

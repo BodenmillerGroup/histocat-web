@@ -1,4 +1,3 @@
-import Feature from "ol/Feature";
 import { Module } from "vuex-smart-module";
 import { AnalysisActions } from "./actions";
 import { AnalysisGetters } from "./getters";
@@ -7,7 +6,6 @@ import { AnalysisMutations } from "./mutations";
 
 export class AnalysisState {
   regionsEnabled = false;
-  selectedRegion: Feature | null = null;
   selectedRegionStats: IRegionChannelData[] = [];
 }
 

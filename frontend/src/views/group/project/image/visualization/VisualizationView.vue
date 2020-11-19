@@ -1,13 +1,9 @@
 <template>
   <v-tabs v-model="tab">
     <v-tab>Blend</v-tab>
-    <v-tab>Regions</v-tab>
     <v-tab>Tiles</v-tab>
     <v-tab-item>
       <BlendTab />
-    </v-tab-item>
-    <v-tab-item>
-      <RegionsTab />
     </v-tab-item>
     <v-tab-item>
       <TilesView />
@@ -16,7 +12,6 @@
 </template>
 
 <script lang="ts">
-import RegionsTab from "@/views/group/project/image/visualization/regions/RegionsTab.vue";
 import TilesView from "@/views/group/project/image/visualization/tiles/TilesView.vue";
 import { Component, Vue } from "vue-property-decorator";
 import BlendTab from "@/views/group/project/image/visualization/blend/BlendTab.vue";
@@ -24,7 +19,6 @@ import BlendTab from "@/views/group/project/image/visualization/blend/BlendTab.v
 @Component({
   components: {
     BlendTab,
-    RegionsTab,
     TilesView,
   },
 })

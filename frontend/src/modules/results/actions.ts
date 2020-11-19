@@ -83,12 +83,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const resultId = this.getters.activeResultId!;
-      const data = await api.getScatterPlotData(
-        groupId,
-        resultId,
-        payload.markerX,
-        payload.markerY,
-      );
+      const data = await api.getScatterPlotData(groupId, resultId, payload.markerX, payload.markerY);
       this.mutations.setScatterData(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);

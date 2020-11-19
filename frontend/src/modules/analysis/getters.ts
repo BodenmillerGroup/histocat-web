@@ -6,10 +6,6 @@ export class AnalysisGetters extends Getters<AnalysisState> {
     return this.state.regionsEnabled;
   }
 
-  get selectedRegion() {
-    return this.state.selectedRegion;
-  }
-
   get selectedRegionStats() {
     return this.state.selectedRegionStats;
   }
