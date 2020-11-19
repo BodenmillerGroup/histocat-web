@@ -154,11 +154,13 @@ async def download_channel_stack(
             if params.mask.colorsType == "marker":
                 heatmap_values = adata.X[:, adata.var.index == params.mask.colorsName]
                 heatmap_dict = dict(zip(adata.obs["ObjectNumber"], heatmap_values[:, 0].tolist()))
-                heatmap_dict.pop('0', None)
+                heatmap_dict.pop("0", None)
             elif params.mask.colorsType == "neighbor" or params.mask.colorsType == "clustering":
                 heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName])
-                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], heatmap_values[params.mask.colorsName].astype("uint")))
-                heatmap_dict.pop('0', None)
+                heatmap_dict = dict(
+                    zip(adata.obs["ObjectNumber"], heatmap_values[params.mask.colorsName].astype("uint"))
+                )
+                heatmap_dict.pop("0", None)
 
         additive_image = draw_mask(additive_image, params.mask, heatmap_dict)
 

@@ -10,9 +10,9 @@ from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage import img_as_ubyte
 from skimage.color import label2rgb
+from sklearn.preprocessing import minmax_scale
 
 from histocat.modules.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
-from sklearn.preprocessing import minmax_scale
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
 
@@ -47,7 +47,7 @@ def gen_lut():
 
 
 lut = gen_lut()
-cmap = cm.get_cmap('jet')
+cmap = cm.get_cmap("jet")
 
 
 def apply_filter(image: np.ndarray, filter: FilterDto):
@@ -99,9 +99,7 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
     else:
         colors = ("darkorange", "darkorange")
 
-    img = label2rgb(
-        label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay"
-    )
+    img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay")
     return img
 
     # mask = img_as_ubyte(mask)
@@ -257,7 +255,7 @@ def replace_with_dict2(ar, dic):
 
     ks = k[sidx]
     vs = v[sidx]
-    return vs[np.searchsorted(ks,ar)]
+    return vs[np.searchsorted(ks, ar)]
 
 
 def labels2rgb(labels, lut):

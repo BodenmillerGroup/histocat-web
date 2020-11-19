@@ -14,5 +14,7 @@ def process(adata: AnnData, step: Dict[str, Any], output: Dict[str, Any]):
     metric = step.get("metric")
     random_state = step.get("randomState")
 
-    result = sc.pp.neighbors(adata, n_neighbors=n_neighbors, knn=True, method="umap", random_state=random_state, metric=metric, copy=True)
+    result = sc.pp.neighbors(
+        adata, n_neighbors=n_neighbors, knn=True, method="umap", random_state=random_state, metric=metric, copy=True
+    )
     return result

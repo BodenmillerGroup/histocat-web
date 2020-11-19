@@ -19,7 +19,7 @@ from histocat.modules.user.models import UserModel
 from ...core.utils import stream_bytes
 from ...io.dataset import ANNDATA_FILE_EXTENSION
 from . import service
-from .dto import ResultDto, ResultUpdateDto, ResultDataDto, ColorsDataDto
+from .dto import ColorsDataDto, ResultDataDto, ResultDto, ResultUpdateDto
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -70,8 +70,8 @@ def get_result_data(
     mappings = {}
     if "pca" in result.output:
         mappings["pca"] = {
-            "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(), },
-            "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(), },
+            "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(),},
+            "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(),},
         }
 
     if "tsne" in result.output:
@@ -92,8 +92,12 @@ def get_result_data(
 
 @router.get("/groups/{group_id}/results/{result_id}/colors", response_model=ColorsDataDto)
 def get_colors_data(
-    group_id: int, result_id: int, colors_type: str,
-    colors_name: str, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    result_id: int,
+    colors_type: str,
+    colors_name: str,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Get colors (heatmap) data"""
     result = service.get(db, id=result_id)
@@ -110,11 +114,7 @@ def get_colors_data(
 
     if colors_type == "marker":
         colors = adata.X[:, adata.var.index == colors_name]
-        output["colors"] = {
-            "type": colors_type,
-            "name": colors_name,
-            "data": colors[:, 0].tolist()
-        }
+        output["colors"] = {"type": colors_type, "name": colors_name, "data": colors[:, 0].tolist()}
     elif colors_type == "neighbor" or colors_type == "clustering":
         colors = sc.get.obs_df(adata, keys=[colors_name])
         output["colors"] = {

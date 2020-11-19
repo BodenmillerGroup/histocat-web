@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import Any, Optional, Dict, List
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel
 
 from histocat.modules.analysis.dto import PlotSeriesDto
-from pydantic import BaseModel
 
 
 class ResultCreateDto(BaseModel):
@@ -38,12 +39,14 @@ class ResultDto(BaseModel):
 
 class MappingDto(BaseModel):
     """2D data mapping"""
+
     x: PlotSeriesDto
     y: PlotSeriesDto
 
 
 class ColorsDto(BaseModel):
     """Color data mapping"""
+
     type: str
     name: str
     data: List[Any]
