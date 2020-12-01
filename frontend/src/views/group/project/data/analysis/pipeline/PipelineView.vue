@@ -88,15 +88,69 @@
     <v-timeline dense class="mr-2">
       <v-slide-x-reverse-transition group hide-on-leave>
         <v-timeline-item v-for="step in steps" :key="step.id" color="blue" :icon="icons[step.type]" fill-dot>
-          <MarkersFilterStepEditor v-if="step.type === `markersFilter`" :step="step" :deleteStep="deleteStep" />
-          <TransformationStepEditor v-else-if="step.type === `transformation`" :step="step" :deleteStep="deleteStep" />
-          <ScaleStepEditor v-else-if="step.type === `scale`" :step="step" :deleteStep="deleteStep" />
-          <NeighborsStepEditor v-else-if="step.type === `neighbors`" :step="step" :deleteStep="deleteStep" />
-          <PcaStepEditor v-else-if="step.type === `pca`" :step="step" :deleteStep="deleteStep" />
-          <TsneStepEditor v-else-if="step.type === `tsne`" :step="step" :deleteStep="deleteStep" />
-          <UmapStepEditor v-else-if="step.type === `umap`" :step="step" :deleteStep="deleteStep" />
-          <LeidenStepEditor v-else-if="step.type === `leiden`" :step="step" :deleteStep="deleteStep" />
-          <LouvainStepEditor v-else-if="step.type === `louvain`" :step="step" :deleteStep="deleteStep" />
+          <MarkersFilterStepEditor
+            v-if="step.type === `markersFilter`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <TransformationStepEditor
+            v-else-if="step.type === `transformation`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <ScaleStepEditor
+            v-else-if="step.type === `scale`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <NeighborsStepEditor
+            v-else-if="step.type === `neighbors`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <PcaStepEditor
+            v-else-if="step.type === `pca`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <TsneStepEditor
+            v-else-if="step.type === `tsne`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <UmapStepEditor
+            v-else-if="step.type === `umap`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <LeidenStepEditor
+            v-else-if="step.type === `leiden`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
+          <LouvainStepEditor
+            v-else-if="step.type === `louvain`"
+            :step="step"
+            :delete-step="deleteStep"
+            :move-up-step="moveUpStep"
+            :move-down-step="moveDownStep"
+          />
         </v-timeline-item>
       </v-slide-x-reverse-transition>
     </v-timeline>
@@ -104,7 +158,6 @@
 </template>
 
 <script lang="ts">
-import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { settingsModule } from "@/modules/settings";
@@ -141,7 +194,6 @@ import LouvainStepEditor from "@/views/group/project/data/analysis/pipeline/step
 export default class PipelineView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly analysisContext = analysisModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly pipelinesContext = pipelinesModule.context(this.$store);
@@ -297,6 +349,26 @@ export default class PipelineView extends Vue {
     this.pipelinesContext.mutations.setSteps(this.steps.filter((item) => item !== step));
   }
 
+  moveUpStep(step) {
+    let index = this.steps.indexOf(step);
+    if (index > 0) {
+      const steps = [...this.steps];
+      steps[index] = steps[index - 1];
+      steps[index - 1] = step;
+      this.pipelinesContext.mutations.setSteps(steps);
+    }
+  }
+
+  moveDownStep(step) {
+    let index = this.steps.indexOf(step);
+    if (index !== -1 && index < this.steps.length - 1) {
+      const steps = [...this.steps];
+      steps[index] = steps[index + 1];
+      steps[index + 1] = step;
+      this.pipelinesContext.mutations.setSteps(steps);
+    }
+  }
+
   clearPipeline() {
     this.pipelinesContext.mutations.setSteps([]);
   }
@@ -305,9 +377,31 @@ export default class PipelineView extends Vue {
     console.log(this.steps);
   }
 
+  checkPipeline() {
+    for (let i = 0; i < this.steps.length; i++) {
+      const step = this.steps[i];
+      if (step.type === "umap" || step.type === "leiden" || step.type === "louvain") {
+        const previousSteps = this.steps.slice(0, i);
+        let isCorrect = false;
+        for (let j = 0; j < previousSteps.length; j++) {
+          if (previousSteps[j].type === "neighbors") {
+            isCorrect = true;
+          }
+        }
+        return !isCorrect ? `Please add Neighbors analysis step before UMAP, Lovain or Leiden steps!` : true;
+      }
+    }
+    return true;
+  }
+
   async processPipeline() {
     this.dialog = false;
-    await this.pipelinesContext.actions.processPipeline();
+    const check = this.checkPipeline();
+    if (typeof check === "string") {
+      this.mainContext.mutations.addNotification({ content: check, color: "info" });
+    } else {
+      await this.pipelinesContext.actions.processPipeline();
+    }
   }
 }
 </script>
