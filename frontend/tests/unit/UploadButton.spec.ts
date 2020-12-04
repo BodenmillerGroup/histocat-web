@@ -10,8 +10,12 @@ describe("UploadButton.vue", () => {
     const title = "Upload";
     const wrapper = shallowMount(UploadButton, {
       slots: {
-        default: title
-      }
+        default: title,
+      },
+      propsData: {
+        label: "Upload",
+        upload: () => {}
+      },
     });
     expect(wrapper.text()).toMatch(title);
   });

@@ -1,7 +1,8 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <v-spacer></v-spacer>
+      <UploadButton label="Upload dataset" :upload="upload" />
+      <v-spacer />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" @click="refreshDatasets">
@@ -103,8 +104,11 @@ import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { centroidsModule } from "@/modules/centroids";
 import { resultsModule } from "@/modules/results";
+import UploadButton from "@/components/UploadButton.vue";
 
-@Component
+@Component({
+  components: { UploadButton },
+})
 export default class DatasetsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
@@ -172,6 +176,10 @@ export default class DatasetsView extends Vue {
         data: { name: this.name, description: this.description },
       });
     }
+  }
+
+  async upload(data: FormData) {
+    await this.datasetsContext.actions.uploadDataset({ id: this.projectsContext.getters.activeProjectId!, data: data });
   }
 
   async mounted() {

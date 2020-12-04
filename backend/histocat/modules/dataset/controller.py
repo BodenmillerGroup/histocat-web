@@ -1,15 +1,18 @@
 import logging
 import os
+import uuid
 from io import BytesIO
 from typing import Sequence
 from zipfile import ZIP_DEFLATED, ZipFile
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
 
+import histocat.worker as worker
+from histocat.config import config
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
 from histocat.core.utils import stream_bytes
@@ -101,3 +104,21 @@ async def download_by_id(dataset_id: int, db: Session = Depends(get_db)):
 
     headers = {"Content-Disposition": f'attachment; filename="{file_name}"'}
     return StreamingResponse(stream_bytes(buffer.getvalue()), media_type="application/zip", headers=headers)
+
+
+@router.post("/groups/{group_id}/projects/{project_id}/datasets/upload")
+def upload_dataset(
+    group_id: int,
+    project_id: int,
+    file: UploadFile = File(None),
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
+    if not os.path.exists(path):
+        os.makedirs(path)
+    uri = os.path.join(path, file.filename)
+    with open(uri, "wb") as f:
+        f.write(file.file.read())
+    worker.import_dataset.send(uri, project_id)
+    return {"uri": uri}

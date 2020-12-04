@@ -102,13 +102,13 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     }
   }
 
-  async upload(payload: { id: number; data: any }) {
+  async uploadSlide(payload: { id: number; data: any }) {
     if (!payload.id) {
       return;
     }
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      await api.upload(
+      await api.uploadSlide(
         this.main!.getters.token,
         groupId,
         payload.id,

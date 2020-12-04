@@ -116,8 +116,8 @@ class DataModelError(Exception):
     """
 
 
-class SlideImportError(Exception):
-    """Error class that is raised when there is an error with slide import."""
+class DataImportError(Exception):
+    """Error class that is raised when there is an error with data import."""
 
 
 class DatasetInputError(Exception):

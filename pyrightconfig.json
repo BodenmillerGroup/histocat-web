@@ -1,10 +1,10 @@
 {
   "include": [
-    "backend"
+    "backend/histocat"
   ],
   "executionEnvironments": [
     {
-      "root": "backend",
+      "root": "backend/histocat",
       "pythonVersion": "3.8",
       "pythonPlatform": "Linux"
     }

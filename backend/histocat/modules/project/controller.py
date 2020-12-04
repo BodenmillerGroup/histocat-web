@@ -98,8 +98,8 @@ def update(
     return item
 
 
-@router.post("/groups/{group_id}/projects/{project_id}/upload")
-def upload_data(
+@router.post("/groups/{group_id}/projects/{project_id}/slides/upload")
+def upload_slide(
     group_id: int,
     project_id: int,
     file: UploadFile = File(None),
@@ -112,7 +112,7 @@ def upload_data(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_data.send(uri, project_id)
+    worker.import_slide.send(uri, project_id)
     return {"uri": uri}
 
 

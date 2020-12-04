@@ -1,8 +1,8 @@
 <template>
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
-      <UploadButton :id="projectData.id" />
-      <v-spacer></v-spacer>
+      <UploadButton label="Upload slide" :upload="upload" />
+      <v-spacer />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" @click="refreshSlides">
@@ -179,6 +179,10 @@ export default class ImageWorkspaceView extends Vue {
       await this.projectsContext.actions.deleteSlide(id);
       await this.refreshSlides();
     }
+  }
+
+  async upload(data: FormData) {
+    await this.projectsContext.actions.uploadSlide({ id: this.projectData.id, data: data });
   }
 }
 </script>

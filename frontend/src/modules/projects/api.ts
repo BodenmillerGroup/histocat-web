@@ -34,7 +34,7 @@ export const api = {
       })
       .json<IProject>();
   },
-  async upload(
+  async uploadSlide(
     token: string,
     groupId: number,
     projectId: number,
@@ -45,7 +45,7 @@ export const api = {
     onError: () => void
   ) {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${apiUrl}/groups/${groupId}/projects/${projectId}/upload`);
+    xhr.open("POST", `${apiUrl}/groups/${groupId}/projects/${projectId}/slides/upload`);
     xhr.setRequestHeader("Authorization", `Bearer ${token}`);
 
     xhr.upload.onloadstart = onLoadStart;

@@ -2,7 +2,7 @@
   <span>
     <v-btn @click="trigger" color="primary" elevation="1" small>
       <v-icon small left>mdi-cloud-upload</v-icon>
-      Upload
+      {{ label }}
     </v-btn>
     <input :multiple="multiple" class="visually-hidden" type="file" v-on:change="files" ref="fileInput" />
   </span>
@@ -16,7 +16,8 @@ import { Component, Emit, Prop, Vue } from "vue-property-decorator";
 export default class UploadButton extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
 
-  @Prop(Number) id!: number;
+  @Prop({ type: String, required: true }) label!: string;
+  @Prop({ type: Function, required: true }) upload!: (data: FormData) => void;
   @Prop({ default: false }) multiple!: boolean;
 
   @Emit()
@@ -25,7 +26,7 @@ export default class UploadButton extends Vue {
     const file = e.target.files[0];
     formData.append("file", file, file.name);
     e.target.value = "";
-    await this.projectsContext.actions.upload({ id: this.id, data: formData });
+    await this.upload(formData);
     return e.target.files;
   }
 
