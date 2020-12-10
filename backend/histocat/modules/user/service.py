@@ -56,3 +56,11 @@ def update(session: Session, *, item: UserModel, params: UserUpdateDto) -> UserM
     session.commit()
     session.refresh(item)
     return item
+
+
+def confirm_signup(session: Session, *, item: UserModel):
+    item.is_active = True
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item

@@ -13,7 +13,8 @@ from jwt.exceptions import InvalidTokenError
 
 from histocat.config import config
 
-password_reset_jwt_subject = "preset"
+password_reset_jwt_subject = "PasswordReset"
+confirm_signup_jwt_subject = "ConfirmSignup"
 
 logger = logging.getLogger(__name__)
 
@@ -140,13 +141,35 @@ def send_test_email(email_to: str):
     subject = f"{project_name} - Test email"
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
         template_str = f.read()
-    from histocat import worker
 
+    from histocat import worker
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
         html_template=template_str,
         environment={"project_name": config.PROJECT_NAME, "email": email_to},
+    )
+
+
+def send_new_account_email(email_to: str, username: str, password: str):
+    project_name = config.PROJECT_NAME
+    subject = f"{project_name} - New account for user {username}"
+    with open(Path(config.EMAIL_TEMPLATES_DIR) / "new_account.html") as f:
+        template_str = f.read()
+    link = config.SERVER_HOST
+
+    from histocat import worker
+    worker.send_email.send(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": config.PROJECT_NAME,
+            "username": username,
+            "password": password,
+            "email": email_to,
+            "link": link,
+        },
     )
 
 
@@ -159,10 +182,9 @@ def send_reset_password_email(email_to: str, email: str, token):
         use_token = token.decode()
     else:
         use_token = token
-    server_host = config.SERVER_HOST
-    link = f"{server_host}/reset-password?token={use_token}"
-    from histocat import worker
+    link = f"{config.SERVER_HOST}/reset-password?token={use_token}"
 
+    from histocat import worker
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -177,14 +199,18 @@ def send_reset_password_email(email_to: str, email: str, token):
     )
 
 
-def send_new_account_email(email_to: str, username: str, password: str):
+def send_confirm_signup_email(email_to: str, username: str, token):
     project_name = config.PROJECT_NAME
     subject = f"{project_name} - New account for user {username}"
-    with open(Path(config.EMAIL_TEMPLATES_DIR) / "new_account.html") as f:
+    with open(Path(config.EMAIL_TEMPLATES_DIR) / "confirm_signup.html") as f:
         template_str = f.read()
-    link = config.SERVER_HOST
-    from histocat import worker
+    if hasattr(token, "decode"):
+        use_token = token.decode()
+    else:
+        use_token = token
+    link = f"{config.SERVER_HOST}/api/v1/auth/confirm-signup/{use_token}"
 
+    from histocat import worker
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -192,8 +218,8 @@ def send_new_account_email(email_to: str, username: str, password: str):
         environment={
             "project_name": config.PROJECT_NAME,
             "username": username,
-            "password": password,
             "email": email_to,
+            "valid_hours": config.EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS,
             "link": link,
         },
     )
@@ -216,6 +242,28 @@ def verify_password_reset_token(token) -> Optional[str]:
     try:
         decoded_token = jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
         assert decoded_token["sub"] == password_reset_jwt_subject
+        return decoded_token["email"]
+    except InvalidTokenError:
+        return None
+
+
+def generate_confirm_signup_token(email: str):
+    delta = timedelta(hours=config.EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS)
+    now = datetime.utcnow()
+    expires = now + delta
+    exp = expires.timestamp()
+    encoded_jwt = jwt.encode(
+        {"exp": exp, "nbf": now, "sub": confirm_signup_jwt_subject, "email": email},
+        config.SECRET_KEY,
+        algorithm="HS256",
+    )
+    return encoded_jwt
+
+
+def verify_confirm_signup_token(token) -> Optional[str]:
+    try:
+        decoded_token = jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
+        assert decoded_token["sub"] == confirm_signup_jwt_subject
         return decoded_token["email"]
     except InvalidTokenError:
         return None

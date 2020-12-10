@@ -46,7 +46,7 @@ export const api = {
   },
   async signUp(data: IUserProfileCreate) {
     return ky
-      .post(`${apiUrl}/users/signup`, {
+      .post(`${apiUrl}/auth/signup`, {
         json: data,
       })
       .json();

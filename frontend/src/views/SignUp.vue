@@ -100,7 +100,7 @@ export default class SignUp extends Vue {
     if ((this.$refs.form as any).validate()) {
       const userExist = await this.checkUserExists();
       if (!userExist) {
-        await this.userContext.actions.signUp({ email: this.email, password: this.password1 });
+        await this.userContext.actions.signUp({ email: this.email, name: this.fullName, password: this.password1 });
       }
     }
   }
