@@ -136,6 +136,14 @@
           <span v-else>Hide options</span>
         </v-tooltip>
       </v-btn-toggle>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon href="https://plankter.gitbook.io/histocat" target="_blank">
+            <v-icon>mdi-help-circle-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Help</span>
+      </v-tooltip>
       <v-menu bottom left offset-y>
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
