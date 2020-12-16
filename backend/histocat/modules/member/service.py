@@ -12,7 +12,7 @@ def get_by_id(session: Session, id: int) -> Optional[MemberModel]:
 
 def get_by_group_id_and_user_id(session: Session, group_id: int, user_id: int) -> Optional[MemberModel]:
     return (
-        session.query(MemberModel).filter(MemberModel.group_id == group_id and MemberModel.user_id == user_id).first()
+        session.query(MemberModel).filter(MemberModel.group_id == group_id, MemberModel.user_id == user_id).first()
     )
 
 
