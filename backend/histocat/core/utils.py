@@ -143,6 +143,7 @@ def send_test_email(email_to: str):
         template_str = f.read()
 
     from histocat import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -159,6 +160,7 @@ def send_new_account_email(email_to: str, username: str, password: str):
     link = config.SERVER_HOST
 
     from histocat import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -185,6 +187,7 @@ def send_reset_password_email(email_to: str, email: str, token):
     link = f"{config.SERVER_HOST}/reset-password?token={use_token}"
 
     from histocat import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,
@@ -211,6 +214,7 @@ def send_confirm_signup_email(email_to: str, username: str, token):
     link = f"{config.SERVER_HOST}/api/v1/auth/confirm-signup/{use_token}"
 
     from histocat import worker
+
     worker.send_email.send(
         email_to=email_to,
         subject_template=subject,

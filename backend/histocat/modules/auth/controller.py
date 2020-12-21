@@ -2,9 +2,10 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
 from pydantic import EmailStr
+from sqlalchemy.orm import Session
 from starlette import status
+from starlette.responses import RedirectResponse
 
 from histocat.api.db import get_db
 from histocat.api.security import get_user
@@ -12,15 +13,17 @@ from histocat.config import config
 from histocat.core.jwt import create_access_token
 from histocat.core.security import get_password_hash
 from histocat.core.utils import (
+    generate_confirm_signup_token,
     generate_password_reset_token,
+    send_confirm_signup_email,
     send_reset_password_email,
-    verify_password_reset_token, verify_confirm_signup_token, generate_confirm_signup_token, send_confirm_signup_email,
+    verify_confirm_signup_token,
+    verify_password_reset_token,
 )
 from histocat.modules.core.dto import MsgDto
 from histocat.modules.user import service
-from histocat.modules.user.dto import UserDto, UserCreateDto
+from histocat.modules.user.dto import UserCreateDto, UserDto
 from histocat.modules.user.models import UserModel as DBUser
-from starlette.responses import RedirectResponse
 
 from .dto import TokenDto
 

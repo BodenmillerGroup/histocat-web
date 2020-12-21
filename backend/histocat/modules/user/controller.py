@@ -2,7 +2,6 @@ from typing import Sequence
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from histocat.core.utils import send_new_account_email
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from starlette import status
@@ -10,6 +9,7 @@ from starlette import status
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user, get_admin
 from histocat.config import config
+from histocat.core.utils import send_new_account_email
 from histocat.modules.user.models import UserModel
 
 from . import service

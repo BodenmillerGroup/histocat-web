@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.28
+    image: dpage/pgadmin4:4.29
     depends_on:
       - db
     environment:
@@ -118,7 +118,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.8.1
+    image: redislabs/redisinsight:1.8.2
     depends_on:
       - redis
     ports:
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.3.4
+    image: library/traefik:2.3.6
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

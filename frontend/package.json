@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2020.12.16",
+  "version": "2020.12.21",
   "private": true,
   "description": "histoCAT for Web",
   "author": {
@@ -33,7 +33,7 @@
     "ky": "0.25.1",
     "memoize-one": "5.1.1",
     "normalizr": "3.6.1",
-    "plotly.js": "1.58.2",
+    "plotly.js": "1.58.3",
     "pub-sub-es": "2.0.1",
     "rambda": "6.4.0",
     "register-service-worker": "1.7.2",
@@ -67,8 +67,8 @@
     "@vue/cli-service": "4.5.9",
     "@vue/test-utils": "1.1.2",
     "deepmerge": "4.2.2",
-    "eslint": "7.15.0",
-    "eslint-config-prettier": "7.0.0",
+    "eslint": "7.16.0",
+    "eslint-config-prettier": "7.1.0",
     "eslint-plugin-prettier": "3.3.0",
     "eslint-plugin-vue": "7.3.0",
     "fibers": "5.0.0",

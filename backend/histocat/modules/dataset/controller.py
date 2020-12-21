@@ -12,9 +12,9 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
 
 import histocat.worker as worker
-from histocat.config import config
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
+from histocat.config import config
 from histocat.core.utils import stream_bytes
 from histocat.modules.member.models import MemberModel
 from histocat.modules.user.models import UserModel
