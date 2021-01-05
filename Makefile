@@ -2,7 +2,7 @@ PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
 bootstrap:
-	cd backend && poetry install --extras backend
+	cd backend && poetry install --extras "backend worker"
 	cd frontend && yarn install
 
 deploy-development:
