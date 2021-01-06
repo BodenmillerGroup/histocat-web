@@ -14,16 +14,7 @@
         <v-form v-model="valid" ref="form" lazy-validation>
           <v-text-field label="Name" v-model="name" :rules="nameRules" />
           <v-text-field label="Description" v-model="description" />
-        </v-form>
-      </v-card-text>
-    </v-card>
-    <v-card class="mt-4 px-4">
-      <v-card-title primary-title>
-        <div class="text-h5">Model File</div>
-      </v-card-title>
-      <v-card-text>
-        <v-form>
-          <v-file-input v-model="file" label="File upload" show-size />
+          <v-file-input v-model="file" label="Model file" show-size accept=".zip" :rules="fileRules" />
         </v-form>
       </v-card-text>
     </v-card>
@@ -34,7 +25,6 @@
 import { Component, Vue } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
 import { required } from "@/utils/validators";
-import { IModelCreate } from "@/modules/models/models";
 import { modelsModule } from "@/modules/models";
 
 @Component
@@ -43,10 +33,11 @@ export default class CreateModel extends Vue {
   readonly modelsContext = modelsModule.context(this.$store);
 
   readonly nameRules = [required];
+  readonly fileRules = [required];
 
   valid = true;
   name = "";
-  description: string | null = null;
+  description = "";
   file: File | null = null;
 
   get activeGroupId() {
@@ -55,7 +46,7 @@ export default class CreateModel extends Vue {
 
   reset() {
     this.name = "";
-    this.description = null;
+    this.description = "";
     this.file = null;
     (this.$refs.form as any).resetValidation();
   }
@@ -65,22 +56,12 @@ export default class CreateModel extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate() && this.activeGroupId) {
-      const data: IModelCreate = {
-        name: this.name,
-        description: this.description,
-      };
-      const model = await this.modelsContext.actions.createModel(data);
-
-      if (model && model.id && this.file) {
-        const formData = new FormData();
-        formData.append("groupId", this.activeGroupId.toString());
-        formData.append("file", this.file);
-        await this.modelsContext.actions.uploadModelFile({
-          modelId: model.id,
-          formData: formData,
-        });
-      }
+    if ((this.$refs.form as any).validate() && this.activeGroupId && this.file) {
+      const formData = new FormData();
+      formData.append("name", this.name);
+      formData.append("description", this.description);
+      formData.append("file", this.file);
+      await this.modelsContext.actions.createModel(formData);
 
       this.$router.back();
     }

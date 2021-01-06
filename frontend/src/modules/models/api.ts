@@ -1,14 +1,7 @@
-import { IModel, IModelCreate, IModelUpdate } from "./models";
+import { IModel, IModelUpdate } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {
-  async createModel(groupId: number, data: IModelCreate) {
-    return ApiManager.api
-      .post(`groups/${groupId}/models`, {
-        json: data,
-      })
-      .json<IModel>();
-  },
   async updateModel(groupId: number, modelId: number, data: IModelUpdate) {
     return ApiManager.api
       .patch(`groups/${groupId}/models/${modelId}`, {
@@ -25,7 +18,7 @@ export const api = {
   async deleteModel(groupId: number, modelId: number) {
     return ApiManager.api.delete(`groups/${groupId}/models/${modelId}`).json<number>();
   },
-  // async uploadModelFile(
+  // async createModel(
   //   token: string,
   //   validationId: number,
   //   formData: FormData,
@@ -46,10 +39,12 @@ export const api = {
   //   };
   //   xhr.send(formData);
   // },
-  async uploadModelFile(groupId: number, modelId: number, formData: FormData) {
-    return ApiManager.api.post(`groups/${groupId}/models/${modelId}/upload`, {
-      body: formData,
-      timeout: false,
-    });
+  async createModel(groupId: number, formData: FormData) {
+    return ApiManager.api
+      .post(`groups/${groupId}/models`, {
+        body: formData,
+        timeout: false,
+      })
+      .json<IModel>();
   },
 };

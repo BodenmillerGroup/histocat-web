@@ -1,8 +1,3 @@
-export interface IModelCreate {
-  name: string;
-  description: string | null;
-}
-
 export interface IModelUpdate {
   name: string;
   description: string | null;

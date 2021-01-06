@@ -45,7 +45,7 @@
                 ></v-text-field>
               </v-form>
               <v-row>
-                <v-col class="text-caption text-right py-0">
+                <v-col class="text-caption text-right">
                   <router-link to="/login">Already have an account?</router-link>
                 </v-col>
               </v-row>

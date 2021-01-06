@@ -1,4 +1,4 @@
-import { IModelCreate, IModelUpdate } from "./models";
+import { IModelUpdate } from "./models";
 import { mainModule } from "@/modules/main";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
@@ -42,17 +42,6 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
     }
   }
 
-  async createModel(data: IModelCreate) {
-    try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const entity = await api.createModel(groupId, data);
-      this.mutations.addEntity(entity);
-      this.main!.mutations.addNotification({ content: "Model successfully created", color: "success" });
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    }
-  }
-
   async updateModel(payload: { modelId: number; data: IModelUpdate }) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
@@ -75,7 +64,7 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
     }
   }
 
-  async uploadModelFile(payload: { modelId: number; formData: FormData }) {
+  async createModel(formData: FormData) {
     try {
       // await api.uploadValidationFile(
       //   this.main!.getters.token,
@@ -98,8 +87,9 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
       //   () => {}
       // );
       const groupId = this.group?.getters.activeGroupId!;
-      const data = await api.uploadModelFile(groupId, payload.modelId, payload.formData);
-      this.main!.mutations.addNotification({ content: "Model file successfully uploaded", color: "success" });
+      const entity = await api.createModel(groupId, formData);
+      this.mutations.addEntity(entity);
+      this.main!.mutations.addNotification({ content: "Model successfully created", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

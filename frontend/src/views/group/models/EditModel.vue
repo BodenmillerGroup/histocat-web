@@ -34,7 +34,7 @@ export default class EditModel extends Vue {
 
   valid = true;
   name = "";
-  description: string | null = null;
+  description = "";
 
   get model() {
     return this.modelsContext.getters.getModel(+this.$router.currentRoute.params.id);

@@ -3,7 +3,7 @@ import os
 import uuid
 from typing import Sequence
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, Form
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -29,20 +29,6 @@ def get_group_models(group_id: int, db: Session = Depends(get_db), member: Membe
     return items
 
 
-@router.post("/groups/{group_id}/models", response_model=ModelDto)
-def create(
-    group_id: int,
-    params: ModelCreateDto,
-    db: Session = Depends(get_db),
-    member: MemberModel = Depends(get_active_member),
-):
-    """
-    Create new model
-    """
-    item = service.create(db, group_id=group_id, params=params)
-    return item
-
-
 @router.get("/groups/{group_id}/models/{model_id}", response_model=ModelDto)
 def get_by_id(
     group_id: int, model_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
@@ -54,18 +40,18 @@ def get_by_id(
     return item
 
 
-@router.delete("/groups/{group_id}/models/{model_id}", response_model=ModelDto)
+@router.delete("/groups/{group_id}/models/{model_id}", response_model=int)
 def delete_by_id(
     group_id: int, model_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
 ):
     """
     Delete model by id
     """
-    item = service.remove(db, id=model_id)
-    return item
+    service.remove(db, id=model_id)
+    return model_id
 
 
-@router.put("/groups/{group_id}/models/{model_id}", response_model=ModelDto)
+@router.patch("/groups/{group_id}/models/{model_id}", response_model=ModelDto)
 def update(
     group_id: int,
     model_id: int,
@@ -83,18 +69,23 @@ def update(
     return item
 
 
-@router.post("/groups/{group_id}/models/upload")
-def upload_model(
+@router.post("/groups/{group_id}/models", response_model=ModelDto)
+def create(
     group_id: int,
+    name: str = Form(""),
+    description: str = Form(None),
     file: UploadFile = File(None),
     member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
+    params = ModelCreateDto(name=name, description=description)
+    model = service.create(db, group_id=group_id, params=params)
+
     path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
     if not os.path.exists(path):
         os.makedirs(path)
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_slide.send(uri, group_id)
-    return {"uri": uri}
+    worker.import_model.send(uri, group_id, model.id)
+    return model

@@ -13,7 +13,7 @@ import histocat.db.init_db  # noqa
 from histocat.config import config
 from histocat.core.errors import DataImportError
 from histocat.db.session import db_session
-from histocat.io import mcd, zip
+from histocat.io import mcd, zip, model
 from histocat.modules.analysis.processors import phenograph, tsne, umap
 from histocat.modules.pipeline.processors import pipeline_processor
 
@@ -197,3 +197,19 @@ def process_pipeline(
         logger.warning(error)
     finally:
         pass
+
+
+@dramatiq.actor(queue_name="import", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
+def import_model(uri: str, group_id: int, model_id: int):
+    logger.info(f"Importing model [{model_id}] into group [{group_id}] from {uri}")
+
+    path = os.path.dirname(os.path.abspath(uri))
+    filename, file_extension = os.path.splitext(uri)
+
+    try:
+        if file_extension.lower() == ZIP_FILENDING:
+            model.import_model_zip(db_session, uri, model_id)
+    except DataImportError as error:
+        logger.warning(error)
+    finally:
+        shutil.rmtree(path)

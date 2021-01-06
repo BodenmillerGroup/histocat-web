@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Dict
 
 import anndata as ad
-import numpy as np
 import pandas as pd
 from sqlalchemy.orm import Session
 

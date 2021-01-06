@@ -136,7 +136,7 @@
       <v-btn-toggle v-if="activeGroupId && activeProjectId" v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="workspace" color="primary">
+            <v-btn v-on="on" value="workspace" color="primary" elevation="0">
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
@@ -145,7 +145,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="options" color="primary">
+            <v-btn v-on="on" value="options" color="primary" elevation="0">
               <v-icon>mdi-tune</v-icon>
             </v-btn>
           </template>
