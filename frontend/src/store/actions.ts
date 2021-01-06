@@ -10,6 +10,7 @@ import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
 import { resultsModule } from "@/modules/results";
 import { pipelinesModule } from "@/modules/pipelines";
+import { modelsModule } from "@/modules/models";
 
 export class RootActions extends Actions {
   group?: Context<typeof groupModule>;
@@ -22,6 +23,7 @@ export class RootActions extends Actions {
   presets?: Context<typeof presetsModule>;
   gates?: Context<typeof gatesModule>;
   pipelines?: Context<typeof pipelinesModule>;
+  models?: Context<typeof modelsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -35,6 +37,7 @@ export class RootActions extends Actions {
     this.presets = presetsModule.context(store);
     this.gates = gatesModule.context(store);
     this.pipelines = pipelinesModule.context(store);
+    this.models = modelsModule.context(store);
   }
 
   // Reset project store
@@ -53,6 +56,7 @@ export class RootActions extends Actions {
   // Reset global store
   reset() {
     this.resetProject();
+    this.models?.mutations.reset();
     this.group?.mutations.reset();
   }
 }

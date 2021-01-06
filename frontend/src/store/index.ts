@@ -18,6 +18,7 @@ import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
 import { resultsModule } from "@/modules/results";
 import { pipelinesModule } from "@/modules/pipelines";
+import { modelsModule } from "@/modules/models";
 
 Vue.use(Vuex);
 
@@ -39,6 +40,7 @@ const rootModule = new Module({
     presets: presetsModule,
     gates: gatesModule,
     pipelines: pipelinesModule,
+    models: modelsModule,
   },
   actions: RootActions,
 });

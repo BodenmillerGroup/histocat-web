@@ -14,6 +14,7 @@ from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto
 from histocat.modules.user.models import UserModel  # noqa
+from histocat.modules.model.models import ModelModel  # noqa
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
 # otherwise, SQL Alchemy might fail to initialize relationships properly
