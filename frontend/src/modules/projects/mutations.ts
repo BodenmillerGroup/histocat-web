@@ -1,4 +1,4 @@
-import { equals } from "rambda";
+import { isEqual } from "lodash-es";
 import { Mutations } from "vuex-smart-module";
 import { projectListSchema, ProjectsState } from ".";
 import { IProject, IProjectData } from "./models";
@@ -33,7 +33,7 @@ export class ProjectsMutations extends Mutations<ProjectsState> {
   }
 
   setTags(tags: string[]) {
-    if (!equals(tags, this.state.tags)) {
+    if (!isEqual(tags, this.state.tags)) {
       this.state.tags = tags;
     }
   }

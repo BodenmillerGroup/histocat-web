@@ -50,8 +50,8 @@ export class MainGetters extends Getters<MainState> {
     return this.state.processingProgress;
   }
 
-  get showData() {
-    return this.state.showData;
+  get viewMode() {
+    return this.state.viewMode;
   }
 
   get isAdmin() {

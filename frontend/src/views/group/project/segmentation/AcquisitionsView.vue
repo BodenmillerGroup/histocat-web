@@ -1,23 +1,28 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="items"
-    :search="search"
-    v-model="selected"
-    show-select
-    hide-default-footer
-    dense
-    disable-pagination
-    no-data-text="No available single-cell data"
-  >
-    <template v-slot:top>
-      <v-text-field v-model="search" label="Search" clearable single-line>
-        <template v-slot:append>
-          <v-icon>mdi-magnify</v-icon>
+  <v-card tile class="ma-1">
+    <v-card-title>Acquisitions</v-card-title>
+    <v-card-text>
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :search="search"
+        v-model="selected"
+        show-select
+        hide-default-footer
+        dense
+        disable-pagination
+        no-data-text="No available single-cell data"
+      >
+        <template v-slot:top>
+          <v-text-field v-model="search" label="Search" clearable single-line>
+            <template v-slot:append>
+              <v-icon>mdi-magnify</v-icon>
+            </template>
+          </v-text-field>
         </template>
-      </v-text-field>
-    </template>
-  </v-data-table>
+      </v-data-table>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -25,14 +30,12 @@ import { projectsModule } from "@/modules/projects";
 import { IAcquisition } from "@/modules/projects/models";
 import { isEqual } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
-import { datasetsModule } from "@/modules/datasets";
-import { pipelinesModule } from "@/modules/pipelines";
+import { segmentationModule } from "@/modules/segmentation";
 
 @Component
-export default class AcquisitionsSelector extends Vue {
+export default class AcquisitionsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly datasetsContext = datasetsModule.context(this.$store);
-  readonly pipelinesContext = pipelinesModule.context(this.$store);
+  readonly segmentationContext = segmentationModule.context(this.$store);
 
   search = "";
 
@@ -61,15 +64,11 @@ export default class AcquisitionsSelector extends Vue {
   ];
 
   get selectedAcquisitionIds() {
-    return this.pipelinesContext.getters.selectedAcquisitionIds;
+    return this.segmentationContext.getters.selectedAcquisitionIds;
   }
 
   get projectData() {
     return this.projectsContext.getters.projectData!;
-  }
-
-  get activeDataset() {
-    return this.datasetsContext.getters.activeDataset;
   }
 
   get items() {
@@ -77,13 +76,7 @@ export default class AcquisitionsSelector extends Vue {
     if (this.projectData.slides) {
       for (const s of this.projectData.slides) {
         for (const a of s.acquisitions) {
-          let hasMask = false;
-          if (this.activeDataset && this.activeDataset.meta.probability_masks) {
-            hasMask = !!this.activeDataset.meta.probability_masks[a.id];
-          }
-          if (hasMask) {
-            acquisitions.push(a);
-          }
+          acquisitions.push(a);
         }
       }
     }
@@ -101,7 +94,7 @@ export default class AcquisitionsSelector extends Vue {
   set selected(items: IAcquisition[]) {
     const selectedIds = items.map((item) => item.id);
     if (!isEqual(this.selectedAcquisitionIds, selectedIds)) {
-      this.pipelinesContext.mutations.setSelectedAcquisitionIds(selectedIds);
+      this.segmentationContext.mutations.setSelectedAcquisitionIds(selectedIds);
     }
   }
 }

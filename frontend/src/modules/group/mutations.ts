@@ -3,7 +3,7 @@ import { groupListSchema, GroupState } from ".";
 import { normalize } from "normalizr";
 import { IGroup } from "./models";
 import { IMember } from "@/modules/member/models";
-import { equals } from "rambda";
+import { isEqual } from "lodash-es";
 
 export class GroupMutations extends Mutations<GroupState> {
   setActiveGroupId(id: number | null) {
@@ -11,7 +11,7 @@ export class GroupMutations extends Mutations<GroupState> {
   }
 
   setTags(tags: string[]) {
-    if (!equals(tags, this.state.tags)) {
+    if (!isEqual(tags, this.state.tags)) {
       this.state.tags = tags;
     }
   }

@@ -2,9 +2,12 @@
   <LoadingView v-if="!projectData" text="Loading..." />
   <div v-else :class="layoutClass">
     <div v-show="showWorkspace" class="pr-1">
-      <DataWorkspaceView />
+      <AcquisitionsView />
     </div>
-    <AnalysisView />
+
+    <div v-show="showOptions">
+      <PanelView />
+    </div>
   </div>
 </template>
 
@@ -12,18 +15,18 @@
 import LoadingView from "@/components/LoadingView.vue";
 import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
-import AnalysisView from "@/views/group/project/data/analysis/AnalysisView.vue";
-import DataWorkspaceView from "@/views/group/project/data/workspace/DataWorkspaceView.vue";
 import { Component, Vue } from "vue-property-decorator";
+import AcquisitionsView from "@/views/group/project/segmentation/AcquisitionsView.vue";
+import PanelView from "@/views/group/project/segmentation/PanelView.vue";
 
 @Component({
   components: {
-    AnalysisView,
-    DataWorkspaceView,
+    PanelView,
+    AcquisitionsView,
     LoadingView,
   },
 })
-export default class DataView extends Vue {
+export default class SegmentationView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
@@ -40,8 +43,12 @@ export default class DataView extends Vue {
   }
 
   get layoutClass() {
-    if (!this.showWorkspace) {
+    if (!this.showWorkspace && this.showOptions) {
       return "layout-without-workspace py-0";
+    } else if (this.showWorkspace && !this.showOptions) {
+      return "layout-without-options py-0";
+    } else if (!this.showWorkspace && !this.showOptions) {
+      return "layout-empty py-0";
     }
     return "layout-full py-0";
   }
@@ -51,10 +58,20 @@ export default class DataView extends Vue {
 <style scoped>
 .layout-full {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 400px 1fr 380px;
   grid-template-rows: auto;
 }
 .layout-without-workspace {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  grid-template-rows: auto;
+}
+.layout-without-options {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  grid-template-rows: auto;
+}
+.layout-empty {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: auto;

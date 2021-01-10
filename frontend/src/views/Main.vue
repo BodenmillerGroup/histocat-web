@@ -63,7 +63,7 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="showData(false)">
+            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('image')">
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
@@ -77,11 +77,25 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="showData(true)">
+            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('segmentation')">
               <v-list-item-icon>
                 <v-tooltip right>
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on">mdi-scatter-plot-outline</v-icon>
+                  </template>
+                  <span>Segmentation</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Segmentation</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('data')">
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-graph-outline</v-icon>
                   </template>
                   <span>Data</span>
                 </v-tooltip>
@@ -136,7 +150,7 @@
       <v-btn-toggle v-if="activeGroupId && activeProjectId" v-model="views" multiple background-color="primary" group>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="workspace" color="primary" elevation="0">
+            <v-btn v-on="on" value="workspace" color="primary">
               <v-icon>mdi-file-tree</v-icon>
             </v-btn>
           </template>
@@ -145,7 +159,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="options" color="primary" elevation="0">
+            <v-btn v-on="on" value="options" color="primary">
               <v-icon>mdi-tune</v-icon>
             </v-btn>
           </template>
@@ -205,6 +219,7 @@ import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
 import { projectsModule } from "@/modules/projects";
+import { ViewMode } from "@/modules/main/models";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === "/main") {
@@ -293,8 +308,8 @@ export default class Main extends Vue {
     return this.mainContext.getters.processingProgress;
   }
 
-  showData(value: boolean) {
-    this.mainContext.mutations.setShowData(value);
+  setViewMode(value: ViewMode) {
+    this.mainContext.mutations.setViewMode(value);
   }
 
   mounted() {
