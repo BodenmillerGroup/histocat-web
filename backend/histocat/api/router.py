@@ -16,6 +16,7 @@ from histocat.modules.result import controller as result_controller
 from histocat.modules.slide import controller as slide_controller
 from histocat.modules.user import controller as user_controller
 from histocat.modules.model import controller as model_controller
+from histocat.modules.segmentation import controller as segmentation_controller
 
 api_router = APIRouter()
 
@@ -35,3 +36,4 @@ api_router.include_router(preset_controller.router, tags=["presets"])
 api_router.include_router(gate_controller.router, tags=["gates"])
 api_router.include_router(analysis_controller.router, tags=["analysis"])
 api_router.include_router(model_controller.router, tags=["models"])
+api_router.include_router(segmentation_controller.router, tags=["segmentation"])

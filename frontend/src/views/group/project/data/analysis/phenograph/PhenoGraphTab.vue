@@ -80,7 +80,6 @@
 </template>
 
 <script lang="ts">
-import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
@@ -97,7 +96,6 @@ export default class PhenoGraphTab extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
   readonly resultsContext = resultsModule.context(this.$store);
-  readonly analysisContext = analysisModule.context(this.$store);
 
   readonly required = required;
   readonly metrics = ["euclidean", "manhattan", "correlation", "cosine"];

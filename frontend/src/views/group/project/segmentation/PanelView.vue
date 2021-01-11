@@ -21,7 +21,7 @@
           </v-text-field>
         </template>
         <template v-slot:item.type="props">
-          <v-edit-dialog :return-value="props.item.type" @save="save(props.item)">
+          <v-edit-dialog :return-value.sync="props.item.type" @save="save(props.item)">
             {{ channelTypeToString(props.item.type) }}
             <template v-slot:input>
               <v-select
@@ -30,7 +30,7 @@
                 item-value="value"
                 item-text="text"
                 disable-lookup
-              ></v-select>
+              />
           </template>
           </v-edit-dialog>
         </template>
@@ -132,15 +132,18 @@ export default class PanelView extends Vue {
   }
 
   set selected(items: IChannel[]) {
-    const selectedMetals = items.map((item) => item.name);
-    if (!isEqual(this.selectedMetals, selectedMetals)) {
-      this.projectsContext.actions.setSelectedMetals(selectedMetals);
-      this.projectsContext.actions.getChannelStackImage();
-    }
+    // const selectedMetals = items.map((item) => item.name);
+    // if (!isEqual(this.selectedMetals, selectedMetals)) {
+    //   this.projectsContext.actions.setSelectedMetals(selectedMetals);
+    //   this.projectsContext.actions.getChannelStackImage();
+    // }
   }
 
   save(item) {
-    console.log(item.type)
+    const nucleiChannels = this.items.filter((item) => item.type === 1).map((item) => item.name);
+    const cytoplasmChannels = this.items.filter((item) => item.type === 2).map((item) => item.name);
+    this.segmentationContext.mutations.setNucleiChannels(nucleiChannels);
+    this.segmentationContext.mutations.setCytoplasmChannels(cytoplasmChannels);
   }
 }
 </script>

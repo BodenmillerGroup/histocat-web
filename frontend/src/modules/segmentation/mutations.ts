@@ -6,8 +6,12 @@ export class SegmentationMutations extends Mutations<SegmentationState> {
     this.state.selectedAcquisitionIds = ids;
   }
 
-  setSelectedTags(tags: string[]) {
-    this.state.selectedTags = tags;
+  setNucleiChannels(channels: string[]) {
+    this.state.nucleiChannels = channels;
+  }
+
+  setCytoplasmChannels(channels: string[]) {
+    this.state.cytoplasmChannels = channels;
   }
 
   reset() {

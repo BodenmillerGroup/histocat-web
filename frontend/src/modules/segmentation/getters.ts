@@ -6,7 +6,11 @@ export class SegmentationGetters extends Getters<SegmentationState> {
     return this.state.selectedAcquisitionIds;
   }
 
-  selectedTags(id: number) {
-    return this.state.selectedTags;
+  get nucleiChannels() {
+    return this.state.nucleiChannels;
+  }
+
+  get cytoplasmChannels() {
+    return this.state.cytoplasmChannels;
   }
 }

@@ -4,9 +4,9 @@
     <div v-show="showWorkspace" class="pr-1">
       <AcquisitionsView />
     </div>
-
+    <PanelView />
     <div v-show="showOptions">
-      <PanelView />
+      <SegmentationSettingsView />
     </div>
   </div>
 </template>
@@ -18,9 +18,11 @@ import { mainModule } from "@/modules/main";
 import { Component, Vue } from "vue-property-decorator";
 import AcquisitionsView from "@/views/group/project/segmentation/AcquisitionsView.vue";
 import PanelView from "@/views/group/project/segmentation/PanelView.vue";
+import SegmentationSettingsView from "@/views/group/project/segmentation/SegmentationSettingsView.vue";
 
 @Component({
   components: {
+    SegmentationSettingsView,
     PanelView,
     AcquisitionsView,
     LoadingView,

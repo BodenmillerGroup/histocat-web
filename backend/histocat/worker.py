@@ -213,3 +213,17 @@ def import_model(uri: str, group_id: int, model_id: int):
         logger.warning(error)
     finally:
         shutil.rmtree(path)
+
+
+@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
+def process_segmentation(group_id: int, project_id: int, params: dict):
+    logger.info(f"Processing segmentation for acquisitions {params['acquisition_ids']} with model [{params['model_id']}]")
+    try:
+        pass
+        # pipeline_processor.process_pipeline(
+        #     db_session, dataset_id=dataset_id, acquisition_ids=acquisition_ids, steps=steps
+        # )
+    except Exception as error:
+        logger.warning(error)
+    finally:
+        pass
