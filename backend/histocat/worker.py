@@ -7,6 +7,7 @@ import dramatiq
 import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
+from histocat.modules.segmentation.dto import SegmentationSubmissionDto
 from imctools.io.utils import MCD_FILENDING, ZIP_FILENDING
 
 import histocat.db.init_db  # noqa
@@ -16,6 +17,7 @@ from histocat.db.session import db_session
 from histocat.io import mcd, zip, model
 from histocat.modules.analysis.processors import phenograph, tsne, umap
 from histocat.modules.pipeline.processors import pipeline_processor
+from histocat.modules.segmentation.processors import segmentation_processor
 
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
 dramatiq.set_broker(rabbitmq_broker)
@@ -216,13 +218,11 @@ def import_model(uri: str, group_id: int, model_id: int):
 
 
 @dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def process_segmentation(group_id: int, project_id: int, params: dict):
-    logger.info(f"Processing segmentation for acquisitions {params['acquisition_ids']} with model [{params['model_id']}]")
+def process_segmentation(project_id: int, json: str):
+    params: SegmentationSubmissionDto = SegmentationSubmissionDto.parse_raw(json)
+    logger.info(f"Processing segmentation for acquisitions {params.acquisition_ids} with model [{params.model_id}]")
     try:
-        pass
-        # pipeline_processor.process_pipeline(
-        #     db_session, dataset_id=dataset_id, acquisition_ids=acquisition_ids, steps=steps
-        # )
+        segmentation_processor.process_segmentation(db_session, project_id=project_id, params=params)
     except Exception as error:
         logger.warning(error)
     finally:

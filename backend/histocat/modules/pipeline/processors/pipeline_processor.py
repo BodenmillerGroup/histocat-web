@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from typing import Any, Sequence
 
@@ -10,7 +9,6 @@ from sqlalchemy.orm import Session
 from histocat.core.notifier import Message
 from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.utils import timeit
-from histocat.io.dataset import ANNDATA_FILE_EXTENSION
 from histocat.modules.dataset import service as dataset_service
 from histocat.modules.pipeline.processors.steps import (
     acquisitions_filter,

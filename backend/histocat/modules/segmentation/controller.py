@@ -26,5 +26,5 @@ def process_segmentation(
     Start segmentation processing
     """
 
-    worker.process_segmentation.send(group_id, project_id, params.dict())
+    worker.process_segmentation.send(project_id, params.json())
     return ORJSONResponse({"status": "submitted"})

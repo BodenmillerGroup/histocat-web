@@ -17,7 +17,7 @@ ARG FRONTEND_ENV
 ENV VUE_APP_ENV=${FRONTEND_ENV}
 
 # Comment out the next line to disable tests
-RUN yarn test:unit
+#RUN yarn test:unit
 
 RUN yarn build
 

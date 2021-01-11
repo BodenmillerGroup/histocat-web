@@ -16,7 +16,7 @@ from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user
 from histocat.core.image import colorize, scale_image
-from histocat.modules.acquisition import service as acquisition_crud
+from histocat.modules.acquisition import service as acquisition_service
 from histocat.modules.acquisition.dto import ChannelStackDto
 from histocat.modules.analysis.processors import phenograph
 from histocat.modules.dataset import service as dataset_service
@@ -42,7 +42,7 @@ RESULT_TYPE_MASK = "mask"
 def get_additive_image(db: Session, params: ChannelStackDto):
     additive_image: Optional[np.ndarray] = None
 
-    acquisition = acquisition_crud.get_by_id(db, id=params.acquisitionId)
+    acquisition = acquisition_service.get_by_id(db, id=params.acquisitionId)
     if not acquisition:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Acquisition not found.")
     parser = OmeTiffParser(acquisition.location)
@@ -149,7 +149,7 @@ async def calculate_region_stats(
     Calculate region's statistics
     """
 
-    acquisition = acquisition_crud.get_by_id(db, params.acquisition_id)
+    acquisition = acquisition_service.get_by_id(db, params.acquisition_id)
     parser = OmeTiffParser(acquisition.location)
     acq = parser.get_acquisition_data()
     mask = None
