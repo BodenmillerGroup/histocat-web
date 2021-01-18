@@ -11,11 +11,20 @@ from skimage.transform import rescale, resize
 from sqlalchemy.orm import Session
 from starlette import status
 from tensorflow import keras
+import cellprofiler_core.image
+import cellprofiler_core.object
+import cellprofiler_core.pipeline
+import cellprofiler_core.preferences
+import cellprofiler_core.workspace
+from cellprofiler_core import preferences as cp_preferences
+from cellprofiler_core import pipeline as cp_pipeline
 
 from histocat.core.utils import timeit
 from histocat.modules.acquisition import service as acquisition_service
 from histocat.modules.model.models import ModelModel
 from histocat.modules.segmentation.dto import SegmentationSubmissionDto
+
+cp_preferences.set_headless()
 
 
 @timeit
@@ -90,3 +99,7 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
     pred = np.array(pred * 65536, dtype="uint16")  # 16 bits for CP
 
     tifffile.imwrite(os.path.join("/data/inbox", filename), np.array(pred, dtype="uint16"))
+
+    # Run CellProfiler pipeline
+    pipeline = cp_pipeline.Pipeline()
+    pipeline.load("/data/inbox/2_segment_ilastik.cppipe")

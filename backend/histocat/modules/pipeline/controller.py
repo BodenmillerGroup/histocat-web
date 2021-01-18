@@ -1,10 +1,10 @@
 from typing import Sequence
 
+import dramatiq
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
-from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
 from histocat.modules.member.models import MemberModel
@@ -93,7 +93,17 @@ def process(
     """
     Process pipeline
     """
-    worker.process_pipeline.send(
-        params.dataset_id, params.acquisition_ids, params.steps,
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="process_pipeline",
+        queue_name='process',
+        args=(),
+        kwargs={
+            "dataset_id": params.dataset_id,
+            "acquisition_ids": params.acquisition_ids,
+            "steps": params.steps
+        },
+        options={},
     )
+    broker.enqueue(message)
     return ORJSONResponse({"status": "submitted"})

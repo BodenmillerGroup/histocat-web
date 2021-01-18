@@ -1,7 +1,7 @@
+import dramatiq
 from fastapi import APIRouter, Depends
 from pydantic import EmailStr
 
-import histocat.worker as worker
 from histocat.api.security import get_admin
 from histocat.core.utils import send_test_email
 
@@ -15,7 +15,17 @@ def test_worker(msg: MsgDto, user=Depends(get_admin)):
     """
     Test worker
     """
-    worker.test_worker.send(msg.msg)
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="test_worker",
+        queue_name='default',
+        args=(),
+        kwargs={
+            "word": msg.msg
+        },
+        options={},
+    )
+    broker.enqueue(message)
     return {"msg": "Word received"}
 
 

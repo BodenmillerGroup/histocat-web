@@ -12,20 +12,16 @@ from sqlalchemy.orm import Session
 from starlette.requests import Request
 from starlette.status import HTTP_404_NOT_FOUND
 
-from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user
 from histocat.core.image import colorize, scale_image
 from histocat.modules.acquisition import service as acquisition_service
 from histocat.modules.acquisition.dto import ChannelStackDto
-from histocat.modules.analysis.processors import phenograph
 from histocat.modules.dataset import service as dataset_service
 from histocat.modules.gate import service as gate_service
 from histocat.modules.user.models import UserModel
 
 from .dto import (
-    PhenographDto,
-    PhenographSubmissionDto,
     PlotSeriesDto,
     RegionChannelStatsDto,
     RegionStatsSubmissionDto,
@@ -102,39 +98,6 @@ async def get_box_plot_data(
         )
 
     # await redis_manager.cache.set(request.url.path, ujson.dumps(content))
-    return ORJSONResponse(content)
-
-
-@router.post("/analysis/phenograph")
-def submit_phenograph(
-    params: PhenographSubmissionDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
-):
-    """
-    Start PhenoGraph data processing
-    """
-
-    worker.process_phenograph.send(
-        params.dataset_id,
-        params.acquisition_ids,
-        params.markers,
-        params.clustering_algo,
-        params.nearest_neighbors,
-        params.jaccard,
-        params.primary_metric,
-        params.min_cluster_size,
-    )
-    return ORJSONResponse({"status": "submitted"})
-
-
-@router.get("/groups/{group_id}/results/{result_id}/phenograph", response_model=PhenographDto)
-async def get_phenograph_data(
-    group_id: int, result_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
-):
-    """
-    Read PhenoGraph result data
-    """
-
-    content = phenograph.get_phenograph_result(db, result_id)
     return ORJSONResponse(content)
 
 

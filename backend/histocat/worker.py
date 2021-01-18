@@ -1,7 +1,7 @@
 import logging
 import os
 import shutil
-from typing import List, Sequence
+from typing import Sequence
 
 import dramatiq
 import emails
@@ -14,7 +14,6 @@ from histocat.config import config
 from histocat.core.errors import DataImportError
 from histocat.db.session import db_session
 from histocat.io import mcd, model, zip
-from histocat.modules.analysis.processors import phenograph, tsne, umap
 from histocat.modules.pipeline.processors import pipeline_processor
 from histocat.modules.segmentation.dto import SegmentationSubmissionDto
 from histocat.modules.segmentation.processors import segmentation_processor
@@ -101,89 +100,6 @@ def import_dataset(uri: str, project_id: int):
         logger.warning(error)
     finally:
         shutil.rmtree(path)
-
-
-@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def process_tsne(
-    dataset_id: int,
-    acquisition_ids: List[int],
-    n_components: int,
-    perplexity: int,
-    learning_rate: int,
-    iterations: int,
-    theta: float,
-    init: str,
-    markers: List[str],
-):
-    logger.info(f"Processing t-SNE for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
-    try:
-        tsne.process_tsne(
-            db_session,
-            dataset_id,
-            acquisition_ids,
-            n_components,
-            perplexity,
-            learning_rate,
-            iterations,
-            theta,
-            init,
-            markers,
-        )
-    except Exception as error:
-        logger.warning(error)
-    finally:
-        pass
-
-
-@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)
-def process_umap(
-    dataset_id: int,
-    acquisition_ids: List[int],
-    n_components: int,
-    n_neighbors: int,
-    metric: str,
-    min_dist: float,
-    markers: List[str],
-):
-    logger.info(f"Processing UMAP for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
-    try:
-        umap.process_umap(
-            db_session, dataset_id, acquisition_ids, n_components, n_neighbors, metric, min_dist, markers,
-        )
-    except Exception as error:
-        logger.warning(error)
-    finally:
-        pass
-
-
-@dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)
-def process_phenograph(
-    dataset_id: int,
-    acquisition_ids: List[int],
-    markers: List[str],
-    clustering_algo: str,
-    nearest_neighbors: int,
-    jaccard: bool,
-    primary_metric: str,
-    min_cluster_size: int,
-):
-    logger.info(f"Processing PhenoGraph for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
-    try:
-        phenograph.process_phenograph(
-            db_session,
-            dataset_id,
-            acquisition_ids,
-            markers,
-            clustering_algo,
-            nearest_neighbors,
-            jaccard,
-            primary_metric,
-            min_cluster_size,
-        )
-    except Exception as error:
-        logger.warning(error)
-    finally:
-        pass
 
 
 @dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit

@@ -1,6 +1,8 @@
 import logging
 import os
 
+import dramatiq
+from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -9,6 +11,9 @@ from histocat.api.router import api_router
 from histocat.config import config
 from histocat.core.notifier import notifier
 from histocat.core.redis_manager import redis_manager
+
+rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)
+dramatiq.set_broker(rabbitmq_broker)
 
 logger = logging.getLogger(__name__)
 

@@ -4,6 +4,6 @@ module.exports = {
   //   "^ky$": require.resolve("ky").replace("index.js", "umd.js"),
   // },
   transformIgnorePatterns: [
-    '/node_modules/(?!(ky))'
+    "^.+\\.module\\.(css|sass|scss)$",
   ]
 };

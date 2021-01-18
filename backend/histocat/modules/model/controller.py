@@ -3,11 +3,11 @@ import os
 import uuid
 from typing import Sequence
 
+import dramatiq
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from starlette import status
 
-import histocat.worker as worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_group_admin
 from histocat.config import config
@@ -87,5 +87,18 @@ def create(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_model.send(uri, group_id, model.id)
+
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="import_model",
+        queue_name='import',
+        args=(),
+        kwargs={
+            "uri": uri,
+            "group_id": group_id,
+            "model_id": model.id
+        },
+        options={},
+    )
+    broker.enqueue(message)
     return model

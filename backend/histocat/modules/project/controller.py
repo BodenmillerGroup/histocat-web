@@ -3,10 +3,10 @@ import os
 import uuid
 from typing import Sequence, Set
 
+import dramatiq
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-import histocat.worker as worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_group_admin
 from histocat.config import config
@@ -112,7 +112,19 @@ def upload_slide(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_slide.send(uri, project_id)
+
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="import_slide",
+        queue_name='import',
+        args=(),
+        kwargs={
+            "uri": uri,
+            "project_id": project_id,
+        },
+        options={},
+    )
+    broker.enqueue(message)
     return {"uri": uri}
 
 

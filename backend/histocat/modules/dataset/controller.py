@@ -5,13 +5,13 @@ from io import BytesIO
 from typing import Sequence
 from zipfile import ZIP_DEFLATED, ZipFile
 
+import dramatiq
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
 
-import histocat.worker as worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
 from histocat.config import config
@@ -120,5 +120,17 @@ def upload_dataset(
     uri = os.path.join(path, file.filename)
     with open(uri, "wb") as f:
         f.write(file.file.read())
-    worker.import_dataset.send(uri, project_id)
+
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="import_dataset",
+        queue_name='import',
+        args=(),
+        kwargs={
+            "uri": uri,
+            "project_id": project_id
+        },
+        options={},
+    )
+    broker.enqueue(message)
     return {"uri": uri}

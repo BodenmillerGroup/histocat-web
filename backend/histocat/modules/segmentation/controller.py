@@ -1,10 +1,10 @@
 import logging
 
+import dramatiq
 from fastapi import APIRouter, Depends
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
-from histocat import worker
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member
 from histocat.modules.member.models import MemberModel
@@ -27,6 +27,16 @@ def process_segmentation(
     """
     Start segmentation processing
     """
-
-    worker.process_segmentation.send(project_id, params.json())
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="process_segmentation",
+        queue_name='process',
+        args=(),
+        kwargs={
+            "project_id": project_id,
+            "json": params.json(),
+        },
+        options={},
+    )
+    broker.enqueue(message)
     return ORJSONResponse({"status": "submitted"})
