@@ -19,9 +19,7 @@ def get_group_models(session: Session, *, group_id: int) -> Sequence[Optional[Mo
 
 
 def create(session: Session, *, group_id: int, params: ModelCreateDto) -> ModelModel:
-    entity = ModelModel(
-        group_id=group_id, name=params.name, description=params.description
-    )
+    entity = ModelModel(group_id=group_id, name=params.name, description=params.description)
     session.add(entity)
     session.commit()
     session.refresh(entity)

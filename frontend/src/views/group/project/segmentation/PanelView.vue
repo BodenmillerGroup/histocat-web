@@ -31,7 +31,7 @@
                 item-text="text"
                 disable-lookup
               />
-          </template>
+            </template>
           </v-edit-dialog>
         </template>
       </v-data-table>

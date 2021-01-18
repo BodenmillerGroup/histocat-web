@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2021.01.04",
+  "version": "2021.01.18",
   "private": true,
   "description": "histoCAT for Web",
   "author": {
@@ -43,7 +43,7 @@
     "uuid": "8.3.2",
     "vue": "2.6.12",
     "vue-class-component": "7.2.6",
-    "vue-grid-layout": "2.3.11",
+    "vue-grid-layout": "2.3.12",
     "vue-property-decorator": "9.1.2",
     "vue-router": "3.4.9",
     "vuetify": "2.4.2",
@@ -52,7 +52,7 @@
     "vuex-smart-module": "0.5.0"
   },
   "devDependencies": {
-    "@mdi/font": "5.8.55",
+    "@mdi/font": "5.9.55",
     "@types/d3": "6.2.0",
     "@types/file-saver": "2.0.1",
     "@types/lodash-es": "4.17.4",
@@ -68,7 +68,7 @@
     "@vue/cli-service": "4.5.10",
     "@vue/test-utils": "1.1.2",
     "deepmerge": "4.2.2",
-    "eslint": "7.17.0",
+    "eslint": "7.18.0",
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-prettier": "3.3.1",
     "eslint-plugin-vue": "7.4.1",

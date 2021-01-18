@@ -7,16 +7,16 @@ import dramatiq
 import emails
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 from emails.template import JinjaTemplate
-from histocat.modules.segmentation.dto import SegmentationSubmissionDto
 from imctools.io.utils import MCD_FILENDING, ZIP_FILENDING
 
 import histocat.db.init_db  # noqa
 from histocat.config import config
 from histocat.core.errors import DataImportError
 from histocat.db.session import db_session
-from histocat.io import mcd, zip, model
+from histocat.io import mcd, model, zip
 from histocat.modules.analysis.processors import phenograph, tsne, umap
 from histocat.modules.pipeline.processors import pipeline_processor
+from histocat.modules.segmentation.dto import SegmentationSubmissionDto
 from histocat.modules.segmentation.processors import segmentation_processor
 
 rabbitmq_broker = RabbitmqBroker(host="rabbitmq", connection_attempts=10)

@@ -20,7 +20,9 @@ router = APIRouter()
 def process_segmentation(
     group_id: int,
     project_id: int,
-    params: SegmentationSubmissionDto, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    params: SegmentationSubmissionDto,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Start segmentation processing

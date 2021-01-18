@@ -5,6 +5,7 @@ from histocat.modules.dataset.models import DatasetModel  # noqa
 from histocat.modules.gate.models import GateModel  # noqa
 from histocat.modules.group.models import GroupModel  # noqa
 from histocat.modules.member.models import MemberModel  # noqa
+from histocat.modules.model.models import ModelModel  # noqa
 from histocat.modules.panorama.models import PanoramaModel  # noqa
 from histocat.modules.pipeline.models import PipelineModel  # noqa
 from histocat.modules.preset.models import PresetModel  # noqa
@@ -14,7 +15,6 @@ from histocat.modules.slide.models import SlideModel  # noqa
 from histocat.modules.user import service
 from histocat.modules.user.dto import UserCreateDto
 from histocat.modules.user.models import UserModel  # noqa
-from histocat.modules.model.models import ModelModel  # noqa
 
 # make sure all SQL Alchemy models are imported (app.db.base) before initializing DB
 # otherwise, SQL Alchemy might fail to initialize relationships properly

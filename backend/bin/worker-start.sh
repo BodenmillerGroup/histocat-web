@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -e
 
-python /app/histocat/worker_pre_start.py
+python3 /app/histocat/worker_pre_start.py
 
 PROCESSES=${DRAMATIQ_PROCESSES:-8}
 THREADS=${DRAMATIQ_THREADS:-8}

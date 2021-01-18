@@ -1,22 +1,21 @@
 import os
 
 import cv2
+import numpy as np
 import tifffile
 from fastapi import HTTPException
-import numpy as np
+from imctools.io.ometiff.ometiffparser import OmeTiffParser
+from skimage import exposure
 from skimage.filters import gaussian
 from skimage.transform import rescale, resize
-from skimage import exposure
-from tensorflow import keras
-
-from histocat.modules.model.models import ModelModel
-from histocat.modules.segmentation.dto import SegmentationSubmissionDto
-from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from sqlalchemy.orm import Session
 from starlette import status
+from tensorflow import keras
 
 from histocat.core.utils import timeit
 from histocat.modules.acquisition import service as acquisition_service
+from histocat.modules.model.models import ModelModel
+from histocat.modules.segmentation.dto import SegmentationSubmissionDto
 
 
 @timeit
@@ -28,7 +27,9 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
     parser = OmeTiffParser(acquisition.location)
     acquisition_data = parser.get_acquisition_data()
 
-    IA_stack = np.zeros((acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 3))  # Channels last
+    IA_stack = np.zeros(
+        (acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 3)
+    )  # Channels last
 
     # sum up nuclear markers
     for c in params.nuclei_channels:
@@ -41,8 +42,8 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
         IA_stack[:, :, 1] = IA_stack[:, :, 1] + img
 
     # resize by the given upscaling factor the RBG image
-    IA_stack = rescale(IA_stack, params.scaling_factor, multichannel=True, anti_aliasing=False, mode='reflect')
-    IA_stack = np.array(IA_stack, dtype='uint16') / 65535
+    IA_stack = rescale(IA_stack, params.scaling_factor, multichannel=True, anti_aliasing=False, mode="reflect")
+    IA_stack = np.array(IA_stack, dtype="uint16") / 65535
 
     # rescale intensities nucleus
     for j in range(0, 2):
@@ -62,9 +63,11 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
 
     pred = np.zeros((fovs_x * tiles_size, fovs_y * tiles_size, channels))  # depends on the model
 
-    for i in range(0, imgheight, int(tiles_size * (1 - params.overlap))):  # for the moment overlap the last bit of tile size
+    for i in range(
+        0, imgheight, int(tiles_size * (1 - params.overlap))
+    ):  # for the moment overlap the last bit of tile size
         for j in range(0, imgwidth, int(tiles_size * (1 - params.overlap))):
-            frame = IA_stack[j:j + tiles_size, i:i + tiles_size, :]
+            frame = IA_stack[j : j + tiles_size, i : i + tiles_size, :]
             # frame = np.array(frame,dtype="uint16")
             xd = tiles_size - frame.shape[0]
             yd = tiles_size - frame.shape[1]
@@ -72,9 +75,11 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
             # predict classes
             prediction = model.predict(np.expand_dims(tile, axis=0), verbose=0)
             prediction = prediction[0, :, :, :]
-            x = pred[j:j + tiles_size, i:i + tiles_size, :].shape[0]
-            y = pred[j:j + tiles_size, i:i + tiles_size, :].shape[1]
-            pred[j:j + tiles_size, i:i + tiles_size, :] = prediction[0:x, 0:y, ]  # cropped prediction
+            x = pred[j : j + tiles_size, i : i + tiles_size, :].shape[0]
+            y = pred[j : j + tiles_size, i : i + tiles_size, :].shape[1]
+            pred[j : j + tiles_size, i : i + tiles_size, :] = prediction[
+                0:x, 0:y,
+            ]  # cropped prediction
 
     # crop prediction to original image size
     pred = pred[0:imgwidth, 0:imgheight, :]

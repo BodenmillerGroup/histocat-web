@@ -11,6 +11,7 @@ class SegmentationFilterSettingsDto(BaseModel):
     kernel_size: Optional[int]
     sigma: Optional[float]
 
+
 class SegmentationSubmissionDto(BaseModel):
     """Segmentation submission model."""
 

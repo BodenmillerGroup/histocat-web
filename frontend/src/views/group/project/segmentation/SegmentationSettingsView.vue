@@ -153,7 +153,7 @@ export default class SegmentationSettingsView extends Vue {
           type: this.filterType,
           kernel_size: this.kernelSize,
           sigma: this.sigma,
-        }
+        },
       });
     }
   }

@@ -3,7 +3,7 @@ import os
 import uuid
 from typing import Sequence
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, Form
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 from starlette import status
 

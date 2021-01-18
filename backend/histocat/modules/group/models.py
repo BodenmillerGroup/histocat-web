@@ -4,7 +4,10 @@ import os
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import ARRAY
 
-from histocat.core.utils import autocreate_directory_property, remove_location_upon_delete
+from histocat.core.utils import (
+    autocreate_directory_property,
+    remove_location_upon_delete,
+)
 from histocat.db.base import Base
 
 logger = logging.getLogger(__name__)

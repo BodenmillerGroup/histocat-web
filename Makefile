@@ -20,6 +20,9 @@ build:
 build-push:
 	./scripts/build-push.sh
 
+build-push-worker-base-image:
+	./scripts/build-worker-base-image.sh
+
 clean:
 	sudo find . -type d -name __pycache__ -exec rm -r {} \+
 	find . -type d -name .pytest_cache -exec rm -r {} \+
