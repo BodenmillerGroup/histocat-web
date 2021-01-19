@@ -3,28 +3,26 @@ import os
 import cv2
 import numpy as np
 import tifffile
+from cellprofiler_core.image import Image, ImageSetList
+from cellprofiler_core.measurement import Measurements
+from cellprofiler_core.object import ObjectSet, Objects
+from cellprofiler_core.pipeline import Pipeline
+from cellprofiler_core.workspace import Workspace
 from fastapi import HTTPException
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage import exposure
 from skimage.filters import gaussian
-from skimage.transform import rescale, resize
+from skimage.transform import rescale
 from sqlalchemy.orm import Session
 from starlette import status
-from tensorflow import keras
-import cellprofiler_core.image
-import cellprofiler_core.object
-import cellprofiler_core.pipeline
-import cellprofiler_core.preferences
-import cellprofiler_core.workspace
-from cellprofiler_core import preferences as cp_preferences
-from cellprofiler_core import pipeline as cp_pipeline
+import skimage.data
+from cellprofiler_core import preferences
 
 from histocat.core.utils import timeit
 from histocat.modules.acquisition import service as acquisition_service
-from histocat.modules.model.models import ModelModel
 from histocat.modules.segmentation.dto import SegmentationSubmissionDto
 
-cp_preferences.set_headless()
+preferences.set_headless()
 
 
 @timeit
@@ -77,7 +75,7 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
     ):  # for the moment overlap the last bit of tile size
         for j in range(0, imgwidth, int(tiles_size * (1 - params.overlap))):
             frame = IA_stack[j : j + tiles_size, i : i + tiles_size, :]
-            # frame = np.array(frame,dtype="uint16")
+            # frame = np.array(frame, dtype="uint16")
             xd = tiles_size - frame.shape[0]
             yd = tiles_size - frame.shape[1]
             tile = cv2.copyMakeBorder(frame, 0, xd, 0, yd, cv2.BORDER_CONSTANT)  # padding for last tiles
@@ -92,7 +90,7 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
 
     # crop prediction to original image size
     pred = pred[0:imgwidth, 0:imgheight, :]
-    pred = gaussian(pred, sigma=params.filter_settings.sigma, multichannel=True)  ##minor gaussian blur
+    pred = gaussian(pred, sigma=params.filter_settings.sigma, multichannel=True)  # minor gaussian blur
 
     # convert to uint16
     # rearrange the mask into RGB
@@ -101,5 +99,29 @@ def process_acquisition(db: Session, acquisition_id: int, params: SegmentationSu
     tifffile.imwrite(os.path.join("/data/inbox", filename), np.array(pred, dtype="uint16"))
 
     # Run CellProfiler pipeline
-    pipeline = cp_pipeline.Pipeline()
+    pipeline = Pipeline()
     pipeline.load("/data/inbox/2_segment_ilastik.cppipe")
+    print(pipeline.modules())
+
+    image_set_list = ImageSetList()
+    image_set = image_set_list.get_image_set(0)
+
+    image_x = Image(skimage.data.cat())
+    image_set.add("x", image_x)
+
+    object_set = ObjectSet()
+    objects = Objects()
+    object_set.add_objects(objects, "example")
+
+    measurements = Measurements()
+
+    workspace = Workspace(
+        pipeline,
+        pipeline.modules()[0],
+        image_set,
+        object_set,
+        measurements,
+        image_set_list,
+    )
+
+    pipeline.run(None)

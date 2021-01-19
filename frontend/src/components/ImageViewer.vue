@@ -131,6 +131,7 @@ export default class ImageViewer extends Vue {
         const regl = this.scatterplot.get("regl");
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
+          aspectRatio: this.activeAcquisition!.max_x / this.activeAcquisition!.max_y
         });
         if (prevBackgroundImage) {
           prevBackgroundImage.destroy();
