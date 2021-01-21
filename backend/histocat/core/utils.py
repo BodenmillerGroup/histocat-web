@@ -7,8 +7,8 @@ from pathlib import Path
 from shutil import rmtree
 from typing import Optional
 
-import jwt
 import dramatiq
+import jwt
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
 
@@ -146,16 +146,13 @@ def send_test_email(email_to: str):
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
         actor_name="send_email",
-        queue_name='email',
+        queue_name="email",
         args=(),
         kwargs={
             "email_to": email_to,
             "subject_template": subject,
             "html_template": template_str,
-            "environment": {
-                "project_name": config.PROJECT_NAME,
-                "email": email_to
-            }
+            "environment": {"project_name": config.PROJECT_NAME, "email": email_to},
         },
         options={},
     )
@@ -172,7 +169,7 @@ def send_new_account_email(email_to: str, username: str, password: str):
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
         actor_name="send_email",
-        queue_name='email',
+        queue_name="email",
         args=(),
         kwargs={
             "email_to": email_to,
@@ -184,7 +181,7 @@ def send_new_account_email(email_to: str, username: str, password: str):
                 "password": password,
                 "email": email_to,
                 "link": link,
-            }
+            },
         },
         options={},
     )
@@ -205,7 +202,7 @@ def send_reset_password_email(email_to: str, email: str, token):
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
         actor_name="send_email",
-        queue_name='email',
+        queue_name="email",
         args=(),
         kwargs={
             "email_to": email_to,
@@ -217,7 +214,7 @@ def send_reset_password_email(email_to: str, email: str, token):
                 "email": email_to,
                 "valid_hours": config.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
                 "link": link,
-            }
+            },
         },
         options={},
     )
@@ -238,7 +235,7 @@ def send_confirm_signup_email(email_to: str, username: str, token):
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
         actor_name="send_email",
-        queue_name='email',
+        queue_name="email",
         args=(),
         kwargs={
             "email_to": email_to,
@@ -250,7 +247,7 @@ def send_confirm_signup_email(email_to: str, username: str, token):
                 "email": email_to,
                 "valid_hours": config.EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS,
                 "link": link,
-            }
+            },
         },
         options={},
     )

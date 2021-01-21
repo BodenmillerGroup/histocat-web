@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     EMAILS_FROM_EMAIL: str
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 24
     EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS: int = 48
-    EMAIL_TEMPLATES_DIR: str = "/app/histocat/email-templates"
+    EMAIL_TEMPLATES_DIR: str = "/app/histocat/api/email-templates"
     EMAILS_ENABLED: bool = True
 
     FIRST_SUPERUSER: str

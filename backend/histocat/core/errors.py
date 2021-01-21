@@ -63,6 +63,11 @@ class PipelineError(Exception):
     """
 
 
+class SegmentationError(Exception):
+    """Base class for segmentation pipeline errors.
+    """
+
+
 class PipelineRunError(PipelineError):
     """Error class that is raised when an error occurs upon running a jterator
     pipeline.

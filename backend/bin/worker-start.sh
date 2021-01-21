@@ -9,8 +9,8 @@ THREADS=${DRAMATIQ_THREADS:-8}
 if [ "$BACKEND_ENV" = "development" ]
 then
     echo "Starting workers in development mode"
-    dramatiq --processes 1 --threads 1 --watch . histocat.worker
+    dramatiq --processes 1 --threads 1 --watch . histocat.worker.worker
 else
     echo "Starting workers in production mode"
-    dramatiq --processes $PROCESSES --threads $THREADS histocat.worker
+    dramatiq --processes $PROCESSES --threads $THREADS histocat.worker.worker
 fi

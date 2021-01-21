@@ -1,7 +1,7 @@
 import logging
 
-from histocat.db.init_db import init_db
-from histocat.db.session import db_session
+from histocat.core.init_db import init_db
+from histocat.core.session import db_session
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,27 +1,27 @@
 from fastapi import APIRouter
 
-from histocat.modules.acquisition import controller as acquisition_controller
-from histocat.modules.analysis import controller as analysis_controller
-from histocat.modules.auth import controller as auth_controller
-from histocat.modules.core import controller as core_controller
-from histocat.modules.dataset import controller as dataset_controller
-from histocat.modules.gate import controller as gate_controller
-from histocat.modules.group import controller as group_controller
-from histocat.modules.member import controller as member_controller
-from histocat.modules.model import controller as model_controller
-from histocat.modules.panorama import controller as panorama_controller
-from histocat.modules.pipeline import controller as pipeline_controller
-from histocat.modules.preset import controller as preset_controller
-from histocat.modules.project import controller as project_controller
-from histocat.modules.result import controller as result_controller
-from histocat.modules.segmentation import controller as segmentation_controller
-from histocat.modules.slide import controller as slide_controller
-from histocat.modules.user import controller as user_controller
+from histocat.api.acquisition import controller as acquisition_controller
+from histocat.api.analysis import controller as analysis_controller
+from histocat.api.auth import controller as auth_controller
+from histocat.api.check import controller as check_controller
+from histocat.api.dataset import controller as dataset_controller
+from histocat.api.gate import controller as gate_controller
+from histocat.api.group import controller as group_controller
+from histocat.api.member import controller as member_controller
+from histocat.api.model import controller as model_controller
+from histocat.api.panorama import controller as panorama_controller
+from histocat.api.pipeline import controller as pipeline_controller
+from histocat.api.preset import controller as preset_controller
+from histocat.api.project import controller as project_controller
+from histocat.api.result import controller as result_controller
+from histocat.api.segmentation import controller as segmentation_controller
+from histocat.api.slide import controller as slide_controller
+from histocat.api.user import controller as user_controller
 
 api_router = APIRouter()
 
 api_router.include_router(auth_controller.router, tags=["auth"])
-api_router.include_router(core_controller.router, tags=["utils"])
+api_router.include_router(check_controller.router, tags=["check"])
 api_router.include_router(group_controller.router, tags=["groups"])
 api_router.include_router(project_controller.router, tags=["projects"])
 api_router.include_router(slide_controller.router, tags=["slides"])
