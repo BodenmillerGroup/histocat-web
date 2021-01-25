@@ -1,5 +1,6 @@
 from typing import Optional, Sequence
 
+from histocat.core.security import verify_password
 from sqlalchemy.orm import Session
 
 from .dto import UserCreateDto, UserUpdateDto
@@ -12,6 +13,15 @@ def get_by_id(session: Session, id: int) -> Optional[UserModel]:
 
 def get_by_email(session: Session, *, email: str) -> Optional[UserModel]:
     return session.query(UserModel).filter(UserModel.email == email).first()
+
+
+def authenticate(session: Session, *, email: str, password: str) -> Optional[UserModel]:
+    user = get_by_email(session, email=email)
+    if not user:
+        return None
+    if not verify_password(password, user.password):
+        return None
+    return user
 
 
 def get_all(session: Session, skip=0, limit=1000) -> Sequence[UserModel]:

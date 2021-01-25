@@ -27,8 +27,6 @@ def process_segmentation(db: Session, project_id: int, params: SegmentationSubmi
 
     # disable GPU
     tf.config.set_visible_devices([], "GPU")
-    tf.config.threading.set_intra_op_parallelism_threads(4)
-    tf.config.threading.set_inter_op_parallelism_threads(4)
 
     # load UNET model
     keras_model = tf.keras.models.load_model(model.location)
