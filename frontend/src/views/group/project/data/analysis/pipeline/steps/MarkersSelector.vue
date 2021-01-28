@@ -29,7 +29,7 @@
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
 import { settingsModule } from "@/modules/settings";
-import { equals } from "rambda";
+import { isEqual } from "lodash-es";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
 
@@ -91,7 +91,7 @@ export default class MarkersSelector extends Vue {
 
   set selected(items: IChannel[]) {
     const selectedMarkers = items.map((item) => item.name);
-    if (!equals(this.step.markers, selectedMarkers)) {
+    if (!isEqual(this.step.markers, selectedMarkers)) {
       this.step.markers = selectedMarkers;
     }
   }

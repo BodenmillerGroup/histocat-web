@@ -23,7 +23,7 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { IAcquisition } from "@/modules/projects/models";
-import { equals } from "rambda";
+import { isEqual } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
 import { pipelinesModule } from "@/modules/pipelines";
@@ -100,7 +100,7 @@ export default class AcquisitionsSelector extends Vue {
 
   set selected(items: IAcquisition[]) {
     const selectedIds = items.map((item) => item.id);
-    if (!equals(this.selectedAcquisitionIds, selectedIds)) {
+    if (!isEqual(this.selectedAcquisitionIds, selectedIds)) {
       this.pipelinesContext.mutations.setSelectedAcquisitionIds(selectedIds);
     }
   }

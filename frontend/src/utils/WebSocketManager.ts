@@ -67,6 +67,7 @@ export class WebSocketManager {
             });
             break;
           }
+          case "segmentation_ready":
           case "dataset_imported": {
             WebSocketManager.datasetContext.actions.getProjectDatasets(message.projectId);
             WebSocketManager.mainContext.mutations.addNotification({

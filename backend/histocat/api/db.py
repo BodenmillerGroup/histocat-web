@@ -1,4 +1,4 @@
-from histocat.db.session import SessionLocal
+from histocat.core.session import SessionLocal
 
 
 def get_db():

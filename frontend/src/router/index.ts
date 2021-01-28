@@ -97,6 +97,25 @@ export default new Router({
                   component: () =>
                     import(/* webpackChunkName: "group-members-edit" */ "@/views/group/members/EditMember.vue"),
                 },
+
+                {
+                  path: "models",
+                  name: "group-models",
+                  component: () =>
+                    import(/* webpackChunkName: "group-models" */ "@/views/group/models/ModelsListView.vue"),
+                },
+                {
+                  path: "models/create",
+                  name: "group-models-create",
+                  component: () =>
+                    import(/* webpackChunkName: "group-models-create" */ "@/views/group/models/CreateModel.vue"),
+                },
+                {
+                  path: "models/:id/edit",
+                  name: "group-models-edit",
+                  component: () =>
+                    import(/* webpackChunkName: "group-models-edit" */ "@/views/group/models/EditModel.vue"),
+                },
               ],
             },
 

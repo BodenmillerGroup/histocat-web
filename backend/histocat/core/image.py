@@ -8,11 +8,11 @@ import tifffile
 from mahotas import bwperim
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
-from skimage import img_as_ubyte
+from skimage import img_as_ubyte, io
 from skimage.color import label2rgb
-from sklearn.preprocessing import minmax_scale
 
-from histocat.modules.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
+from histocat.core.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
+from skimage.segmentation import find_boundaries
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
 
@@ -91,26 +91,25 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
         m = np.isin(mask, mask_settings.cellIds)
         mask[~m] = 0
 
-    if heatmap_dict:
-        mask = replace_with_dict(mask, heatmap_dict)
+    boundary = find_boundaries(mask, connectivity=1, mode='inner')
+    image[boundary > 0] = 1
 
-        max_value = max(heatmap_dict.values())
-        colors = [cmap(i / max_value) for i in heatmap_dict.values()]
-    else:
-        colors = ("darkorange", "darkorange")
-
-    img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay")
-    return img
-
-    # mask = img_as_ubyte(mask)
-    # img = labels2rgb(mask, lut)
-    # # img = cv2.applyColorMap(mask, cv2.COLORMAP_JET)
-    # return img
-
-    # if mask_settings.gated:
-    #     return mask_gated_img(image, mask, mask_settings.cellIds)
+    # if heatmap_dict:
+    #     mask = replace_with_dict(mask, heatmap_dict)
+    #
+    #     max_value = max(heatmap_dict.values())
+    #     colors = [cmap(i / max_value) for i in heatmap_dict.values()]
     # else:
-    #     return mask_color_img(image, mask)
+    #     colors = ("darkorange", "darkorange")
+
+    # img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay")
+    return image
+
+
+def draw_overlay(mask_settings: MaskSettingsDto):
+    filename = mask_settings.location.replace("mask.tiff", "overlay.png")
+    overlay = io.imread(filename)
+    return overlay
 
 
 def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(0, 146, 63, 100), alpha=0.8):

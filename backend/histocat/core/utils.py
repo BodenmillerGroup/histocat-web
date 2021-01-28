@@ -7,6 +7,7 @@ from pathlib import Path
 from shutil import rmtree
 from typing import Optional
 
+import dramatiq
 import jwt
 import sqlalchemy
 from jwt.exceptions import InvalidTokenError
@@ -142,14 +143,20 @@ def send_test_email(email_to: str):
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "test_email.html") as f:
         template_str = f.read()
 
-    from histocat import worker
-
-    worker.send_email.send(
-        email_to=email_to,
-        subject_template=subject,
-        html_template=template_str,
-        environment={"project_name": config.PROJECT_NAME, "email": email_to},
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="send_email",
+        queue_name="email",
+        args=(),
+        kwargs={
+            "email_to": email_to,
+            "subject_template": subject,
+            "html_template": template_str,
+            "environment": {"project_name": config.PROJECT_NAME, "email": email_to},
+        },
+        options={},
     )
+    broker.enqueue(message)
 
 
 def send_new_account_email(email_to: str, username: str, password: str):
@@ -159,20 +166,26 @@ def send_new_account_email(email_to: str, username: str, password: str):
         template_str = f.read()
     link = config.SERVER_HOST
 
-    from histocat import worker
-
-    worker.send_email.send(
-        email_to=email_to,
-        subject_template=subject,
-        html_template=template_str,
-        environment={
-            "project_name": config.PROJECT_NAME,
-            "username": username,
-            "password": password,
-            "email": email_to,
-            "link": link,
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="send_email",
+        queue_name="email",
+        args=(),
+        kwargs={
+            "email_to": email_to,
+            "subject_template": subject,
+            "html_template": template_str,
+            "environment": {
+                "project_name": config.PROJECT_NAME,
+                "username": username,
+                "password": password,
+                "email": email_to,
+                "link": link,
+            },
         },
+        options={},
     )
+    broker.enqueue(message)
 
 
 def send_reset_password_email(email_to: str, email: str, token):
@@ -186,20 +199,26 @@ def send_reset_password_email(email_to: str, email: str, token):
         use_token = token
     link = f"{config.SERVER_HOST}/reset-password?token={use_token}"
 
-    from histocat import worker
-
-    worker.send_email.send(
-        email_to=email_to,
-        subject_template=subject,
-        html_template=template_str,
-        environment={
-            "project_name": config.PROJECT_NAME,
-            "username": email,
-            "email": email_to,
-            "valid_hours": config.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
-            "link": link,
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="send_email",
+        queue_name="email",
+        args=(),
+        kwargs={
+            "email_to": email_to,
+            "subject_template": subject,
+            "html_template": template_str,
+            "environment": {
+                "project_name": config.PROJECT_NAME,
+                "username": email,
+                "email": email_to,
+                "valid_hours": config.EMAIL_RESET_TOKEN_EXPIRE_HOURS,
+                "link": link,
+            },
         },
+        options={},
     )
+    broker.enqueue(message)
 
 
 def send_confirm_signup_email(email_to: str, username: str, token):
@@ -213,20 +232,26 @@ def send_confirm_signup_email(email_to: str, username: str, token):
         use_token = token
     link = f"{config.SERVER_HOST}/api/v1/auth/confirm-signup/{use_token}"
 
-    from histocat import worker
-
-    worker.send_email.send(
-        email_to=email_to,
-        subject_template=subject,
-        html_template=template_str,
-        environment={
-            "project_name": config.PROJECT_NAME,
-            "username": username,
-            "email": email_to,
-            "valid_hours": config.EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS,
-            "link": link,
+    broker = dramatiq.get_broker()
+    message = dramatiq.Message(
+        actor_name="send_email",
+        queue_name="email",
+        args=(),
+        kwargs={
+            "email_to": email_to,
+            "subject_template": subject,
+            "html_template": template_str,
+            "environment": {
+                "project_name": config.PROJECT_NAME,
+                "username": username,
+                "email": email_to,
+                "valid_hours": config.EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS,
+                "link": link,
+            },
         },
+        options={},
     )
+    broker.enqueue(message)
 
 
 def generate_password_reset_token(email):

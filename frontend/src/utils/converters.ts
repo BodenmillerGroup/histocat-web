@@ -14,3 +14,13 @@ export function roleToString(value: number): string {
   }
   return roleMap[value];
 }
+
+const channelTypeMap = {
+  0: "",
+  1: "nuclei",
+  2: "cytoplasm",
+};
+
+export function channelTypeToString(value: number): string {
+  return channelTypeMap[value];
+}

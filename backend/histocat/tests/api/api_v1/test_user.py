@@ -1,9 +1,9 @@
 import requests
 
 from histocat.config import config
-from histocat.db.session import db_session
-from histocat.modules.user import service
-from histocat.modules.user.dto import UserCreateDto
+from histocat.core.session import db_session
+from histocat.core.user import service
+from histocat.core.user.dto import UserCreateDto
 from histocat.tests.utils.user import user_authentication_headers
 from histocat.tests.utils.utils import get_server_api, random_lower_string
 

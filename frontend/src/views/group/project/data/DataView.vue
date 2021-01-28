@@ -10,7 +10,6 @@
 
 <script lang="ts">
 import LoadingView from "@/components/LoadingView.vue";
-import { analysisModule } from "@/modules/analysis";
 import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import AnalysisView from "@/views/group/project/data/analysis/AnalysisView.vue";
@@ -27,7 +26,6 @@ import { Component, Vue } from "vue-property-decorator";
 export default class DataView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly analysisContext = analysisModule.context(this.$store);
 
   get projectData() {
     return this.projectsContext.getters.projectData;

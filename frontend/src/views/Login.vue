@@ -34,12 +34,12 @@
                 </v-alert>
               </div>
               <v-row>
-                <v-col class="text-caption text-right py-0">
+                <v-col class="text-caption text-right">
                   <router-link to="/password-recovery">Recover password</router-link>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col class="text-caption text-right py-0">
+                <v-col class="text-caption text-right">
                   <router-link to="/signup">Register an account</router-link>
                 </v-col>
               </v-row>

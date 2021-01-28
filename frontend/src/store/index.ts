@@ -18,6 +18,8 @@ import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
 import { resultsModule } from "@/modules/results";
 import { pipelinesModule } from "@/modules/pipelines";
+import { modelsModule } from "@/modules/models";
+import { segmentationModule } from "@/modules/segmentation";
 
 Vue.use(Vuex);
 
@@ -39,6 +41,8 @@ const rootModule = new Module({
     presets: presetsModule,
     gates: gatesModule,
     pipelines: pipelinesModule,
+    models: modelsModule,
+    segmentation: segmentationModule,
   },
   actions: RootActions,
 });

@@ -1,13 +1,10 @@
 import asyncio
-import logging
 
 import aioredis
 import orjson
 import redis
 
 from histocat.core.notifier import Message, notifier
-
-logger = logging.getLogger(__name__)
 
 UPDATES_CHANNEL_NAME = "updates"
 

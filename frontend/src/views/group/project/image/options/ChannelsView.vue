@@ -41,7 +41,7 @@
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
 import { settingsModule } from "@/modules/settings";
-import { equals } from "rambda";
+import { isEqual } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
@@ -107,7 +107,7 @@ export default class ChannelsView extends Vue {
 
   set selected(items: IChannel[]) {
     const selectedMetals = items.map((item) => item.name);
-    if (!equals(this.selectedMetals, selectedMetals)) {
+    if (!isEqual(this.selectedMetals, selectedMetals)) {
       this.projectsContext.actions.setSelectedMetals(selectedMetals);
       this.projectsContext.actions.getChannelStackImage();
     }

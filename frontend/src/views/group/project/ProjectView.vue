@@ -1,23 +1,25 @@
 <template>
   <LoadingView v-if="!projectData" text="Loading..." />
   <v-container v-else fluid class="ma-0 pa-0">
-    <DataView v-show="showData" />
-    <ImageView v-show="!showData" />
+    <ImageView v-show="viewMode === 'image'" />
+    <SegmentationView v-show="viewMode === 'segmentation'" />
+    <DataView v-show="viewMode === 'data'" />
   </v-container>
 </template>
 
 <script lang="ts">
 import LoadingView from "@/components/LoadingView.vue";
-import { analysisModule } from "@/modules/analysis";
 import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
 import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue } from "vue-property-decorator";
 import ImageView from "@/views/group/project/image/ImageView.vue";
 import DataView from "@/views/group/project/data/DataView.vue";
+import SegmentationView from "@/views/group/project/segmentation/SegmentationView.vue";
 
 @Component({
   components: {
+    SegmentationView,
     DataView,
     ImageView,
     LoadingView,
@@ -26,14 +28,13 @@ import DataView from "@/views/group/project/data/DataView.vue";
 export default class ProjectView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly analysisContext = analysisModule.context(this.$store);
 
   get projectData() {
     return this.projectsContext.getters.projectData;
   }
 
-  get showData() {
-    return this.mainContext.getters.showData;
+  get viewMode() {
+    return this.mainContext.getters.viewMode;
   }
 
   async mounted() {

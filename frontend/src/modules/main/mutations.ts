@@ -1,7 +1,7 @@
 import { IUserProfile } from "@/modules/user/models";
 import { Mutations } from "vuex-smart-module";
 import { MainState } from ".";
-import { AppNotification } from "./models";
+import { AppNotification, ViewMode } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export class MainMutations extends Mutations<MainState> {
@@ -51,8 +51,8 @@ export class MainMutations extends Mutations<MainState> {
     this.state.processingProgress = payload;
   }
 
-  setShowData(value: boolean) {
-    this.state.showData = value;
+  setViewMode(value: ViewMode) {
+    this.state.viewMode = value;
   }
 
   reset() {
