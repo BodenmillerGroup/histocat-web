@@ -30,7 +30,7 @@ from histocat.core.image import (
     colorize,
     draw_mask,
     draw_scalebar,
-    scale_image,
+    scale_image, draw_overlay,
 )
 from histocat.core.member.models import MemberModel
 from histocat.core.project.dto import ProjectFullDto
@@ -140,7 +140,7 @@ async def download_channel_stack(
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)
 
-    if params.datasetId and params.mask and params.mask.apply:
+    if params.datasetId and params.mask and params.mask.mode == "mask":
         heatmap_dict = None
         if params.mask.resultId and params.mask.colorsType and params.mask.colorsName:
             result = result_service.get(db, id=params.mask.resultId)
@@ -161,6 +161,8 @@ async def download_channel_stack(
                 heatmap_dict.pop("0", None)
 
         additive_image = draw_mask(additive_image, params.mask, heatmap_dict)
+    elif params.datasetId and params.mask and params.mask.mode == "overlay":
+        additive_image = draw_overlay(params.mask)
 
     if params.scalebar.apply:
         additive_image = draw_scalebar(additive_image, params.scalebar)

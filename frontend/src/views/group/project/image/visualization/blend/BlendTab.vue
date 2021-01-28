@@ -17,7 +17,11 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-switch v-model="applyMask" label="Mask overlay" hide-details inset class="ml-8" :disabled="!hasMask" dense />
+      <v-radio-group label="Mode" v-model="mode" row dense mandatory hide-details :disabled="!hasMask" class="ml-8">
+        <v-radio label="Origin" value="origin" />
+        <v-radio label="Mask" value="mask" />
+        <v-radio label="Overlay" value="overlay" />
+      </v-radio-group>
       <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
     </v-toolbar>
     <ImageViewer />
@@ -44,14 +48,14 @@ export default class BlendTab extends Vue {
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
 
-  get applyMask() {
-    return this.settingsContext.getters.maskSettings.apply;
+  get mode() {
+    return this.settingsContext.getters.maskSettings.mode;
   }
 
-  set applyMask(value: boolean) {
+  set mode(value: string) {
     this.settingsContext.actions.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
-      apply: value,
+      mode: value,
     });
     this.projectsContext.actions.getChannelStackImage();
   }

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from histocat.core.constants import CSV_FILE_EXTENSION
 from histocat.core.utils import timeit
 from histocat.worker.io import mcd
-from histocat.worker.io.dataset import CELL_FILENAME, import_dataset
+from histocat.worker.io.dataset_v1 import CELL_FILENAME, import_dataset
 from histocat.worker.io.imcfolder import import_imcfolder
 from histocat.worker.io.imcfolder_v1 import import_imcfolder_v1
 from histocat.worker.io.utils import locate

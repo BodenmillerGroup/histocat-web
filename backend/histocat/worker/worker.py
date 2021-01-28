@@ -1,7 +1,6 @@
 import logging
 import os
 import shutil
-from typing import Sequence
 
 import dramatiq
 import emails
@@ -12,6 +11,7 @@ from imctools.io.utils import MCD_FILENDING, ZIP_FILENDING
 import histocat.core.init_db  # noqa
 from histocat.config import config
 from histocat.core.errors import DataImportError
+from histocat.core.pipeline.dto import PipelineProcessDto
 from histocat.core.segmentation.dto import SegmentationSubmissionDto
 from histocat.core.session import db_session
 from histocat.worker.io import mcd, model, zip
@@ -103,14 +103,11 @@ def import_dataset(uri: str, project_id: int):
 
 
 @dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def process_pipeline(
-    dataset_id: int, acquisition_ids: Sequence[int], steps: Sequence[str],
-):
-    logger.info(f"Processing pipeline for acquisitions {acquisition_ids} from dataset [{dataset_id}]")
+def process_pipeline(payload: str):
+    params: PipelineProcessDto = PipelineProcessDto.parse_raw(payload)
+    logger.info(f"Processing pipeline for acquisitions {params.acquisition_ids} from dataset [{params.dataset_id}]")
     try:
-        pipeline_processor.process_pipeline(
-            db_session, dataset_id=dataset_id, acquisition_ids=acquisition_ids, steps=steps
-        )
+        pipeline_processor.process_pipeline(db_session, params)
     except Exception as error:
         logger.warning(error)
     finally:
@@ -134,8 +131,8 @@ def import_model(uri: str, group_id: int, model_id: int):
 
 
 @dramatiq.actor(queue_name="process", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def process_segmentation(project_id: int, json: str):
-    params: SegmentationSubmissionDto = SegmentationSubmissionDto.parse_raw(json)
+def process_segmentation(project_id: int, payload: str):
+    params: SegmentationSubmissionDto = SegmentationSubmissionDto.parse_raw(payload)
     logger.info(f"Processing segmentation for acquisitions {params.acquisition_ids} with model [{params.model_id}]")
     try:
         segmentation_processor.process_segmentation(db_session, project_id=project_id, params=params)

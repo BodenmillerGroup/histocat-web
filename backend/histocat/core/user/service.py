@@ -1,7 +1,8 @@
 from typing import Optional, Sequence
 
-from histocat.core.security import verify_password
 from sqlalchemy.orm import Session
+
+from histocat.core.security import verify_password
 
 from .dto import UserCreateDto, UserUpdateDto
 from .models import UserModel

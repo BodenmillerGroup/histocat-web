@@ -281,7 +281,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
         if (mask) {
           output["mask"] = {
             colorize: false,
-            apply: maskSettings.apply,
+            mode: maskSettings.mode,
             location: mask.location,
           };
           if (this.results?.getters.heatmap) {

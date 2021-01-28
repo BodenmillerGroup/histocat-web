@@ -3,58 +3,135 @@
     <v-card-title>Settings</v-card-title>
     <v-card-text>
       <v-form v-model="valid" ref="form">
-        <v-select
-          label="Model"
-          v-model="modelId"
-          :items="models"
-          item-value="id"
-          item-text="name"
-          :rules="modelRules"
-        />
-        <v-text-field
-          label="Scaling factor"
-          hint="This parameter is commonly used in the IMCSegmentation pipeline"
-          v-model.number="scalingFactor"
-          type="number"
-          min="0"
-          :rules="scalingFactorRules"
-        />
-        <v-text-field
-          label="Upper limit [%]"
-          hint="Histogram rescaled from [0-upper_limit]"
-          v-model.number="upperLimit"
-          type="number"
-          min="0"
-          max="100"
-          :rules="upperLimitRules"
-        />
-        <v-text-field
-          label="Overlap"
-          hint="Overlap between tiles"
-          v-model.number="overlap"
-          type="number"
-          min="0"
-          :rules="overlapRules"
-        />
-        <v-switch v-model="applyFilter" label="Apply Filter" inset class="mt-2" />
-        <v-select :items="filterTypes" v-model="filterType" label="Filter Type" :disabled="!applyFilter" />
-        <v-select
-          v-if="filterType === 'median'"
-          :items="kernelSizes"
-          v-model.number="kernelSize"
-          label="Kernel Size"
-          :disabled="!applyFilter"
-        />
-        <v-text-field
-          v-if="filterType === 'gaussian'"
-          type="number"
-          min="0"
-          step="0.1"
-          label="Sigma"
-          v-model.number="sigma"
-          :rules="sigmaRules"
-          :disabled="!applyFilter"
-        />
+        <v-tabs v-model="tab">
+          <v-tab>General</v-tab>
+          <v-tab>Pre</v-tab>
+          <v-tab>Post</v-tab>
+          <v-tab-item>
+            <v-text-field label="Dataset Name" hint="Resulting dataset name" v-model="datasetName" />
+            <v-text-field
+              label="Dataset Description"
+              hint="Resulting dataset description"
+              v-model="datasetDescription"
+            />
+            <v-select
+              label="Model"
+              v-model="modelId"
+              :items="models"
+              item-value="id"
+              item-text="name"
+              :rules="modelRules"
+            />
+          </v-tab-item>
+          <v-tab-item>
+            <v-switch v-model="threshold" label="Threshold" inset class="ml-1" />
+            <v-text-field
+              label="Percentile"
+              v-model.number="percentile"
+              type="number"
+              min="0"
+              :rules="percentileRules"
+              :disabled="!threshold"
+            />
+            <v-switch v-model="normalize" label="Normalize" inset class="ml-1" />
+            <v-text-field
+              label="Kernel Size"
+              v-model.number="kernelSize"
+              type="number"
+              min="0"
+              step="1"
+              :rules="kernelSizeRules"
+              :disabled="!normalize"
+            />
+          </v-tab-item>
+          <v-tab-item>
+            <v-text-field
+              label="Radius"
+              hint="Radius of disk used to search for maxima"
+              v-model.number="radius"
+              type="number"
+              min="0"
+              step="1"
+              :rules="radiusRules"
+            />
+            <v-text-field
+              label="Maxima Threshold"
+              hint="Threshold for the maxima prediction"
+              v-model.number="maximaThreshold"
+              type="number"
+              min="0"
+              :rules="maximaThresholdRules"
+            />
+            <v-text-field
+              label="Interior Threshold"
+              hint="Threshold for the interior prediction"
+              v-model.number="interiorThreshold"
+              type="number"
+              min="0"
+              :rules="interiorThresholdRules"
+            />
+            <v-text-field
+              label="Small Objects Threshold"
+              hint="Removes objects smaller than this size"
+              v-model.number="smallObjectsThreshold"
+              type="number"
+              min="0"
+              step="1"
+              :rules="smallObjectsThresholdRules"
+            />
+            <v-text-field
+              label="Fill Holes Threshold"
+              hint="Maximum size for holes within segmented objects to be filled"
+              v-model.number="fillHolesThreshold"
+              type="number"
+              min="0"
+              step="1"
+              :rules="fillHolesThresholdRules"
+            />
+            <v-select
+              :items="validModelNames"
+              v-model="interiorModel"
+              label="Interior Model"
+              hint="Semantic head to use to predict interior of each object"
+              :rules="interiorModelRules"
+            />
+            <v-select
+              :items="validModelNames"
+              v-model="maximaModel"
+              label="Maxima Model"
+              hint="Semantic head to use to predict maxima of each object"
+              :rules="maximaModelRules"
+            />
+            <v-text-field
+              label="Interior Model Smooth"
+              hint="Smoothing factor to apply to interior model predictions"
+              v-model.number="interiorModelSmooth"
+              type="number"
+              min="0"
+              step="1"
+              :rules="interiorModelSmoothRules"
+            />
+            <v-text-field
+              label="Maxima Model Smooth"
+              hint="Smoothing factor to apply to maxima model predictions"
+              v-model.number="maximaModelSmooth"
+              type="number"
+              min="0"
+              step="1"
+              :rules="maximaModelSmoothRules"
+            />
+            <v-text-field
+              label="Pixel Expansion"
+              hint="Optional number of pixels to expand segmentation labels"
+              v-model.number="pixelExpansion"
+              type="number"
+              min="0"
+              step="1"
+              clearable
+              :rules="pixelExpansionRules"
+            />
+          </v-tab-item>
+        </v-tabs>
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -77,26 +154,45 @@ export default class SegmentationSettingsView extends Vue {
   readonly modelsContext = modelsModule.context(this.$store);
 
   readonly modelRules = [required];
-  readonly scalingFactorRules = [positiveNumber];
-  readonly upperLimitRules = [percentNumber];
-  readonly overlapRules = [nonNegativeNumber];
-  readonly sigmaRules = [required];
+  readonly percentileRules = [percentNumber];
+  readonly kernelSizeRules = [positiveNumber];
+  readonly radiusRules = [positiveNumber];
+  readonly maximaThresholdRules = [nonNegativeNumber];
+  readonly interiorThresholdRules = [nonNegativeNumber];
+  readonly smallObjectsThresholdRules = [nonNegativeNumber];
+  readonly fillHolesThresholdRules = [nonNegativeNumber];
+  readonly interiorModelRules = [required];
+  readonly maximaModelRules = [required];
+  readonly interiorModelSmoothRules = [nonNegativeNumber];
+  readonly maximaModelSmoothRules = [nonNegativeNumber];
+  readonly pixelExpansionRules = [(value) => value === null || value >= 0 || "Should be null or non-negative number"];
 
-  readonly filterTypes = ["gaussian", "median"];
-  readonly kernelSizes = [3, 5, 7, 9];
+  readonly validCompartments = ["whole-cell", "nuclear", "both"];
+  readonly validModelNames = ["inner-distance", "outer-distance", "fgbg-fg", "pixelwise-interior"];
 
   search = "";
   valid = false;
+  tab = 0;
 
+  datasetName: string | null = null;
+  datasetDescription: string | null = null;
   modelId: number | null = null;
-  scalingFactor = 1;
-  upperLimit = 98;
-  overlap = 0.0;
 
-  applyFilter = true;
-  filterType = "gaussian";
-  kernelSize = 3;
-  sigma = 1.0;
+  threshold = true;
+  percentile = 99.9;
+  normalize = true;
+  kernelSize = 128;
+
+  radius = 2;
+  maximaThreshold = 0.1;
+  interiorThreshold = 0.3;
+  smallObjectsThreshold = 15;
+  fillHolesThreshold = 15;
+  interiorModel = "pixelwise-interior";
+  maximaModel = "inner-distance";
+  interiorModelSmooth = 2;
+  maximaModelSmooth = 0;
+  pixelExpansion: number | null = null;
 
   readonly headers = [
     {
@@ -141,18 +237,29 @@ export default class SegmentationSettingsView extends Vue {
       const cytoplasmChannels = this.segmentationContext.getters.cytoplasmChannels;
 
       await this.segmentationContext.actions.processSegmentation({
+        dataset_name: this.datasetName,
+        dataset_description: this.datasetDescription,
         model_id: this.modelId!,
         acquisition_ids: acquisitionIds,
         nuclei_channels: nucleiChannels,
         cytoplasm_channels: cytoplasmChannels,
-        scaling_factor: this.scalingFactor,
-        upper_limit: this.upperLimit,
-        overlap: this.overlap,
-        filter_settings: {
-          apply: this.applyFilter,
-          type: this.filterType,
+        preprocessing: {
+          threshold: this.threshold,
+          percentile: this.percentile,
+          normalize: this.normalize,
           kernel_size: this.kernelSize,
-          sigma: this.sigma,
+        },
+        postprocessing: {
+          radius: this.radius,
+          maxima_threshold: this.maximaThreshold,
+          interior_threshold: this.interiorThreshold,
+          small_objects_threshold: this.smallObjectsThreshold,
+          fill_holes_threshold: this.fillHolesThreshold,
+          interior_model: this.interiorModel,
+          maxima_model: this.maximaModel,
+          interior_model_smooth: this.interiorModelSmooth,
+          maxima_model_smooth: this.maximaModelSmooth,
+          pixel_expansion: this.pixelExpansion,
         },
       });
     }

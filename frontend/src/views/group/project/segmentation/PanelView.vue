@@ -21,18 +21,11 @@
           </v-text-field>
         </template>
         <template v-slot:item.type="props">
-          <v-edit-dialog :return-value.sync="props.item.type" @save="save(props.item)">
-            {{ channelTypeToString(props.item.type) }}
-            <template v-slot:input>
-              <v-select
-                v-model="props.item.type"
-                :items="channelTypes"
-                item-value="value"
-                item-text="text"
-                disable-lookup
-              />
-            </template>
-          </v-edit-dialog>
+          <v-radio-group v-model="props.item.type" row dense mandatory hide-details class="ma-0">
+            <v-radio label="" value="none" @click="typeChanged" />
+            <v-radio label="nuclear" value="nuclear" @click="typeChanged" />
+            <v-radio label="cytoplasm" value="cytoplasm" @click="typeChanged" />
+          </v-radio-group>
         </template>
       </v-data-table>
     </v-card-text>
@@ -43,7 +36,7 @@
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
 import { settingsModule } from "@/modules/settings";
-import { isEqual, intersectionBy } from "lodash-es";
+import { intersectionBy } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
 import { segmentationModule } from "@/modules/segmentation";
 import { channelTypeEnum } from "@/utils/enums";
@@ -86,7 +79,7 @@ export default class PanelView extends Vue {
       sortable: true,
       value: "type",
       align: "start",
-      width: 200,
+      width: 350,
     },
   ];
 
@@ -114,7 +107,7 @@ export default class PanelView extends Vue {
         label: channel.customLabel,
         name: channel.name,
         mass: channel.mass,
-        type: 0,
+        type: "none",
       };
     });
   }
@@ -139,18 +132,11 @@ export default class PanelView extends Vue {
     // }
   }
 
-  save(item) {
-    const nucleiChannels = this.items.filter((item) => item.type === 1).map((item) => item.name);
-    const cytoplasmChannels = this.items.filter((item) => item.type === 2).map((item) => item.name);
+  typeChanged() {
+    const nucleiChannels = this.items.filter((item) => item.type === "nuclear").map((item) => item.name);
+    const cytoplasmChannels = this.items.filter((item) => item.type === "cytoplasm").map((item) => item.name);
     this.segmentationContext.mutations.setNucleiChannels(nucleiChannels);
     this.segmentationContext.mutations.setCytoplasmChannels(cytoplasmChannels);
   }
 }
 </script>
-
-<style scoped>
-table.v-table tbody td,
-table.v-table tbody th {
-  height: 35px;
-}
-</style>

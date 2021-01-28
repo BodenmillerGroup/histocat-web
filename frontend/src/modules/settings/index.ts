@@ -26,8 +26,7 @@ export class SettingsState {
     },
   };
   mask: IMaskSettings = {
-    apply: false,
-    location: undefined,
+    mode: "origin",
   };
 }
 

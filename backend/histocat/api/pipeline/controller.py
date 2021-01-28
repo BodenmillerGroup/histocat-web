@@ -102,7 +102,7 @@ def process(
         actor_name="process_pipeline",
         queue_name="process",
         args=(),
-        kwargs={"dataset_id": params.dataset_id, "acquisition_ids": params.acquisition_ids, "steps": params.steps},
+        kwargs={"payload": params.json()},
         options={},
     )
     broker.enqueue(message)
