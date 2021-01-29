@@ -23,11 +23,12 @@ def upgrade():
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('member_id', sa.Integer(), sa.ForeignKey("member.id", ondelete="CASCADE"), index=True, nullable=False),
-        sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
+        sa.Column('name', sa.String(), nullable=False, index=True),
         sa.Column('description', sa.String()),
         sa.Column('tags', ARRAY(sa.String(64)), index=True),
         sa.Column('location', sa.String(4096)),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
+        sa.UniqueConstraint('group_id', 'name', name='uix_project_group_id_and_name')
     )
 
 

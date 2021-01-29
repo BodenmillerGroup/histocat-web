@@ -20,7 +20,6 @@ def process_acquisition(
     db: Session, acquisition_id: int, params: SegmentationSubmissionDto, model, dataset: DatasetModel
 ):
     app = MultiplexSegmentation(model)
-    print("Training Resolution:", app.model_mpp, "microns per pixel")
 
     acquisition = acquisition_service.get_by_id(db, acquisition_id)
     if not acquisition:

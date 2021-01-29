@@ -51,7 +51,7 @@ def create(
     """
     Create new project
     """
-    item = service.get_by_name(db, name=params.name)
+    item = service.get_by_group_id_and_name(db, group_id=group_id, name=params.name)
     if item:
         raise HTTPException(
             status_code=400, detail="The project with this name already exists.",

@@ -19,6 +19,10 @@ def get_by_name(session: Session, *, name: str) -> Optional[ProjectModel]:
     return session.query(ProjectModel).filter(ProjectModel.name == name).first()
 
 
+def get_by_group_id_and_name(session: Session, *, group_id: int, name: str) -> Optional[ProjectModel]:
+    return session.query(ProjectModel).filter(ProjectModel.group_id == group_id, ProjectModel.name == name).first()
+
+
 def get_group_projects(session: Session, *, group_id: int) -> List[Optional[ProjectModel]]:
     return session.query(ProjectModel).order_by(ProjectModel.id.desc()).filter(ProjectModel.group_id == group_id).all()
 

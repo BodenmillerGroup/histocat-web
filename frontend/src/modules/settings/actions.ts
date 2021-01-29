@@ -3,9 +3,8 @@ import { SettingsState } from ".";
 import { SettingsGetters } from "./getters";
 import { SettingsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_PRESET, SET_CHANNEL_SETTINGS, SET_FILTER, SET_LEGEND, SET_SCALEBAR, SET_MASK_SETTINGS } from "./events";
+import { SET_CHANNEL_SETTINGS, SET_FILTER, SET_LEGEND, SET_SCALEBAR, SET_MASK_SETTINGS } from "./events";
 import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
-import { IPreset } from "@/modules/presets/models";
 
 export class SettingsActions extends Actions<SettingsState, SettingsGetters, SettingsMutations, SettingsActions> {
   setChannelSettings(payload: { channelName: string; settings: IChannelSettings }, isGlobal = true) {
@@ -26,10 +25,6 @@ export class SettingsActions extends Actions<SettingsState, SettingsGetters, Set
 
   setMaskSettings(payload: IMaskSettings, isGlobal = true) {
     BroadcastManager.publish(SET_MASK_SETTINGS, payload, isGlobal);
-  }
-
-  setPreset(payload: IPreset, isGlobal = true) {
-    BroadcastManager.publish(SET_PRESET, payload, isGlobal);
   }
 
   async resetSettings() {

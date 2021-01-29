@@ -77,6 +77,12 @@ def create(
     member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
+    item = service.get_by_group_id_and_name(db, group_id=group_id, name=name)
+    if item:
+        raise HTTPException(
+            status_code=400, detail="The model with this name already exists.",
+        )
+
     params = ModelCreateDto(name=name, description=description)
     model = service.create(db, group_id=group_id, params=params)
 

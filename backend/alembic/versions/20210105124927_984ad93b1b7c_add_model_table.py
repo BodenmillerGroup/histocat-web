@@ -22,11 +22,12 @@ def upgrade():
         'model',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('group_id', sa.Integer(), sa.ForeignKey("group.id", ondelete="CASCADE"), index=True, nullable=False),
-        sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
+        sa.Column('name', sa.String(), nullable=False, index=True),
         sa.Column('description', sa.String()),
         sa.Column('location', sa.String(4096)),
         sa.Column('meta', JSONB()),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
+        sa.UniqueConstraint('group_id', 'name', name='uix_model_group_id_and_name')
     )
 
 

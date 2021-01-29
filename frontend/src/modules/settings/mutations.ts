@@ -3,14 +3,12 @@ import { SettingsState } from ".";
 import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
-  SET_PRESET,
   SET_CHANNEL_SETTINGS,
   SET_FILTER,
   SET_LEGEND,
   SET_MASK_SETTINGS,
   SET_SCALEBAR,
 } from "@/modules/settings/events";
-import { IPreset } from "@/modules/presets/models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
   constructor() {
@@ -20,7 +18,6 @@ export class SettingsMutations extends Mutations<SettingsState> {
     BroadcastManager.subscribe(SET_LEGEND, (payload) => this.setLegend(payload));
     BroadcastManager.subscribe(SET_SCALEBAR, (payload) => this.setScalebar(payload));
     BroadcastManager.subscribe(SET_MASK_SETTINGS, (payload) => this.setMaskSettings(payload));
-    BroadcastManager.subscribe(SET_PRESET, (payload) => this.setPreset(payload));
   }
 
   setChannelSettings(payload: { channelName: string; settings: IChannelSettings }) {
@@ -62,10 +59,6 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setMaskSettings(payload: IMaskSettings) {
     this.state.mask = payload;
-  }
-
-  setPreset(preset: IPreset) {
-    this.state.channelsSettings = preset.data["channelsSettings"];
   }
 
   reset() {

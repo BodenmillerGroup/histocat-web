@@ -14,6 +14,10 @@ def get(session: Session, *, id: int) -> Optional[ModelModel]:
     return session.query(ModelModel).filter(ModelModel.id == id).first()
 
 
+def get_by_group_id_and_name(session: Session, *, group_id: int, name: str) -> Optional[ModelModel]:
+    return session.query(ModelModel).filter(ModelModel.group_id == group_id, ModelModel.name == name).first()
+
+
 def get_group_models(session: Session, *, group_id: int) -> Sequence[Optional[ModelModel]]:
     return session.query(ModelModel).order_by(ModelModel.id.desc()).filter(ModelModel.group_id == group_id).all()
 

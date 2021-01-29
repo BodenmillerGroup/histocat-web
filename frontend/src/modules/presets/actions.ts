@@ -42,6 +42,7 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
       const projectId = this.projects!.getters.activeProjectId;
       const presetData = {
         channelsSettings: this.settings!.getters.channelsSettings,
+        selectedTags: this.projects!.getters.selectedMetals
       };
       const payload: IPresetCreate = {
         name: name,
@@ -60,7 +61,13 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
     try {
       const preset = await api.getPreset(id);
       if (preset) {
-        this.settings?.actions.setPreset(preset);
+        if (preset.data["channelsSettings"]) {
+          this.settings?.actions.setChannelSettings(preset.data["channelsSettings"]);
+        }
+        if (preset.data["selectedTags"]) {
+          this.projects?.actions.setSelectedMetals(preset.data["selectedTags"]);
+        }
+        this.projects!.actions.getChannelStackImage();
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
