@@ -5,7 +5,7 @@ import tifffile
 from deepcell.applications import MultiplexSegmentation
 from deepcell.utils.plot_utils import create_rgb_image, make_outline_overlay
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
-from skimage import measure, io
+from skimage import io, measure
 from sqlalchemy.orm import Session
 
 from histocat.core.acquisition import service as acquisition_service
@@ -45,7 +45,14 @@ def process_acquisition(
     im = np.stack((IA_stack[:, :, 0], IA_stack[:, :, 1]), axis=-1)
     im = np.expand_dims(im, 0)
 
-    segmentation_predictions = app.predict(im, batch_size=1, image_mpp=1.0, compartment="whole-cell", preprocess_kwargs=params.preprocessing.dict(), postprocess_kwargs_whole_cell=params.postprocessing.dict())
+    segmentation_predictions = app.predict(
+        im,
+        batch_size=1,
+        image_mpp=1.0,
+        compartment="whole-cell",
+        preprocess_kwargs=params.preprocessing.dict(),
+        postprocess_kwargs_whole_cell=params.postprocessing.dict(),
+    )
     rgb_images = create_rgb_image(im, channel_colors=["green", "blue"])
     overlay_data = make_outline_overlay(rgb_data=rgb_images, predictions=segmentation_predictions)
 

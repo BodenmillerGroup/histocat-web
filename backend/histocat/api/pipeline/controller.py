@@ -99,11 +99,7 @@ def process(
     """
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
-        actor_name="process_pipeline",
-        queue_name="process",
-        args=(),
-        kwargs={"payload": params.json()},
-        options={},
+        actor_name="process_pipeline", queue_name="process", args=(), kwargs={"payload": params.json()}, options={},
     )
     broker.enqueue(message)
     return ORJSONResponse({"status": "submitted"})

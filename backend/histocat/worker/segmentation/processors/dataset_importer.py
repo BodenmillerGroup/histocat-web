@@ -29,9 +29,7 @@ PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequence[Dict]):
     """Import dataset from the segmentation pipeline output."""
 
-    meta = {
-        "neighbors_columns": []
-    }
+    meta = {"origin": "DeepCell", "neighbors_columns": []}
 
     masks = {}
     for ac_segmentation_data in segmentation_data:

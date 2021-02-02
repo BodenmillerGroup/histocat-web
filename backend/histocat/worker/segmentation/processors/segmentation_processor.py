@@ -55,6 +55,7 @@ def process_segmentation(db: Session, project_id: int, params: SegmentationSubmi
         segmentation_data.append(ac_output)
 
     meta = dataset_importer.import_dataset(db, dataset=dataset, segmentation_data=segmentation_data)
+    meta["params"] = params.dict()
 
     dataset_service.update(db, item=dataset, params=DatasetUpdateDto(status="ready", meta=meta))
 

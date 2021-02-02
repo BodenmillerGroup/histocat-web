@@ -91,7 +91,7 @@ export default class ImageViewer extends Vue {
   @Watch("mouseMode")
   mouseModeChanged(value) {
     this.scatterplot.set({
-      mouseMode: value
+      mouseMode: value,
     });
   }
 
@@ -279,7 +279,7 @@ export default class ImageViewer extends Vue {
       showRecticle: false,
       deselectOnDblClick: true,
       deselectOnEscape: true,
-      mouseMode: "panZoom"
+      mouseMode: "panZoom",
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);

@@ -29,8 +29,9 @@ from histocat.core.image import (
     apply_filter,
     colorize,
     draw_mask,
+    draw_overlay,
     draw_scalebar,
-    scale_image, draw_overlay,
+    scale_image,
 )
 from histocat.core.member.models import MemberModel
 from histocat.core.project.dto import ProjectFullDto

@@ -34,7 +34,7 @@ OBJECT_RELATIONSHIPS_FILENAME = "Object relationships"
 IMAGE_FILENAME = "Image"
 CELL_FILENAME = "cell"
 
-CHANNELS_FULL_CSV_ENDING = "_ac_full.csv"
+PANEL_FILE = "panel.csv"
 PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
@@ -48,7 +48,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
 
     create_params = DatasetCreateDto(project_id=project_id, status="pending")
     dataset = dataset_service.create(db, params=create_params)
-    meta = {"origin": "ImcSegmentationPipelineV1"}
+    meta = {"origin": "ImcSegmentationPipelineV2"}
 
     src_folder = Path(cell_csv_filename).parent
     dst_folder = Path(dataset.location)
@@ -77,23 +77,22 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     # Map acquisition database ID to ImageNumber column
     meta["image_map"] = image_map
 
-    channels_input = {}
-    for channels_filename in locate(str(root_folder), f"*{CHANNELS_FULL_CSV_ENDING}"):
-        channels_input = _import_channels_csv(db, channels_filename)
-        meta["channel_map"] = channels_input
-        break
+    # Import panel data: { Metal Tag : channel number }
+    channels_input = _import_panel(db, os.path.join(src_folder, PANEL_FILE))
+    meta["channel_map"] = channels_input
 
     object_relationships_df, object_relationships_input = _import_object_relationships(db, src_folder, dst_folder)
     if object_relationships_input:
         meta["object_relationships"] = object_relationships_input
 
+    # Convert cell.csv to AnnData file format
     cell_df, cell_input = _import_cell_csv(
         db, src_folder, dst_folder, image_number_to_acquisition_id, image_number_to_scaling, channels_input
     )
     if cell_input:
         meta["cell"] = cell_input
 
-    # Register heatmap columns
+    # Register neighbors columns
     neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]
     meta["neighbors_columns"] = neighbors_cols
 
@@ -119,11 +118,11 @@ def _import_image_csv(db: Session, src_folder: Path, dst_folder: Path):
     return df, artifact
 
 
-def _import_channels_csv(db: Session, src_uri: str):
-    df = pd.read_csv(src_uri, header=None)
+def _import_panel(db: Session, src_uri: str):
+    df = pd.read_csv(src_uri)
     artifact = {}
-    for index, row in df.iterrows():
-        artifact[row[0]] = index + 1
+    for _, row in df.iterrows():
+        artifact[row.loc["Metal Tag"]] = int(row.loc["channel"])
     return artifact
 
 
@@ -204,12 +203,12 @@ def _import_cell_csv(
 def _import_mask(db: Session, src_folder: Path, row: pd.Series, dataset: DatasetModel):
     filename = row["FileName_CellImage"]
     image_number = row["ImageNumber"]
-    uri = src_folder / filename
+    uri = src_folder / "masks" / filename
 
     p = re.compile(
-        "(?P<Name>.*)_s(?P<SlideID>[0-9]+)_p(?P<PanoramaID>[0-9]+)_r(?P<AcquisitionROIID>[0-9]+)_a(?P<AcquisitionID>[0-9]+)_ac.*"
+        "(?P<Name>.*)_s(?P<SlideID>[0-9]+)_a(?P<AcquisitionID>[0-9]+)_ac.*"
     )
-    name, slide_origin_id, panorama_origin_id, roi_origin_id, acquisition_origin_id = p.findall(filename)[0]
+    name, slide_origin_id, acquisition_origin_id = p.findall(filename)[0]
 
     slide = slide_service.get_by_name(db, project_id=dataset.project_id, name=name)
     if slide is None:

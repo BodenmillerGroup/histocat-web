@@ -42,7 +42,7 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
       const projectId = this.projects!.getters.activeProjectId;
       const presetData = {
         channelsSettings: this.settings!.getters.channelsSettings,
-        selectedTags: this.projects!.getters.selectedMetals
+        selectedTags: this.projects!.getters.selectedMetals,
       };
       const payload: IPresetCreate = {
         name: name,

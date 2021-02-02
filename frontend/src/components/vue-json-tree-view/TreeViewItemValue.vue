@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import {isString, isNaN, toNumber, isNumber, isNull, isBoolean, isFunction} from "lodash-es";
+import { isString, isNaN, toNumber, isNumber, isNull, isBoolean, isFunction } from "lodash-es";
 
 export default {
   name: "tree-view-item",

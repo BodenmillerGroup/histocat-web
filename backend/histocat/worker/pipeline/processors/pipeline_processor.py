@@ -50,7 +50,11 @@ def process_pipeline(db: Session, params: PipelineProcessDto):
         raise PipelineError("The dataset does not have a proper input.")
 
     result_create_params = ResultCreateDto(
-        dataset_id=params.dataset_id, status="ready", name=str(datetime.utcnow()), pipeline=params.steps, input=params.acquisition_ids,
+        dataset_id=params.dataset_id,
+        status="ready",
+        name=str(datetime.utcnow()),
+        pipeline=params.steps,
+        input=params.acquisition_ids,
     )
     result = result_service.create(db, params=result_create_params)
 

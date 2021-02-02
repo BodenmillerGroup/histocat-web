@@ -10,9 +10,9 @@ from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage import img_as_ubyte, io
 from skimage.color import label2rgb
+from skimage.segmentation import find_boundaries
 
 from histocat.core.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
-from skimage.segmentation import find_boundaries
 
 EPSILON = sys.float_info.epsilon  # Smallest possible difference.
 
@@ -91,7 +91,7 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
         m = np.isin(mask, mask_settings.cellIds)
         mask[~m] = 0
 
-    boundary = find_boundaries(mask, connectivity=1, mode='inner')
+    boundary = find_boundaries(mask, connectivity=1, mode="inner")
     image[boundary > 0] = 1
 
     # if heatmap_dict:

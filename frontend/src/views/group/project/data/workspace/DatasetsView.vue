@@ -28,15 +28,6 @@
             </v-menu>
           </v-list-item-icon>
 
-          <!--          <v-list-item-icon>-->
-          <!--            <v-tooltip bottom>-->
-          <!--              <template v-slot:activator="{ on }">-->
-          <!--                <v-icon v-on="on">{{ item.icon }}</v-icon>-->
-          <!--              </template>-->
-          <!--              <span>Status: {{ item.status }}</span>-->
-          <!--            </v-tooltip>-->
-          <!--          </v-list-item-icon>-->
-
           <v-list-item-content>
             <v-list-item-title>{{ item.name }}</v-list-item-title>
             <v-list-item-subtitle v-if="item.description">{{ item.description }}</v-list-item-subtitle>
