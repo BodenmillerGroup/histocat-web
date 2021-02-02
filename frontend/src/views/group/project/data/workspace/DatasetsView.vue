@@ -16,13 +16,26 @@
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.uid">
           <v-list-item-icon>
-            <v-tooltip bottom>
+            <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
               <template v-slot:activator="{ on }">
-                <v-icon v-on="on">{{ item.icon }}</v-icon>
+                <v-btn v-on="on" small icon color="grey" @click.stop="">
+                  <v-icon>{{ item.icon }}</v-icon>
+                </v-btn>
               </template>
-              <span>Status: {{ item.status }}</span>
-            </v-tooltip>
+              <v-card tile flat class="card overflow-y-auto">
+                <TreeView :data="item.meta" :options="{ modifiable: false, rootObjectKey: 'meta' }" />
+              </v-card>
+            </v-menu>
           </v-list-item-icon>
+
+          <!--          <v-list-item-icon>-->
+          <!--            <v-tooltip bottom>-->
+          <!--              <template v-slot:activator="{ on }">-->
+          <!--                <v-icon v-on="on">{{ item.icon }}</v-icon>-->
+          <!--              </template>-->
+          <!--              <span>Status: {{ item.status }}</span>-->
+          <!--            </v-tooltip>-->
+          <!--          </v-list-item-icon>-->
 
           <v-list-item-content>
             <v-list-item-title>{{ item.name }}</v-list-item-title>
@@ -105,9 +118,10 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import { centroidsModule } from "@/modules/centroids";
 import { resultsModule } from "@/modules/results";
 import UploadButton from "@/components/UploadButton.vue";
+import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 
 @Component({
-  components: { UploadButton },
+  components: { TreeView, UploadButton },
 })
 export default class DatasetsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
@@ -132,11 +146,13 @@ export default class DatasetsView extends Vue {
   datasetChanged(index?: number | null) {
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
-      this.datasetsContext.actions.setActiveDatasetId(dataset.id);
-      Promise.all([
-        this.centroidsContext.actions.getCentroids({ datasetId: dataset.id }),
-        this.resultContext.actions.getDatasetResults(dataset.id),
-      ]);
+      if (dataset.status === "ready") {
+        this.datasetsContext.actions.setActiveDatasetId(dataset.id);
+        Promise.all([
+          this.centroidsContext.actions.getCentroids({ datasetId: dataset.id }),
+          this.resultContext.actions.getDatasetResults(dataset.id),
+        ]);
+      }
     } else {
       this.datasetsContext.actions.setActiveDatasetId(null);
     }
@@ -191,5 +207,8 @@ export default class DatasetsView extends Vue {
 <style scoped>
 .scroll-view {
   height: calc(100vh - 132px);
+}
+.card {
+  height: 40vh;
 }
 </style>

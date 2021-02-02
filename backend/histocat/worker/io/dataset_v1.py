@@ -46,7 +46,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
         logger.warning(f"Cannot import dataset: project [id: {project_id}] does not exist.")
         return
 
-    create_params = DatasetCreateDto(project_id=project_id, status="importing")
+    create_params = DatasetCreateDto(project_id=project_id, status="pending")
     dataset = dataset_service.create(db, params=create_params)
     meta = {}
 

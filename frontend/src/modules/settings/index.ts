@@ -28,6 +28,7 @@ export class SettingsState {
   mask: IMaskSettings = {
     mode: "origin",
   };
+  mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom"
 }
 
 export const settingsModule = new Module({

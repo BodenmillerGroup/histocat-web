@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "histocat"
-version = "2021.01.25"
+version = "2021.02.02"
 description = "histoCAT for Web"
 authors = ["Anton Rau <anton.rau@uzh.ch>"]
 
@@ -12,22 +12,22 @@ authors = ["Anton Rau <anton.rau@uzh.ch>"]
 python = ">=3.8,<3.9"
 aiofiles = "^0.6.0"
 aioredis = { version = "^1.3.1", extras = ["hiredis"] }
-alembic = { version = "^1.5.2", optional = true }
-deepcell-cpu = { version = "^0.8.3", optional = true }
+alembic = { version = "^1.5.3", optional = true }
+deepcell-cpu = { version = "^0.8.4", optional = true }
 dramatiq = { version = "^1.10.0", extras = ["rabbitmq", "watch"] }
 email-validator = "^1.1.1"
 emails = "^0.6"
 fastapi = "^0.63.0"
 gunicorn = { version = "^20.0.4", optional = true }
-imctools = "^2.1.3"
-jinja2 = { version = "^2.11.2", optional = true }
+imctools = "^2.1.4"
+jinja2 = { version = "^2.11.3", optional = true }
 mahotas = "^1.4.11"
-opencv-python-headless = "3.4.9.31"
+opencv-python-headless = "^4.5.1.48"
 orjson = "^3.4.7"
 passlib = { version = "^1.7.4", extras = ["bcrypt"] }
 psycopg2-binary = "^2.8.6"
 ptvsd = "^4.3.2"
-pyarrow = "^2.0.0"
+pyarrow = "^3.0.0"
 pydantic = "^1.7.3"
 pydevd-pycharm = "^203.*"
 PyJWT = "^2.0.0"
@@ -37,7 +37,7 @@ redis = { version = "^3.5.3", extras = ["hiredis"] }
 requests = "^2.25.1"
 scanpy = { version = "^1.6.0", extras = ["leiden", "louvain"] }
 scikit-image = "0.16.2"
-SQLAlchemy = "^1.3.22"
+SQLAlchemy = "^1.3.23"
 tenacity = "^6.3.1"
 ujson = "^4.0.1"
 uvicorn = { version = "^0.13.3", extras = ["standard"], optional = true }

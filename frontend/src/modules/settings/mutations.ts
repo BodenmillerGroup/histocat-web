@@ -61,6 +61,10 @@ export class SettingsMutations extends Mutations<SettingsState> {
     this.state.mask = payload;
   }
 
+  setMouseMode(mode: "panZoom" | "lasso" | "rotate") {
+    this.state.mouseMode = mode;
+  }
+
   reset() {
     // acquire initial state
     const s = new SettingsState();

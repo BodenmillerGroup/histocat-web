@@ -7,7 +7,7 @@
  */
 
 //Change this value every time before you build
-const LATEST_VERSION = "2021.01.25";
+const LATEST_VERSION = require("../package.json").version;
 
 workbox.core.setCacheNameDetails({ prefix: "histocat" });
 

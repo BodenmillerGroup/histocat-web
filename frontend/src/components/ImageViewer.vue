@@ -84,6 +84,17 @@ export default class ImageViewer extends Vue {
     return this.analysisContext.getters.regionsEnabled;
   }
 
+  get mouseMode() {
+    return this.settingsContext.getters.mouseMode;
+  }
+
+  @Watch("mouseMode")
+  mouseModeChanged(value) {
+    this.scatterplot.set({
+      mouseMode: value
+    });
+  }
+
   onIntersect(entries, observer, isIntersecting) {
     if (isIntersecting) {
       const canvas = this.$refs.canvasWebGl as Element;
@@ -268,6 +279,7 @@ export default class ImageViewer extends Vue {
       showRecticle: false,
       deselectOnDblClick: true,
       deselectOnEscape: true,
+      mouseMode: "panZoom"
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);

@@ -23,6 +23,14 @@
         <v-radio label="Overlay" value="overlay" />
       </v-radio-group>
       <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
+      <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
+        <v-btn value="panZoom" small>
+          <v-icon>mdi-arrow-top-left</v-icon>
+        </v-btn>
+        <v-btn value="lasso" small>
+          <v-icon>mdi-lasso</v-icon>
+        </v-btn>
+      </v-btn-toggle>
     </v-toolbar>
     <ImageViewer />
   </div>
@@ -58,6 +66,14 @@ export default class BlendTab extends Vue {
       mode: value,
     });
     this.projectsContext.actions.getChannelStackImage();
+  }
+
+  get mouseMode() {
+    return this.settingsContext.getters.mouseMode;
+  }
+
+  set mouseMode(value: "panZoom" | "lasso" | "rotate") {
+    this.settingsContext.mutations.setMouseMode(value);
   }
 
   get regionsEnabled() {
