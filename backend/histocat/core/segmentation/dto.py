@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -33,8 +33,9 @@ class SegmentationSubmissionDto(BaseModel):
     dataset_name: Optional[str]
     dataset_description: Optional[str]
     model_id: int
-    acquisition_ids: Sequence[int]
-    nuclei_channels: Sequence[str]
-    cytoplasm_channels: Sequence[str]
+    acquisition_ids: List[int]
+    channels: List[str]
+    nuclei_channels: List[str]
+    cytoplasm_channels: List[str]
     preprocessing: SegmentationPreprocessingSettingsDto
     postprocessing: SegmentationPostprocessingSettingsDto

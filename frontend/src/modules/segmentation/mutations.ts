@@ -6,6 +6,10 @@ export class SegmentationMutations extends Mutations<SegmentationState> {
     this.state.selectedAcquisitionIds = ids;
   }
 
+  setChannels(channels: string[]) {
+    this.state.channels = channels;
+  }
+
   setNucleiChannels(channels: string[]) {
     this.state.nucleiChannels = channels;
   }

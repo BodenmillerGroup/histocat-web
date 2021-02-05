@@ -144,7 +144,7 @@ export default class ResultsView extends Vue {
     const activeDataset = this.datasetContext.getters.activeDataset;
     const markers = this.resultsContext.getters.markers;
 
-    if (!activeDataset || !activeDataset.meta["neighbors_columns"]) {
+    if (!activeDataset || !activeDataset.meta["columns"]) {
       return [];
     }
     const channelItems =
@@ -161,7 +161,7 @@ export default class ResultsView extends Vue {
               label: item,
             };
           });
-    const neighborItems = activeDataset.meta["neighbors_columns"].map((item) => {
+    const neighborItems = activeDataset.meta["columns"]["neighbors"].map((item) => {
       return {
         type: "neighbor",
         label: item,

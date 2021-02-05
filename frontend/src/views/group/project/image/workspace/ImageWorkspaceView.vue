@@ -137,8 +137,8 @@ export default class ImageWorkspaceView extends Vue {
       return this.projectData.slides.map((slide) => {
         const acquisitions = slide.acquisitions.map((acquisition) => {
           let hasMask = false;
-          if (this.dataset && this.dataset.meta.probability_masks) {
-            hasMask = !!this.dataset.meta.probability_masks[acquisition.id];
+          if (this.dataset && this.dataset.meta.masks) {
+            hasMask = !!this.dataset.meta.masks[acquisition.id];
           }
           return Object.assign({}, acquisition, {
             type: "acquisition",

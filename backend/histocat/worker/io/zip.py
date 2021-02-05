@@ -4,12 +4,19 @@ import os
 import zipfile
 from pathlib import Path
 
+from imctools.io.utils import MCD_FILENDING, SCHEMA_XML_SUFFIX, SESSION_JSON_SUFFIX
 from sqlalchemy.orm import Session
-from imctools.io.utils import MCD_FILENDING, SESSION_JSON_SUFFIX, SCHEMA_XML_SUFFIX
 
-from histocat.core.constants import CSV_FILE_EXTENSION
 from histocat.core.utils import timeit
-from histocat.worker.io import imcfolder_v1, dataset_v1, dataset_v2, mcd, imcfolder, utils
+from histocat.worker.io import (
+    dataset_v1,
+    dataset_v2,
+    imcfolder,
+    imcfolder_v1,
+    mcd,
+    utils,
+)
+from histocat.worker.io.utils import CELL_CSV_FILENAME
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +49,7 @@ def import_dataset_zip(db: Session, uri: str, project_id: int):
     with zipfile.ZipFile(path, "r") as zip:
         zip.extractall(output_dir)
 
-    for cell_csv_filename in utils.locate(output_dir, f"{dataset_v1.CELL_FILENAME}{CSV_FILE_EXTENSION}"):
+    for cell_csv_filename in utils.locate(output_dir, CELL_CSV_FILENAME):
         src_folder = Path(cell_csv_filename).parent
         is_v2 = os.path.exists(os.path.join(src_folder, "var_cell.csv"))
         if is_v2:

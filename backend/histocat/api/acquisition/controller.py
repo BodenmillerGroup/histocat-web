@@ -170,12 +170,6 @@ async def download_channel_stack(
 
     format = params.format if params.format is not None else "png"
 
-    # buffer = BytesIO()
-    # imageio.imwrite(buffer, additive_image, format=format)
-    # buffer.seek(0)
-    #
-    # return StreamingResponse(buffer, media_type=f"image/{format}")
-
     additive_image = img_as_ubyte(additive_image)
     additive_image = cv2.cvtColor(additive_image, cv2.COLOR_BGR2RGB)
     status, buffer = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)

@@ -3,6 +3,9 @@ import os
 import shutil
 from pathlib import Path
 
+IMAGE_CSV_FILENAME = "Image.csv"
+CELL_CSV_FILENAME = "cell.csv"
+
 
 def locate(root: str, pattern: str):
     """

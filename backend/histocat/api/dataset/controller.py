@@ -60,12 +60,7 @@ def get_centroids(
     if not dataset:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Dataset id:{dataset_id} not found")
 
-    cell_input = dataset.meta.get("cell")
-
-    if not cell_input:
-        raise HTTPException(status_code=400, detail="The dataset does not have a proper input.")
-
-    adata = ad.read_h5ad(cell_input.get("location"))
+    adata = ad.read_h5ad(dataset.cell_file_location())
     output = {
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),

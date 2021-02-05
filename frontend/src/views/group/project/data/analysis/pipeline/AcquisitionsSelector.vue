@@ -77,11 +77,11 @@ export default class AcquisitionsSelector extends Vue {
     if (this.projectData.slides) {
       for (const s of this.projectData.slides) {
         for (const a of s.acquisitions) {
-          let hasMask = false;
-          if (this.activeDataset && this.activeDataset.meta.probability_masks) {
-            hasMask = !!this.activeDataset.meta.probability_masks[a.id];
+          let hasData = false;
+          if (this.activeDataset) {
+            hasData = this.activeDataset.acquisition_ids.includes(a.id);
           }
-          if (hasMask) {
+          if (hasData) {
             acquisitions.push(a);
           }
         }

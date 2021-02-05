@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
 
 from histocat.core.project import service as project_service
-from histocat.core.project.dto import ProjectFullDto
 
 from .dto import AcquisitionCreateDto, ChannelUpdateDto
 from .models import AcquisitionModel
@@ -31,7 +30,7 @@ def create(session: Session, params: AcquisitionCreateDto) -> AcquisitionModel:
     return item
 
 
-def update_custom_label(session: Session, *, item: AcquisitionModel, params: ChannelUpdateDto) -> ProjectFullDto:
+def update_custom_label(session: Session, *, item: AcquisitionModel, params: ChannelUpdateDto):
     for a in item.slide.acquisitions:
         channel_data = a.channels.get(params.name)
         channel_data["customLabel"] = params.customLabel

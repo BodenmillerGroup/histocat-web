@@ -276,8 +276,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
       output["datasetId"] = activeDataset.id;
       const maskSettings = this.settings!.getters.maskSettings;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
-      if (activeAcquisitionId && activeDataset.meta.probability_masks) {
-        const mask = activeDataset.meta.probability_masks[activeAcquisitionId];
+      if (activeAcquisitionId && activeDataset.meta.masks) {
+        const mask = activeDataset.meta.masks[activeAcquisitionId];
         if (mask) {
           output["mask"] = {
             colorize: false,

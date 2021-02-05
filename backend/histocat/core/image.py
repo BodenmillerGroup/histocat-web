@@ -9,7 +9,6 @@ from mahotas import bwperim
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage import img_as_ubyte, io
-from skimage.color import label2rgb
 from skimage.segmentation import find_boundaries
 
 from histocat.core.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto

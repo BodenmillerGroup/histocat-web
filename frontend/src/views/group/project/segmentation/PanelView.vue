@@ -133,8 +133,10 @@ export default class PanelView extends Vue {
   }
 
   typeChanged() {
+    const channels = this.channels.map((v) => v.name);
     const nucleiChannels = this.items.filter((item) => item.type === "nuclear").map((item) => item.name);
     const cytoplasmChannels = this.items.filter((item) => item.type === "cytoplasm").map((item) => item.name);
+    this.segmentationContext.mutations.setChannels(channels);
     this.segmentationContext.mutations.setNucleiChannels(nucleiChannels);
     this.segmentationContext.mutations.setCytoplasmChannels(cytoplasmChannels);
   }

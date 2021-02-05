@@ -233,14 +233,21 @@ export default class SegmentationSettingsView extends Vue {
   async submit() {
     if ((this.$refs.form as any).validate()) {
       const acquisitionIds = this.segmentationContext.getters.selectedAcquisitionIds;
+      const channels = this.segmentationContext.getters.channels;
       const nucleiChannels = this.segmentationContext.getters.nucleiChannels;
       const cytoplasmChannels = this.segmentationContext.getters.cytoplasmChannels;
+
+      if (nucleiChannels.length === 0 || cytoplasmChannels.length === 0) {
+        self.alert("Select at least one nuclear and one cytoplasm channel!")
+        return;
+      }
 
       await this.segmentationContext.actions.processSegmentation({
         dataset_name: this.datasetName,
         dataset_description: this.datasetDescription,
         model_id: this.modelId!,
         acquisition_ids: acquisitionIds,
+        channels: channels,
         nuclei_channels: nucleiChannels,
         cytoplasm_channels: cytoplasmChannels,
         preprocessing: {

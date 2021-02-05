@@ -28,6 +28,9 @@ export interface IDataset {
   uid: string;
   name: string;
   description: string;
+  origin: string;
+  acquisition_ids: number[];
+  channels: string[];
   status: string;
   output?: {
     tsne: { [name: string]: IDatasetTSNEOutput };
@@ -35,30 +38,10 @@ export interface IDataset {
     phenograph: { [name: string]: IDatasetPhenoGraphOutput };
   };
   meta: {
-    acquisition_metadata?: {
-      location: string;
-    };
-    cell?: {
-      location: string;
-    };
-    image?: {
-      location: string;
-    };
-    object_relationships?: {
-      location: string;
-    };
-    probability_masks?: {
+    masks?: {
       [id: number]: {
         location: string;
         slide: {
-          id: number;
-          origin_id: number;
-        };
-        panorama: {
-          id: number;
-          origin_id: number;
-        };
-        roi: {
           id: number;
           origin_id: number;
         };

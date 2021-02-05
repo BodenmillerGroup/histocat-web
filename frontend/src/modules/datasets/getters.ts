@@ -19,12 +19,6 @@ export class DatasetsGetters extends Getters<DatasetsState> {
   }
 
   get channels() {
-    if (this.getters.activeDataset && this.getters.activeDataset.meta["channel_map"]) {
-      const dict = this.getters.activeDataset.meta["channel_map"];
-      return Object.keys(dict).sort((a, b) => {
-        return dict[a] - dict[b];
-      });
-    }
-    return [];
+    return this.getters.activeDataset ? this.getters.activeDataset.channels : [];
   }
 }

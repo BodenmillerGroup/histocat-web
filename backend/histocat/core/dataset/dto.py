@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -9,6 +9,9 @@ class DatasetCreateDto(BaseModel):
     status: str
     name: Optional[str]
     description: Optional[str]
+    origin: str
+    acquisition_ids: Optional[List[int]]
+    channels: Optional[List[str]]
     meta: Optional[dict]
 
 
@@ -16,6 +19,8 @@ class DatasetUpdateDto(BaseModel):
     status: Optional[str]
     name: Optional[str]
     description: Optional[str]
+    acquisition_ids: Optional[List[int]]
+    channels: Optional[List[str]]
     meta: Optional[dict]
 
 
@@ -26,6 +31,9 @@ class DatasetDto(BaseModel):
     status: str
     name: Optional[str]
     description: Optional[str]
+    origin: str
+    acquisition_ids: Optional[List[int]]
+    channels: Optional[List[str]]
     meta: Optional[dict]
     location: Optional[str]
     created_at: datetime

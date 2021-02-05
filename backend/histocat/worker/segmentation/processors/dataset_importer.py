@@ -29,7 +29,7 @@ PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequence[Dict]):
     """Import dataset from the segmentation pipeline output."""
 
-    meta = {"origin": "DeepCell", "neighbors_columns": []}
+    meta = {"columns": {"neighbors": []}}
 
     masks = {}
     for ac_segmentation_data in segmentation_data:
@@ -40,16 +40,14 @@ def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequen
             "acquisition": {"id": acquisition.id, "origin_id": acquisition.origin_id},
             "slide": {"id": acquisition.slide.id, "origin_id": acquisition.slide.origin_id},
         }
-    meta["probability_masks"] = masks
+    meta["masks"] = masks
 
-    cell_location = _import_cells(db, dataset=dataset, segmentation_data=segmentation_data)
-    if cell_location:
-        meta["cell"] = {"location": cell_location}
+    _import_cells(dataset=dataset, segmentation_data=segmentation_data)
 
     return meta
 
 
-def _import_cells(db: Session, dataset: DatasetModel, segmentation_data: Sequence[Dict]):
+def _import_cells(dataset: DatasetModel, segmentation_data: Sequence[Dict]):
     dst = os.path.join(dataset.location, f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}")
 
     object_numbers_all = None

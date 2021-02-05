@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.29
+    image: dpage/pgadmin4:4.30
     depends_on:
       - db
     environment:
@@ -128,7 +128,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer-ce:2.0.1-alpine
+    image: portainer/portainer-ce:2.1.1-alpine
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.4.0
+    image: library/traefik:2.4.2
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

@@ -23,6 +23,7 @@ export interface ISegmentationSubmission {
   dataset_description: string | null;
   model_id: number;
   acquisition_ids: readonly number[];
+  channels: string[];
   nuclei_channels: string[];
   cytoplasm_channels: string[];
   preprocessing: ISegmentationPreprocessingSettings;

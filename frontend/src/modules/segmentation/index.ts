@@ -5,6 +5,7 @@ import { SegmentationMutations } from "./mutations";
 
 export class SegmentationState {
   selectedAcquisitionIds: ReadonlyArray<number> = [];
+  channels: string[] = [];
   nucleiChannels: string[] = [];
   cytoplasmChannels: string[] = [];
 }

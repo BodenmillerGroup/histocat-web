@@ -6,6 +6,10 @@ export class SegmentationGetters extends Getters<SegmentationState> {
     return this.state.selectedAcquisitionIds;
   }
 
+  get channels() {
+    return this.state.channels;
+  }
+
   get nucleiChannels() {
     return this.state.nucleiChannels;
   }

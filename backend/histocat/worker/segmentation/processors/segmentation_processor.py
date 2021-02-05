@@ -40,7 +40,13 @@ def process_segmentation(db: Session, project_id: int, params: SegmentationSubmi
     # load UNET model
     keras_model = tf.keras.models.load_model(model.location, compile=False)
 
-    dataset_params = DatasetCreateDto(project_id=project_id, status="pending")
+    dataset_params = DatasetCreateDto(
+        project_id=project_id,
+        origin="DeepCell",
+        status="pending",
+        acquisition_ids=params.acquisition_ids,
+        channels=params.channels,
+    )
     if params.dataset_name:
         dataset_params.name = params.dataset_name
     if params.dataset_description:

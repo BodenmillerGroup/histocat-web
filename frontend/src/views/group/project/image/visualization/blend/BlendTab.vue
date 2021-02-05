@@ -20,7 +20,7 @@
       <v-radio-group label="Mode" v-model="mode" row dense mandatory hide-details :disabled="!hasMask" class="ml-8">
         <v-radio label="Origin" value="origin" />
         <v-radio label="Mask" value="mask" />
-        <v-radio label="Overlay" value="overlay" />
+        <v-radio label="Overlay" value="overlay" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'" />
       </v-radio-group>
       <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
       <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
@@ -92,14 +92,14 @@ export default class BlendTab extends Vue {
     return this.projectsContext.getters.activeAcquisition;
   }
 
-  get dataset() {
+  get activeDataset() {
     return this.datasetsContext.getters.activeDataset;
   }
 
   get hasMask() {
     let hasMask = false;
-    if (this.activeAcquisition && this.dataset && this.dataset.meta.probability_masks) {
-      hasMask = !!this.dataset.meta.probability_masks[this.activeAcquisition.id];
+    if (this.activeAcquisition && this.activeDataset && this.activeDataset.meta.masks) {
+      hasMask = !!this.activeDataset.meta.masks[this.activeAcquisition.id];
     }
     return hasMask;
   }
