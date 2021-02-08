@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2021.02.02",
+  "version": "2021.02.08",
   "private": true,
   "description": "histoCAT for Web",
   "author": {
@@ -81,6 +81,6 @@
     "vue-cli-plugin-webpack-bundle-analyzer": "4.0.0",
     "vue-masonry-css": "1.0.3",
     "vue-template-compiler": "2.6.12",
-    "vuetify-loader": "1.7.1"
+    "vuetify-loader": "1.7.2"
   }
 }

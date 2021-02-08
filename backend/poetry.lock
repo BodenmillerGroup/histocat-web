@@ -331,7 +331,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 
 [[package]]
 name = "deepcell-cpu"
-version = "0.8.4"
+version = "0.8.6"
 description = "Deep learning for single cell image segmentation"
 category = "main"
 optional = true
@@ -1664,7 +1664,7 @@ typing_extensions = ["typing-extensions (>=3.7.2)"]
 
 [[package]]
 name = "pydevd-pycharm"
-version = "211.4961.30"
+version = "211.5538.22"
 description = "PyCharm Debugger (used in PyCharm and PyDev)"
 category = "main"
 optional = false
@@ -2639,7 +2639,7 @@ worker = ["deepcell-cpu", "pynndescent", "xarray"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.9"
-content-hash = "d2828eab28b5f3bca0296456babbd7744dc59e870b547ae89d471774f940c38b"
+content-hash = "f9906fea8263f0fa8a44b4dccbbb749b4c42a7759036015fa32e833335bddd05"
 
 [metadata.files]
 absl-py = [
@@ -2853,7 +2853,7 @@ decorator = [
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
 ]
 deepcell-cpu = [
-    {file = "DeepCell-CPU-0.8.4.tar.gz", hash = "sha256:cd8834d133e3f6947df7a3bf4c0d2d24cebb49a40302ef5e628433834603d430"},
+    {file = "DeepCell-CPU-0.8.6.tar.gz", hash = "sha256:f9dc4fe2e98029ba47c96e82be2562910b05a07d5d76740d93db58f29119de7f"},
 ]
 deepcell-toolbox = [
     {file = "Deepcell_Toolbox-0.8.6.tar.gz", hash = "sha256:01dfb5195707bf92f9039381d5da057406ae56597b9255a4dd082f77c07aea11"},
@@ -3995,7 +3995,7 @@ pydantic = [
     {file = "pydantic-1.7.3.tar.gz", hash = "sha256:213125b7e9e64713d16d988d10997dabc6a1f73f3991e1ff8e35ebb1409c7dc9"},
 ]
 pydevd-pycharm = [
-    {file = "pydevd-pycharm-211.4961.30.tar.gz", hash = "sha256:8269b15574e90a064375b639ae4939de4cc40b1371498a1ebbc788e118a30b98"},
+    {file = "pydevd-pycharm-211.5538.22.tar.gz", hash = "sha256:f64873155b0fd48d7b4f53ba82127b55aee188b83b4675df59d949da28edfb73"},
 ]
 pyflakes = [
     {file = "pyflakes-2.2.0-py2.py3-none-any.whl", hash = "sha256:0d94e0e05a19e57a99444b6ddcf9a6eb2e5c68d3ca1e98e90707af8152c90a92"},
