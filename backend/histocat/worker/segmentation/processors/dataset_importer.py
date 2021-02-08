@@ -10,20 +10,9 @@ import pandas as pd
 from sqlalchemy.orm import Session
 
 from histocat.core.acquisition.models import AcquisitionModel
-from histocat.core.constants import ANNDATA_FILE_EXTENSION
-from histocat.core.dataset.models import DatasetModel
+from histocat.core.dataset.models import DatasetModel, CELL_FILENAME
 
 logger = logging.getLogger(__name__)
-
-
-EXPERIMENT_CSV_FILENAME = "Experiment"
-ACQUISITION_METADATA_FILENAME = "acquisition_metadata"
-OBJECT_RELATIONSHIPS_FILENAME = "Object relationships"
-IMAGE_FILENAME = "Image"
-CELL_FILENAME = "cell"
-
-CHANNELS_FULL_CSV_ENDING = "_ac_full.csv"
-PROBABILITIES_MASK_TIFF_ENDING = "_Probabilities_mask.tiff"
 
 
 def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequence[Dict]):
@@ -48,7 +37,7 @@ def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequen
 
 
 def _import_cells(dataset: DatasetModel, segmentation_data: Sequence[Dict]):
-    dst = os.path.join(dataset.location, f"{CELL_FILENAME}{ANNDATA_FILE_EXTENSION}")
+    dst = os.path.join(dataset.location, CELL_FILENAME)
 
     object_numbers_all = None
     centroids_x_all = None
@@ -105,6 +94,7 @@ def _import_cells(dataset: DatasetModel, segmentation_data: Sequence[Dict]):
         x_df[k] = v
         var_names.append(k)
     var = pd.DataFrame(index=var_names)
+    var.index.astype(str, copy=False)
     var["Channel"] = var.index
     X_counts = x_df.to_numpy()
 

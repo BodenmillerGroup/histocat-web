@@ -19,6 +19,7 @@ class ResultUpdateDto(BaseModel):
     name: Optional[str]
     description: Optional[str]
     output: Optional[Any]
+    status: Optional[str]
 
 
 class ResultDto(BaseModel):

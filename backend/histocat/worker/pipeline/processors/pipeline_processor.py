@@ -44,14 +44,13 @@ def process_pipeline(db: Session, params: PipelineProcessDto):
     """
 
     dataset = dataset_service.get(db, id=params.dataset_id)
-    cell_input = dataset.meta.get("cell")
 
-    if not cell_input or len(params.acquisition_ids) == 0:
+    if len(params.acquisition_ids) == 0:
         raise PipelineError("The dataset does not have a proper input.")
 
     result_create_params = ResultCreateDto(
         dataset_id=params.dataset_id,
-        status="ready",
+        status="pending",
         name=str(datetime.utcnow()),
         pipeline=params.steps,
         input=params.acquisition_ids,
@@ -66,7 +65,7 @@ def process_pipeline(db: Session, params: PipelineProcessDto):
     sc.settings.cachedir = result.location
     sc.settings.writedir = result.location
 
-    adata = sc.read_h5ad(cell_input.get("location"))
+    adata = sc.read_h5ad(dataset.cell_file_location())
     output = dict()
 
     # Subset observations for selected acquisitions
@@ -78,10 +77,9 @@ def process_pipeline(db: Session, params: PipelineProcessDto):
         if processor:
             adata = processor.process(adata, step=step, output=output)
 
-    # location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
     sc.write("output", adata=adata)
 
-    result_update_params = ResultUpdateDto(output=output)
+    result_update_params = ResultUpdateDto(output=output, status="ready")
     result = result_service.update(db, item=result, params=result_update_params)
 
     redis_manager.publish(
