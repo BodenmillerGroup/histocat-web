@@ -106,7 +106,7 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
 
 
 def draw_overlay(mask_settings: MaskSettingsDto):
-    filename = mask_settings.location.replace("mask.tiff", "overlay.png")
+    filename = mask_settings.location.replace("mask.tiff", "origin.png")
     overlay = io.imread(filename)
     return overlay
 

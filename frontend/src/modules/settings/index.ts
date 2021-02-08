@@ -26,7 +26,7 @@ export class SettingsState {
     },
   };
   mask: IMaskSettings = {
-    mode: "origin",
+    mode: "raw",
   };
   mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom";
 }

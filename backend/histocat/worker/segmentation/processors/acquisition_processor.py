@@ -56,7 +56,7 @@ def process_acquisition(
     rgb_images = create_rgb_image(im, channel_colors=["green", "blue"])
     overlay_data = make_outline_overlay(rgb_data=rgb_images, predictions=segmentation_predictions)
 
-    filename = os.path.basename(acquisition.location).replace("ome.tiff", "overlay.png")
+    filename = os.path.basename(acquisition.location).replace("ome.tiff", "origin.png")
     io.imsave(os.path.join(dataset.location, filename), overlay_data[0, :, :, :])
 
     mask_filename = os.path.basename(acquisition.location).replace("ome.tiff", "mask.tiff")

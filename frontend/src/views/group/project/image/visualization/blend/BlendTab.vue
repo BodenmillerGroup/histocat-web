@@ -17,10 +17,10 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-radio-group label="Mode" v-model="mode" row dense mandatory hide-details :disabled="!hasMask" class="ml-8">
-        <v-radio label="Origin" value="origin" />
+      <v-radio-group label="Mode:" v-model="mode" row dense mandatory hide-details :disabled="!hasMask" class="ml-8">
+        <v-radio label="Raw" value="raw" />
         <v-radio label="Mask" value="mask" />
-        <v-radio label="Overlay" value="overlay" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'" />
+        <v-radio label="Mask Origin" value="origin" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'" />
       </v-radio-group>
       <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
       <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
@@ -60,7 +60,7 @@ export default class BlendTab extends Vue {
     return this.settingsContext.getters.maskSettings.mode;
   }
 
-  set mode(value: string) {
+  set mode(value: "raw" | "mask" | "origin") {
     this.settingsContext.actions.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
       mode: value,

@@ -162,7 +162,7 @@ async def download_channel_stack(
                 heatmap_dict.pop("0", None)
 
         additive_image = draw_mask(additive_image, params.mask, heatmap_dict)
-    elif params.datasetId and params.mask and params.mask.mode == "overlay":
+    elif params.datasetId and params.mask and params.mask.mode == "origin":
         additive_image = draw_overlay(params.mask)
 
     if params.scalebar.apply:
