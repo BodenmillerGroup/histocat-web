@@ -55,7 +55,7 @@ def create(session: Session, *, params: GroupCreateDto, user_id: int) -> GroupMo
     session.refresh(entity)
 
     member = member_service.create(
-        session, params=MemberCreateDto(group_id=entity.id, user_id=user_id, role=100, is_active=True)
+        session, group_id=entity.id, params=MemberCreateDto(user_id=user_id, role=100, is_active=True)
     )
 
     return entity
@@ -75,7 +75,7 @@ def update(session: Session, *, item: GroupModel, params: GroupUpdateDto) -> Gro
 
 def join(session: Session, *, group_id: int, user_id: int) -> Optional[GroupModel]:
     member = member_service.create(
-        session, params=MemberCreateDto(group_id=group_id, user_id=user_id, role=10, is_active=True)
+        session, group_id=group_id, params=MemberCreateDto(user_id=user_id, role=10, is_active=True)
     )
     return get_by_id(session, id=group_id)
 
