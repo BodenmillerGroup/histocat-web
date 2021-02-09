@@ -4,18 +4,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_active_user
+from histocat.api.security import get_active_member
 from histocat.core.member.models import MemberModel
 from histocat.core.preset import service
 from histocat.core.preset.dto import PresetCreateDto, PresetDto
-from histocat.core.user.models import UserModel
 
 router = APIRouter()
 
 
-@router.get("/presets/{preset_id}", response_model=PresetDto)
+@router.get("/groups/{group_id}/presets/{preset_id}", response_model=PresetDto)
 def get_by_id(
-    preset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, preset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get preset by id
@@ -24,9 +23,9 @@ def get_by_id(
     return item
 
 
-@router.get("/projects/{project_id}/presets", response_model=Sequence[PresetDto])
+@router.get("/groups/{group_id}/projects/{project_id}/presets", response_model=Sequence[PresetDto])
 def get_project_presets(
-    project_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get all project presets
@@ -49,9 +48,9 @@ def create(
     return items
 
 
-@router.delete("/presets/{preset_id}", response_model=int)
+@router.delete("/groups/{group_id}/presets/{preset_id}", response_model=int)
 def delete_by_id(
-    preset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, preset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Delete preset by id

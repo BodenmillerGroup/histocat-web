@@ -27,17 +27,11 @@ class GroupModel(Base):
 
     members = sa.orm.relationship("MemberModel", back_populates="group", cascade="all, delete, delete-orphan")
     projects = sa.orm.relationship("ProjectModel", back_populates="group", cascade="all, delete, delete-orphan")
-    models = sa.orm.relationship("ModelModel", back_populates="group", cascade="all, delete, delete-orphan")
 
     @autocreate_directory_property
     def projects_location(self) -> str:
         """Location where projects data are stored."""
         return os.path.join(self.location, "projects")
-
-    @autocreate_directory_property
-    def models_location(self) -> str:
-        """Location where segmentation models are stored."""
-        return os.path.join(self.location, "models")
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(id={self.id}, name={self.name})>"

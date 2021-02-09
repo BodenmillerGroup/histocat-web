@@ -1,7 +1,6 @@
 import { IUserProfile } from "@/modules/user/models";
 
 export interface IMemberCreate {
-  group_id: number;
   user_id: number;
   role: number;
   is_active: boolean;

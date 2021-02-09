@@ -16,14 +16,14 @@ export const api = {
       })
       .json<IPipeline>();
   },
-  async getProjectPipelines(projectId: number) {
-    return ApiManager.api.get(`projects/${projectId}/pipelines`).json<IPipeline[]>();
+  async getProjectPipelines(groupId: number, projectId: number) {
+    return ApiManager.api.get(`groups/${groupId}/projects/${projectId}/pipelines`).json<IPipeline[]>();
   },
-  async getPipeline(id: number) {
-    return ApiManager.api.get(`pipelines/${id}`).json<IPipeline>();
+  async getPipeline(groupId: number, id: number) {
+    return ApiManager.api.get(`groups/${groupId}/pipelines/${id}`).json<IPipeline>();
   },
-  async deletePipeline(id: number) {
-    return ApiManager.api.delete(`pipelines/${id}`).json<number>();
+  async deletePipeline(groupId: number, id: number) {
+    return ApiManager.api.delete(`groups/${groupId}/pipelines/${id}`).json<number>();
   },
   async processPipeline(groupId: number, data: IProcessPipeline) {
     return ApiManager.api

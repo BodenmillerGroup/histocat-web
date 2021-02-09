@@ -2,21 +2,21 @@ import { IModel, IModelUpdate } from "./models";
 import { ApiManager } from "@/utils/api";
 
 export const api = {
-  async updateModel(groupId: number, modelId: number, data: IModelUpdate) {
+  async updateModel(modelId: number, data: IModelUpdate) {
     return ApiManager.api
-      .patch(`groups/${groupId}/models/${modelId}`, {
+      .patch(`models/${modelId}`, {
         json: data,
       })
       .json<IModel>();
   },
-  async getGroupModels(groupId: number) {
-    return ApiManager.api.get(`groups/${groupId}/models`).json<IModel[]>();
+  async getAllModels() {
+    return ApiManager.api.get(`models`).json<IModel[]>();
   },
-  async getModel(groupId: number, modelId: number) {
-    return ApiManager.api.get(`groups/${groupId}/models/${modelId}`).json<IModel>();
+  async getModel(modelId: number) {
+    return ApiManager.api.get(`models/${modelId}`).json<IModel>();
   },
-  async deleteModel(groupId: number, modelId: number) {
-    return ApiManager.api.delete(`groups/${groupId}/models/${modelId}`).json<number>();
+  async deleteModel(modelId: number) {
+    return ApiManager.api.delete(`models/${modelId}`).json<number>();
   },
   // async createModel(
   //   token: string,
@@ -39,9 +39,9 @@ export const api = {
   //   };
   //   xhr.send(formData);
   // },
-  async createModel(groupId: number, formData: FormData) {
+  async createModel(formData: FormData) {
     return ApiManager.api
-      .post(`groups/${groupId}/models`, {
+      .post(`models`, {
         body: formData,
         timeout: false,
       })

@@ -97,25 +97,6 @@ export default new Router({
                   component: () =>
                     import(/* webpackChunkName: "group-members-edit" */ "@/views/group/members/EditMember.vue"),
                 },
-
-                {
-                  path: "models",
-                  name: "group-models",
-                  component: () =>
-                    import(/* webpackChunkName: "group-models" */ "@/views/group/models/ModelsListView.vue"),
-                },
-                {
-                  path: "models/create",
-                  name: "group-models-create",
-                  component: () =>
-                    import(/* webpackChunkName: "group-models-create" */ "@/views/group/models/CreateModel.vue"),
-                },
-                {
-                  path: "models/:id/edit",
-                  name: "group-models-edit",
-                  component: () =>
-                    import(/* webpackChunkName: "group-models-edit" */ "@/views/group/models/EditModel.vue"),
-                },
               ],
             },
 
@@ -160,6 +141,25 @@ export default new Router({
                   name: "admin-users-create",
                   component: () =>
                     import(/* webpackChunkName: "admin-users-create" */ "@/views/admin/user/CreateUser.vue"),
+                },
+
+                {
+                  path: "models",
+                  name: "admin-models",
+                  component: () =>
+                    import(/* webpackChunkName: "admin-models" */ "@/views/admin/models/ModelsListView.vue"),
+                },
+                {
+                  path: "models/create",
+                  name: "admin-models-create",
+                  component: () =>
+                    import(/* webpackChunkName: "admin-models-create" */ "@/views/admin/models/CreateModel.vue"),
+                },
+                {
+                  path: "models/:id/edit",
+                  name: "admin-models-edit",
+                  component: () =>
+                    import(/* webpackChunkName: "admin-models-edit" */ "@/views/admin/models/EditModel.vue"),
                 },
               ],
             },

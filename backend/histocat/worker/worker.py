@@ -115,8 +115,8 @@ def process_pipeline(payload: str):
 
 
 @dramatiq.actor(queue_name="import", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def import_model(uri: str, group_id: int, model_id: int):
-    logger.info(f"Importing model [{model_id}] into group [{group_id}] from {uri}")
+def import_model(uri: str, model_id: int):
+    logger.info(f"Importing model [{model_id}] from {uri}")
 
     path = os.path.dirname(os.path.abspath(uri))
     filename, file_extension = os.path.splitext(uri)

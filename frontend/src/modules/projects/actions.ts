@@ -160,7 +160,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
 
   async getChannelStats(payload: { acquisitionId: number; channelName: string }) {
     try {
-      return await api.getChannelStats(payload.acquisitionId, payload.channelName);
+      const groupId = this.group?.getters.activeGroupId!;
+      return await api.getChannelStats(groupId, payload.acquisitionId, payload.channelName);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -172,7 +173,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
       return;
     }
     try {
-      const response = await api.downloadChannelStackImage(params);
+      const groupId = this.group?.getters.activeGroupId!;
+      const response = await api.downloadChannelStackImage(groupId, params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -193,7 +195,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     params["mask"]["colorize"] = true;
     try {
       this.mutations.setColorizeMaskInProgress(true);
-      const response = await api.downloadChannelStackImage(params);
+      const groupId = this.group?.getters.activeGroupId!;
+      const response = await api.downloadChannelStackImage(groupId, params);
       const blob = await response.blob();
       const reader = new FileReader();
       reader.readAsDataURL(blob);
@@ -210,7 +213,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
   async exportChannelStackImage(format: ExportFormat = "png") {
     const params = await this.actions.prepareStackParams(format);
     try {
-      const response = await api.downloadChannelStackImage(params);
+      const groupId = this.group?.getters.activeGroupId!;
+      const response = await api.downloadChannelStackImage(groupId, params);
       const blob = await response.blob();
       saveAs(blob);
     } catch (error) {
@@ -220,7 +224,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
 
   async deleteSlide(id: number) {
     try {
-      const data = await api.deleteSlide(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deleteSlide(groupId, id);
       this.main!.mutations.addNotification({ content: "Slide successfully deleted", color: "success" });
     } catch (error) {
       await this.main!.actions.checkApiError(error);

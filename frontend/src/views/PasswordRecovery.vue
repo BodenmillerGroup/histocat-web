@@ -12,7 +12,7 @@
               <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
                 <v-text-field
                   @keyup.enter="submit"
-                  label="Username"
+                  label="Email"
                   type="text"
                   prepend-icon="mdi-account"
                   v-model="username"

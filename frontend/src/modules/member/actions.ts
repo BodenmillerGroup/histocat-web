@@ -6,20 +6,24 @@ import { api } from "./api";
 import { MemberGetters } from "./getters";
 import { MemberMutations } from "./mutations";
 import { IMemberCreate, IMemberUpdate } from "./models";
+import { groupModule } from "@/modules/group";
 
 export class MemberActions extends Actions<MemberState, MemberGetters, MemberMutations, MemberActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  group?: Context<typeof groupModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     // Create and retain main module context
     this.main = mainModule.context(store);
+    this.group = groupModule.context(store);
   }
 
   async createMember(payload: IMemberCreate) {
     try {
-      const data = await api.createMember(payload);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.createMember(groupId, payload);
       this.mutations.addEntity(data);
       this.main!.mutations.addNotification({ content: "Group member successfully created", color: "success" });
     } catch (error) {
@@ -29,7 +33,8 @@ export class MemberActions extends Actions<MemberState, MemberGetters, MemberMut
 
   async getMember(id: number) {
     try {
-      const data = await api.getMember(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getMember(groupId, id);
       if (data) {
         this.mutations.setEntity(data);
       }
@@ -40,7 +45,8 @@ export class MemberActions extends Actions<MemberState, MemberGetters, MemberMut
 
   async updateMember(payload: { id: number; data: IMemberUpdate }) {
     try {
-      const data = await api.updateMember(payload.id, payload.data);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.updateMember(groupId, payload.id, payload.data);
       this.mutations.updateEntity(data);
       this.main!.mutations.addNotification({ content: "Group member successfully updated", color: "success" });
     } catch (error) {
@@ -50,7 +56,8 @@ export class MemberActions extends Actions<MemberState, MemberGetters, MemberMut
 
   async deleteMember(id: number) {
     try {
-      const data = await api.deleteMember(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deleteMember(groupId, id);
       this.mutations.deleteEntity(data);
       this.main!.mutations.addNotification({ content: "Group member successfully deleted", color: "success" });
     } catch (error) {

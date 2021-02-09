@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 from starlette.responses import FileResponse
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user
+from histocat.api.security import get_active_member
+from histocat.core.member.models import MemberModel
 from histocat.core.slide import service
 from histocat.core.slide.dto import SlideDto
-from histocat.core.user.models import UserModel
 
 router = APIRouter()
 
@@ -28,9 +28,9 @@ async def read_slide_image(
     )
 
 
-@router.delete("/slides/{id}", response_model=SlideDto)
+@router.delete("/groups/{group_id}/slides/{id}", response_model=SlideDto)
 def delete_by_id(
-    id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Delete a specific slide by id

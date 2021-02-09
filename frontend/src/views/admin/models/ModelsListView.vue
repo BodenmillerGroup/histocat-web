@@ -4,9 +4,7 @@
       <v-toolbar-title>Models</v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
-        <v-btn v-if="isGroupAdmin" text :to="`/main/groups/${activeGroupId}/models/create`" color="primary">
-          Add Model
-        </v-btn>
+        <v-btn v-if="isAdmin" text :to="`/main/admin/models/create`" color="primary"> Add Model </v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-card>
@@ -37,9 +35,8 @@
             <v-list dense>
               <v-list-item
                 :to="{
-                  name: 'group-models-edit',
+                  name: 'admin-models-edit',
                   params: {
-                    groupId: activeGroupId,
                     id: item.id,
                   },
                 }"
@@ -51,7 +48,7 @@
                   <v-list-item-title>Edit</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item v-if="isGroupAdmin" @click="deleteModel(item.id)">
+              <v-list-item v-if="isAdmin" @click="deleteModel(item.id)">
                 <v-list-item-icon>
                   <v-icon color="red accent-1">mdi-delete-outline</v-icon>
                 </v-list-item-icon>
@@ -69,12 +66,12 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { groupModule } from "@/modules/group";
 import { modelsModule } from "@/modules/models";
+import { mainModule } from "@/modules/main";
 
 @Component
 export default class ModelsListView extends Vue {
-  readonly groupContext = groupModule.context(this.$store);
+  readonly mainContext = mainModule.context(this.$store);
   readonly modelsContext = modelsModule.context(this.$store);
 
   readonly headers = [
@@ -103,12 +100,8 @@ export default class ModelsListView extends Vue {
 
   search = "";
 
-  get activeGroupId() {
-    return this.groupContext.getters.activeGroupId;
-  }
-
-  get isGroupAdmin() {
-    return this.groupContext.getters.isGroupAdmin;
+  get isAdmin() {
+    return this.mainContext.getters.isAdmin;
   }
 
   get items() {
@@ -116,7 +109,7 @@ export default class ModelsListView extends Vue {
   }
 
   async mounted() {
-    await this.modelsContext.actions.getModels(+this.$router.currentRoute.params.groupId);
+    await this.modelsContext.actions.getModels();
   }
 
   async deleteModel(id: number) {

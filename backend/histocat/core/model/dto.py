@@ -16,7 +16,6 @@ class ModelUpdateDto(BaseModel):
 
 class ModelDto(BaseModel):
     id: int
-    group_id: int
     name: Optional[str]
     description: Optional[str]
     location: Optional[str]

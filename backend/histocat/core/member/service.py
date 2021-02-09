@@ -18,10 +18,8 @@ def get_group_members(session: Session, *, group_id: int) -> Sequence[MemberMode
     return session.query(MemberModel).filter(MemberModel.group_id == group_id).all()
 
 
-def create(session: Session, *, params: MemberCreateDto) -> MemberModel:
-    entity = MemberModel(
-        group_id=params.group_id, user_id=params.user_id, role=params.role, is_active=params.is_active,
-    )
+def create(session: Session, *, group_id: int, params: MemberCreateDto) -> MemberModel:
+    entity = MemberModel(group_id=group_id, user_id=params.user_id, role=params.role, is_active=params.is_active,)
     session.add(entity)
     session.commit()
     session.refresh(entity)
@@ -44,4 +42,4 @@ def delete_by_id(session: Session, *, id: int):
     item = session.query(MemberModel).filter(MemberModel.id == id).first()
     session.delete(item)
     session.commit()
-    return item
+    return id

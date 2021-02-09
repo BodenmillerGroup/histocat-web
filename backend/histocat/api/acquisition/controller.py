@@ -16,7 +16,7 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_active_user
+from histocat.api.security import get_active_member
 from histocat.api.utils import get_additive_image
 from histocat.core.acquisition import service as acquisition_service
 from histocat.core.acquisition.dto import (
@@ -37,20 +37,20 @@ from histocat.core.member.models import MemberModel
 from histocat.core.project.dto import ProjectFullDto
 from histocat.core.redis_manager import redis_manager
 from histocat.core.result import service as result_service
-from histocat.core.user.models import UserModel
 from histocat.core.utils import stream_bytes
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/acquisitions/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto)
+@router.get("/groups/{group_id}/acquisitions/{acquisition_id}/{channel_name}/stats", response_model=ChannelStatsDto)
 async def read_channel_stats(
+    group_id: int,
     acquisition_id: int,
     channel_name: str,
     request: Request,
     bins: int = 40,
-    user: UserModel = Depends(get_active_user),
+    member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
     """Get channel stats by name."""
@@ -128,9 +128,12 @@ async def read_channel_image(
     return StreamingResponse(stream_bytes(buffer), media_type="image/png")
 
 
-@router.post("/acquisitions/stack")
+@router.post("/groups/{group_id}/acquisitions/stack")
 async def download_channel_stack(
-    params: ChannelStackDto, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int,
+    params: ChannelStackDto,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Download channel stack (additive) image."""
     additive_image = get_additive_image(db, params)

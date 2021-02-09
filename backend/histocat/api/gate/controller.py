@@ -5,18 +5,17 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_active_user
+from histocat.api.security import get_active_member
 from histocat.core.gate import service
 from histocat.core.gate.dto import GateCreateDto, GateDto, GateUpdateDto
 from histocat.core.member.models import MemberModel
-from histocat.core.user.models import UserModel
 
 router = APIRouter()
 
 
-@router.get("/gates/{gate_id}", response_model=GateDto)
+@router.get("/groups/{group_id}/gates/{gate_id}", response_model=GateDto)
 def get_by_id(
-    gate_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, gate_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get gate by id
@@ -25,9 +24,9 @@ def get_by_id(
     return item
 
 
-@router.get("/datasets/{dataset_id}/gates", response_model=Sequence[GateDto])
+@router.get("/groups/{group_id}/datasets/{dataset_id}/gates", response_model=Sequence[GateDto])
 def get_dataset_gates(
-    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get all dataset gates
@@ -36,9 +35,12 @@ def get_dataset_gates(
     return item
 
 
-@router.post("/gates", response_model=GateDto)
+@router.post("/groups/{group_id}/gates", response_model=GateDto)
 def create(
-    *, db: Session = Depends(get_db), params: GateCreateDto, user: UserModel = Depends(get_active_user),
+    group_id: int,
+    params: GateCreateDto,
+    db: Session = Depends(get_db),
+    member: MemberModel = Depends(get_active_member),
 ):
     """
     Create new gate
@@ -56,7 +58,7 @@ def update(
     db: Session = Depends(get_db),
 ):
     """
-    Update pipeline
+    Update gate
     """
     item = service.get_by_id(db, id=gate_id)
     if not item:
@@ -65,9 +67,9 @@ def update(
     return item
 
 
-@router.delete("/gates/{gate_id}", response_model=int)
+@router.delete("/groups/{group_id}/gates/{gate_id}", response_model=int)
 def delete_by_id(
-    gate_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, gate_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Delete gate by id

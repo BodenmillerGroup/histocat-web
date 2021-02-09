@@ -30,7 +30,8 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
 
   async getPipelines(projectId: number) {
     try {
-      const data = await api.getProjectPipelines(projectId);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getProjectPipelines(groupId, projectId);
       if (data) {
         this.mutations.setEntities(data);
       }
@@ -70,7 +71,8 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
 
   async loadPipeline(id: number) {
     try {
-      const pipeline = await api.getPipeline(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const pipeline = await api.getPipeline(groupId, id);
       if (pipeline) {
         this.mutations.setSteps(pipeline.steps);
       }
@@ -81,7 +83,8 @@ export class PipelinesActions extends Actions<PipelinesState, PipelinesGetters, 
 
   async deletePipeline(id: number) {
     try {
-      const data = await api.deletePipeline(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deletePipeline(groupId, id);
       this.mutations.deleteEntity(data);
       this.main!.mutations.addNotification({ content: "Pipeline successfully deleted", color: "success" });
     } catch (error) {

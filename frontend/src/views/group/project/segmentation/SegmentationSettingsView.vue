@@ -238,7 +238,7 @@ export default class SegmentationSettingsView extends Vue {
       const cytoplasmChannels = this.segmentationContext.getters.cytoplasmChannels;
 
       if (nucleiChannels.length === 0 || cytoplasmChannels.length === 0) {
-        self.alert("Select at least one nuclear and one cytoplasm channel!")
+        self.alert("Select at least one nuclear and one cytoplasm channel!");
         return;
       }
 

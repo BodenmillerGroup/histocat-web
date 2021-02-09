@@ -10,7 +10,7 @@ import pandas as pd
 from sqlalchemy.orm import Session
 
 from histocat.core.acquisition.models import AcquisitionModel
-from histocat.core.dataset.models import DatasetModel, CELL_FILENAME
+from histocat.core.dataset.models import CELL_FILENAME, DatasetModel
 
 logger = logging.getLogger(__name__)
 

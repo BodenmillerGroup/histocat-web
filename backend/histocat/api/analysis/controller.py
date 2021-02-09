@@ -11,24 +11,21 @@ from sqlalchemy.orm import Session
 from starlette.requests import Request
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_user
+from histocat.api.security import get_active_member
 from histocat.core.acquisition import service as acquisition_service
 from histocat.core.analysis.dto import RegionChannelStatsDto, RegionStatsSubmissionDto
-from histocat.core.user.models import UserModel
+from histocat.core.member.models import MemberModel
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-RESULT_TYPE_ORIGIN = "origin"
-RESULT_TYPE_MASK = "mask"
 
-
-@router.post("/analysis/region/stats", response_model=Sequence[RegionChannelStatsDto])
+@router.post("/groups/{group_id}/analysis/region/stats", response_model=Sequence[RegionChannelStatsDto])
 async def calculate_region_stats(
     params: RegionStatsSubmissionDto,
     request: Request,
-    user: UserModel = Depends(get_active_user),
+    member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
 ):
     """

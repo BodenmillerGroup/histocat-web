@@ -6,7 +6,6 @@ from histocat.core.user.dto import ShortUserDto
 
 
 class MemberCreateDto(BaseModel):
-    group_id: int
     user_id: int
     role: int
     is_active: bool

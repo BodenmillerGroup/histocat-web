@@ -23,13 +23,11 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { groupModule } from "@/modules/group";
 import { required } from "@/utils/validators";
 import { modelsModule } from "@/modules/models";
 
 @Component
 export default class CreateModel extends Vue {
-  readonly groupContext = groupModule.context(this.$store);
   readonly modelsContext = modelsModule.context(this.$store);
 
   readonly nameRules = [required];
@@ -39,10 +37,6 @@ export default class CreateModel extends Vue {
   name = "";
   description = "";
   file: File | null = null;
-
-  get activeGroupId() {
-    return this.groupContext.getters.activeGroupId;
-  }
 
   reset() {
     this.name = "";
@@ -56,7 +50,7 @@ export default class CreateModel extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate() && this.activeGroupId && this.file) {
+    if ((this.$refs.form as any).validate() && this.file) {
       const formData = new FormData();
       formData.append("name", this.name);
       formData.append("description", this.description);

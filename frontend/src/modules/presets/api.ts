@@ -9,13 +9,13 @@ export const api = {
       })
       .json<IPreset>();
   },
-  async getProjectPresets(projectId: number) {
-    return ApiManager.api.get(`projects/${projectId}/presets`).json<IPreset[]>();
+  async getProjectPresets(groupId: number, projectId: number) {
+    return ApiManager.api.get(`groups/${groupId}/projects/${projectId}/presets`).json<IPreset[]>();
   },
-  async getPreset(id: number) {
-    return ApiManager.api.get(`presets/${id}`).json<IPreset>();
+  async getPreset(groupId: number, id: number) {
+    return ApiManager.api.get(`groups/${groupId}/presets/${id}`).json<IPreset>();
   },
-  async deletePreset(id: number) {
-    return ApiManager.api.delete(`presets/${id}`).json<number>();
+  async deletePreset(groupId: number, id: number) {
+    return ApiManager.api.delete(`groups/${groupId}/presets/${id}`).json<number>();
   },
 };

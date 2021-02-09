@@ -27,7 +27,8 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
 
   async getPresets(projectId: number) {
     try {
-      const data = await api.getProjectPresets(projectId);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getProjectPresets(groupId, projectId);
       if (data) {
         this.mutations.setEntities(data);
       }
@@ -59,7 +60,8 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
 
   async applyPreset(id: number) {
     try {
-      const preset = await api.getPreset(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const preset = await api.getPreset(groupId, id);
       if (preset) {
         if (preset.data["channelsSettings"]) {
           this.settings?.actions.setChannelSettings(preset.data["channelsSettings"]);
@@ -76,7 +78,8 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
 
   async deletePreset(id: number) {
     try {
-      const data = await api.deletePreset(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deletePreset(groupId, id);
       this.mutations.deleteEntity(data);
       this.main!.mutations.addNotification({ content: "Preset successfully deleted", color: "success" });
     } catch (error) {

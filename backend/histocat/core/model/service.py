@@ -4,6 +4,8 @@ from typing import Optional, Sequence
 
 from sqlalchemy.orm import Session
 
+from histocat.config import config
+
 from .dto import ModelCreateDto, ModelUpdateDto
 from .models import ModelModel
 
@@ -14,21 +16,21 @@ def get(session: Session, *, id: int) -> Optional[ModelModel]:
     return session.query(ModelModel).filter(ModelModel.id == id).first()
 
 
-def get_by_group_id_and_name(session: Session, *, group_id: int, name: str) -> Optional[ModelModel]:
-    return session.query(ModelModel).filter(ModelModel.group_id == group_id, ModelModel.name == name).first()
+def get_by_name(session: Session, *, name: str) -> Optional[ModelModel]:
+    return session.query(ModelModel).filter(ModelModel.name == name).first()
 
 
-def get_group_models(session: Session, *, group_id: int) -> Sequence[Optional[ModelModel]]:
-    return session.query(ModelModel).order_by(ModelModel.id.desc()).filter(ModelModel.group_id == group_id).all()
+def get_all_models(session: Session) -> Sequence[Optional[ModelModel]]:
+    return session.query(ModelModel).order_by(ModelModel.id.desc()).all()
 
 
-def create(session: Session, *, group_id: int, params: ModelCreateDto) -> ModelModel:
-    entity = ModelModel(group_id=group_id, name=params.name, description=params.description)
+def create(session: Session, *, params: ModelCreateDto) -> ModelModel:
+    entity = ModelModel(name=params.name, description=params.description)
     session.add(entity)
     session.commit()
     session.refresh(entity)
 
-    entity.location = os.path.join(entity.group.models_location, str(entity.id))
+    entity.location = os.path.join(config.MODELS_DIRECTORY, str(entity.id))
     if not os.path.exists(entity.location):
         logger.debug(f"Create location for model {entity.id}: {entity.location}")
         os.makedirs(entity.location)

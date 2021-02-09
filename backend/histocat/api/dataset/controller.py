@@ -14,12 +14,11 @@ from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_active_user
+from histocat.api.security import get_active_member
 from histocat.config import config
 from histocat.core.dataset import service as dataset_service
 from histocat.core.dataset.dto import DatasetDto, DatasetUpdateDto
 from histocat.core.member.models import MemberModel
-from histocat.core.user.models import UserModel
 from histocat.core.utils import stream_bytes
 
 logger = logging.getLogger(__name__)
@@ -51,9 +50,9 @@ def update(
     return item
 
 
-@router.get("/datasets/{dataset_id}/centroids")
+@router.get("/groups/{group_id}/datasets/{dataset_id}/centroids")
 def get_centroids(
-    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """Get dataset cell centroids"""
     dataset = dataset_service.get(db, id=dataset_id)
@@ -71,9 +70,9 @@ def get_centroids(
     return ORJSONResponse(output)
 
 
-@router.get("/datasets/{dataset_id}", response_model=DatasetDto)
+@router.get("/groups/{group_id}/datasets/{dataset_id}", response_model=DatasetDto)
 def get_by_id(
-    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """Get dataset by id"""
     item = dataset_service.get(db, id=dataset_id)
@@ -82,9 +81,9 @@ def get_by_id(
     return item
 
 
-@router.delete("/datasets/{dataset_id}", response_model=DatasetDto)
+@router.delete("/groups/{group_id}/datasets/{dataset_id}", response_model=DatasetDto)
 def delete_by_id(
-    dataset_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """Delete a specific dataset by id"""
     item = dataset_service.remove(db, id=dataset_id)

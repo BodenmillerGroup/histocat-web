@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     # absolute path to the directory where uploaded files are stored before import
     INBOX_DIRECTORY: str = "/data/inbox/"
 
+    # absolute path to the directory where uploaded models are stored
+    MODELS_DIRECTORY: str = "/data/models/"
+
     # absolute path to the root directory where all group data are located
     ROOT_DATA_DIRECTORY: str = "/data/groups/"
 

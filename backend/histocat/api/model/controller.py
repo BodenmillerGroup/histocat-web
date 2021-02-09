@@ -9,28 +9,28 @@ from sqlalchemy.orm import Session
 from starlette import status
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_group_admin
+from histocat.api.security import get_active_user, get_admin
 from histocat.config import config
-from histocat.core.member.models import MemberModel
 from histocat.core.model import service
 from histocat.core.model.dto import ModelCreateDto, ModelDto, ModelUpdateDto
+from histocat.core.user.models import UserModel
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/groups/{group_id}/models", response_model=Sequence[ModelDto])
-def get_group_models(group_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member)):
+@router.get("/models", response_model=Sequence[ModelDto])
+def get_all_models(db: Session = Depends(get_db), user: UserModel = Depends(get_active_user)):
     """
-    Get group models
+    Get all models
     """
-    items = service.get_group_models(db, group_id=group_id)
+    items = service.get_all_models(db)
     return items
 
 
-@router.get("/groups/{group_id}/models/{model_id}", response_model=ModelDto)
+@router.get("/models/{model_id}", response_model=ModelDto)
 def get_by_id(
-    group_id: int, model_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    model_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
 ):
     """
     Get model by id
@@ -39,9 +39,9 @@ def get_by_id(
     return item
 
 
-@router.delete("/groups/{group_id}/models/{model_id}", response_model=int)
+@router.delete("/models/{model_id}", response_model=int)
 def delete_by_id(
-    group_id: int, model_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
+    model_id: int, user: UserModel = Depends(get_admin), db: Session = Depends(get_db),
 ):
     """
     Delete model by id
@@ -50,13 +50,9 @@ def delete_by_id(
     return model_id
 
 
-@router.patch("/groups/{group_id}/models/{model_id}", response_model=ModelDto)
+@router.patch("/models/{model_id}", response_model=ModelDto)
 def update(
-    group_id: int,
-    model_id: int,
-    params: ModelUpdateDto,
-    member: MemberModel = Depends(get_active_member),
-    db: Session = Depends(get_db),
+    model_id: int, params: ModelUpdateDto, user: UserModel = Depends(get_admin), db: Session = Depends(get_db),
 ):
     """
     Update model
@@ -68,23 +64,22 @@ def update(
     return item
 
 
-@router.post("/groups/{group_id}/models", response_model=ModelDto)
+@router.post("/models", response_model=ModelDto)
 def create(
-    group_id: int,
     name: str = Form(""),
     description: str = Form(None),
     file: UploadFile = File(None),
-    member: MemberModel = Depends(get_active_member),
+    user: UserModel = Depends(get_admin),
     db: Session = Depends(get_db),
 ):
-    item = service.get_by_group_id_and_name(db, group_id=group_id, name=name)
+    item = service.get_by_name(db, name=name)
     if item:
         raise HTTPException(
             status_code=400, detail="The model with this name already exists.",
         )
 
     params = ModelCreateDto(name=name, description=description)
-    model = service.create(db, group_id=group_id, params=params)
+    model = service.create(db, params=params)
 
     path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))
     if not os.path.exists(path):
@@ -95,11 +90,7 @@ def create(
 
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
-        actor_name="import_model",
-        queue_name="import",
-        args=(),
-        kwargs={"uri": uri, "group_id": group_id, "model_id": model.id},
-        options={},
+        actor_name="import_model", queue_name="import", args=(), kwargs={"uri": uri, "model_id": model.id}, options={},
     )
     broker.enqueue(message)
     return model

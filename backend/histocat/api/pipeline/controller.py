@@ -6,7 +6,7 @@ from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
 from histocat.api.db import get_db
-from histocat.api.security import get_active_member, get_active_user
+from histocat.api.security import get_active_member
 from histocat.core.member.models import MemberModel
 from histocat.core.pipeline import service
 from histocat.core.pipeline.dto import (
@@ -15,14 +15,13 @@ from histocat.core.pipeline.dto import (
     PipelineProcessDto,
     PipelineUpdateDto,
 )
-from histocat.core.user.models import UserModel
 
 router = APIRouter()
 
 
-@router.get("/pipelines/{pipeline_id}", response_model=PipelineDto)
+@router.get("/groups/{group_id}/pipelines/{pipeline_id}", response_model=PipelineDto)
 def get_by_id(
-    pipeline_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, pipeline_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get pipeline by id
@@ -31,9 +30,9 @@ def get_by_id(
     return item
 
 
-@router.get("/projects/{project_id}/pipelines", response_model=Sequence[PipelineDto])
+@router.get("/groups/{group_id}/projects/{project_id}/pipelines", response_model=Sequence[PipelineDto])
 def get_project_pipelines(
-    project_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Get all project pipelines
@@ -76,9 +75,9 @@ def update(
     return item
 
 
-@router.delete("/pipelines/{pipeline_id}", response_model=int)
+@router.delete("/groups/{group_id}/pipelines/{pipeline_id}", response_model=int)
 def delete_by_id(
-    pipeline_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int, pipeline_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
 ):
     """
     Delete pipeline by id

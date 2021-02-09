@@ -6,22 +6,19 @@ import { ModelsState } from ".";
 import { api } from "./api";
 import { ModelsGetters } from "./getters";
 import { ModelsMutations } from "./mutations";
-import { groupModule } from "@/modules/group";
 
 export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMutations, ModelsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
-  group?: Context<typeof groupModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
-    this.group = groupModule.context(store);
   }
 
-  async getModels(groupId: number) {
+  async getModels() {
     try {
-      const data = await api.getGroupModels(groupId);
+      const data = await api.getAllModels();
       if (data) {
         this.mutations.setEntities(data);
       }
@@ -32,8 +29,7 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
 
   async getModel(modelId: number) {
     try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const entity = await api.getModel(groupId, modelId);
+      const entity = await api.getModel(modelId);
       if (entity) {
         this.mutations.setEntity(entity);
       }
@@ -44,8 +40,7 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
 
   async updateModel(payload: { modelId: number; data: IModelUpdate }) {
     try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const entity = await api.updateModel(groupId, payload.modelId, payload.data);
+      const entity = await api.updateModel(payload.modelId, payload.data);
       this.mutations.updateEntity(entity);
       this.main!.mutations.addNotification({ content: "Model successfully updated", color: "success" });
     } catch (error) {
@@ -55,8 +50,7 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
 
   async deleteModel(id: number) {
     try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const entity = await api.deleteModel(groupId, id);
+      const entity = await api.deleteModel(id);
       this.mutations.deleteEntity(entity);
       this.main!.mutations.addNotification({ content: "Model successfully deleted", color: "success" });
     } catch (error) {
@@ -86,8 +80,7 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
       //   },
       //   () => {}
       // );
-      const groupId = this.group?.getters.activeGroupId!;
-      const entity = await api.createModel(groupId, formData);
+      const entity = await api.createModel(formData);
       this.mutations.addEntity(entity);
       this.main!.mutations.addNotification({ content: "Model successfully created", color: "success" });
     } catch (error) {

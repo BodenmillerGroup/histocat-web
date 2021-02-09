@@ -46,23 +46,6 @@
               </v-list-item-content>
             </v-list-item>
 
-            <v-list-item
-              v-if="activeGroupId && !activeProjectId"
-              :to="{ name: 'group-models', params: { groupId: activeGroupId } }"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-brain</v-icon>
-                  </template>
-                  <span>Models</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Models</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
             <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('image')">
               <v-list-item-icon>
                 <v-tooltip right>
@@ -135,6 +118,20 @@
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title>Users</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-list-item v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-models' }">
+              <v-list-item-icon>
+                <v-tooltip right>
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">mdi-brain</v-icon>
+                  </template>
+                  <span>Models</span>
+                </v-tooltip>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>Models</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

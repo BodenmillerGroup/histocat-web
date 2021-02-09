@@ -75,8 +75,8 @@ export const api = {
   async getProjectData(groupId: number, projectId: number) {
     return ApiManager.api.get(`groups/${groupId}/projects/${projectId}/data`).json<IProjectData>();
   },
-  async getChannelStats(acquisitionId: number, channelName: string) {
-    const url = `acquisitions/${acquisitionId}/${channelName}/stats?bins=40`;
+  async getChannelStats(groupId: number, acquisitionId: number, channelName: string) {
+    const url = `groups/${groupId}/acquisitions/${acquisitionId}/${channelName}/stats?bins=40`;
     let cache;
     if (cacheAvailable) {
       cache = await self.caches.open("stats");
@@ -93,14 +93,14 @@ export const api = {
     }
     return response.json() as Promise<IChannelStats>;
   },
-  async downloadChannelStackImage(params: IChannelStack) {
-    return ApiManager.api.post(`acquisitions/stack`, {
+  async downloadChannelStackImage(groupId: number, params: IChannelStack) {
+    return ApiManager.api.post(`groups/${groupId}/acquisitions/stack`, {
       json: params,
       timeout: false,
     });
   },
-  async deleteSlide(id: number) {
-    return ApiManager.api.delete(`slides/${id}`).json<ISlide>();
+  async deleteSlide(groupId: number, id: number) {
+    return ApiManager.api.delete(`groups/${groupId}/slides/${id}`).json<ISlide>();
   },
   async updateChannel(groupId: number, acquisitionId: number, data: IChannelUpdate) {
     return ApiManager.api

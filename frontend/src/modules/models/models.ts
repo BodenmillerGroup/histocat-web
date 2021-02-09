@@ -5,7 +5,6 @@ export interface IModelUpdate {
 
 export interface IModel {
   id: number;
-  group_id: number;
   name: string;
   description: string;
   location: string;

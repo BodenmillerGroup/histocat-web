@@ -34,7 +34,8 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
 
   async getGates(datasetId: number) {
     try {
-      const data = await api.getDatasetGates(datasetId);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getDatasetGates(groupId, datasetId);
       if (data) {
         this.mutations.setEntities(data);
       }
@@ -45,6 +46,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
 
   async createGate(name: string) {
     try {
+      const groupId = this.group?.getters.activeGroupId!;
       const datasetId = this.dataset!.getters.activeDatasetId;
       const selectedCells = this.results!.getters.selectedCells;
       if (datasetId && selectedCells) {
@@ -63,7 +65,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
           indices: indices,
           cell_ids: cellIds,
         };
-        const data = await api.createGate(payload);
+        const data = await api.createGate(groupId, payload);
         this.mutations.addEntity(data);
         this.main!.mutations.addNotification({ content: "Gate successfully created", color: "success" });
       }
@@ -74,7 +76,8 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
 
   async applyGate(id: number) {
     try {
-      const data = await api.getGate(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getGate(groupId, id);
       if (data) {
         const selectedCells: ISelectedCell[] = [];
         for (let i = 0; i < data.acquisition_ids.length; i++) {
@@ -103,7 +106,8 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
 
   async deleteGate(id: number) {
     try {
-      const data = await api.deleteGate(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deleteGate(groupId, id);
       this.mutations.deleteEntity(data);
       this.main!.mutations.addNotification({ content: "Gate successfully deleted", color: "success" });
     } catch (error) {

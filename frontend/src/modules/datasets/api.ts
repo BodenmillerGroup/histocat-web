@@ -6,8 +6,8 @@ export const api = {
   async getProjectDatasets(groupId: number, projectId: number) {
     return ApiManager.api.get(`groups/${groupId}/projects/${projectId}/datasets`).json<IDataset[]>();
   },
-  async getDataset(datasetId: number) {
-    return ApiManager.api.get(`datasets/${datasetId}`).json<IDataset>();
+  async getDataset(groupId: number, datasetId: number) {
+    return ApiManager.api.get(`groups/${groupId}/datasets/${datasetId}`).json<IDataset>();
   },
   async updateDataset(groupId: number, datasetId: number, data: IDatasetUpdate) {
     return ApiManager.api
@@ -16,8 +16,8 @@ export const api = {
       })
       .json<IDataset>();
   },
-  async deleteDataset(datasetId: number) {
-    return ApiManager.api.delete(`datasets/${datasetId}`).json();
+  async deleteDataset(groupId: number, datasetId: number) {
+    return ApiManager.api.delete(`groups/${groupId}/datasets/${datasetId}`).json();
   },
   async downloadDataset(datasetId: number) {
     return ApiManager.api.get(`datasets/${datasetId}/download`, {

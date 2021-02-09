@@ -36,7 +36,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
 import { userModule } from "@/modules/user";
 import { required } from "@/utils/validators";
@@ -44,7 +43,6 @@ import { IMemberCreate } from "@/modules/member/models";
 
 @Component
 export default class CreateMember extends Vue {
-  readonly groupContext = groupModule.context(this.$store);
   readonly userContext = userModule.context(this.$store);
   readonly memberContext = memberModule.context(this.$store);
 
@@ -54,10 +52,6 @@ export default class CreateMember extends Vue {
   userId: number | null = null;
   role = "0";
   isActive = false;
-
-  get activeGroupId() {
-    return this.groupContext.getters.activeGroupId;
-  }
 
   get users() {
     return this.userContext.getters.users.map((item) => ({
@@ -78,9 +72,8 @@ export default class CreateMember extends Vue {
   }
 
   async submit() {
-    if ((this.$refs.form as any).validate() && this.activeGroupId) {
+    if ((this.$refs.form as any).validate()) {
       const data: IMemberCreate = {
-        group_id: this.activeGroupId,
         user_id: Number(this.userId),
         role: !this.role || this.role === "" ? 0 : Number(this.role),
         is_active: this.isActive,

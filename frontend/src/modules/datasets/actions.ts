@@ -45,7 +45,8 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
 
   async getDataset(id: number) {
     try {
-      const data = await api.getDataset(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.getDataset(groupId, id);
       this.mutations.setEntity(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -65,7 +66,8 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
 
   async deleteDataset(id: number) {
     try {
-      const data = await api.deleteDataset(id);
+      const groupId = this.group?.getters.activeGroupId!;
+      const data = await api.deleteDataset(groupId, id);
       this.mutations.deleteEntity(id);
       this.main!.mutations.addNotification({ content: "Dataset successfully deleted", color: "success" });
     } catch (error) {
