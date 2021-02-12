@@ -1,0 +1,27 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.formContainer {
+  display: grid;
+  height: 100vh;
+  background-color: $gray1;
+  justify-content: center;
+  align-content: center;
+}
+
+.form {
+  width: 400px;
+}
+
+.linkContainer {
+  display: flex;
+  flex-direction: column;
+  float: right;
+}
+
+.link {
+  margin-top: 5px;
+}
+
+.callout {
+  margin-top: 10px;
+}

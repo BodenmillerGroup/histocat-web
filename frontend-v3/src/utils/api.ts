@@ -1,5 +1,6 @@
 import ky from "ky";
 import { apiUrl } from "../env";
+import { AppToaster } from "./toaster";
 
 export class ApiManager {
   private static _token: string;
@@ -37,5 +38,15 @@ export class ApiManager {
 
   static get api() {
     return ApiManager._api;
+  }
+}
+
+export function displayApiError(error: any) {
+  AppToaster.show({ message: error.message, intent: "danger" });
+  if (error.response) {
+    console.error("API error: ", error.response);
+    if (error.response.status === 401) {
+      // await this.actions.logOut();
+    }
   }
 }

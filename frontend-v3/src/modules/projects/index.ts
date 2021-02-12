@@ -1,0 +1,352 @@
+import create from "zustand";
+import { schema, normalize } from "normalizr";
+import {
+  ExportFormat,
+  IAcquisition,
+  IChannel,
+  IChannelUpdate,
+  IProject,
+  IProjectCreate,
+  IProjectData,
+  IProjectUpdate,
+} from "./models";
+import { api } from "./api";
+import { displayApiError } from "utils/api";
+import { isEqual } from "lodash-es";
+import { useGroupsStore } from "../groups";
+import { AppToaster } from "../../utils/toaster";
+import { useAuthStore } from "../auth";
+import { useMainStore } from "../main";
+import { useSettingsStore } from "../settings";
+
+const projectSchema = new schema.Entity("projects");
+const projectListSchema = [projectSchema];
+
+type ProjectsState = {
+  ids: ReadonlyArray<number>;
+  entities: { [key: number]: IProject };
+  tags: string[];
+  projectData: IProjectData | null;
+  activeProjectId: number | null;
+  activeAcquisitionId: number | null;
+  activeWorkspaceNode: object | null;
+  selectedMetals: string[];
+  channelStackImage: string | ArrayBuffer | null;
+  colorizeMaskInProgress: boolean;
+
+  prepareStackParams(format?: "png" | "tiff"): any;
+  getChannelStackImage(): Promise<void>;
+  getActiveAcquisition(): IAcquisition | undefined;
+  getSelectedChannels(): IChannel[];
+};
+
+export const useProjectsStore = create<ProjectsState>((set, get) => ({
+  ids: [],
+  entities: {},
+  tags: [],
+  projectData: null,
+  activeProjectId: null,
+  activeAcquisitionId: null,
+  activeWorkspaceNode: null,
+  selectedMetals: [],
+  channelStackImage: null,
+  colorizeMaskInProgress: false,
+
+  setActiveAcquisitionId: (id?: number, isGlobal = true) => {
+    set({ activeAcquisitionId: id });
+  },
+
+  setActiveWorkspaceNode(node?: { id: number; type: string }, isGlobal = true) {
+    set({ activeWorkspaceNode: node });
+  },
+
+  setSelectedMetals(metals: string[], isGlobal = true) {
+    set({ selectedMetals: metals });
+  },
+
+  getGroupProjects: async (groupId: number) => {
+    try {
+      const data = await api.getGroupProjects(groupId);
+      if (data) {
+        const normalizedData = normalize<IProject>(data, projectListSchema);
+        set({
+          ids: normalizedData.result,
+          entities: normalizedData.entities.projects ? Object.freeze(normalizedData.entities.projects) : {},
+        });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async getProjectsTags(groupId: number) {
+    try {
+      const data = await api.getProjectsTags(groupId);
+      if (data) {
+        if (!isEqual(data, get().tags)) {
+          set({ tags: data });
+        }
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async updateProject(payload: { id: number; data: IProjectUpdate }) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.updateProject(groupId, payload.id, payload.data);
+      if (data) {
+        set({ entities: Object.freeze({ ...get().entities, [data.id]: data }) });
+        AppToaster.show({ message: "Project successfully updated", intent: "success" });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async deleteProject(projectId: number) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.deleteProject(groupId, projectId);
+      if (data) {
+        const entities = { ...get().entities };
+        delete entities[projectId];
+        set({ ids: get().ids.filter((item) => item !== projectId), entities: Object.freeze(entities) });
+        AppToaster.show({ message: "Project successfully deleted", intent: "success" });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async createProject(payload: IProjectCreate) {
+    try {
+      const data = await api.createProject(payload);
+      if (data) {
+        set({ ids: get().ids.concat(data.id), entities: Object.freeze({ ...get().entities, [data.id]: data }) });
+        AppToaster.show({ message: "Project successfully created", intent: "success" });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async uploadSlide(payload: { id: number; data: any }) {
+    if (!payload.id) {
+      return;
+    }
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const token = useAuthStore.getState().token!;
+      await api.uploadSlide(
+        token,
+        groupId,
+        payload.id,
+        payload.data,
+        () => {
+          console.log("Upload has started.");
+          useMainStore.getState().setProcessing(true);
+        },
+        () => {
+          console.log("Upload completed successfully.");
+          useMainStore.getState().setProcessing(false);
+          useMainStore.getState().setProcessingProgress(0);
+          AppToaster.show({ message: "File successfully uploaded", intent: "success" });
+        },
+        (event) => {
+          const percent = Math.round((100 * event.loaded) / event.total);
+          useMainStore.getState().setProcessingProgress(percent);
+        },
+        () => {}
+      );
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async getProject(projectId: number) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.getProject(groupId, projectId);
+      if (data) {
+        const existingId = get().ids.find((id) => id === data.id);
+        if (!existingId) {
+          set({ ids: get().ids.concat(data.id) });
+        }
+        set({ entities: Object.freeze({ ...get().entities, [data.id]: data }) });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async getProjectData(projectId: number) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.getProjectData(groupId, projectId);
+      if (data) {
+        set({ projectData: data });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async getChannelStats(payload: { acquisitionId: number; channelName: string }) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      return await api.getChannelStats(groupId, payload.acquisitionId, payload.channelName);
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async getChannelStackImage() {
+    const params = get().prepareStackParams();
+    if (params.channels.length === 0) {
+      return;
+    }
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const response = await api.downloadChannelStackImage(groupId, params);
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        set({ channelStackImage: reader.result });
+      };
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async exportChannelStackImage(format: ExportFormat = "png") {
+    const params = get().prepareStackParams(format);
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const response = await api.downloadChannelStackImage(groupId, params);
+      const blob = await response.blob();
+      saveAs(blob);
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async deleteSlide(id: number) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.deleteSlide(groupId, id);
+      if (data) {
+        AppToaster.show({ message: "Slide successfully deleted", intent: "success" });
+      }
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  async updateChannel(payload: { acquisitionId: number; data: IChannelUpdate }) {
+    try {
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.updateChannel(groupId, payload.acquisitionId, payload.data);
+      if (data) {
+        set({ projectData: data });
+      }
+      await get().getChannelStackImage();
+      AppToaster.show({ message: "Channel successfully updated", intent: "success" });
+    } catch (error) {
+      displayApiError(error);
+    }
+  },
+
+  getActiveAcquisition() {
+    const projectData = get().projectData;
+    const activeAcquisitionId = get().activeAcquisitionId;
+    if (projectData && projectData.slides) {
+      for (const slide of projectData.slides) {
+        const acquisition = slide.acquisitions.find((item) => item.id === activeAcquisitionId);
+        if (acquisition) {
+          return acquisition;
+        }
+      }
+    }
+    return undefined;
+  },
+
+  getSelectedChannels() {
+    const activeAcquisition = get().getActiveAcquisition();
+    const selectedMetals = get().selectedMetals;
+    if (activeAcquisition) {
+      return Object.values(activeAcquisition.channels).filter((channel) => {
+        if (selectedMetals.includes(channel.name)) {
+          return channel;
+        }
+      });
+    } else {
+      return [];
+    }
+  },
+
+  /**
+   * Prepare stack image call parameters
+   */
+  prepareStackParams(format: "png" | "tiff" = "png") {
+    const activeAcquisitionId = get().activeAcquisitionId;
+    const { channelsSettings, filter, scalebar } = useSettingsStore.getState();
+    const channels = get()
+      .getSelectedChannels()
+      .map((channel) => {
+        const channelSettings = channelsSettings[channel.name];
+        const color = channelSettings ? channelSettings.color : undefined;
+        const min = channelSettings && channelSettings.levels ? channelSettings.levels.min : undefined;
+        const max = channelSettings && channelSettings.levels ? channelSettings.levels.max : undefined;
+        return {
+          name: channel.name,
+          color: color,
+          min: min,
+          max: max,
+        };
+      });
+
+    const output = {
+      acquisitionId: activeAcquisitionId,
+      format: format,
+      filter: filter,
+      scalebar: scalebar,
+      channels: channels,
+    };
+
+    const activeDataset = this.datasets!.getters.activeDataset;
+    if (activeDataset) {
+      output["datasetId"] = activeDataset.id;
+      const maskSettings = this.settings!.getters.maskSettings;
+      const activeAcquisitionId = this.getters.activeAcquisitionId;
+      if (activeAcquisitionId && activeDataset.meta.masks) {
+        const mask = activeDataset.meta.masks[activeAcquisitionId];
+        if (mask) {
+          output["mask"] = {
+            colorize: false,
+            mode: maskSettings.mode,
+            location: mask.location,
+          };
+          if (this.results?.getters.heatmap) {
+            output["mask"]["colorsType"] = this.results.getters.heatmap.type;
+            output["mask"]["colorsName"] = this.results.getters.heatmap.label;
+          }
+          if (this.results?.getters.activeResultId) {
+            output["mask"]["resultId"] = this.results?.getters.activeResultId;
+          }
+          // Prepare selected cell ids visualisation
+          const selectedCells = this.results?.getters.selectedCells?.filter(
+            (v) => v.acquisitionId === activeAcquisitionId
+          );
+          if (selectedCells && selectedCells.length > 0) {
+            output["mask"]["gated"] = true;
+            output["mask"]["cellIds"] = selectedCells.map((item) => item.objectNumber);
+          }
+        }
+      }
+    }
+    return output;
+  },
+}));
