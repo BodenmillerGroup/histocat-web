@@ -20,15 +20,15 @@ export const useMainStore = create<MainState>((set, get) => ({
   processing: false,
   processingProgress: 0,
 
-  setProcessing: (payload: boolean) => {
+  setProcessing(payload: boolean) {
     set({ processing: payload });
   },
 
-  setProcessingProgress: (payload: number) => {
+  setProcessingProgress(payload: number) {
     set({ processingProgress: payload });
   },
 
-  setViewMode: (payload: ViewMode) => {
+  setViewMode(payload: ViewMode) {
     set({ viewMode: payload });
   },
 }));

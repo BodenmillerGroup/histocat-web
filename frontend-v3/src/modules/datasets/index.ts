@@ -2,10 +2,11 @@ import create from "zustand";
 import { schema, normalize } from "normalizr";
 import { api } from "./api";
 import { displayApiError } from "utils/api";
-import { isEqual } from "lodash-es";
 import { AppToaster } from "../../utils/toaster";
 import { IDataset, IDatasetUpdate } from "./models";
 import { useGroupsStore } from "../groups";
+import { useAuthStore } from "../auth";
+import { useMainStore } from "../main";
 
 export const datasetSchema = new schema.Entity("datasets");
 export const datasetListSchema = [datasetSchema];
@@ -16,6 +17,13 @@ type DatasetsState = {
   activeDatasetId: number | null;
 
   setActiveDatasetId(id: number | null): void;
+  getActiveDataset(): IDataset | null;
+  getProjectDatasets(projectId: number): Promise<void>;
+  getDataset(id: number): Promise<void>;
+  updateDataset(datasetId: number, params: IDatasetUpdate): Promise<void>;
+  deleteDataset(id: number): Promise<void>;
+  downloadDataset(datasetId: number, filename: string): Promise<void>;
+  uploadDataset(id: number, params: any): Promise<void>;
 };
 
 export const useDatasetsStore = create<DatasetsState>((set, get) => ({
@@ -25,6 +33,11 @@ export const useDatasetsStore = create<DatasetsState>((set, get) => ({
 
   setActiveDatasetId(id: number | null) {
     set({ activeDatasetId: id });
+  },
+
+  getActiveDataset() {
+    const activeDatasetId = get().activeDatasetId;
+    return activeDatasetId ? get().entities[activeDatasetId] : null;
   },
 
   async getProjectDatasets(projectId: number) {
@@ -59,10 +72,10 @@ export const useDatasetsStore = create<DatasetsState>((set, get) => ({
     }
   },
 
-  async updateDataset(payload: { datasetId: number; data: IDatasetUpdate }) {
+  async updateDataset(datasetId: number, params: IDatasetUpdate) {
     try {
       const groupId = useGroupsStore.getState().activeGroupId!;
-      const data = await api.updateDataset(groupId, payload.datasetId, payload.data);
+      const data = await api.updateDataset(groupId, datasetId, params);
       if (data) {
         set({ entities: { ...get().entities, [data.id]: data } });
         AppToaster.show({ message: "Dataset successfully updated", intent: "success" });
@@ -87,40 +100,41 @@ export const useDatasetsStore = create<DatasetsState>((set, get) => ({
     }
   },
 
-  async downloadDataset(payload: { datasetId: number; filename: string }) {
+  async downloadDataset(datasetId: number, filename: string) {
     try {
-      const response = await api.downloadDataset(payload.datasetId);
+      const response = await api.downloadDataset(datasetId);
       const blob = await response.blob();
-      saveAs(blob, payload.filename);
+      saveAs(blob, filename);
     } catch (error) {
       displayApiError(error);
     }
   },
 
-  async uploadDataset(payload: { id: number; data: any }) {
-    if (!payload.id) {
+  async uploadDataset(id: number, params: any) {
+    if (!id) {
       return;
     }
     try {
       const groupId = useGroupsStore.getState().activeGroupId!;
+      const token = useAuthStore.getState().token!;
       await api.uploadDataset(
-        this.main!.getters.token,
+        token,
         groupId,
-        payload.id,
-        payload.data,
+        id,
+        params,
         () => {
           console.log("Upload has started.");
-          this.main!.mutations.setProcessing(true);
+          useMainStore.getState().setProcessing(true);
         },
         () => {
           console.log("Upload completed successfully.");
-          this.main!.mutations.setProcessing(false);
-          this.main!.mutations.setProcessingProgress(0);
-          this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
+          useMainStore.getState().setProcessing(false);
+          useMainStore.getState().setProcessingProgress(0);
+          AppToaster.show({ message: "File successfully uploaded", intent: "success" });
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);
-          this.main!.mutations.setProcessingProgress(percent);
+          useMainStore.getState().setProcessingProgress(percent);
         },
         () => {}
       );

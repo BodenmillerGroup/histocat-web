@@ -24,7 +24,8 @@ export function MainNavBar() {
         <NavbarHeading>{appName}</NavbarHeading>
         <NavbarDivider />
         <Button minimal={true} icon="home" text="Home" onClick={() => history.push("/")} />
-        <Button minimal={true} icon="document" text="Files" />
+        <Button minimal={true} icon="user" text="Users" onClick={() => history.push("/admin/users")} />
+        <Button minimal={true} icon="predictive-analysis" text="Models" onClick={() => history.push("/admin/models")} />
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
         <Popover2

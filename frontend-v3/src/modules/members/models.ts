@@ -1,4 +1,4 @@
-import { IUserProfile } from "@/modules/user/models";
+import { IUserProfile } from "../profile/models";
 
 export interface IMemberCreate {
   user_id: number;

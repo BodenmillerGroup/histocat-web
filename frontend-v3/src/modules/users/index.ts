@@ -6,12 +6,16 @@ import { IUserProfile, IUserProfileCreate, IUserProfileUpdate } from "../profile
 
 type UsersState = {
   users: IUserProfile[];
+
+  getUsers(): Promise<void>;
+  updateUser(id: number, params: IUserProfileUpdate): Promise<void>;
+  createUser(params: IUserProfileCreate): Promise<void>;
 };
 
 export const useUsersStore = create<UsersState>((set, get) => ({
   users: [],
 
-  getUsers: async () => {
+  async getUsers() {
     try {
       const data = await api.getUsers();
       if (data) {
@@ -22,9 +26,9 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     }
   },
 
-  updateUser: async (payload: { id: number; user: IUserProfileUpdate }) => {
+  async updateUser(id: number, params: IUserProfileUpdate) {
     try {
-      const data = await api.updateUser(payload.id, payload.user);
+      const data = await api.updateUser(id, params);
       if (data) {
         const users = get().users.filter((user: IUserProfile) => user.id !== data.id);
         users.push(data);
@@ -36,9 +40,9 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     }
   },
 
-  createUser: async (payload: IUserProfileCreate) => {
+  async createUser(params: IUserProfileCreate) {
     try {
-      const data = await api.createUser(payload);
+      const data = await api.createUser(params);
       if (data) {
         const users = get().users.filter((user: IUserProfile) => user.id !== data.id);
         users.push(data);

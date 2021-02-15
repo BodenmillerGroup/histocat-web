@@ -18,6 +18,8 @@ import { AppToaster } from "../../utils/toaster";
 import { useAuthStore } from "../auth";
 import { useMainStore } from "../main";
 import { useSettingsStore } from "../settings";
+import { useDatasetsStore } from "../datasets";
+import { useResultsStore } from "../results";
 
 const projectSchema = new schema.Entity("projects");
 const projectListSchema = [projectSchema];
@@ -52,7 +54,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   channelStackImage: null,
   colorizeMaskInProgress: false,
 
-  setActiveAcquisitionId: (id?: number, isGlobal = true) => {
+  setActiveAcquisitionId(id?: number, isGlobal = true) {
     set({ activeAcquisitionId: id });
   },
 
@@ -64,7 +66,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     set({ selectedMetals: metals });
   },
 
-  getGroupProjects: async (groupId: number) => {
+  async getGroupProjects(groupId: number) {
     try {
       const data = await api.getGroupProjects(groupId);
       if (data) {
@@ -92,10 +94,10 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  async updateProject(payload: { id: number; data: IProjectUpdate }) {
+  async updateProject(id: number, params: IProjectUpdate) {
     try {
       const groupId = useGroupsStore.getState().activeGroupId!;
-      const data = await api.updateProject(groupId, payload.id, payload.data);
+      const data = await api.updateProject(groupId, id, params);
       if (data) {
         set({ entities: Object.freeze({ ...get().entities, [data.id]: data }) });
         AppToaster.show({ message: "Project successfully updated", intent: "success" });
@@ -120,9 +122,9 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  async createProject(payload: IProjectCreate) {
+  async createProject(params: IProjectCreate) {
     try {
-      const data = await api.createProject(payload);
+      const data = await api.createProject(params);
       if (data) {
         set({ ids: get().ids.concat(data.id), entities: Object.freeze({ ...get().entities, [data.id]: data }) });
         AppToaster.show({ message: "Project successfully created", intent: "success" });
@@ -132,8 +134,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  async uploadSlide(payload: { id: number; data: any }) {
-    if (!payload.id) {
+  async uploadSlide(id: number, params: any) {
+    if (!id) {
       return;
     }
     try {
@@ -142,8 +144,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
       await api.uploadSlide(
         token,
         groupId,
-        payload.id,
-        payload.data,
+        id,
+        params,
         () => {
           console.log("Upload has started.");
           useMainStore.getState().setProcessing(true);
@@ -193,10 +195,10 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  async getChannelStats(payload: { acquisitionId: number; channelName: string }) {
+  async getChannelStats(acquisitionId: number, channelName: string) {
     try {
       const groupId = useGroupsStore.getState().activeGroupId!;
-      return await api.getChannelStats(groupId, payload.acquisitionId, payload.channelName);
+      return await api.getChannelStats(groupId, acquisitionId, channelName);
     } catch (error) {
       displayApiError(error);
     }
@@ -245,10 +247,10 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  async updateChannel(payload: { acquisitionId: number; data: IChannelUpdate }) {
+  async updateChannel(acquisitionId: number, params: IChannelUpdate) {
     try {
       const groupId = useGroupsStore.getState().activeGroupId!;
-      const data = await api.updateChannel(groupId, payload.acquisitionId, payload.data);
+      const data = await api.updateChannel(groupId, acquisitionId, params);
       if (data) {
         set({ projectData: data });
       }
@@ -308,7 +310,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
         };
       });
 
-    const output = {
+    const output: any = {
       acquisitionId: activeAcquisitionId,
       format: format,
       filter: filter,
@@ -316,11 +318,10 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
       channels: channels,
     };
 
-    const activeDataset = this.datasets!.getters.activeDataset;
+    const activeDataset = useDatasetsStore.getState().getActiveDataset();
     if (activeDataset) {
       output["datasetId"] = activeDataset.id;
-      const maskSettings = this.settings!.getters.maskSettings;
-      const activeAcquisitionId = this.getters.activeAcquisitionId;
+      const maskSettings = useSettingsStore.getState().mask;
       if (activeAcquisitionId && activeDataset.meta.masks) {
         const mask = activeDataset.meta.masks[activeAcquisitionId];
         if (mask) {
@@ -329,20 +330,19 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
             mode: maskSettings.mode,
             location: mask.location,
           };
-          if (this.results?.getters.heatmap) {
-            output["mask"]["colorsType"] = this.results.getters.heatmap.type;
-            output["mask"]["colorsName"] = this.results.getters.heatmap.label;
+          const { heatmap, activeResultId, selectedCells } = useResultsStore.getState();
+          if (heatmap) {
+            output["mask"]["colorsType"] = heatmap.type;
+            output["mask"]["colorsName"] = heatmap.label;
           }
-          if (this.results?.getters.activeResultId) {
-            output["mask"]["resultId"] = this.results?.getters.activeResultId;
+          if (activeResultId) {
+            output["mask"]["resultId"] = activeResultId;
           }
           // Prepare selected cell ids visualisation
-          const selectedCells = this.results?.getters.selectedCells?.filter(
-            (v) => v.acquisitionId === activeAcquisitionId
-          );
-          if (selectedCells && selectedCells.length > 0) {
+          const selectedCellsFiltered = selectedCells?.filter((v) => v.acquisitionId === activeAcquisitionId);
+          if (selectedCellsFiltered && selectedCellsFiltered.length > 0) {
             output["mask"]["gated"] = true;
-            output["mask"]["cellIds"] = selectedCells.map((item) => item.objectNumber);
+            output["mask"]["cellIds"] = selectedCellsFiltered.map((item) => item.objectNumber);
           }
         }
       }

@@ -21,7 +21,7 @@ type GroupsState = {
   getTags: () => Promise<void>;
   createGroup: (payload: IGroupCreate) => Promise<void>;
   getGroup: (id: number) => Promise<void>;
-  updateGroup: (payload: { id: number; data: IGroupUpdate }) => Promise<void>;
+  updateGroup: (id: number, params: IGroupUpdate) => Promise<void>;
   deleteGroup: (id: number) => Promise<void>;
   joinGroup: (id: number) => Promise<void>;
   getMyMember: (groupId: number) => Promise<void>;
@@ -34,7 +34,7 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
   myMember: null,
   tags: [],
 
-  getGroups: async () => {
+  async getGroups() {
     try {
       const data = await api.getGroups();
       if (data) {
@@ -49,7 +49,7 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  getTags: async () => {
+  async getTags() {
     try {
       const data = await api.getTags();
       if (data && !isEqual(data, get().tags)) {
@@ -60,9 +60,9 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  createGroup: async (payload: IGroupCreate) => {
+  async createGroup(params: IGroupCreate) {
     try {
-      const data = await api.createGroup(payload);
+      const data = await api.createGroup(params);
       if (data) {
         set({
           ids: get().ids.concat(data.id),
@@ -75,7 +75,7 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  getGroup: async (id: number) => {
+  async getGroup(id: number) {
     try {
       const data = await api.getGroup(id);
       if (data) {
@@ -90,9 +90,9 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  updateGroup: async (payload: { id: number; data: IGroupUpdate }) => {
+  async updateGroup(id: number, params: IGroupUpdate) {
     try {
-      const data = await api.updateGroup(payload.id, payload.data);
+      const data = await api.updateGroup(id, params);
       if (data) {
         set({ entities: Object.freeze({ ...get().entities, [data.id]: data }) });
         AppToaster.show({ message: "Group successfully updated", intent: "success" });
@@ -102,7 +102,7 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  deleteGroup: async (id: number) => {
+  async deleteGroup(id: number) {
     try {
       const data = await api.deleteGroup(id);
       if (data) {
@@ -116,7 +116,7 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  joinGroup: async (id: number) => {
+  async joinGroup(id: number) {
     try {
       const data = await api.joinGroup(id);
       if (data) {
@@ -128,7 +128,7 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
     }
   },
 
-  getMyMember: async (groupId: number) => {
+  async getMyMember(groupId: number) {
     try {
       const data = await api.getMyMember(groupId);
       if (data) {

@@ -6,14 +6,21 @@ import { AppToaster } from "utils/toaster";
 
 type ProfileState = {
   userProfile: IUserProfile | null;
-  getUserProfile: () => Promise<void>;
-  updateUserProfile: (payload: IUserProfileUpdate) => Promise<void>;
+
+  hasAdminAccess(): boolean | null;
+  getUserProfile(): Promise<void>;
+  updateUserProfile(params: IUserProfileUpdate): Promise<void>;
 };
 
 export const useProfileStore = create<ProfileState>((set, get) => ({
   userProfile: null,
 
-  getUserProfile: async () => {
+  hasAdminAccess() {
+    const userProfile = get().userProfile;
+    return userProfile && userProfile.is_admin && userProfile.is_active;
+  },
+
+  async getUserProfile() {
     try {
       const data = await api.getUserProfile();
       if (data) {
@@ -24,9 +31,9 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  updateUserProfile: async (payload: IUserProfileUpdate) => {
+  async updateUserProfile(params: IUserProfileUpdate) {
     try {
-      const data = await api.updateUserProfile(payload);
+      const data = await api.updateUserProfile(params);
       set({ userProfile: data });
       AppToaster.show({ message: "Profile successfully updated", intent: "success" });
     } catch (error) {

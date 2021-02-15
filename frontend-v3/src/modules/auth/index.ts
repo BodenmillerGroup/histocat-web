@@ -13,6 +13,7 @@ type AuthState = {
   token: string | null;
   loggedIn: boolean | null;
   loginError: boolean;
+
   login: (username: string, password: string) => Promise<void>;
   checkLoggedIn: () => Promise<void>;
   removeLogin: () => void;
@@ -32,7 +33,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loggedIn: null,
   loginError: false,
 
-  login: async (username: string, password: string) => {
+  async login(username: string, password: string) {
     try {
       const response: any = await api.login(username, password);
       const token = response.access_token;
@@ -52,7 +53,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  checkLoggedIn: async () => {
+  async checkLoggedIn() {
     if (!get().loggedIn) {
       let token = get().token;
       if (!token) {
@@ -76,34 +77,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  removeLogin: () => {
+  removeLogin() {
     removeLocalToken();
     set({ token: null, loggedIn: false });
   },
 
-  routeLoggedIn: () => {
+  routeLoggedIn() {
     if (history.location.pathname === "/login" || history.location.pathname === "/") {
       history.push("/main");
     }
   },
 
-  routeLogout: () => {
+  routeLogout() {
     if (history.location.pathname !== "/login") {
       history.push("/login");
     }
   },
 
-  logout: () => {
+  logout() {
     get().routeLogout();
     get().removeLogin();
   },
 
-  userLogout: () => {
+  userLogout() {
     get().logout();
     AppToaster.show({ message: "Logged out", intent: "success" });
   },
 
-  checkUserExists: async (email: string) => {
+  async checkUserExists(email: string) {
     try {
       const data = await api.checkUserExists(email);
       return data.exists;
@@ -113,9 +114,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  signUp: async (payload: IUserProfileCreate) => {
+  async signUp(params: IUserProfileCreate) {
     try {
-      const data = await api.signUp(payload);
+      const data = await api.signUp(params);
       get().routeLogout();
       AppToaster.show({ message: "Registration confirmation email was sent", intent: "success" });
     } catch (error) {
@@ -123,7 +124,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  passwordRecovery: async (email: string) => {
+  async passwordRecovery(email: string) {
     try {
       await api.passwordRecovery(email);
       AppToaster.show({ message: "Password recovery email sent", intent: "success" });
@@ -133,7 +134,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  resetPassword: async (password: string, token: string) => {
+  async resetPassword(password: string, token: string) {
     try {
       const response = await api.resetPassword(password, token);
       AppToaster.show({ message: "Password successfully reset", intent: "success" });
@@ -143,7 +144,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  updateUserPassword: async (password: string) => {
+  async updateUserPassword(password: string) {
     try {
       // const data = await api.updateUserProfile(payload);
       get().logout();
