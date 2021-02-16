@@ -13,7 +13,6 @@ import "./App.scss";
 import { ProfileEditView } from "./views/profile/ProfileEditView";
 import { ProfilePasswordView } from "./views/profile/ProfilePasswordView";
 import { AdminView } from "./views/admin/AdminView";
-import { UsersView } from "./views/admin/users/UsersView";
 
 FocusStyleManager.onlyShowFocusOnTabs();
 

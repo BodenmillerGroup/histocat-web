@@ -1,5 +1,5 @@
 import { Cell, Column, ColumnHeaderCell, ICellRenderer } from "@blueprintjs/table";
-import { Menu, MenuItem } from "@blueprintjs/core";
+import { Checkbox, Menu, MenuItem } from "@blueprintjs/core";
 
 export type ICellLookup = (rowIndex: number, accesor: string) => any;
 export type ISortCallback = (accessor: string, comparator: (a: any, b: any) => number) => void;
@@ -56,7 +56,44 @@ export class NumericSortableColumn {
   }
 
   public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
-    const cellRenderer = (rowIndex: number, columnIndex: number) => <Cell>{getCellData(rowIndex, this.accessor)}</Cell>;
+    const cellRenderer = (rowIndex: number, columnIndex: number) => <Cell style={{ textAlign: 'right' }}>{getCellData(rowIndex, this.accessor)}</Cell>;
+    const menuRenderer = this.renderMenu.bind(this, sortColumn);
+    const columnHeaderCellRenderer = () => <ColumnHeaderCell name={this.name} menuRenderer={menuRenderer} />;
+    return (
+      <Column
+        cellRenderer={cellRenderer}
+        columnHeaderCellRenderer={columnHeaderCellRenderer}
+        key={this.name}
+        name={this.name}
+      />
+    );
+  }
+}
+
+export class CheckboxSortableColumn {
+  constructor(protected name: string, protected accessor: string) {}
+
+  private renderMenu(sortColumn: ISortCallback) {
+    const sortAsc = () => sortColumn(this.accessor, (a, b) => this.compare(a, b));
+    const sortDesc = () => sortColumn(this.accessor, (a, b) => this.compare(b, a));
+    return (
+      <Menu>
+        <MenuItem icon="sort-asc" onClick={sortAsc} text="Sort Asc" />
+        <MenuItem icon="sort-desc" onClick={sortDesc} text="Sort Desc" />
+      </Menu>
+    );
+  }
+
+  private compare(a: boolean, b: boolean) {
+    return a === b ? 0 : a ? -1 : 1;
+  }
+
+  public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
+    const cellRenderer = (rowIndex: number, columnIndex: number) => (
+      <Cell style={{ textAlign: 'center' }}>
+        <Checkbox checked={getCellData(rowIndex, this.accessor)} disabled={true} />
+      </Cell>
+    );
     const menuRenderer = this.renderMenu.bind(this, sortColumn);
     const columnHeaderCellRenderer = () => <ColumnHeaderCell name={this.name} menuRenderer={menuRenderer} />;
     return (

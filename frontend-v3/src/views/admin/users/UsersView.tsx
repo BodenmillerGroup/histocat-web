@@ -2,14 +2,25 @@ import styles from "./UsersView.module.scss";
 import { useUsersStore } from "../../../modules/users";
 import shallow from "zustand/shallow";
 import { useEffect, useState } from "react";
-import { ActionsColumn, TextSortableColumn, NumericSortableColumn } from "../../../components/table/Core";
+import {
+  ActionsColumn,
+  CheckboxSortableColumn,
+  NumericSortableColumn,
+  TextSortableColumn,
+} from "../../../components/table/Core";
 import { Cell, SelectionModes, Table, Utils } from "@blueprintjs/table";
-import { Button, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Button, InputGroup } from "@blueprintjs/core";
+import { EditUserDialog } from "./EditUserDialog";
+import { IUserProfile } from "../../../modules/profile/models";
+import { AddUserDialog } from "./AddUserDialog";
 
 export function UsersView() {
   const { users, getUsers } = useUsersStore((state) => ({ users: state.users, getUsers: state.getUsers }), shallow);
   const [sortedIndexMap, setSortedIndexMap] = useState<number[]>([]);
   const [filterValue, setFilterValue] = useState<string>("");
+  const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
+  const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
+  const [activeItem, setActiveItem] = useState<IUserProfile | null>(null);
 
   const data = users.filter((item) => item.name.includes(filterValue) || item.email.includes(filterValue));
 
@@ -34,14 +45,11 @@ export function UsersView() {
   };
 
   const handleFilterChange = (event: React.FormEvent<HTMLElement>) =>
-    window.setTimeout(() => setFilterValue((event.target as HTMLInputElement).value), 10);
+    window.setTimeout(() => setFilterValue((event.target as HTMLInputElement).value), 100);
 
-  const editAction = (item: any) => {
-    console.log(item);
-  };
-
-  const deleteAction = (item: any) => {
-    console.log(item);
+  const editAction = (item: IUserProfile) => {
+    setActiveItem(item);
+    setEditDialogOpen(true);
   };
 
   const actionsCellRenderer = (rowIndex: number) => {
@@ -59,14 +67,6 @@ export function UsersView() {
           intent="primary"
           onClick={() => editAction(data[rowIndex])}
         />
-        <Button
-          text="Delete"
-          icon="delete"
-          minimal={true}
-          small={true}
-          intent="danger"
-          onClick={() => deleteAction(data[rowIndex])}
-        />
       </Cell>
     );
   };
@@ -75,22 +75,27 @@ export function UsersView() {
     new NumericSortableColumn("ID", "id").getColumn(getCellData, sortColumn),
     new TextSortableColumn("Email", "email").getColumn(getCellData, sortColumn),
     new TextSortableColumn("Name", "name").getColumn(getCellData, sortColumn),
+    new CheckboxSortableColumn("Active", "is_active").getColumn(getCellData, sortColumn),
+    new CheckboxSortableColumn("Admin", "is_admin").getColumn(getCellData, sortColumn),
     new ActionsColumn("Actions").getColumn(actionsCellRenderer),
   ];
 
-  const clearButton = <Button icon="delete" minimal={true} onClick={() => setFilterValue("")} />;
-
   return (
     <div className={styles.container}>
-      <h2>Users</h2>
+      <span className={styles.toolbar}>
+        <h2>Users</h2>
+        <Button text="Add User" icon="add" intent="primary" onClick={() => setAddDialogOpen(true)} />
+      </span>
       <InputGroup
         asyncControl={true}
         leftIcon="filter"
-        rightElement={filterValue ? clearButton : undefined}
+        rightElement={
+          filterValue ? <Button icon="delete" minimal={true} onClick={() => setFilterValue("")} /> : undefined
+        }
         onChange={handleFilterChange}
         placeholder="Filter users..."
         value={filterValue}
-        style={{ marginBottom: "20px" }}
+        className={styles.filter}
       />
       <Table
         numRows={data.length}
@@ -100,10 +105,12 @@ export function UsersView() {
         enableFocusedCell={false}
         enableRowResizing={false}
         defaultRowHeight={24}
-        columnWidths={[50, 200, 200, 200]}
+        columnWidths={[50, 200, 200, 70, 70, 200]}
       >
         {columns}
       </Table>
+      <EditUserDialog user={activeItem!} isOpen={editDialogOpen} handleClose={() => setEditDialogOpen(false)} />
+      <AddUserDialog isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />
     </div>
   );
 }
