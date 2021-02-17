@@ -84,7 +84,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   routeLoggedIn() {
     if (history.location.pathname === "/login" || history.location.pathname === "/") {
-      history.push("/main");
+      history.push("/");
     }
   },
 

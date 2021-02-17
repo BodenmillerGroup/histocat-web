@@ -56,7 +56,9 @@ export class NumericSortableColumn {
   }
 
   public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
-    const cellRenderer = (rowIndex: number, columnIndex: number) => <Cell style={{ textAlign: 'right' }}>{getCellData(rowIndex, this.accessor)}</Cell>;
+    const cellRenderer = (rowIndex: number, columnIndex: number) => (
+      <Cell style={{ textAlign: "right" }}>{getCellData(rowIndex, this.accessor)}</Cell>
+    );
     const menuRenderer = this.renderMenu.bind(this, sortColumn);
     const columnHeaderCellRenderer = () => <ColumnHeaderCell name={this.name} menuRenderer={menuRenderer} />;
     return (
@@ -90,7 +92,7 @@ export class CheckboxSortableColumn {
 
   public getColumn(getCellData: ICellLookup, sortColumn: ISortCallback) {
     const cellRenderer = (rowIndex: number, columnIndex: number) => (
-      <Cell style={{ textAlign: 'center' }}>
+      <Cell style={{ textAlign: "center" }}>
         <Checkbox checked={getCellData(rowIndex, this.accessor)} disabled={true} />
       </Cell>
     );

@@ -1,5 +1,5 @@
 import styles from "./UsersView.module.scss";
-import { useUsersStore } from "../../../modules/users";
+import { useUsersStore } from "modules/users";
 import shallow from "zustand/shallow";
 import { useEffect, useState } from "react";
 import {
@@ -7,12 +7,13 @@ import {
   CheckboxSortableColumn,
   NumericSortableColumn,
   TextSortableColumn,
-} from "../../../components/table/Core";
+} from "components/table/Core";
 import { Cell, SelectionModes, Table, Utils } from "@blueprintjs/table";
 import { Button, InputGroup } from "@blueprintjs/core";
 import { EditUserDialog } from "./EditUserDialog";
-import { IUserProfile } from "../../../modules/profile/models";
+import { IUserProfile } from "modules/profile/models";
 import { AddUserDialog } from "./AddUserDialog";
+import { throttle } from "lodash-es";
 
 export function UsersView() {
   const { users, getUsers } = useUsersStore((state) => ({ users: state.users, getUsers: state.getUsers }), shallow);
@@ -22,7 +23,10 @@ export function UsersView() {
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<IUserProfile | null>(null);
 
-  const data = users.filter((item) => item.name.includes(filterValue) || item.email.includes(filterValue));
+  const data = users.filter((item) => {
+    const filter = filterValue.toLowerCase();
+    return item.email.toLowerCase().includes(filter) || (item.name && item.name.toLowerCase().includes(filter));
+  });
 
   useEffect(() => {
     getUsers();
@@ -45,7 +49,7 @@ export function UsersView() {
   };
 
   const handleFilterChange = (event: React.FormEvent<HTMLElement>) =>
-    window.setTimeout(() => setFilterValue((event.target as HTMLInputElement).value), 100);
+    setFilterValue((event.target as HTMLInputElement).value);
 
   const editAction = (item: IUserProfile) => {
     setActiveItem(item);
@@ -90,9 +94,9 @@ export function UsersView() {
         asyncControl={true}
         leftIcon="filter"
         rightElement={
-          filterValue ? <Button icon="delete" minimal={true} onClick={() => setFilterValue("")} /> : undefined
+          filterValue ? <Button icon="cross" minimal={true} onClick={() => setFilterValue("")} /> : undefined
         }
-        onChange={handleFilterChange}
+        onChange={throttle(handleFilterChange, 200, { leading: false })}
         placeholder="Filter users..."
         value={filterValue}
         className={styles.filter}

@@ -1,11 +1,14 @@
 import { Button, Card, Elevation } from "@blueprintjs/core";
 import { useProfileStore } from "../../modules/profile";
 import styles from "./Profile.module.scss";
-import { useHistory } from "react-router-dom";
+import { EditProfileDialog } from "./EditProfileDialog";
+import { useState } from "react";
+import { EditPasswordDialog } from "./EditPasswordDialog";
 
-export function ProfileView() {
+export default function ProfileView() {
   const userProfile = useProfileStore((state) => state.userProfile);
-  const history = useHistory();
+  const [editProfileDialogOpen, setEditProfileDialogOpen] = useState<boolean>(false);
+  const [editPasswordDialogOpen, setEditPasswordDialogOpen] = useState<boolean>(false);
 
   return (
     <div className={styles.container}>
@@ -16,10 +19,12 @@ export function ProfileView() {
         <h3>Email:</h3>
         <p>{userProfile?.email}</p>
         <div className={styles.actions}>
-          <Button text="Edit profile" onClick={() => history.push("/profile/edit")} />
-          <Button text="Change password" onClick={() => history.push("/profile/password")} />
+          <Button text="Edit profile" onClick={() => setEditProfileDialogOpen(true)} />
+          <Button text="Change password" onClick={() => setEditPasswordDialogOpen(true)} />
         </div>
       </Card>
+      <EditProfileDialog isOpen={editProfileDialogOpen} handleClose={() => setEditProfileDialogOpen(false)} />
+      <EditPasswordDialog isOpen={editPasswordDialogOpen} handleClose={() => setEditPasswordDialogOpen(false)} />
     </div>
   );
 }

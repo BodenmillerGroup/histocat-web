@@ -15,16 +15,17 @@ type GroupsState = {
   entities: { [key: number]: IGroup };
   activeGroupId: number | null;
   myMember: IMember | null;
-  tags: string[];
+  groupsTags: string[] | null;
 
-  getGroups: () => Promise<void>;
-  getTags: () => Promise<void>;
-  createGroup: (payload: IGroupCreate) => Promise<void>;
-  getGroup: (id: number) => Promise<void>;
-  updateGroup: (id: number, params: IGroupUpdate) => Promise<void>;
-  deleteGroup: (id: number) => Promise<void>;
-  joinGroup: (id: number) => Promise<void>;
-  getMyMember: (groupId: number) => Promise<void>;
+  isGroupAdmin(): boolean;
+  getGroups(): Promise<void>;
+  getTags(): Promise<void>;
+  createGroup(payload: IGroupCreate): Promise<void>;
+  getGroup(id: number): Promise<void>;
+  updateGroup(id: number, params: IGroupUpdate): Promise<void>;
+  deleteGroup(id: number): Promise<void>;
+  joinGroup(id: number): Promise<void>;
+  getMyMember(groupId: number): Promise<void>;
 };
 
 export const useGroupsStore = create<GroupsState>((set, get) => ({
@@ -32,7 +33,12 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
   entities: {},
   activeGroupId: null,
   myMember: null,
-  tags: [],
+  groupsTags: null,
+
+  isGroupAdmin() {
+    const myMember = get().myMember;
+    return myMember ? myMember.role >= 100 : false;
+  },
 
   async getGroups() {
     try {
@@ -52,8 +58,8 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
   async getTags() {
     try {
       const data = await api.getTags();
-      if (data && !isEqual(data, get().tags)) {
-        set({ tags: data });
+      if (data && !isEqual(data, get().groupsTags)) {
+        set({ groupsTags: data });
       }
     } catch (error) {
       displayApiError(error);

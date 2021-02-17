@@ -1,7 +1,7 @@
 import { Button, Checkbox, Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { useForm } from "react-hook-form";
-import { IUserProfileCreate } from "../../../modules/profile/models";
-import { useUsersStore } from "../../../modules/users";
+import { IUserProfileCreate } from "modules/profile/models";
+import { useUsersStore } from "modules/users";
 
 type AddUserDialogProps = {
   isOpen: boolean;
@@ -32,6 +32,7 @@ export function AddUserDialog(props: AddUserDialogProps) {
       usePortal={true}
       isOpen={props.isOpen}
       className="bp3-dark"
+      canOutsideClickClose={false}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={Classes.DIALOG_BODY}>
@@ -57,27 +58,11 @@ export function AddUserDialog(props: AddUserDialogProps) {
           </FormGroup>
 
           <FormGroup label="Name" labelFor="name-input">
-            <InputGroup
-              id="name-input"
-              name="name"
-              placeholder="Enter your real name"
-              inputRef={register({})}
-            />
+            <InputGroup id="name-input" name="name" placeholder="Enter your real name" inputRef={register({})} />
           </FormGroup>
 
-          <Checkbox
-            name="isActive"
-            label="Active"
-            inline={true}
-            defaultChecked={true}
-            inputRef={register({})}
-          />
-          <Checkbox
-            name="isAdmin"
-            label="Admin"
-            inline={true}
-            inputRef={register({})}
-          />
+          <Checkbox name="isActive" label="Active" inline={true} defaultChecked={true} inputRef={register({})} />
+          <Checkbox name="isAdmin" label="Admin" inline={true} inputRef={register({})} />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

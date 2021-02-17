@@ -1,19 +1,19 @@
-import { Button, Checkbox, Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { useForm } from "react-hook-form";
-import { IUserProfile, IUserProfileUpdate } from "modules/profile/models";
-import { useUsersStore } from "modules/users";
+import { IUserProfileUpdate } from "modules/profile/models";
+import { useProfileStore } from "modules/profile";
 
 type EditUserDialogProps = {
   isOpen: boolean;
   handleClose(): void;
-  user: IUserProfile;
 };
 
-export function EditUserDialog(props: EditUserDialogProps) {
+export function EditProfileDialog(props: EditUserDialogProps) {
   const { register, errors, handleSubmit } = useForm();
-  const updateUser = useUsersStore((state) => state.updateUser);
+  const userProfile = useProfileStore((state) => state.userProfile);
+  const updateUserProfile = useProfileStore((state) => state.updateUserProfile);
 
-  if (!props.user) {
+  if (!userProfile) {
     return null;
   }
 
@@ -22,10 +22,8 @@ export function EditUserDialog(props: EditUserDialogProps) {
     const params: IUserProfileUpdate = {
       email: values.email,
       name: values.name,
-      is_admin: values.isAdmin,
-      is_active: values.isActive,
     };
-    await updateUser(props.user.id, params);
+    await updateUserProfile(params);
     props.handleClose();
   };
 
@@ -33,7 +31,7 @@ export function EditUserDialog(props: EditUserDialogProps) {
     <Dialog
       icon="edit"
       onClose={props.handleClose}
-      title="Edit User"
+      title="Edit Profile"
       usePortal={true}
       isOpen={props.isOpen}
       className="bp3-dark"
@@ -52,7 +50,7 @@ export function EditUserDialog(props: EditUserDialogProps) {
               id="email-input"
               name="email"
               placeholder="Enter email"
-              defaultValue={props.user.email}
+              defaultValue={userProfile!.email}
               inputRef={register({
                 required: "Email is required",
                 pattern: {
@@ -68,25 +66,10 @@ export function EditUserDialog(props: EditUserDialogProps) {
               id="name-input"
               name="name"
               placeholder="Enter your real name"
-              defaultValue={props.user.name}
+              defaultValue={userProfile!.name}
               inputRef={register({})}
             />
           </FormGroup>
-
-          <Checkbox
-            name="isActive"
-            label="Active"
-            defaultChecked={props.user.is_active}
-            inline={true}
-            inputRef={register({})}
-          />
-          <Checkbox
-            name="isAdmin"
-            label="Admin"
-            defaultChecked={props.user.is_admin}
-            inline={true}
-            inputRef={register({})}
-          />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

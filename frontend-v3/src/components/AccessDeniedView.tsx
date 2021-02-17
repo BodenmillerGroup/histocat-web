@@ -4,7 +4,7 @@ import { Callout } from "@blueprintjs/core";
 type AccessDeniedViewProps = {
   title: string;
   content: string;
-}
+};
 
 export function AccessDeniedView(props: AccessDeniedViewProps) {
   return (

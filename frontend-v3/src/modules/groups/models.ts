@@ -20,7 +20,7 @@ export interface IGroupUpdate {
 export interface IGroup {
   id: number;
   name: string;
-  description: string | null;
+  description?: string;
   url: string | null;
   is_open: boolean;
   tags: string[];

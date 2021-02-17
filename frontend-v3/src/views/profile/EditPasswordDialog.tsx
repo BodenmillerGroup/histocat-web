@@ -1,15 +1,17 @@
-import { Button, Card, Elevation, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
-import styles from "./Profile.module.scss";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { useForm } from "react-hook-form";
-import { useHistory } from "react-router-dom";
+import { IUserProfileUpdate } from "modules/profile/models";
 import { useRef, useState } from "react";
+import { useAuthStore } from "modules/auth";
 import { Tooltip2 } from "@blueprintjs/popover2";
-import { IUserProfileUpdate } from "../../modules/profile/models";
-import { useAuthStore } from "../../modules/auth";
 
-export function ProfilePasswordView() {
+type EditUserDialogProps = {
+  isOpen: boolean;
+  handleClose(): void;
+};
+
+export function EditPasswordDialog(props: EditUserDialogProps) {
   const { register, errors, handleSubmit, watch } = useForm();
-  const history = useHistory();
   const [showPassword, setShowPassword] = useState(false);
   const { updateUserPassword } = useAuthStore();
 
@@ -19,7 +21,7 @@ export function ProfilePasswordView() {
   const onSubmit = async (values: IUserProfileUpdate) => {
     // form is valid
     await updateUserPassword(values.password!);
-    history.goBack();
+    props.handleClose();
   };
 
   const lockButton = (
@@ -34,10 +36,17 @@ export function ProfilePasswordView() {
   );
 
   return (
-    <div className={styles.container}>
-      <Card interactive={false} elevation={Elevation.TWO}>
-        <h2>Change Password</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
+    <Dialog
+      icon="edit"
+      onClose={props.handleClose}
+      title="Change Password"
+      usePortal={true}
+      isOpen={props.isOpen}
+      className="bp3-dark"
+      canOutsideClickClose={false}
+    >
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className={Classes.DIALOG_BODY}>
           <FormGroup
             label="Password"
             labelFor="password-input"
@@ -80,11 +89,15 @@ export function ProfilePasswordView() {
               })}
             />
           </FormGroup>
-
-          <Button type="reset" text="Reset" />
-          <Button type="submit" text="Submit" intent="primary" style={{ marginLeft: "10px" }} />
-        </form>
-      </Card>
-    </div>
+        </div>
+        <div className={Classes.DIALOG_FOOTER}>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+            <Button onClick={props.handleClose} text="Cancel" />
+            <Button type="reset" text="Reset" />
+            <Button type="submit" intent={Intent.PRIMARY} text="Save" />
+          </div>
+        </div>
+      </form>
+    </Dialog>
   );
 }

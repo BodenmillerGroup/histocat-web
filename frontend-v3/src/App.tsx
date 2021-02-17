@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { MainNavBar } from "views/MainNavBar";
 import { FocusStyleManager } from "@blueprintjs/core";
 import { LoginForm } from "views/auth/LoginForm";
@@ -8,11 +8,11 @@ import history from "utils/history";
 import { SignupForm } from "./views/auth/SignupForm";
 import { PasswordRecoveryForm } from "./views/auth/PasswordRecoveryForm";
 import { ResetPasswordForm } from "./views/auth/ResetPasswordForm";
-import { ProfileView } from "./views/profile/ProfileView";
 import "./App.scss";
-import { ProfileEditView } from "./views/profile/ProfileEditView";
-import { ProfilePasswordView } from "./views/profile/ProfilePasswordView";
-import { AdminView } from "./views/admin/AdminView";
+import { LoadingView } from "./components/LoadingView";
+const GroupsView = React.lazy(() => import("./views/groups/GroupsView"));
+const ProfileView = React.lazy(() => import("./views/profile/ProfileView"));
+const AdminView = React.lazy(() => import("./views/admin/AdminView"));
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -42,18 +42,22 @@ function App() {
         <MainNavBar />
         <main>
           <Switch>
-            <Route exact={true} path="/profile">
-              <ProfileView />
-            </Route>
-            <Route path="/profile/edit">
-              <ProfileEditView />
-            </Route>
-            <Route path="/profile/password">
-              <ProfilePasswordView />
+            <Route path="/profile">
+              <Suspense fallback={<LoadingView />}>
+                <ProfileView />
+              </Suspense>
             </Route>
 
             <Route path="/admin">
-              <AdminView/>
+              <Suspense fallback={<LoadingView />}>
+                <AdminView />
+              </Suspense>
+            </Route>
+
+            <Route path="/">
+              <Suspense fallback={<LoadingView />}>
+                <GroupsView />
+              </Suspense>
             </Route>
           </Switch>
         </main>
