@@ -1,7 +1,6 @@
 import { IImageFilter, IImageScalebar, IMaskSettings } from "../settings/models";
 
 export interface IProjectCreate {
-  group_id: number;
   name: string;
   description?: string;
   tags?: string[];

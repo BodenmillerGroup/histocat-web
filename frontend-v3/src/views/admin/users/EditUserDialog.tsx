@@ -13,10 +13,6 @@ export function EditUserDialog(props: EditUserDialogProps) {
   const { register, errors, handleSubmit } = useForm();
   const updateUser = useUsersStore((state) => state.updateUser);
 
-  if (!props.user) {
-    return null;
-  }
-
   const onSubmit = async (values: any) => {
     // form is valid
     const params: IUserProfileUpdate = {
@@ -36,7 +32,7 @@ export function EditUserDialog(props: EditUserDialogProps) {
       title="Edit User"
       usePortal={true}
       isOpen={props.isOpen}
-      className="bp3-dark"
+      className={Classes.DARK}
       canOutsideClickClose={false}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

@@ -1,39 +1,37 @@
-import styles from "./ModelsView.module.scss";
+import styles from "./ProjectsView.module.scss";
 import shallow from "zustand/shallow";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ActionsColumn, NumericSortableColumn, TextSortableColumn } from "components/table/Core";
-import { Cell, SelectionModes, Table, TableLoadingOption, Utils } from "@blueprintjs/table";
+import { Cell, SelectionModes, Table, Utils } from "@blueprintjs/table";
 import { Alert, Button, Classes, InputGroup, Intent } from "@blueprintjs/core";
 import { throttle } from "lodash-es";
-import { EditModelDialog } from "./EditModelDialog";
-import { AddModelDialog } from "./AddModelDialog";
-import { useModelsStore } from "modules/models";
-import { IModel } from "modules/models/models";
+import { useProjectsStore } from "modules/projects";
+import { IProject } from "modules/projects/models";
+import { EditProjectDialog } from "./EditProjectDialog";
+import { AddProjectDialog } from "./AddProjectDialog";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
-export function ModelsView() {
-  const { ids, entities, getModels, deleteModel } = useModelsStore(
+export function ProjectsView() {
+  const history = useHistory();
+  const { url } = useRouteMatch();
+  const { ids, entities, projectsTags, deleteProject } = useProjectsStore(
     (state) => ({
       ids: state.ids,
       entities: state.entities,
-      getModels: state.getModels,
-      deleteModel: state.deleteModel,
+      projectsTags: state.projectsTags,
+      deleteProject: state.deleteProject,
     }),
     shallow
   );
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
   const [sortedIndexMap, setSortedIndexMap] = useState<number[]>([]);
   const [filterValue, setFilterValue] = useState<string>("");
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
   const [addDialogOpen, setAddDialogOpen] = useState<boolean>(false);
-  const [activeItem, setActiveItem] = useState<IModel | null>(null);
+  const [activeItem, setActiveItem] = useState<IProject | null>(null);
 
-  useEffect(() => {
-    getModels().then(() => setLoading(false));
-  }, [getModels]);
-
-  const models = ids.map((id) => entities[id]);
-  const data = models.filter((item) => {
+  const projects = ids.map((id) => entities[id]);
+  const data = projects.filter((item) => {
     const filter = filterValue.toLowerCase();
     return (
       item.name.toLowerCase().includes(filter) || (item.description && item.description.toLowerCase().includes(filter))
@@ -59,14 +57,14 @@ export function ModelsView() {
   const handleFilterChange = (event: React.FormEvent<HTMLElement>) =>
     setFilterValue((event.target as HTMLInputElement).value);
 
-  const editAction = (item: IModel) => {
+  const editAction = (item: IProject) => {
     setActiveItem(item);
     setEditDialogOpen(true);
   };
 
   const deleteAction = async () => {
     if (activeItem) {
-      await deleteModel(activeItem.id);
+      await deleteProject(activeItem.id);
     }
     setAlertOpen(false);
   };
@@ -79,19 +77,20 @@ export function ModelsView() {
     return (
       <Cell>
         <Button
-          text="Edit"
-          icon="edit"
+          text="Open"
+          icon="document-open"
           minimal={true}
           small={true}
-          intent="primary"
-          onClick={() => editAction(data[rowIndex])}
+          intent={Intent.PRIMARY}
+          onClick={() => history.push(`${url}/projects/${data[rowIndex].id}`)}
         />
+        <Button text="Edit" icon="edit" minimal={true} small={true} onClick={() => editAction(data[rowIndex])} />
         <Button
           text="Delete"
           icon="delete"
           minimal={true}
           small={true}
-          intent="danger"
+          intent={Intent.DANGER}
           onClick={() => {
             setActiveItem(data[rowIndex]);
             setAlertOpen(true);
@@ -112,8 +111,8 @@ export function ModelsView() {
   return (
     <div className={styles.container}>
       <span className={styles.toolbar}>
-        <h2>Models</h2>
-        <Button text="Add Model" icon="add" intent="primary" onClick={() => setAddDialogOpen(true)} />
+        <h2>Projects</h2>
+        <Button text="Add Project" icon="add" intent="primary" onClick={() => setAddDialogOpen(true)} />
       </span>
       <InputGroup
         asyncControl={true}
@@ -122,7 +121,7 @@ export function ModelsView() {
           filterValue ? <Button icon="cross" minimal={true} onClick={() => setFilterValue("")} /> : undefined
         }
         onChange={throttle(handleFilterChange, 200, { leading: false })}
-        placeholder="Filter models..."
+        placeholder="Filter projects..."
         value={filterValue}
         className={styles.filter}
       />
@@ -134,18 +133,14 @@ export function ModelsView() {
         enableFocusedCell={false}
         enableRowResizing={false}
         defaultRowHeight={24}
-        columnWidths={[50, 200, 200, 200, 200]}
-        loadingOptions={
-          loading
-            ? [TableLoadingOption.COLUMN_HEADERS, TableLoadingOption.ROW_HEADERS, TableLoadingOption.CELLS]
-            : undefined
-        }
+        columnWidths={[50, 200, 300, 200, 235]}
       >
         {columns}
       </Table>
       {activeItem && (
-        <EditModelDialog
-          model={activeItem}
+        <EditProjectDialog
+          project={activeItem}
+          projectsTags={projectsTags}
           isOpen={editDialogOpen}
           handleClose={() => {
             setEditDialogOpen(false);
@@ -153,7 +148,11 @@ export function ModelsView() {
           }}
         />
       )}
-      <AddModelDialog isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />
+      <AddProjectDialog
+        projectsTags={projectsTags}
+        isOpen={addDialogOpen}
+        handleClose={() => setAddDialogOpen(false)}
+      />
       <Alert
         className={Classes.DARK}
         cancelButtonText="Cancel"
@@ -165,7 +164,7 @@ export function ModelsView() {
         onCancel={() => setAlertOpen(false)}
         onConfirm={deleteAction}
       >
-        <p>Are you sure you want to delete the model?</p>
+        <p>Are you sure you want to delete the project?</p>
       </Alert>
     </div>
   );

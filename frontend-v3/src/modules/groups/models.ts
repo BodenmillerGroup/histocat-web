@@ -21,7 +21,7 @@ export interface IGroup {
   id: number;
   name: string;
   description?: string;
-  url: string | null;
+  url?: string;
   is_open: boolean;
   tags: string[];
   created_at: string;

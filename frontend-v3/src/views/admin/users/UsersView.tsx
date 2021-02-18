@@ -8,7 +8,7 @@ import {
   NumericSortableColumn,
   TextSortableColumn,
 } from "components/table/Core";
-import { Cell, SelectionModes, Table, Utils } from "@blueprintjs/table";
+import { Cell, SelectionModes, Table, TableLoadingOption, Utils } from "@blueprintjs/table";
 import { Button, InputGroup } from "@blueprintjs/core";
 import { EditUserDialog } from "./EditUserDialog";
 import { IUserProfile } from "modules/profile/models";
@@ -17,6 +17,7 @@ import { throttle } from "lodash-es";
 
 export function UsersView() {
   const { users, getUsers } = useUsersStore((state) => ({ users: state.users, getUsers: state.getUsers }), shallow);
+  const [loading, setLoading] = useState<boolean>(true);
   const [sortedIndexMap, setSortedIndexMap] = useState<number[]>([]);
   const [filterValue, setFilterValue] = useState<string>("");
   const [editDialogOpen, setEditDialogOpen] = useState<boolean>(false);
@@ -29,7 +30,7 @@ export function UsersView() {
   });
 
   useEffect(() => {
-    getUsers();
+    getUsers().then(() => setLoading(false));
   }, [getUsers]);
 
   const getCellData = (rowIndex: number, accessor: string) => {
@@ -110,10 +111,24 @@ export function UsersView() {
         enableRowResizing={false}
         defaultRowHeight={24}
         columnWidths={[50, 200, 200, 70, 70, 200]}
+        loadingOptions={
+          loading
+            ? [TableLoadingOption.COLUMN_HEADERS, TableLoadingOption.ROW_HEADERS, TableLoadingOption.CELLS]
+            : undefined
+        }
       >
         {columns}
       </Table>
-      <EditUserDialog user={activeItem!} isOpen={editDialogOpen} handleClose={() => setEditDialogOpen(false)} />
+      {activeItem && (
+        <EditUserDialog
+          user={activeItem}
+          isOpen={editDialogOpen}
+          handleClose={() => {
+            setEditDialogOpen(false);
+            setActiveItem(null);
+          }}
+        />
+      )}
       <AddUserDialog isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />
     </div>
   );

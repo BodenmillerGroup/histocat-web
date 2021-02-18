@@ -25,9 +25,9 @@ export const api = {
       })
       .json<IProject>();
   },
-  async createProject(data: IProjectCreate) {
+  async createProject(groupId: number, data: IProjectCreate) {
     return ApiManager.api
-      .post(`groups/${data.group_id}/projects`, {
+      .post(`groups/${groupId}/projects`, {
         json: data,
       })
       .json<IProject>();

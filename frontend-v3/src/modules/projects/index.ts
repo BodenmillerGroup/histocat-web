@@ -4,6 +4,7 @@ import {
   ExportFormat,
   IAcquisition,
   IChannel,
+  IChannelStats,
   IChannelUpdate,
   IProject,
   IProjectCreate,
@@ -27,7 +28,7 @@ const projectListSchema = [projectSchema];
 type ProjectsState = {
   ids: ReadonlyArray<number>;
   entities: { [key: number]: IProject };
-  tags: string[];
+  projectsTags: string[];
   projectData: IProjectData | null;
   activeProjectId: number | null;
   activeAcquisitionId: number | null;
@@ -36,33 +37,53 @@ type ProjectsState = {
   channelStackImage: string | ArrayBuffer | null;
   colorizeMaskInProgress: boolean;
 
-  prepareStackParams(format?: "png" | "tiff"): any;
+  setActiveProjectId(id: number | null): void;
+  setActiveAcquisitionId(id: number | null): void;
+  setActiveWorkspaceNode(node: { id: number; type: string } | null): void;
+  setSelectedMetals(metals: string[]): void;
+  getGroupProjects(groupId: number): Promise<void>;
+  getProjectsTags(groupId: number): Promise<void>;
+  updateProject(id: number, params: IProjectUpdate): Promise<void>;
+  deleteProject(projectId: number): Promise<void>;
+  createProject(params: IProjectCreate): Promise<void>;
+  uploadSlide(id: number, params: any): Promise<void>;
+  getProject(projectId: number): Promise<void>;
+  getProjectData(projectId: number): Promise<void>;
+  getChannelStats(acquisitionId: number, channelName: string): Promise<IChannelStats | undefined>;
   getChannelStackImage(): Promise<void>;
+  exportChannelStackImage(format: ExportFormat): Promise<void>;
+  deleteSlide(id: number): Promise<void>;
+  updateChannel(acquisitionId: number, params: IChannelUpdate): Promise<void>;
   getActiveAcquisition(): IAcquisition | undefined;
   getSelectedChannels(): IChannel[];
+  prepareStackParams(format?: "png" | "tiff"): any;
 };
 
 export const useProjectsStore = create<ProjectsState>((set, get) => ({
   ids: [],
   entities: {},
-  tags: [],
-  projectData: null,
   activeProjectId: null,
+  projectsTags: [],
+  projectData: null,
   activeAcquisitionId: null,
   activeWorkspaceNode: null,
   selectedMetals: [],
   channelStackImage: null,
   colorizeMaskInProgress: false,
 
-  setActiveAcquisitionId(id?: number, isGlobal = true) {
+  setActiveProjectId(id: number | null) {
+    set({ activeProjectId: id });
+  },
+
+  setActiveAcquisitionId(id: number | null) {
     set({ activeAcquisitionId: id });
   },
 
-  setActiveWorkspaceNode(node?: { id: number; type: string }, isGlobal = true) {
+  setActiveWorkspaceNode(node: { id: number; type: string } | null) {
     set({ activeWorkspaceNode: node });
   },
 
-  setSelectedMetals(metals: string[], isGlobal = true) {
+  setSelectedMetals(metals: string[]) {
     set({ selectedMetals: metals });
   },
 
@@ -85,8 +106,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     try {
       const data = await api.getProjectsTags(groupId);
       if (data) {
-        if (!isEqual(data, get().tags)) {
-          set({ tags: data });
+        if (!isEqual(data, get().projectsTags)) {
+          set({ projectsTags: data });
         }
       }
     } catch (error) {
@@ -124,7 +145,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
 
   async createProject(params: IProjectCreate) {
     try {
-      const data = await api.createProject(params);
+      const groupId = useGroupsStore.getState().activeGroupId!;
+      const data = await api.createProject(groupId, params);
       if (data) {
         set({ ids: get().ids.concat(data.id), entities: Object.freeze({ ...get().entities, [data.id]: data }) });
         AppToaster.show({ message: "Project successfully created", intent: "success" });

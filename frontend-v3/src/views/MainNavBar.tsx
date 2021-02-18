@@ -9,25 +9,45 @@ import {
   NavbarHeading,
 } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
-
 import { useAuthStore } from "modules/auth";
 import { appName } from "../env";
 import { useHistory } from "react-router-dom";
+import { useGroupsStore } from "modules/groups";
+import { useProfileStore } from "modules/profile";
+import { LayoutsControl } from "./LayoutsControl";
 
 export function MainNavBar() {
-  const { userLogout } = useAuthStore();
+  const hasAdminAccess = useProfileStore((state) => state.hasAdminAccess());
+  const userLogout = useAuthStore((state) => state.userLogout);
+  const activeGroupId = useGroupsStore((state) => state.activeGroupId);
   const history = useHistory();
 
   return (
     <Navbar fixedToTop={false}>
       <NavbarGroup align={Alignment.LEFT}>
-        <NavbarHeading>{appName}</NavbarHeading>
+        <NavbarHeading>
+          <Button minimal={true} text={appName} onClick={() => history.push("/")} />
+        </NavbarHeading>
         <NavbarDivider />
-        <Button minimal={true} icon="home" text="Home" onClick={() => history.push("/")} />
-        <Button minimal={true} icon="user" text="Users" onClick={() => history.push("/admin/users")} />
-        <Button minimal={true} icon="predictive-analysis" text="Models" onClick={() => history.push("/admin/models")} />
+        {activeGroupId && (
+          <Button minimal={true} icon="projects" text="Projects" onClick={() => history.push(`/${activeGroupId}`)} />
+        )}
+        <LayoutsControl />
       </NavbarGroup>
       <NavbarGroup align={Alignment.RIGHT}>
+        {hasAdminAccess && (
+          <Popover2
+            content={
+              <Menu>
+                <MenuItem text="Users" icon="user" onClick={() => history.push("/admin/users")} />
+                <MenuItem text="Models" icon="predictive-analysis" onClick={() => history.push("/admin/models")} />
+              </Menu>
+            }
+            placement="bottom"
+          >
+            <Button minimal={true} icon="key" text="Admin" />
+          </Popover2>
+        )}
         <Popover2
           content={
             <Menu>

@@ -1,8 +1,8 @@
 import React, { Suspense, useEffect } from "react";
 import { MainNavBar } from "views/MainNavBar";
-import { FocusStyleManager } from "@blueprintjs/core";
+import { Classes, FocusStyleManager } from "@blueprintjs/core";
 import { LoginForm } from "views/auth/LoginForm";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { Router, Switch, Route } from "react-router-dom";
 import { useAuthStore } from "modules/auth";
 import history from "utils/history";
 import { SignupForm } from "./views/auth/SignupForm";
@@ -10,6 +10,7 @@ import { PasswordRecoveryForm } from "./views/auth/PasswordRecoveryForm";
 import { ResetPasswordForm } from "./views/auth/ResetPasswordForm";
 import "./App.scss";
 import { LoadingView } from "./components/LoadingView";
+import shallow from "zustand/shallow";
 const GroupsView = React.lazy(() => import("./views/groups/GroupsView"));
 const ProfileView = React.lazy(() => import("./views/profile/ProfileView"));
 const AdminView = React.lazy(() => import("./views/admin/AdminView"));
@@ -17,7 +18,13 @@ const AdminView = React.lazy(() => import("./views/admin/AdminView"));
 FocusStyleManager.onlyShowFocusOnTabs();
 
 function App() {
-  const { loggedIn, checkLoggedIn } = useAuthStore();
+  const { loggedIn, checkLoggedIn } = useAuthStore(
+    (state) => ({
+      loggedIn: state.loggedIn,
+      checkLoggedIn: state.checkLoggedIn,
+    }),
+    shallow
+  );
 
   useEffect(() => {
     checkLoggedIn();
@@ -37,8 +44,8 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <div className="bp3-dark">
+    <Router history={history}>
+      <div className={Classes.DARK}>
         <MainNavBar />
         <main>
           <Switch>
@@ -62,7 +69,7 @@ function App() {
           </Switch>
         </main>
       </div>
-    </BrowserRouter>
+    </Router>
   );
 }
 

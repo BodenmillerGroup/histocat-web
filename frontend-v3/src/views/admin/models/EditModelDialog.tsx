@@ -13,10 +13,6 @@ export function EditModelDialog(props: EditModelDialogProps) {
   const { register, errors, handleSubmit } = useForm();
   const updateModel = useModelsStore((state) => state.updateModel);
 
-  if (!props.model) {
-    return null;
-  }
-
   const onSubmit = async (values: any) => {
     // form is valid
     const params: IModelUpdate = {
@@ -34,7 +30,7 @@ export function EditModelDialog(props: EditModelDialogProps) {
       title="Edit Model"
       usePortal={true}
       isOpen={props.isOpen}
-      className="bp3-dark"
+      className={Classes.DARK}
       canOutsideClickClose={false}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

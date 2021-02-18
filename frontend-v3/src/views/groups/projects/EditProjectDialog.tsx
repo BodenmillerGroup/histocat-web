@@ -1,38 +1,32 @@
-import { Button, Checkbox, Classes, Dialog, FormGroup, InputGroup, Intent, MenuItem } from "@blueprintjs/core";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent, MenuItem } from "@blueprintjs/core";
 import { useForm } from "react-hook-form";
-import { useGroupsStore } from "modules/groups";
-import { IGroupCreate } from "modules/groups/models";
-import { ItemPredicate, ItemRenderer, MultiSelect } from "@blueprintjs/select";
-import shallow from "zustand/shallow";
 import { useState } from "react";
+import { ItemPredicate, ItemRenderer, MultiSelect } from "@blueprintjs/select";
+import { IProject, IProjectUpdate } from "modules/projects/models";
+import { useProjectsStore } from "modules/projects";
 
-type AddGroupDialogProps = {
+type EditProjectDialogProps = {
   isOpen: boolean;
   handleClose(): void;
-  groupsTags: string[];
+  project: IProject;
+  projectsTags: string[];
 };
 
-export function AddGroupDialog(props: AddGroupDialogProps) {
+export function EditProjectDialog(props: EditProjectDialogProps) {
   const { register, errors, handleSubmit } = useForm();
-  const { createGroup } = useGroupsStore(
-    (state) => ({
-      createGroup: state.createGroup,
-    }),
-    shallow
-  );
-  const [items, setItems] = useState<string[]>(props.groupsTags);
-  const [tags, setTags] = useState<string[]>([]);
+  const updateProject = useProjectsStore((state) => state.updateProject);
+  const [items, setItems] = useState<string[]>(props.projectsTags);
+  const [tags, setTags] = useState<string[]>(props.project.tags);
   const [createdItems, setCreatedItems] = useState<string[]>([]);
 
   const onSubmit = async (values: any) => {
-    const params: IGroupCreate = {
+    // form is valid
+    const params: IProjectUpdate = {
       name: values.name,
       description: values.description,
-      url: values.url,
-      is_open: values.isOpen,
       tags: tags,
     };
-    await createGroup(params);
+    await updateProject(props.project.id, params);
     props.handleClose();
   };
 
@@ -194,7 +188,7 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
     <Dialog
       icon="edit"
       onClose={props.handleClose}
-      title="Add Group"
+      title="Edit Project"
       usePortal={true}
       isOpen={props.isOpen}
       className={Classes.DARK}
@@ -212,7 +206,8 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
             <InputGroup
               id="name-input"
               name="name"
-              placeholder="Enter group name"
+              placeholder="Enter project name"
+              defaultValue={props.project.name}
               inputRef={register({
                 required: "Name is required",
               })}
@@ -223,13 +218,10 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
             <InputGroup
               id="description-input"
               name="description"
-              placeholder="Enter group description"
+              placeholder="Enter project description"
+              defaultValue={props.project.description}
               inputRef={register({})}
             />
-          </FormGroup>
-
-          <FormGroup label="URL" labelFor="url-input">
-            <InputGroup id="url-input" name="url" placeholder="Enter group URL" inputRef={register({})} />
           </FormGroup>
 
           <FormGroup label="Tags">
@@ -257,13 +249,11 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
               fill={true}
             />
           </FormGroup>
-
-          <Checkbox name="isOpen" label="Public group" inline={true} defaultChecked={false} inputRef={register({})} />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
             <Button onClick={props.handleClose} text="Cancel" />
-            <Button type="reset" text="Reset" onClick={() => setTags([])} />
+            <Button type="reset" text="Reset" onClick={() => setTags(props.project.tags)} />
             <Button type="submit" intent={Intent.PRIMARY} text="Save" />
           </div>
         </div>

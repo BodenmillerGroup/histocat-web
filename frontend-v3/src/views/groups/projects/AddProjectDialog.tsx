@@ -1,38 +1,30 @@
-import { Button, Checkbox, Classes, Dialog, FormGroup, InputGroup, Intent, MenuItem } from "@blueprintjs/core";
+import { Button, Classes, Dialog, FormGroup, InputGroup, Intent, MenuItem } from "@blueprintjs/core";
 import { useForm } from "react-hook-form";
-import { useGroupsStore } from "modules/groups";
-import { IGroupCreate } from "modules/groups/models";
 import { ItemPredicate, ItemRenderer, MultiSelect } from "@blueprintjs/select";
-import shallow from "zustand/shallow";
 import { useState } from "react";
+import { useProjectsStore } from "modules/projects";
+import { IProjectCreate } from "modules/projects/models";
 
-type AddGroupDialogProps = {
+type AddProjectDialogProps = {
   isOpen: boolean;
   handleClose(): void;
-  groupsTags: string[];
+  projectsTags: string[];
 };
 
-export function AddGroupDialog(props: AddGroupDialogProps) {
+export function AddProjectDialog(props: AddProjectDialogProps) {
   const { register, errors, handleSubmit } = useForm();
-  const { createGroup } = useGroupsStore(
-    (state) => ({
-      createGroup: state.createGroup,
-    }),
-    shallow
-  );
-  const [items, setItems] = useState<string[]>(props.groupsTags);
+  const createProject = useProjectsStore((state) => state.createProject);
+  const [items, setItems] = useState<string[]>(props.projectsTags);
   const [tags, setTags] = useState<string[]>([]);
   const [createdItems, setCreatedItems] = useState<string[]>([]);
 
   const onSubmit = async (values: any) => {
-    const params: IGroupCreate = {
+    const params: IProjectCreate = {
       name: values.name,
       description: values.description,
-      url: values.url,
-      is_open: values.isOpen,
       tags: tags,
     };
-    await createGroup(params);
+    await createProject(params);
     props.handleClose();
   };
 
@@ -194,7 +186,7 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
     <Dialog
       icon="edit"
       onClose={props.handleClose}
-      title="Add Group"
+      title="Add Project"
       usePortal={true}
       isOpen={props.isOpen}
       className={Classes.DARK}
@@ -212,7 +204,7 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
             <InputGroup
               id="name-input"
               name="name"
-              placeholder="Enter group name"
+              placeholder="Enter project name"
               inputRef={register({
                 required: "Name is required",
               })}
@@ -223,13 +215,9 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
             <InputGroup
               id="description-input"
               name="description"
-              placeholder="Enter group description"
+              placeholder="Enter project description"
               inputRef={register({})}
             />
-          </FormGroup>
-
-          <FormGroup label="URL" labelFor="url-input">
-            <InputGroup id="url-input" name="url" placeholder="Enter group URL" inputRef={register({})} />
           </FormGroup>
 
           <FormGroup label="Tags">
@@ -257,8 +245,6 @@ export function AddGroupDialog(props: AddGroupDialogProps) {
               fill={true}
             />
           </FormGroup>
-
-          <Checkbox name="isOpen" label="Public group" inline={true} defaultChecked={false} inputRef={register({})} />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>

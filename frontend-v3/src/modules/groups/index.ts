@@ -17,6 +17,7 @@ type GroupsState = {
   myMember: IMember | null;
   groupsTags: string[] | null;
 
+  setActiveGroupId(id: number | null): void;
   isGroupAdmin(): boolean;
   getGroups(): Promise<void>;
   getTags(): Promise<void>;
@@ -34,6 +35,10 @@ export const useGroupsStore = create<GroupsState>((set, get) => ({
   activeGroupId: null,
   myMember: null,
   groupsTags: null,
+
+  setActiveGroupId(id: number | null) {
+    set({ activeGroupId: id });
+  },
 
   isGroupAdmin() {
     const myMember = get().myMember;

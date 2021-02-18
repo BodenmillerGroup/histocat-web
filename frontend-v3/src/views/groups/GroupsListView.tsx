@@ -15,14 +15,12 @@ import { useHistory } from "react-router-dom";
 export function GroupsListView() {
   const history = useHistory();
   const userProfile = useProfileStore((state) => state.userProfile);
-  const { ids, entities, getGroups, deleteGroup, joinGroup, getTags, groupsTags } = useGroupsStore(
+  const { ids, entities, deleteGroup, joinGroup, groupsTags } = useGroupsStore(
     (state) => ({
       ids: state.ids,
       entities: state.entities,
-      getGroups: state.getGroups,
       deleteGroup: state.deleteGroup,
       joinGroup: state.joinGroup,
-      getTags: state.getTags,
       groupsTags: state.groupsTags,
     }),
     shallow
@@ -40,13 +38,6 @@ export function GroupsListView() {
       item.name.toLowerCase().includes(filter) || (item.description && item.description.toLowerCase().includes(filter))
     );
   });
-
-  useEffect(() => {
-    Promise.all([
-      getGroups(),
-      getTags(),
-    ]);
-  }, [getGroups, getTags]);
 
   const handleFilterChange = (event: React.FormEvent<HTMLElement>) =>
     setFilterValue((event.target as HTMLInputElement).value);
@@ -113,7 +104,11 @@ export function GroupsListView() {
               )}
               <div className={Classes.DIALOG_FOOTER_ACTIONS}>
                 {(isMember || userProfile!.is_admin) && (
-                  <Button text="Open" intent={Intent.PRIMARY} onClick={() => history.push("/")} />
+                  <Button
+                    text="Open"
+                    intent={Intent.PRIMARY}
+                    onClick={() => history.push(`/${group.id}`)}
+                  />
                 )}
                 {!isMember && group.is_open && <Button text="Join" onClick={() => joinGroup(group.id)} />}
                 {isMember && userProfile!.is_admin && <Button text="Edit" onClick={() => editAction(group)} />}
@@ -132,10 +127,20 @@ export function GroupsListView() {
           );
         })}
       </Masonry>
-      <EditGroupDialog group={activeItem!} isOpen={editDialogOpen} handleClose={() => setEditDialogOpen(false)} />
-      {groupsTags && <AddGroupDialog groupsTags={groupsTags} isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />}
+      {activeItem && (
+        <EditGroupDialog
+          group={activeItem}
+          groupsTags={groupsTags!}
+          isOpen={editDialogOpen}
+          handleClose={() => {
+            setEditDialogOpen(false);
+            setActiveItem(null);
+          }}
+        />
+      )}
+      <AddGroupDialog groupsTags={groupsTags!} isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />
       <Alert
-        className="bp3-dark"
+        className={Classes.DARK}
         cancelButtonText="Cancel"
         canEscapeKeyCancel={true}
         confirmButtonText="Delete"

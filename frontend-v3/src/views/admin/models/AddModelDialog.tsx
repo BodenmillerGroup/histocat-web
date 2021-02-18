@@ -21,7 +21,6 @@ export function AddModelDialog(props: AddModelDialogProps) {
       formData.append("description", values.description);
       formData.append("file", file);
       await createModel(formData);
-      setFile(null);
       props.handleClose();
     }
   };
@@ -40,7 +39,7 @@ export function AddModelDialog(props: AddModelDialogProps) {
       title="Add Model"
       usePortal={true}
       isOpen={props.isOpen}
-      className="bp3-dark"
+      className={Classes.DARK}
       canOutsideClickClose={false}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

@@ -1,17 +1,46 @@
-import { Redirect, Route, Switch } from "react-router-dom";
-import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useGroupsStore } from "modules/groups";
-import { AccessDeniedView } from "components/AccessDeniedView";
 import { GroupsListView } from "./GroupsListView";
+import shallow from "zustand/shallow";
+import { LoadingView } from "components/LoadingView";
+import GroupView from "./GroupView";
+import { WebSocketManager } from "utils/WebSocketManager";
+import { useAuthStore } from "../../modules/auth";
 
 export default function GroupsView() {
-  // const isGroupAdmin = useGroupsStore((state) => state.isGroupAdmin());
-  // if (!isGroupAdmin) {
-  //   return <AccessDeniedView title="Access Denied" content="You should have super-admin access rights." />;
-  // }
+  const { path } = useRouteMatch();
+  const token = useAuthStore(state => state.token);
+  const { getGroups, getTags } = useGroupsStore(
+    (state) => ({
+      getGroups: state.getGroups,
+      getTags: state.getTags,
+    }),
+    shallow
+  );
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Mounted
+  useEffect(() => {
+    WebSocketManager.init(token!);
+    Promise.all([getGroups(), getTags()]).then(() => setLoading(false));
+  }, [getGroups, getTags]);
+
+  // Unmounted
+  useEffect(() => {
+    return () => {
+      WebSocketManager.close();
+    };
+  }, []);
+
+  if (loading) {
+    return <LoadingView />;
+  }
+
   return (
     <Switch>
-      <Route path="/" component={GroupsListView} />
+      <Route exact={true} path={path} component={GroupsListView} />
+      <Route path={`${path}:groupId`} component={GroupView} />
     </Switch>
   );
 }

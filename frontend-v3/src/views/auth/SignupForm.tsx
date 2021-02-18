@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Button, Card, Elevation, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
+import { Button, Card, Classes, Elevation, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { useAuthStore } from "modules/auth";
 import styles from "./Auth.module.scss";
 import classNames from "classnames";
@@ -7,10 +7,17 @@ import { useRef, useState } from "react";
 import { Tooltip2 } from "@blueprintjs/popover2";
 import { appName } from "../../env";
 import { AppToaster } from "utils/toaster";
+import shallow from "zustand/shallow";
 
 export function SignupForm() {
   const { register, errors, handleSubmit, watch } = useForm();
-  const { signUp, checkUserExists } = useAuthStore();
+  const { signUp, checkUserExists } = useAuthStore(
+    (state) => ({
+      signUp: state.signUp,
+      checkUserExists: state.checkUserExists,
+    }),
+    shallow
+  );
   const [showPassword, setShowPassword] = useState(false);
 
   const password = useRef({});
@@ -43,7 +50,7 @@ export function SignupForm() {
 
   return (
     <div className={styles.formContainer}>
-      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, "bp3-dark")}>
+      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, Classes.DARK)}>
         <h3>{appName} - Signup</h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup

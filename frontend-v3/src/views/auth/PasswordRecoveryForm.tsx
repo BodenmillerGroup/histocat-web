@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Button, Card, Elevation, FormGroup, InputGroup } from "@blueprintjs/core";
+import { Button, Card, Classes, Elevation, FormGroup, InputGroup } from "@blueprintjs/core";
 import { useAuthStore } from "modules/auth";
 import styles from "./Auth.module.scss";
 import classNames from "classnames";
@@ -7,7 +7,7 @@ import { appName } from "../../env";
 
 export function PasswordRecoveryForm() {
   const { register, errors, handleSubmit } = useForm();
-  const { passwordRecovery } = useAuthStore();
+  const passwordRecovery = useAuthStore(state => state.passwordRecovery);
 
   const onSubmit = async (values: any) => {
     // form is valid
@@ -16,7 +16,7 @@ export function PasswordRecoveryForm() {
 
   return (
     <div className={styles.formContainer}>
-      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, "bp3-dark")}>
+      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, Classes.DARK)}>
         <h3>{appName} - Password Recovery</h3>
         <h5>A password recovery email will be sent to the registered account</h5>
         <form onSubmit={handleSubmit(onSubmit)}>

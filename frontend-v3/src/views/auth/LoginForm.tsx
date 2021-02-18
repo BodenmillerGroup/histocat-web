@@ -1,15 +1,23 @@
 import { useForm } from "react-hook-form";
-import { Button, Callout, Card, Elevation, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
+import { Button, Callout, Card, Elevation, FormGroup, InputGroup, Intent, Classes } from "@blueprintjs/core";
 import { useAuthStore } from "modules/auth";
 import styles from "./Auth.module.scss";
 import classNames from "classnames";
 import { useState } from "react";
 import { Tooltip2 } from "@blueprintjs/popover2";
 import { appName } from "../../env";
+import shallow from "zustand/shallow";
+import { OptionalBlueprint } from "react-mosaic-component/lib/util/OptionalBlueprint";
 
 export function LoginForm() {
   const { register, errors, handleSubmit } = useForm();
-  const { login, loginError } = useAuthStore();
+  const { login, loginError } = useAuthStore(
+    (state) => ({
+      login: state.login,
+      loginError: state.loginError,
+    }),
+    shallow
+  );
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (values: any) => {
@@ -30,7 +38,7 @@ export function LoginForm() {
 
   return (
     <div className={styles.formContainer}>
-      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, "bp3-dark")}>
+      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, Classes.DARK)}>
         <h3>{appName} - Login</h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup

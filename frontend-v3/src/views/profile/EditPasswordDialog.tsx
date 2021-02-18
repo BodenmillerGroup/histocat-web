@@ -13,7 +13,7 @@ type EditUserDialogProps = {
 export function EditPasswordDialog(props: EditUserDialogProps) {
   const { register, errors, handleSubmit, watch } = useForm();
   const [showPassword, setShowPassword] = useState(false);
-  const { updateUserPassword } = useAuthStore();
+  const updateUserPassword = useAuthStore(state => state.updateUserPassword);
 
   const password = useRef({});
   password.current = watch("password", "");
@@ -42,7 +42,7 @@ export function EditPasswordDialog(props: EditUserDialogProps) {
       title="Change Password"
       usePortal={true}
       isOpen={props.isOpen}
-      className="bp3-dark"
+      className={Classes.DARK}
       canOutsideClickClose={false}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

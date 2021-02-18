@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Button, Card, Elevation, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
+import { Button, Card, Classes, Elevation, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { useAuthStore } from "modules/auth";
 import styles from "./Auth.module.scss";
 import classNames from "classnames";
@@ -11,7 +11,7 @@ import { AppToaster } from "utils/toaster";
 
 export function ResetPasswordForm() {
   const { register, errors, handleSubmit, watch } = useForm();
-  const { resetPassword } = useAuthStore();
+  const resetPassword = useAuthStore(state => state.resetPassword);
   const [showPassword, setShowPassword] = useState(false);
 
   const password = useRef({});
@@ -48,7 +48,7 @@ export function ResetPasswordForm() {
 
   return (
     <div className={styles.formContainer}>
-      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, "bp3-dark")}>
+      <Card interactive={false} elevation={Elevation.TWO} className={classNames(styles.form, Classes.DARK)}>
         <h3>{appName} - Reset Password</h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormGroup

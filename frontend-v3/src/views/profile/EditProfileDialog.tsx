@@ -34,7 +34,7 @@ export function EditProfileDialog(props: EditUserDialogProps) {
       title="Edit Profile"
       usePortal={true}
       isOpen={props.isOpen}
-      className="bp3-dark"
+      className={Classes.DARK}
       canOutsideClickClose={false}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
