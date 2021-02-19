@@ -1,60 +1,50 @@
 import styles from "./ProjectView.module.scss";
-import React, { useState } from "react";
+import React from "react";
 import "react-mosaic-component/react-mosaic-component.css";
-import { Mosaic, MosaicWindow } from "react-mosaic-component";
+import { Mosaic, MosaicNode, MosaicWindow } from "react-mosaic-component";
 import classNames from "classnames";
 import { Classes } from "@blueprintjs/core";
-
-type ViewId = "a" | "b" | "c" | "new";
-
-const TITLE_MAP: Record<ViewId, string> = {
-  a: "Left Window",
-  b: "Top Right Window",
-  c: "Bottom Right Window",
-  new: "New Window",
-};
-
-const LOCAL_STORAGE_KEY = "ProjectLayout";
-const DEFAULT_LAYOUT: any = {
-  direction: "row",
-  first: "a",
-  second: {
-    direction: "column",
-    first: "b",
-    second: "c",
-  },
-};
+import { TITLE_MAP, useLayoutsStore } from "modules/layouts";
+import shallow from "zustand/shallow";
+import { ViewId } from "modules/layouts/models";
+import { ImageView } from "./viewers/ImageView";
+import { SlidesView } from "./viewers/SlidesView";
+import { ChannelsView } from "./viewers/ChannelsView";
+import { SettingsView } from "./viewers/SettingsView";
 
 export function ProjectView() {
-  const [layout, setLayout] = useState(DEFAULT_LAYOUT);
+  const { setActiveNode, activeLayout } = useLayoutsStore(
+    (state) => ({
+      setActiveNode: state.setActiveNode,
+      activeLayout: state.activeLayout,
+    }),
+    shallow
+  );
 
-  const saveLayout = () => {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(layout));
-  }
+  const handleLayoutChange = (node: MosaicNode<ViewId> | null) => {
+    setActiveNode(node);
+  };
 
-  const loadLayout = () => {
-    const layout = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (layout) {
-      setLayout(JSON.parse(layout));
-    } else {
-      setLayout(DEFAULT_LAYOUT);
-    }
-  }
-
-  const deleteLayout = () => {
-    localStorage.removeItem(LOCAL_STORAGE_KEY);
-  }
+  const handleCreateNode = (): ViewId => {
+    return "new";
+  };
 
   return (
     <div className={styles.container}>
       <Mosaic<ViewId>
-        initialValue={DEFAULT_LAYOUT}
-        onChange={(node) => setLayout(node)}
-        // onChange={(node) => console.log(node)}
+        initialValue={activeLayout.node}
+        onChange={handleLayoutChange}
         className={classNames("mosaic-blueprint-theme", Classes.DARK)}
         renderTile={(id, path) => (
-          <MosaicWindow<ViewId> path={path} createNode={() => "new"} title={TITLE_MAP[id]}>
-            <h1>{TITLE_MAP[id]}</h1>
+          <MosaicWindow<ViewId> path={path} createNode={handleCreateNode} title={TITLE_MAP[id]}>
+            {
+              {
+                a: <SlidesView />,
+                b: <ImageView />,
+                c: <ChannelsView />,
+                new: <SettingsView />,
+              }[id]
+            }
           </MosaicWindow>
         )}
       />

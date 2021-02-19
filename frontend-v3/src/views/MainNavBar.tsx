@@ -14,7 +14,7 @@ import { appName } from "../env";
 import { useHistory } from "react-router-dom";
 import { useGroupsStore } from "modules/groups";
 import { useProfileStore } from "modules/profile";
-import { LayoutsControl } from "./LayoutsControl";
+import { LayoutsControl } from "./layouts/LayoutsControl";
 
 export function MainNavBar() {
   const hasAdminAccess = useProfileStore((state) => state.hasAdminAccess());
