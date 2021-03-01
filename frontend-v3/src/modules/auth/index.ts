@@ -116,7 +116,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   async signUp(params: IUserProfileCreate) {
     try {
-      const data = await api.signUp(params);
+      await api.signUp(params);
       get().routeLogout();
       AppToaster.show({ message: "Registration confirmation email was sent", intent: "success" });
     } catch (error) {
@@ -136,7 +136,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   async resetPassword(password: string, token: string) {
     try {
-      const response = await api.resetPassword(password, token);
+      await api.resetPassword(password, token);
       AppToaster.show({ message: "Password successfully reset", intent: "success" });
       get().logout();
     } catch (error) {

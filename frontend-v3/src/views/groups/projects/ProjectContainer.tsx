@@ -24,7 +24,7 @@ export function ProjectContainer() {
     setActiveProjectId(activeProjectId);
     getProjectData(activeProjectId).then(() => setLoading(false));
     WebSocketManager.connect(activeProjectId);
-  }, [setActiveProjectId, getProjectData]);
+  }, [setActiveProjectId, getProjectData, projectId]);
 
   // Unmounted
   useEffect(() => {
@@ -32,7 +32,7 @@ export function ProjectContainer() {
       setActiveProjectId(null);
       WebSocketManager.close();
     };
-  }, []);
+  }, [setActiveProjectId]);
 
   if (loading) {
     return <LoadingView />;

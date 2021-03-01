@@ -301,11 +301,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     const activeAcquisition = get().getActiveAcquisition();
     const selectedMetals = get().selectedMetals;
     if (activeAcquisition) {
-      return Object.values(activeAcquisition.channels).filter((channel) => {
-        if (selectedMetals.includes(channel.name)) {
-          return channel;
-        }
-      });
+      return Object.values(activeAcquisition.channels).filter((channel) => selectedMetals.includes(channel.name));
     } else {
       return [];
     }

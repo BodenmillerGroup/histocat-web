@@ -1,6 +1,6 @@
 import styles from "./GroupsListView.module.scss";
 import shallow from "zustand/shallow";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert, Button, Card, Classes, Elevation, Icon, InputGroup, Intent, Tag } from "@blueprintjs/core";
 import { throttle } from "lodash-es";
 import { AddGroupDialog } from "./AddGroupDialog";

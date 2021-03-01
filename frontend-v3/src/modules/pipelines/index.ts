@@ -1,11 +1,5 @@
 import create from "zustand";
-import { schema, normalize } from "normalizr";
-import { api } from "./api";
-import { displayApiError } from "utils/api";
-import { AppToaster } from "../../utils/toaster";
-import { useGroupsStore } from "../groups";
-import { useAuthStore } from "../auth";
-import { useMainStore } from "../main";
+import { schema } from "normalizr";
 import { IPipeline } from "./models";
 
 export const datasetSchema = new schema.Entity("datasets");

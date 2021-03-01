@@ -1,5 +1,5 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:14.15.4-alpine3.12 as build-stage
+FROM node:14.15.5-alpine3.13 as build-stage
 
 # Comment out the next line to disable git
 #RUN apk update && apk upgrade && \

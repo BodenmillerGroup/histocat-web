@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Tooltip2 } from "@blueprintjs/popover2";
 import { appName } from "../../env";
 import shallow from "zustand/shallow";
-import { OptionalBlueprint } from "react-mosaic-component/lib/util/OptionalBlueprint";
 
 export function LoginForm() {
   const { register, errors, handleSubmit } = useForm();

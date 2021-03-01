@@ -24,14 +24,14 @@ export default function GroupView() {
   useEffect(() => {
     setActiveGroupId(+groupId);
     Promise.all([getGroupProjects(+groupId), getProjectsTags(+groupId)]).then(() => setLoading(false));
-  }, [getGroupProjects, getProjectsTags]);
+  }, [groupId, getGroupProjects, getProjectsTags, setActiveGroupId]);
 
   // Unmounted
   useEffect(() => {
     return () => {
       setActiveGroupId(null);
     };
-  }, []);
+  }, [setActiveGroupId]);
 
   if (loading) {
     return <LoadingView />;

@@ -24,7 +24,7 @@ export default function GroupsView() {
   useEffect(() => {
     WebSocketManager.init(token!);
     Promise.all([getGroups(), getTags()]).then(() => setLoading(false));
-  }, [getGroups, getTags]);
+  }, [getGroups, getTags, token]);
 
   // Unmounted
   useEffect(() => {
