@@ -32,7 +32,7 @@ export const api = {
       })
       .json<IProject>();
   },
-  async uploadSlide(
+  uploadSlide(
     token: string,
     groupId: number,
     projectId: number,
@@ -55,6 +55,7 @@ export const api = {
     };
 
     xhr.send(data);
+    return xhr;
 
     // return ky.post(`${apiUrl}/api/v1/projects/${id}/upload`, {
     //   body: data,

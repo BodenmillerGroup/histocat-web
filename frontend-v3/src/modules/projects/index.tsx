@@ -17,10 +17,10 @@ import { isEqual } from "lodash-es";
 import { useGroupsStore } from "../groups";
 import { AppToaster } from "../../utils/toaster";
 import { useAuthStore } from "../auth";
-import { useMainStore } from "../main";
 import { useSettingsStore } from "../settings";
 import { useDatasetsStore } from "../datasets";
 import { useResultsStore } from "../results";
+import { Classes, IToastProps, ProgressBar } from "@blueprintjs/core";
 
 const projectSchema = new schema.Entity("projects");
 const projectListSchema = [projectSchema];
@@ -46,7 +46,7 @@ type ProjectsState = {
   updateProject(id: number, params: IProjectUpdate): Promise<void>;
   deleteProject(projectId: number): Promise<void>;
   createProject(params: IProjectCreate): Promise<void>;
-  uploadSlide(id: number, params: any): Promise<void>;
+  uploadSlide(data: FormData): Promise<void>;
   getProject(projectId: number): Promise<void>;
   getProjectData(projectId: number): Promise<void>;
   getChannelStats(acquisitionId: number, channelName: string): Promise<IChannelStats | undefined>;
@@ -156,31 +156,56 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  async uploadSlide(id: number, params: any) {
-    if (!id) {
-      return;
-    }
+  async uploadSlide(data: FormData) {
     try {
       const groupId = useGroupsStore.getState().activeGroupId!;
+      const activeProjectId = get().activeProjectId!;
       const token = useAuthStore.getState().token!;
-      await api.uploadSlide(
+      AppToaster.show({ message: `File upload: ${0}`, intent: "success" }, "slideUploadToast");
+      const xhr = api.uploadSlide(
         token,
         groupId,
-        id,
-        params,
+        activeProjectId,
+        data,
         () => {
-          console.log("Upload has started.");
-          useMainStore.getState().setProcessing(true);
+          const toast: IToastProps = {
+            className: Classes.DARK,
+            icon: "cloud-upload",
+            message: <ProgressBar value={0} />,
+            onDismiss: (didTimeoutExpire: boolean) => {
+              if (!didTimeoutExpire) {
+                // user dismissed toast with click
+                xhr.abort();
+              }
+            },
+            timeout: 0,
+          };
+          AppToaster.show(toast, "slideUploadToast");
         },
         () => {
-          console.log("Upload completed successfully.");
-          useMainStore.getState().setProcessing(false);
-          useMainStore.getState().setProcessingProgress(0);
-          AppToaster.show({ message: "File successfully uploaded", intent: "success" });
+          const toast: IToastProps = {
+            icon: "cloud-upload",
+            message: "Slide successfully uploaded",
+            intent: "success",
+            timeout: 2000,
+          };
+          AppToaster.show(toast, "slideUploadToast");
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);
-          useMainStore.getState().setProcessingProgress(percent);
+          const toast: IToastProps = {
+            className: Classes.DARK,
+            icon: "cloud-upload",
+            message: <ProgressBar value={percent / 100} />,
+            onDismiss: (didTimeoutExpire: boolean) => {
+              if (!didTimeoutExpire) {
+                // user dismissed toast with click
+                xhr.abort();
+              }
+            },
+            timeout: percent < 100 ? 0 : 2000,
+          };
+          AppToaster.show(toast, "slideUploadToast");
         },
         () => {}
       );
@@ -263,6 +288,8 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
       const data = await api.deleteSlide(groupId, id);
       if (data) {
         AppToaster.show({ message: "Slide successfully deleted", intent: "success" });
+        const activeProjectId = get().activeProjectId!;
+        await get().getProjectData(activeProjectId);
       }
     } catch (error) {
       displayApiError(error);

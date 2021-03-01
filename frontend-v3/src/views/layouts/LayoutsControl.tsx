@@ -30,11 +30,11 @@ export function LayoutsControl() {
       <ControlGroup vertical={false}>
         <HTMLSelect value={activeLayout.name} onChange={handleOnChange}>
           {layouts.map((layout) => {
-            return <option>{layout.name}</option>;
+            return <option key={layout.name}>{layout.name}</option>;
           })}
         </HTMLSelect>
         <Button icon="add" onClick={() => setAddDialogOpen(true)} />
-        <Button icon="delete" disabled={activeLayout.isDefault} onClick={handleDeleteLayout} />
+        {!activeLayout.isDefault && <Button icon="delete" onClick={handleDeleteLayout} />}
       </ControlGroup>
       <AddLayoutDialog isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />
     </React.Fragment>

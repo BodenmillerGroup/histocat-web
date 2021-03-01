@@ -22,10 +22,11 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-hook-form": "6.15.4",
+    "react-json-view": "1.21.1",
     "react-masonry-css": "1.0.14",
     "react-mosaic-component": "4.1.1",
     "react-router-dom": "5.2.0",
-    "regl-scatterplot": "0.15.1",
+    "regl-scatterplot": "0.16.0",
     "uuid": "8.3.2",
     "web-vitals": "1.1.0",
     "workbox-background-sync": "6.1.1",
@@ -40,12 +41,12 @@
     "workbox-routing": "6.1.1",
     "workbox-strategies": "6.1.1",
     "workbox-streams": "6.1.1",
-    "zustand": "3.3.2"
+    "zustand": "3.3.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.11.9",
     "@testing-library/react": "11.2.5",
-    "@testing-library/user-event": "12.7.3",
+    "@testing-library/user-event": "12.8.0",
     "@types/classnames": "2.2.11",
     "@types/d3": "6.3.0",
     "@types/file-saver": "2.0.1",

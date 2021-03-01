@@ -8,8 +8,8 @@ import { TITLE_MAP, useLayoutsStore } from "modules/layouts";
 import shallow from "zustand/shallow";
 import { ViewId } from "modules/layouts/models";
 import { ImageView } from "./viewers/ImageView";
-import { SlidesView } from "./viewers/SlidesView";
-import { ChannelsView } from "./viewers/ChannelsView";
+import { SlidesView } from "./viewers/slides/SlidesView";
+import { ChannelsView } from "./viewers/channels/ChannelsView";
 import { SettingsView } from "./viewers/SettingsView";
 
 export function ProjectView() {
@@ -25,9 +25,9 @@ export function ProjectView() {
     setActiveNode(node);
   };
 
-  const handleCreateNode = (): ViewId => {
-    return "new";
-  };
+  // const handleCreateNode = (): ViewId => {
+  //   return "new";
+  // };
 
   return (
     <div className={styles.container}>
@@ -36,7 +36,7 @@ export function ProjectView() {
         onChange={handleLayoutChange}
         className={classNames("mosaic-blueprint-theme", Classes.DARK)}
         renderTile={(id, path) => (
-          <MosaicWindow<ViewId> path={path} createNode={handleCreateNode} title={TITLE_MAP[id]}>
+          <MosaicWindow<ViewId> path={path} title={TITLE_MAP[id]}>
             {
               {
                 a: <SlidesView />,
