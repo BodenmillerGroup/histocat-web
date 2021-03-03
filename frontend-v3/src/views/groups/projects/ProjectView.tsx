@@ -7,7 +7,7 @@ import { Classes } from "@blueprintjs/core";
 import { TITLE_MAP, useLayoutsStore } from "modules/layouts";
 import shallow from "zustand/shallow";
 import { ViewId } from "modules/layouts/models";
-import { ImageView } from "./viewers/ImageView";
+import { BlendView } from "./viewers/image/BlendView";
 import { SlidesView } from "./viewers/slides/SlidesView";
 import { ChannelsView } from "./viewers/channels/ChannelsView";
 import { SettingsView } from "./viewers/SettingsView";
@@ -40,7 +40,7 @@ export function ProjectView() {
             {
               {
                 a: <SlidesView />,
-                b: <ImageView />,
+                b: <BlendView />,
                 c: <ChannelsView />,
                 new: <SettingsView />,
               }[id]
