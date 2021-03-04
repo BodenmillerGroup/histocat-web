@@ -89,7 +89,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:4.30
+    image: dpage/pgadmin4:5.0
     depends_on:
       - db
     environment:
@@ -103,13 +103,13 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.8.12-alpine
+    image: rabbitmq:3.8.14-alpine
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   redis:
     restart: always
-    image: redis:6.0.10-alpine3.13
+    image: redis:6.2.1-alpine3.13
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.4.5
+    image: library/traefik:2.4.6
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
