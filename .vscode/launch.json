@@ -29,7 +29,7 @@
       "host": "localhost",
       "pathMappings": [
         {
-          "localRoot": "${workspaceFolder}/backend/app",
+          "localRoot": "${workspaceFolder}/backend",
           "remoteRoot": "."
         }
       ]
@@ -42,7 +42,7 @@
       "host": "localhost",
       "pathMappings": [
         {
-          "localRoot": "${workspaceFolder}/backend/app",
+          "localRoot": "${workspaceFolder}/backend",
           "remoteRoot": "."
         }
       ]

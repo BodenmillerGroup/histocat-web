@@ -1,19 +1,24 @@
 import { Module } from "vuex-smart-module";
-import { DatasetActions } from "./actions";
-import { DatasetGetters } from "./getters";
+import { DatasetsActions } from "./actions";
+import { DatasetsGetters } from "./getters";
 import { IDataset } from "./models";
-import { DatasetMutations } from "./mutations";
+import { DatasetsMutations } from "./mutations";
+import { schema } from "normalizr";
 
-export class DatasetState {
-  datasets: IDataset[] = [];
-  activeDataset?: IDataset = undefined;
+export const datasetSchema = new schema.Entity("datasets");
+export const datasetListSchema = [datasetSchema];
+
+export class DatasetsState {
+  ids: ReadonlyArray<number> = [];
+  entities: { [key: number]: IDataset } = {};
+  activeDatasetId: number | null = null;
 }
 
-export const datasetModule = new Module({
+export const datasetsModule = new Module({
   namespaced: true,
 
-  state: DatasetState,
-  getters: DatasetGetters,
-  mutations: DatasetMutations,
-  actions: DatasetActions
+  state: DatasetsState,
+  getters: DatasetsGetters,
+  mutations: DatasetsMutations,
+  actions: DatasetsActions,
 });

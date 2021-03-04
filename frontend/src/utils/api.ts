@@ -12,23 +12,26 @@ export class ApiManager {
       throwHttpErrors: true,
       hooks: {
         beforeRequest: [
-          async request => {
+          async (request) => {
             request.headers.set("Authorization", `Bearer ${ApiManager._token}`);
-          }
+          },
         ],
         afterResponse: [
           async (request, options, response) => {
             if (!response.ok) {
               try {
                 const errorJson = await response.json();
-                return new Response(null, { status: errorJson.statusCode, statusText: errorJson.message });
+                return new Response(null, {
+                  status: response.status,
+                  statusText: errorJson.detail ? errorJson.detail : errorJson.error,
+                });
               } catch (e) {
                 console.log(e);
               }
             }
-          }
-        ]
-      }
+          },
+        ],
+      },
     });
   }
 

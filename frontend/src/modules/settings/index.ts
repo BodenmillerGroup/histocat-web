@@ -1,4 +1,3 @@
-import { IImageSegmentationSettings } from "@/modules/analysis/models";
 import { Module } from "vuex-smart-module";
 import { SettingsActions } from "./actions";
 import { SettingsGetters } from "./getters";
@@ -6,38 +5,30 @@ import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSett
 import { SettingsMutations } from "./mutations";
 
 export class SettingsState {
-  channelsSettings: Map<number, IChannelSettings> = new Map<number, IChannelSettings>();
-  metalColorMap: Map<string, string> = new Map<string, string>();
+  channelsSettings: { [channelName: string]: IChannelSettings } = {};
   filter: IImageFilter = {
     apply: false,
     type: "gaussian",
     settings: {
       sigma: 1.0,
-      kernel_size: 3
-    }
+      kernel_size: 3,
+    },
   };
   legend: IImageLegend = {
     apply: false,
-    fontScale: 1.0,
-    showIntensity: false
+    fontScale: 12,
+    showIntensity: false,
   };
   scalebar: IImageScalebar = {
     apply: false,
     settings: {
-      scale: 1.0
-    }
-  };
-  segmentationSettings: IImageSegmentationSettings = {
-    algorithm: "Otsu Hue",
-    iterations: 1,
-    kernel_size: 3,
-    mask_color: "#00AAFF40",
-    result_type: "origin"
+      scale: 1.0,
+    },
   };
   mask: IMaskSettings = {
-    apply: false,
-    location: undefined
+    mode: "raw",
   };
+  mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom";
 }
 
 export const settingsModule = new Module({
@@ -46,5 +37,5 @@ export const settingsModule = new Module({
   state: SettingsState,
   getters: SettingsGetters,
   mutations: SettingsMutations,
-  actions: SettingsActions
+  actions: SettingsActions,
 });

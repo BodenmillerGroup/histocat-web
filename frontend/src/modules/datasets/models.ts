@@ -1,19 +1,3 @@
-import { IChannelSettings } from "@/modules/settings/models";
-
-export type Status = "pending" | "processing" | "terminated";
-
-export interface IDatasetCreate {
-  experiment_id: number;
-  name: string;
-  description?: string;
-  input: {
-    acquisition_ids: number[];
-    metals: string[];
-    channel_settings: IChannelSettings[];
-  };
-  meta?: object;
-}
-
 export interface IDatasetTSNEOutput {
   name: string;
   location: string;
@@ -32,39 +16,32 @@ export interface IDatasetPhenoGraphOutput {
   params: any;
 }
 
+export interface IDatasetUpdate {
+  name?: string | null;
+  description?: string | null;
+}
+
 export interface IDataset {
   id: number;
-  experiment_id: number;
+  project_id: number;
   user_id: number;
   uid: string;
   name: string;
   description: string;
-  status: Status;
-  input: {
-    acquisition_metadata?: {
-      location: string;
-    };
-    cell?: {
-      location: string;
-    };
-    image?: {
-      location: string;
-    };
-    object_relationships?: {
-      location: string;
-    };
-    probability_masks?: {
+  origin: string;
+  acquisition_ids: number[];
+  channels: string[];
+  status: string;
+  output?: {
+    tsne: { [name: string]: IDatasetTSNEOutput };
+    umap: { [name: string]: IDatasetUMAPOutput };
+    phenograph: { [name: string]: IDatasetPhenoGraphOutput };
+  };
+  meta: {
+    masks?: {
       [id: number]: {
         location: string;
         slide: {
-          id: number;
-          origin_id: number;
-        };
-        panorama: {
-          id: number;
-          origin_id: number;
-        };
-        roi: {
           id: number;
           origin_id: number;
         };
@@ -75,13 +52,6 @@ export interface IDataset {
       };
     };
   };
-  output?: {
-    tsne: { [name: string]: IDatasetTSNEOutput };
-    umap: { [name: string]: IDatasetUMAPOutput };
-    phenograph: { [name: string]: IDatasetPhenoGraphOutput };
-  };
-  meta?: object;
   location: string;
   created_at: string;
-  updated_at: string;
 }

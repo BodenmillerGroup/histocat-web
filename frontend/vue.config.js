@@ -1,10 +1,20 @@
+const manifestJSON = require("./public/manifest.json");
+
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: false,
   transpileDependencies: ["vuetify"],
 
   pwa: {
-    name: "HistoCAT",
+    themeColor: manifestJSON.theme_color,
+    name: manifestJSON.short_name,
+    msTileColor: manifestJSON.background_color,
+    appleMobileWebAppCapable: "yes",
+    appleMobileWebAppStatusBarStyle: "black",
+    workboxPluginMode: "InjectManifest",
+    workboxOptions: {
+      swSrc: "public/service-worker.js",
+    },
   },
 
   configureWebpack: config => {

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid fill-height>
       <v-row align="center" justify="center">
         <v-col xs="12" sm="8" md="4">
@@ -12,7 +12,7 @@
               <v-form @keyup.enter="submit" v-model="valid" ref="form" @submit.prevent="" lazy-validation>
                 <v-text-field
                   @keyup.enter="submit"
-                  label="Username"
+                  label="Email"
                   type="text"
                   prepend-icon="mdi-account"
                   v-model="username"
@@ -23,15 +23,13 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn @click="cancel">Cancel</v-btn>
-              <v-btn @click.prevent="submit" :disabled="!valid">
-                Recover Password
-              </v-btn>
+              <v-btn @click.prevent="submit" :disabled="!valid">Recover Password</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">

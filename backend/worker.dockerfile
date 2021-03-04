@@ -1,4 +1,4 @@
-FROM python:3.7.6
+FROM python:3.8.8
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 
@@ -7,26 +7,27 @@ ARG BACKEND_ENV=production
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
-  PIP_NO_CACHE_DIR=off \
+  PIP_NO_CACHE_DIR=1 \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
   PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.0.5 \
-  BACKEND_ENV=${BACKEND_ENV}
+  POETRY_VERSION=1.1.5 \
+  POETRY_VIRTUALENVS_CREATE=false \
+  BACKEND_ENV=${BACKEND_ENV} \
+  PATH="${PATH}:/root/.poetry/bin" \
+  PYTHONPATH=/app
 
 # Install Poetry
-RUN pip install --no-cache "poetry==$POETRY_VERSION" && poetry config virtualenvs.create false
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
 WORKDIR /app
 
 # By copying over requirements first, we make sure that Docker will cache
 # our installed requirements rather than reinstall them on every build
-COPY /app/poetry.lock /app/pyproject.toml /app/
-RUN poetry install --no-dev
+COPY /poetry.lock /pyproject.toml /app/
+RUN poetry install --no-dev --no-root --extras worker
 
-COPY ./app /app
+COPY ./ /app
 RUN chmod +x /app/bin/worker-start.sh
-
-ENV PYTHONPATH=/app
 
 EXPOSE 5688
 

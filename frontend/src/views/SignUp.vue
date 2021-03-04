@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid fill-height>
       <v-row align="center" justify="center">
         <v-col xs="12" sm="8" md="4">
@@ -45,7 +45,7 @@
                 ></v-text-field>
               </v-form>
               <v-row>
-                <v-col class="caption text-right py-0">
+                <v-col class="text-caption text-right">
                   <router-link to="/login">Already have an account?</router-link>
                 </v-col>
               </v-row>
@@ -58,7 +58,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">
@@ -100,7 +100,7 @@ export default class SignUp extends Vue {
     if ((this.$refs.form as any).validate()) {
       const userExist = await this.checkUserExists();
       if (!userExist) {
-        await this.userContext.actions.signUp({ email: this.email, password: this.password1 });
+        await this.userContext.actions.signUp({ email: this.email, name: this.fullName, password: this.password1 });
       }
     }
   }
@@ -110,7 +110,7 @@ export default class SignUp extends Vue {
     if (userExist) {
       this.mainContext.mutations.addNotification({
         content: "User with this email already exists",
-        color: "warning"
+        color: "warning",
       });
     }
     return userExist;

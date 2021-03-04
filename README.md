@@ -13,7 +13,7 @@
 
 [![histocat][product-screenshot]](https://github.com/BodenmillerGroup/histocat-web)
 
-histoCAT: analysis of cell phenotypes and interactions in multiplex image cytometry data
+Histology Topography Cytometry Analysis Toolbox (histoCAT) is a web platform to visualize and analyse multiplexed image cytometry data interactively.
 
 <!-- GETTING STARTED -->
 ## Getting Started

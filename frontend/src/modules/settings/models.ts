@@ -1,36 +1,35 @@
 export interface IChannelSettings {
-  id: number;
-  customLabel: string;
+  color: string;
   levels?: {
     min: number;
     max: number;
   };
-  suppressBroadcast?: boolean;
 }
 
 export interface IImageFilter {
   apply: boolean;
   type: string;
   settings?: any;
-  suppressBroadcast?: boolean;
 }
 
 export interface IImageLegend {
   apply: boolean;
   fontScale: number;
   showIntensity: boolean;
-  suppressBroadcast?: boolean;
 }
 
 export interface IImageScalebar {
   apply: boolean;
   settings?: any;
-  suppressBroadcast?: boolean;
 }
 
 export interface IMaskSettings {
-  apply: boolean;
+  mode: "raw" | "mask" | "origin";
+  gated?: boolean;
+  cellIds?: number[];
+  resultId?: number;
   location?: string;
   settings?: any;
-  suppressBroadcast?: boolean;
+  colorsType?: string;
+  colorsName?: string;
 }

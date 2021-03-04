@@ -17,7 +17,7 @@ export const api = {
   async updateMe(data: IUserProfileUpdate) {
     return ApiManager.api
       .patch(`users/profile`, {
-        json: data
+        json: data,
       })
       .json<IUserProfile>();
   },
@@ -27,14 +27,14 @@ export const api = {
   async updateUser(id: number, data: IUserProfileUpdate) {
     return ApiManager.api
       .put(`users/${id}`, {
-        json: data
+        json: data,
       })
       .json<IUserProfile>();
   },
   async createUser(data: IUserProfileCreate) {
     return ApiManager.api
       .post(`users`, {
-        json: data
+        json: data,
       })
       .json<IUserProfile>();
   },
@@ -46,8 +46,8 @@ export const api = {
   },
   async signUp(data: IUserProfileCreate) {
     return ky
-      .post(`${apiUrl}/users/signup`, {
-        json: data
+      .post(`${apiUrl}/auth/signup`, {
+        json: data,
       })
       .json();
   },
@@ -56,9 +56,9 @@ export const api = {
       .post(`${apiUrl}/auth/reset-password/`, {
         json: {
           new_password: password,
-          token
-        }
+          token,
+        },
       })
       .json();
-  }
+  },
 };

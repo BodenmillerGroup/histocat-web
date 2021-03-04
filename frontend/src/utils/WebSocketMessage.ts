@@ -1,10 +1,10 @@
 export class WebSocketMessage {
-  readonly experimentId: number;
+  readonly projectId: number;
   readonly type: string;
   readonly payload: any;
 
   constructor(json: object) {
-    this.experimentId = json["experiment_id"];
+    this.projectId = json["project_id"];
     this.type = json["type"];
     this.payload = json["payload"];
   }

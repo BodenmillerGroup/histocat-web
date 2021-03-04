@@ -2,12 +2,8 @@ import { Getters } from "vuex-smart-module";
 import { SettingsState } from ".";
 
 export class SettingsGetters extends Getters<SettingsState> {
-  getChannelSettings(id: number) {
-    return this.state.channelsSettings.get(id);
-  }
-
-  get metalColorMap() {
-    return this.state.metalColorMap;
+  get channelsSettings() {
+    return this.state.channelsSettings;
   }
 
   get filter() {
@@ -22,11 +18,11 @@ export class SettingsGetters extends Getters<SettingsState> {
     return this.state.scalebar;
   }
 
-  get segmentationSettings() {
-    return this.state.segmentationSettings;
-  }
-
   get maskSettings() {
     return this.state.mask;
+  }
+
+  get mouseMode() {
+    return this.state.mouseMode;
   }
 }

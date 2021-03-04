@@ -2,7 +2,7 @@ import { IUserProfile } from "@/modules/user/models";
 import { Module } from "vuex-smart-module";
 import { MainActions } from "./actions";
 import { MainGetters } from "./getters";
-import { AppNotification } from "./models";
+import { AppNotification, ViewMode } from "./models";
 import { MainMutations } from "./mutations";
 
 export class MainState {
@@ -15,6 +15,7 @@ export class MainState {
   notifications: AppNotification[] = [];
   showWorkspace = true;
   showOptions = true;
+  viewMode: ViewMode = "image";
 
   processing = false;
   processingProgress = 0;
@@ -26,5 +27,5 @@ export const mainModule = new Module({
   state: MainState,
   getters: MainGetters,
   mutations: MainMutations,
-  actions: MainActions
+  actions: MainActions,
 });

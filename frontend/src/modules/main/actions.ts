@@ -102,7 +102,7 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
 
   routeLogOut() {
     if (router.currentRoute.path !== "/login") {
-      router.push("/login");
+      router.push("/login", () => {});
     }
   }
 
@@ -118,7 +118,7 @@ export class MainActions extends Actions<MainState, MainGetters, MainMutations, 
 
   routeLoggedIn() {
     if (router.currentRoute.path === "/login" || router.currentRoute.path === "/") {
-      router.push("/main");
+      router.push("/main", () => {});
     }
   }
 

@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid fill-height>
       <v-row align="center" justify="center">
         <v-col xs="12" sm="8" md="4">
@@ -35,7 +35,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">
@@ -71,7 +71,7 @@ export default class UserProfileEdit extends Vue {
   }
 
   cancel() {
-    this.$router.push("/");
+    this.$router.push("/", () => {});
   }
 
   checkToken() {
@@ -79,9 +79,9 @@ export default class UserProfileEdit extends Vue {
     if (!token) {
       this.mainContext.mutations.addNotification({
         content: "No token provided in the URL, start a new password recovery",
-        color: "error"
+        color: "error",
       });
-      this.$router.push("/recover-password");
+      this.$router.push("/password-recovery", () => {});
     } else {
       return token;
     }
@@ -92,7 +92,7 @@ export default class UserProfileEdit extends Vue {
       const token = this.checkToken();
       if (token) {
         await this.mainContext.actions.resetPassword({ token, password: this.password1 });
-        this.$router.push("/");
+        this.$router.push("/", () => {});
       }
     }
   }
