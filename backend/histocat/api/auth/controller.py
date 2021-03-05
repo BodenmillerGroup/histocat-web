@@ -110,7 +110,8 @@ def signup(
     confirm_signup_token = generate_confirm_signup_token(email=email)
     send_confirm_signup_email(email_to=email, username=name, token=confirm_signup_token)
 
-    params = UserCreateDto(password=password, email=email, name=name, is_active=False)
+    hashed_password = get_password_hash(password)
+    params = UserCreateDto(password=hashed_password, email=email, name=name, is_active=False)
     service.create(db, params=params)
 
 

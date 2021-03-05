@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2021.03.04",
+  "version": "2021.03.05",
   "private": true,
   "description": "histoCAT for Web",
   "author": {
@@ -75,7 +75,7 @@
     "prettier": "2.2.1",
     "sass": "1.32.8",
     "sass-loader": "10.1.1",
-    "typescript": "4.2.2",
+    "typescript": "4.2.3",
     "vue-cli-plugin-vuetify": "2.2.2",
     "vue-cli-plugin-webpack-bundle-analyzer": "4.0.0",
     "vue-masonry-css": "1.0.3",
