@@ -51,7 +51,7 @@ export default class CreateMember extends Vue {
   valid = true;
   userId: number | null = null;
   role = "0";
-  isActive = false;
+  isActive = true;
 
   get users() {
     return this.userContext.getters.users.map((item) => ({
