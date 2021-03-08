@@ -13,7 +13,7 @@ export class ResultsState {
   entities: { [key: number]: IResult } = {};
   activeResultId: number | null = null;
 
-  heatmap: { type: string; label: string } | null = null;
+  heatmap: { type: string; label: string; value: string } | null = null;
 
   markers: Readonly<string[]> = [];
   cells: Readonly<Map<string, ICellData>> | null = null;

@@ -24,7 +24,7 @@ export class ResultsMutations extends Mutations<ResultsState> {
     this.state.activeResultId = id;
   }
 
-  setHeatmap(heatmap: { type: string; label: string } | null) {
+  setHeatmap(heatmap: { type: string; label: string; value: string } | null) {
     this.state.heatmap = heatmap;
   }
 

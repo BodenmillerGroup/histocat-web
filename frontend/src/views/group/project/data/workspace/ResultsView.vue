@@ -6,13 +6,14 @@
         :items="heatmaps"
         v-model="heatmap"
         label="Heatmap"
-        item-text="label"
         return-object
         hide-details
         solo
         flat
         clearable
         dense
+        item-value="value"
+        item-text="label"
       />
       <v-spacer></v-spacer>
       <v-tooltip bottom>
@@ -140,6 +141,11 @@ export default class ResultsView extends Vue {
     // }
   }
 
+  get channels() {
+    const acquisition = this.projectsContext.getters.activeAcquisition;
+    return acquisition ? acquisition.channels : null;
+  }
+
   get heatmaps() {
     const activeDataset = this.datasetContext.getters.activeDataset;
     const markers = this.resultsContext.getters.markers;
@@ -152,18 +158,21 @@ export default class ResultsView extends Vue {
         ? markers.map((item) => {
             return {
               type: "marker",
-              label: item,
+              value: item,
+              label: this.channels && this.channels[item] ? this.channels[item].customLabel : item,
             };
           })
         : this.datasetContext.getters.channels.map((item) => {
             return {
               type: "marker",
-              label: item,
+              value: item,
+              label: this.channels && this.channels[item] ? this.channels[item].customLabel : item,
             };
           });
     const neighborItems = activeDataset.meta["columns"]["neighbors"].map((item) => {
       return {
         type: "neighbor",
+        value: item,
         label: item,
       };
     });
@@ -171,12 +180,14 @@ export default class ResultsView extends Vue {
     if (this.resultsContext.getters.activeResult?.output.leiden) {
       clusteringItems.push({
         type: "clustering",
+        value: "leiden",
         label: "leiden",
       });
     }
     if (this.resultsContext.getters.activeResult?.output.louvain) {
       clusteringItems.push({
         type: "clustering",
+        value: "louvain",
         label: "louvain",
       });
     }
@@ -195,7 +206,7 @@ export default class ResultsView extends Vue {
   }
 
   @Watch("heatmap")
-  async heatmapChanged(value: { type: string; label: string } | null | undefined) {
+  async heatmapChanged(value: { type: string; label: string; value: string } | null | undefined) {
     await this.resultsContext.actions.getColorsData();
   }
 

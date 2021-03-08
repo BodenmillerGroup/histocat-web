@@ -65,7 +65,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
   async getColorsData() {
     try {
       const colorsType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
-      const colorsName = this.getters.heatmap ? this.getters.heatmap.label : undefined;
+      const colorsName = this.getters.heatmap ? this.getters.heatmap.value : undefined;
       if (!colorsType || !colorsName) {
         this.mutations.setColors(null);
         return;

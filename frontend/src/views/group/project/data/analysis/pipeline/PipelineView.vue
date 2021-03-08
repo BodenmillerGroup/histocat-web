@@ -233,7 +233,7 @@ export default class PipelineView extends Vue {
       id: uuidv4(),
       type: "transformation",
       mode: "arcsinh",
-      cofactor: 5,
+      cofactor: 1,
     };
   }
 
