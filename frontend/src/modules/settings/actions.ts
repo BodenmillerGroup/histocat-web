@@ -3,12 +3,12 @@ import { SettingsState } from ".";
 import { SettingsGetters } from "./getters";
 import { SettingsMutations } from "./mutations";
 import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_CHANNEL_SETTINGS, SET_FILTER, SET_LEGEND, SET_SCALEBAR, SET_MASK_SETTINGS } from "./events";
+import { SET_CHANNELS_SETTINGS, SET_FILTER, SET_LEGEND, SET_SCALEBAR, SET_MASK_SETTINGS } from "./events";
 import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
 
 export class SettingsActions extends Actions<SettingsState, SettingsGetters, SettingsMutations, SettingsActions> {
-  setChannelSettings(payload: { channelName: string; settings: IChannelSettings }, isGlobal = true) {
-    BroadcastManager.publish(SET_CHANNEL_SETTINGS, payload, isGlobal);
+  setChannelsSettings(payload: { channelName: string; settings: IChannelSettings }, isGlobal = true) {
+    BroadcastManager.publish(SET_CHANNELS_SETTINGS, payload, isGlobal);
   }
 
   setFilter(payload: IImageFilter, isGlobal = true) {

@@ -153,8 +153,13 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
     image = img_as_ubyte(image)
     height, width, _ = image.shape
     length = 64
+    thickness = 2
+    if scalebar.settings is not None and "length" in scalebar.settings:
+        new_length = scalebar.settings.get("length")
+        if new_length is not None and new_length != "":
+            length = int(new_length)
     cv2.line(
-        image, (width - 60, height - 60), (width - 60 - length, height - 60), (255, 255, 255), 2, cv2.LINE_4,
+        image, (width - 60, height - 60), (width - 60 - length, height - 60), (255, 255, 255), thickness, cv2.LINE_4,
     )
 
     scale_text = length

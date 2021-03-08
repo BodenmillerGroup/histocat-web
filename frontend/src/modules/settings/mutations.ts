@@ -1,9 +1,9 @@
 import { Mutations } from "vuex-smart-module";
 import { SettingsState } from ".";
-import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
+import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import {
-  SET_CHANNEL_SETTINGS,
+  SET_CHANNELS_SETTINGS,
   SET_FILTER,
   SET_LEGEND,
   SET_MASK_SETTINGS,
@@ -13,15 +13,15 @@ import {
 export class SettingsMutations extends Mutations<SettingsState> {
   constructor() {
     super();
-    BroadcastManager.subscribe(SET_CHANNEL_SETTINGS, (payload) => this.setChannelSettings(payload));
+    BroadcastManager.subscribe(SET_CHANNELS_SETTINGS, (payload) => this.setChannelsSettings(payload));
     BroadcastManager.subscribe(SET_FILTER, (payload) => this.setFilter(payload));
     BroadcastManager.subscribe(SET_LEGEND, (payload) => this.setLegend(payload));
     BroadcastManager.subscribe(SET_SCALEBAR, (payload) => this.setScalebar(payload));
     BroadcastManager.subscribe(SET_MASK_SETTINGS, (payload) => this.setMaskSettings(payload));
   }
 
-  setChannelSettings(payload: { channelName: string; settings: IChannelSettings }) {
-    this.state.channelsSettings = { ...this.state.channelsSettings, [payload.channelName]: payload.settings };
+  setChannelsSettings(payload) {
+    this.state.channelsSettings = { ...this.state.channelsSettings, payload };
   }
 
   setChannelColor(payload: { channelName: string; color: string }) {
