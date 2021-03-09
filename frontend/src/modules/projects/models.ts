@@ -123,4 +123,4 @@ export interface IChannelUpdate {
   customLabel: string;
 }
 
-export type ExportFormat = "tiff" | "png";
+export type ExportFormat = "tiff" | "png" | "ome-tiff";

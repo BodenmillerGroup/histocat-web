@@ -211,14 +211,26 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
   }
 
   async exportChannelStackImage(format: ExportFormat = "png") {
-    const params = await this.actions.prepareStackParams(format);
-    try {
-      const groupId = this.group?.getters.activeGroupId!;
-      const response = await api.downloadChannelStackImage(groupId, params);
-      const blob = await response.blob();
-      saveAs(blob);
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
+    if (format === "ome-tiff") {
+      try {
+        const groupId = this.group?.getters.activeGroupId!;
+        const activeAcquisition = this.getters.activeAcquisition;
+        const response = await api.downloadOmeTiffImage(groupId, activeAcquisition?.id!);
+        const blob = await response.blob();
+        saveAs(blob, `${activeAcquisition?.description}.ome.tiff`);
+      } catch (error) {
+        await this.main!.actions.checkApiError(error);
+      }
+    } else {
+      const params = await this.actions.prepareStackParams(format);
+      try {
+        const groupId = this.group?.getters.activeGroupId!;
+        const response = await api.downloadChannelStackImage(groupId, params);
+        const blob = await response.blob();
+        saveAs(blob);
+      } catch (error) {
+        await this.main!.actions.checkApiError(error);
+      }
     }
   }
 
