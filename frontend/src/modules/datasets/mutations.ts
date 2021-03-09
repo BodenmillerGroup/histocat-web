@@ -1,17 +1,9 @@
 import { Mutations } from "vuex-smart-module";
 import { datasetListSchema, DatasetsState } from ".";
 import { IDataset } from "./models";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_ACTIVE_DATASET_ID, SET_DATASETS } from "./events";
 import { normalize } from "normalizr";
 
 export class DatasetsMutations extends Mutations<DatasetsState> {
-  constructor() {
-    super();
-    BroadcastManager.subscribe(SET_ACTIVE_DATASET_ID, (payload) => this.setActiveDatasetId(payload));
-    BroadcastManager.subscribe(SET_DATASETS, (payload) => this.setEntities(payload));
-  }
-
   setActiveDatasetId(id: number | null) {
     this.state.activeDatasetId = id;
   }

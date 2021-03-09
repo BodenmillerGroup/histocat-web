@@ -8,8 +8,6 @@ import { DatasetsState } from ".";
 import { api } from "./api";
 import { DatasetsGetters } from "./getters";
 import { DatasetsMutations } from "./mutations";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_DATASETS, SET_ACTIVE_DATASET_ID } from "./events";
 import { groupModule } from "@/modules/group";
 import { IDatasetUpdate } from "@/modules/datasets/models";
 
@@ -29,15 +27,11 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
     this.projects = projectsModule.context(store);
   }
 
-  setActiveDatasetId(id: number | null) {
-    BroadcastManager.publish(SET_ACTIVE_DATASET_ID, id);
-  }
-
   async getProjectDatasets(projectId: number) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getProjectDatasets(groupId, projectId);
-      BroadcastManager.publish(SET_DATASETS, data);
+      this.mutations.setEntities(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

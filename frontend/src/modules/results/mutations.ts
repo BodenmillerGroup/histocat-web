@@ -11,20 +11,13 @@ import {
   IRawColorsData,
 } from "./models";
 import { normalize } from "normalizr";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_SELECTED_CELLS } from "./events";
 
 export class ResultsMutations extends Mutations<ResultsState> {
-  constructor() {
-    super();
-    BroadcastManager.subscribe(SET_SELECTED_CELLS, (payload) => this.setSelectedCells(payload));
-  }
-
   setActiveResultId(id: number | null) {
     this.state.activeResultId = id;
   }
 
-  setHeatmap(heatmap: { type: string; label: string } | null) {
+  setHeatmap(heatmap: { type: string; label: string; value: string } | null) {
     this.state.heatmap = heatmap;
   }
 
@@ -125,14 +118,6 @@ export class ResultsMutations extends Mutations<ResultsState> {
       });
     }
     this.state.scatterData = Object.freeze(scatterPlotData);
-  }
-
-  setBoxPlotData(data: IPlotSeries[]) {
-    this.state.boxPlotData = data;
-  }
-
-  setPhenoGraphData(data: IPhenoGraphData | null) {
-    this.state.phenographData = data;
   }
 
   resetResultData() {

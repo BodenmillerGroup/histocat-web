@@ -17,6 +17,8 @@
         solo
         flat
         class="select-input"
+        item-text="label"
+        item-value="tag"
       />
       y:
       <v-select
@@ -29,6 +31,8 @@
         solo
         flat
         class="select-input"
+        item-text="label"
+        item-value="tag"
       />
       <!--      <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />-->
     </v-toolbar>
@@ -51,6 +55,7 @@ import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
 import { resultsModule } from "@/modules/results";
+import { projectsModule } from "@/modules/projects";
 
 @Component({
   components: { ScatterPlot2d },
@@ -58,6 +63,7 @@ import { resultsModule } from "@/modules/results";
 export default class ScatterWidget extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);
   readonly resultsContext = resultsModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
 
   readonly required = required;
 
@@ -73,8 +79,18 @@ export default class ScatterWidget extends Vue {
     return this.datasetContext.getters.activeDataset;
   }
 
+  get channels() {
+    const acquisition = this.projectsContext.getters.activeAcquisition;
+    return acquisition ? acquisition.channels : null;
+  }
+
   get markers() {
-    return this.resultsContext.getters.markers;
+    return this.resultsContext.getters.markers.map((tag) => {
+      return {
+        tag: tag,
+        label: this.channels && this.channels[tag] ? this.channels[tag].customLabel : tag,
+      };
+    });
   }
 
   @Watch("markers")

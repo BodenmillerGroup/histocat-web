@@ -135,17 +135,20 @@ export default class DatasetsView extends Vue {
 
   @Watch("selected")
   datasetChanged(index?: number | null) {
+    this.resultContext.mutations.reset();
+    this.centroidsContext.mutations.reset();
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
       if (dataset.status === "ready") {
-        this.datasetsContext.actions.setActiveDatasetId(dataset.id);
+        this.datasetsContext.mutations.setActiveDatasetId(dataset.id);
         Promise.all([
           this.centroidsContext.actions.getCentroids({ datasetId: dataset.id }),
           this.resultContext.actions.getDatasetResults(dataset.id),
+          this.projectsContext.actions.getChannelStackImage(),
         ]);
       }
     } else {
-      this.datasetsContext.actions.setActiveDatasetId(null);
+      this.datasetsContext.mutations.setActiveDatasetId(null);
     }
   }
 

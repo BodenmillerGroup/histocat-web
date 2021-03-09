@@ -43,7 +43,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    this.settingsContext.actions.setFilter({
+    this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
       apply: value,
     });
@@ -55,7 +55,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set filterType(value: string) {
-    this.settingsContext.actions.setFilter({
+    this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
       type: value,
     });
@@ -71,7 +71,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set sigma(value: number) {
-    this.settingsContext.actions.setFilter({
+    this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
       settings: {
         sigma: value,
@@ -89,7 +89,7 @@ export default class FilterSettingsView extends Vue {
   }
 
   set kernelSize(value: string) {
-    this.settingsContext.actions.setFilter({
+    this.settingsContext.mutations.setFilter({
       ...this.settingsContext.getters.filter,
       settings: {
         kernel_size: value,

@@ -7,7 +7,7 @@ import numpy as np
 import orjson
 import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import ORJSONResponse
+from fastapi.responses import ORJSONResponse, FileResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage.util import img_as_ubyte
 from sqlalchemy.orm import Session
@@ -177,3 +177,19 @@ async def download_channel_stack(
     additive_image = cv2.cvtColor(additive_image, cv2.COLOR_BGR2RGB)
     status, buffer = cv2.imencode(f".{format}", additive_image.astype(int) if format == "tiff" else additive_image)
     return StreamingResponse(stream_bytes(buffer), media_type=f"image/{format}")
+
+
+@router.get("/groups/{group_id}/acquisitions/{acquisition_id}/download")
+async def download_ome_tiff(
+    group_id: int,
+    acquisition_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    """Download acquisition OME-TIFF by id."""
+    item = acquisition_service.get_by_id(db, id=acquisition_id)
+    if not item:
+        raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Acquisition id:{acquisition_id} not found")
+
+    # headers = {"Content-Disposition": f'attachment; filename="{file_name}"'}
+    return FileResponse(path=item.location, media_type="image/tiff")

@@ -103,9 +103,9 @@ export default class GatesView extends Vue {
   gateChanged(index: number | null) {
     if (index !== null && index !== undefined) {
       const gate = this.gates[index];
-      this.gateContext.actions.setActiveGateId(gate.id);
+      this.gateContext.mutations.setActiveGateId(gate.id);
     } else {
-      this.gateContext.actions.setActiveGateId(null);
+      this.gateContext.mutations.setActiveGateId(null);
     }
   }
 

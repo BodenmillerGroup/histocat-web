@@ -82,9 +82,7 @@ export default class PresetsView extends Vue {
   }
 
   async applyPreset(event, id: number) {
-    if (self.confirm("Do you want to apply preset?")) {
-      await this.presetContext.actions.applyPreset(id);
-    }
+    await this.presetContext.actions.applyPreset(id);
   }
 
   async deletePreset(event, id: number) {

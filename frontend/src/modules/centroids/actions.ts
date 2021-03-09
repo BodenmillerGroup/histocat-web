@@ -4,10 +4,8 @@ import { CentroidsState } from ".";
 import { CentroidsGetters } from "./getters";
 import { CentroidsMutations } from "./mutations";
 import { api } from "./api";
-import { ICentroidsData, ICentroidsSubmission } from "./models";
+import { ICentroidsSubmission } from "./models";
 import { mainModule } from "@/modules/main";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_CENTROIDS } from "./events";
 import { groupModule } from "@/modules/group";
 
 export class CentroidsActions extends Actions<CentroidsState, CentroidsGetters, CentroidsMutations, CentroidsActions> {
@@ -21,15 +19,11 @@ export class CentroidsActions extends Actions<CentroidsState, CentroidsGetters, 
     this.group = groupModule.context(store);
   }
 
-  setCentroids(payload: ICentroidsData, isGlobal = true) {
-    BroadcastManager.publish(SET_CENTROIDS, payload, isGlobal);
-  }
-
   async getCentroids(payload: ICentroidsSubmission) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const response = await api.getCentroids(groupId, payload);
-      this.actions.setCentroids(response);
+      this.mutations.setCentroids(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

@@ -109,6 +109,7 @@ class AcquisitionDto(BaseModel):
     is_valid: Optional[bool]
     meta: Dict[str, Optional[str]]
     channels: Optional[Dict[Any, Any]]
+    location: str
 
     class Config:
         orm_mode = True

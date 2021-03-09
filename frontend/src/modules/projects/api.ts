@@ -99,6 +99,11 @@ export const api = {
       timeout: false,
     });
   },
+  async downloadOmeTiffImage(groupId: number, acquisitionId: number) {
+    return ApiManager.api.get(`groups/${groupId}/acquisitions/${acquisitionId}/download`, {
+      timeout: false,
+    });
+  },
   async deleteSlide(groupId: number, id: number) {
     return ApiManager.api.delete(`groups/${groupId}/slides/${id}`).json<ISlide>();
   },

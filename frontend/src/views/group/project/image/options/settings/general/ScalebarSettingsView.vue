@@ -10,9 +10,18 @@
         step="0.1"
         label="Scale"
         v-model.number="scale"
-        persistent-hint
         hint="1px to μm"
-      ></v-text-field>
+      />
+      <v-text-field
+        type="number"
+        :rules="[required]"
+        min="1"
+        max="300"
+        step="1"
+        label="Length"
+        v-model.number="length"
+        hint="Scalebar length"
+      />
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -35,7 +44,7 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    this.settingsContext.actions.setScalebar({
+    this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
       apply: value,
     });
@@ -49,10 +58,28 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set scale(value: number) {
-    this.settingsContext.actions.setScalebar({
+    this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
       settings: {
         scale: value,
+      },
+    });
+    if (this.apply) {
+      this.projectsContext.actions.getChannelStackImage();
+    }
+  }
+
+  get length() {
+    return this.settingsContext.getters.scalebar.settings.length
+      ? this.settingsContext.getters.scalebar.settings.length
+      : 64;
+  }
+
+  set length(value: number) {
+    this.settingsContext.mutations.setScalebar({
+      ...this.settingsContext.getters.scalebar,
+      settings: {
+        length: value,
       },
     });
     if (this.apply) {

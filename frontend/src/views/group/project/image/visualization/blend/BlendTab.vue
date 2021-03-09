@@ -3,7 +3,7 @@
     <v-toolbar dense flat>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
-          <v-btn v-on="on" small elevation="1">
+          <v-btn v-on="on" small elevation="1" :disabled="!activeAcquisition">
             <v-icon left small>mdi-download</v-icon>
             Export
           </v-btn>
@@ -14,6 +14,9 @@
           </v-list-item>
           <v-list-item @click="exportImage('png')">
             <v-list-item-title>Export PNG</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="exportImage('ome-tiff')">
+            <v-list-item-title>Export OME-TIFF</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -61,7 +64,7 @@ export default class BlendTab extends Vue {
   }
 
   set mode(value: "raw" | "mask" | "origin") {
-    this.settingsContext.actions.setMaskSettings({
+    this.settingsContext.mutations.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
       mode: value,
     });

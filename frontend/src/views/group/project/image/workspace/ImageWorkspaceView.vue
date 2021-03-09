@@ -99,9 +99,9 @@ export default class ImageWorkspaceView extends Vue {
       return;
     }
     const node = items[0];
-    this.projectsContext.actions.setActiveWorkspaceNode(node);
+    this.projectsContext.mutations.setActiveWorkspaceNode(node);
     if (node.type === "acquisition") {
-      this.projectsContext.actions.setActiveAcquisitionId(node.id);
+      this.projectsContext.mutations.setActiveAcquisitionId(node.id);
       this.projectsContext.actions.getChannelStackImage();
     }
   }

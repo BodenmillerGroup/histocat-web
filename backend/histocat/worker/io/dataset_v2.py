@@ -46,7 +46,6 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
 
     masks = {}
     image_number_to_acquisition_id = {}
-    image_number_to_scaling = {}
     for index, row in image_df.iterrows():
         mask_meta = _import_mask(db, src_folder, row, dataset)
         if mask_meta is not None:
@@ -54,9 +53,6 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
             masks[acquisition_id] = mask_meta
             image_number = mask_meta.get("image_number")
             image_number_to_acquisition_id[image_number] = acquisition_id
-
-            scaling = int(row["Scaling_FullStack"])
-            image_number_to_scaling[image_number] = scaling
     meta["masks"] = masks
 
     # Import panel data: { Metal Tag : channel number }
@@ -64,7 +60,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
 
     # Convert cell.csv to AnnData file format
     cell_df = _import_cell_csv(
-        src_folder, dst_folder, image_number_to_acquisition_id, image_number_to_scaling, channel_order
+        src_folder, dst_folder, image_number_to_acquisition_id, channel_order
     )
 
     # Register neighbors columns
@@ -107,7 +103,6 @@ def _import_cell_csv(
     src_folder: Path,
     dst_folder: Path,
     image_number_to_acquisition_id: Dict[int, int],
-    image_number_to_scaling: Dict[int, int],
     channel_order: Dict[str, int],
 ):
     src_uri = src_folder / CELL_CSV_FILENAME

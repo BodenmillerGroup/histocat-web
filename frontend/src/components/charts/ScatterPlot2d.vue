@@ -20,8 +20,8 @@ export default class ScatterPlot2d extends Vue {
 
   @Prop({ type: String, required: true }) plotId;
   @Prop({ type: String, required: true }) title;
-  @Prop({ type: String, required: true }) xAxisTitle;
-  @Prop({ type: String, required: true }) yAxisTitle;
+  @Prop({ type: String, required: false }) xAxisTitle;
+  @Prop({ type: String, required: false }) yAxisTitle;
   @Prop({ type: Map, required: true }) data!: Map<number, ICellPoint[]>;
   @Prop({ type: Boolean, required: true }) ignoreSelection!: boolean;
 
@@ -165,7 +165,7 @@ export default class ScatterPlot2d extends Vue {
               objectNumber: cellPoint.objectNumber,
             });
           });
-          this.resultsContext.actions.setSelectedCells(newSelectedCells);
+          this.resultsContext.mutations.setSelectedCells(newSelectedCells);
           if (this.applyMask) {
             this.projectsContext.actions.getChannelStackImage();
           }
@@ -174,7 +174,7 @@ export default class ScatterPlot2d extends Vue {
     });
 
     plot.on("plotly_deselect", () => {
-      this.resultsContext.actions.setSelectedCells([]);
+      this.resultsContext.mutations.setSelectedCells([]);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }
