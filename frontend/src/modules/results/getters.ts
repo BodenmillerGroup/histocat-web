@@ -62,14 +62,6 @@ export class ResultsGetters extends Getters<ResultsState> {
     return null;
   }
 
-  get boxPlotData() {
-    return this.state.boxPlotData;
-  }
-
-  get phenographData() {
-    return this.state.phenographData;
-  }
-
   get cellsByAcquisition() {
     const output = new Map<number, ICellData[]>();
     this.getters.cells?.forEach((value, key) => {

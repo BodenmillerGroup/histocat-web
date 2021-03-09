@@ -108,7 +108,7 @@ export default class ChannelsView extends Vue {
   set selected(items: IChannel[]) {
     const selectedMetals = items.map((item) => item.name);
     if (!isEqual(this.selectedMetals, selectedMetals)) {
-      this.projectsContext.actions.setSelectedMetals(selectedMetals);
+      this.projectsContext.mutations.setSelectedMetals(selectedMetals);
       this.projectsContext.actions.getChannelStackImage();
     }
   }

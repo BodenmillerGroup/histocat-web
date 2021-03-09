@@ -7,8 +7,6 @@ import { api } from "./api";
 import { GatesGetters } from "./getters";
 import { GatesMutations } from "./mutations";
 import { datasetsModule } from "@/modules/datasets";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import { SET_ACTIVE_GATE_ID } from "./events";
 import { groupModule } from "@/modules/group";
 import { resultsModule } from "@/modules/results";
 import { ISelectedCell } from "@/modules/results/models";
@@ -26,10 +24,6 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
     this.group = groupModule.context(store);
     this.dataset = datasetsModule.context(store);
     this.results = resultsModule.context(store);
-  }
-
-  setActiveGateId(id: number | null, isGlobal = true) {
-    BroadcastManager.publish(SET_ACTIVE_GATE_ID, id, isGlobal);
   }
 
   async getGates(datasetId: number) {
@@ -86,7 +80,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
           const cellId = data.cell_ids[i];
           selectedCells.push(Object.freeze({ acquisitionId: acquisitionId, cellId: cellId, objectNumber: index }));
         }
-        this.results?.actions.setSelectedCells(selectedCells);
+        this.results?.mutations.setSelectedCells(selectedCells);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

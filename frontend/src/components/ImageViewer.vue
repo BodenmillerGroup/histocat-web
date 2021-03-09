@@ -187,12 +187,12 @@ export default class ImageViewer extends Vue {
           Object.freeze({ acquisitionId: acquisitionId, cellId: point.cellId, objectNumber: point.objectNumber })
         );
       }
-      this.resultsContext.actions.setSelectedCells(newSelectedCells);
+      this.resultsContext.mutations.setSelectedCells(newSelectedCells);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }
     } else {
-      this.resultsContext.actions.setSelectedCells([]);
+      this.resultsContext.mutations.setSelectedCells([]);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }

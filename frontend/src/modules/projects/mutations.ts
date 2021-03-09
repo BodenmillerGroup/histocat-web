@@ -2,24 +2,9 @@ import { isEqual } from "lodash-es";
 import { Mutations } from "vuex-smart-module";
 import { projectListSchema, ProjectsState } from ".";
 import { IProject, IProjectData } from "./models";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import {
-  SET_ACTIVE_ACQUISITION_ID,
-  SET_ACTIVE_WORKSPACE_NODE,
-  SET_CHANNEL_STACK_IMAGE,
-  SET_SELECTED_METALS,
-} from "./events";
 import { normalize } from "normalizr";
 
 export class ProjectsMutations extends Mutations<ProjectsState> {
-  constructor() {
-    super();
-    BroadcastManager.subscribe(SET_ACTIVE_ACQUISITION_ID, (payload) => this.setActiveAcquisitionId(payload));
-    BroadcastManager.subscribe(SET_ACTIVE_WORKSPACE_NODE, (payload) => this.setActiveWorkspaceNode(payload));
-    BroadcastManager.subscribe(SET_SELECTED_METALS, (payload) => this.setSelectedMetals(payload));
-    BroadcastManager.subscribe(SET_CHANNEL_STACK_IMAGE, (payload) => this.setChannelStackImage(payload));
-  }
-
   setActiveProjectId(id: number | null) {
     this.state.activeProjectId = id;
   }

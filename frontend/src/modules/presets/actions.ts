@@ -64,10 +64,10 @@ export class PresetsActions extends Actions<PresetsState, PresetsGetters, Preset
       const preset = await api.getPreset(groupId, id);
       if (preset) {
         if (preset.data["channelsSettings"]) {
-          this.settings?.actions.setChannelsSettings(preset.data["channelsSettings"]);
+          this.settings?.mutations.setChannelsSettings(preset.data["channelsSettings"]);
         }
         if (preset.data["selectedTags"]) {
-          this.projects?.actions.setSelectedMetals(preset.data["selectedTags"]);
+          this.projects?.mutations.setSelectedMetals(preset.data["selectedTags"]);
         }
         this.projects!.actions.getChannelStackImage();
       }

@@ -9,13 +9,6 @@ import { api } from "./api";
 import { ProjectsGetters } from "./getters";
 import { ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate } from "./models";
 import { ProjectsMutations } from "./mutations";
-import { BroadcastManager } from "@/utils/BroadcastManager";
-import {
-  SET_CHANNEL_STACK_IMAGE,
-  SET_ACTIVE_ACQUISITION_ID,
-  SET_ACTIVE_WORKSPACE_NODE,
-  SET_SELECTED_METALS,
-} from "./events";
 import { groupModule } from "@/modules/group";
 import { resultsModule } from "@/modules/results";
 
@@ -34,18 +27,6 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     this.settings = settingsModule.context(store);
     this.datasets = datasetsModule.context(store);
     this.results = resultsModule.context(store);
-  }
-
-  setActiveAcquisitionId(id?: number, isGlobal = true) {
-    BroadcastManager.publish(SET_ACTIVE_ACQUISITION_ID, id, isGlobal);
-  }
-
-  setActiveWorkspaceNode(node?: { id: number; type: string }, isGlobal = true) {
-    BroadcastManager.publish(SET_ACTIVE_WORKSPACE_NODE, node, isGlobal);
-  }
-
-  setSelectedMetals(metals: string[], isGlobal = true) {
-    BroadcastManager.publish(SET_SELECTED_METALS, metals, isGlobal);
   }
 
   async getGroupProjects(groupId: number) {
@@ -179,7 +160,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        BroadcastManager.publish(SET_CHANNEL_STACK_IMAGE, reader.result);
+        this.mutations.setChannelStackImage(reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -201,7 +182,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        BroadcastManager.publish(SET_CHANNEL_STACK_IMAGE, reader.result);
+        this.mutations.setChannelStackImage(reader.result);
       };
     } catch (error) {
       await this.main!.actions.checkApiError(error);

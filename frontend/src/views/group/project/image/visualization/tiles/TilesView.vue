@@ -91,7 +91,7 @@ export default class TilesView extends Vue {
   async exportImage(e) {
     const canvas = await html2canvas(this.$refs.tilesContainer as HTMLElement, {
       useCORS: true,
-      backgroundColor: null
+      backgroundColor: null,
     });
     canvas.toBlob(
       (blob) => {

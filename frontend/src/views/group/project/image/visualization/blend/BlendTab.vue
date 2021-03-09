@@ -64,7 +64,7 @@ export default class BlendTab extends Vue {
   }
 
   set mode(value: "raw" | "mask" | "origin") {
-    this.settingsContext.actions.setMaskSettings({
+    this.settingsContext.mutations.setMaskSettings({
       ...this.settingsContext.getters.maskSettings,
       mode: value,
     });

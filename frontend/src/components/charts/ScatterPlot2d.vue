@@ -165,7 +165,7 @@ export default class ScatterPlot2d extends Vue {
               objectNumber: cellPoint.objectNumber,
             });
           });
-          this.resultsContext.actions.setSelectedCells(newSelectedCells);
+          this.resultsContext.mutations.setSelectedCells(newSelectedCells);
           if (this.applyMask) {
             this.projectsContext.actions.getChannelStackImage();
           }
@@ -174,7 +174,7 @@ export default class ScatterPlot2d extends Vue {
     });
 
     plot.on("plotly_deselect", () => {
-      this.resultsContext.actions.setSelectedCells([]);
+      this.resultsContext.mutations.setSelectedCells([]);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }

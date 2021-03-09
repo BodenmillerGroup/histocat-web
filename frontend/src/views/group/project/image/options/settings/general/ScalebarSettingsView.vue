@@ -44,7 +44,7 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set apply(value: boolean) {
-    this.settingsContext.actions.setScalebar({
+    this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
       apply: value,
     });
@@ -58,7 +58,7 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set scale(value: number) {
-    this.settingsContext.actions.setScalebar({
+    this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
       settings: {
         scale: value,
@@ -76,7 +76,7 @@ export default class ScalebarSettingsView extends Vue {
   }
 
   set length(value: number) {
-    this.settingsContext.actions.setScalebar({
+    this.settingsContext.mutations.setScalebar({
       ...this.settingsContext.getters.scalebar,
       settings: {
         length: value,
