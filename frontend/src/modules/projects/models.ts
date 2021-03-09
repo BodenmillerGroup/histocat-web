@@ -83,6 +83,7 @@ export interface IAcquisition {
   has_after_ablation_image: boolean;
   is_valid: boolean;
   meta: object;
+  location: string;
 
   channels: { [name: string]: IChannel };
 }

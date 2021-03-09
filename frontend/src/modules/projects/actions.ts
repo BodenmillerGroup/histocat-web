@@ -198,7 +198,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
         const activeAcquisition = this.getters.activeAcquisition;
         const response = await api.downloadOmeTiffImage(groupId, activeAcquisition?.id!);
         const blob = await response.blob();
-        saveAs(blob, `${activeAcquisition?.description}.ome.tiff`);
+        const filename = activeAcquisition?.location.replace(/^.*[\\\/]/, "");
+        saveAs(blob, filename);
       } catch (error) {
         await this.main!.actions.checkApiError(error);
       }

@@ -144,7 +144,7 @@ export default class DatasetsView extends Vue {
         Promise.all([
           this.centroidsContext.actions.getCentroids({ datasetId: dataset.id }),
           this.resultContext.actions.getDatasetResults(dataset.id),
-          this.projectsContext.actions.getChannelStackImage()
+          this.projectsContext.actions.getChannelStackImage(),
         ]);
       }
     } else {
