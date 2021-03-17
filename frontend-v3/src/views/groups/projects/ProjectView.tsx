@@ -11,6 +11,7 @@ import { BlendView } from "./viewers/image/BlendView";
 import { SlidesView } from "./viewers/slides/SlidesView";
 import { ChannelsView } from "./viewers/channels/ChannelsView";
 import { SettingsView } from "./viewers/SettingsView";
+import { ChannelsSettingsView } from "./viewers/settings/ChannelsSettingsView";
 
 export function ProjectView() {
   const { setActiveNode, activeLayout } = useLayoutsStore(
@@ -40,7 +41,7 @@ export function ProjectView() {
             {
               {
                 a: <SlidesView />,
-                b: <BlendView />,
+                b: <ChannelsSettingsView />,
                 c: <ChannelsView />,
                 new: <SettingsView />,
               }[id]

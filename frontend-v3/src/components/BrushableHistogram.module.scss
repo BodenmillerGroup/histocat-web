@@ -1,0 +1,21 @@
+.root {
+  padding: 10px;
+  background-color: white;
+}
+.container {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 8px;
+}
+.labels {
+  display: flex;
+  justify-content: space-between;
+}
+.label {
+  font-size: x-small;
+  font-style: italic;
+}
+.range-label {
+  color: #bbb;
+  font-size: xx-small;
+}

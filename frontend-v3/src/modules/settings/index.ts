@@ -8,6 +8,10 @@ type SettingsState = {
   scalebar: IImageScalebar;
   mask: IMaskSettings;
   mouseMode: "panZoom" | "lasso" | "rotate";
+
+  setChannelsSettings(payload: any): void;
+  setChannelColor(channelName: string, color: string): void;
+  setChannelLevels(channelName: string, levels: { min: number; max: number }): void;
 };
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -35,4 +39,33 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     mode: "raw",
   },
   mouseMode: "panZoom",
+
+  setChannelsSettings(payload: any) {
+    set({ channelsSettings: { ...get().channelsSettings, payload } });
+  },
+
+  setChannelColor(channelName: string, color: string) {
+    const channelsSettings = get().channelsSettings;
+    const existingLevels =
+      channelsSettings[channelName] && channelsSettings[channelName].levels
+        ? channelsSettings[channelName].levels
+        : undefined;
+    set({
+      channelsSettings: {
+        ...channelsSettings,
+        [channelName]: { levels: existingLevels, color: color },
+      },
+    });
+  },
+
+  setChannelLevels(channelName: string, levels: { min: number; max: number }) {
+    const channelsSettings = get().channelsSettings;
+    const existingColor = channelsSettings[channelName] ? channelsSettings[channelName].color : "#ffffff";
+    set({
+      channelsSettings: {
+        ...channelsSettings,
+        [channelName]: { levels: levels, color: existingColor },
+      },
+    });
+  },
 }));
