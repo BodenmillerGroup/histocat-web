@@ -14,7 +14,10 @@ router = APIRouter()
 
 @router.get("/groups/{group_id}/presets/{preset_id}", response_model=PresetDto)
 def get_by_id(
-    group_id: int, preset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    preset_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get preset by id
@@ -25,7 +28,10 @@ def get_by_id(
 
 @router.get("/groups/{group_id}/projects/{project_id}/presets", response_model=Sequence[PresetDto])
 def get_project_presets(
-    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    project_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get all project presets
@@ -50,7 +56,10 @@ def create(
 
 @router.delete("/groups/{group_id}/presets/{preset_id}", response_model=int)
 def delete_by_id(
-    group_id: int, preset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    preset_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Delete preset by id

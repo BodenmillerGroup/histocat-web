@@ -23,7 +23,11 @@ def test_create_user_new_email(superuser_token_headers):
     username = f"{random_lower_string()}@test.com"
     password = random_lower_string()
     data = {"email": username, "password": password}
-    r = requests.post(f"{server_api}{config.API_V1_STR}/users/", headers=superuser_token_headers, json=data,)
+    r = requests.post(
+        f"{server_api}{config.API_V1_STR}/users/",
+        headers=superuser_token_headers,
+        json=data,
+    )
     assert 200 <= r.status_code < 300
     created_user = r.json()
     user = service.get_by_email(db_session, email=username)
@@ -37,7 +41,10 @@ def test_get_existing_user(superuser_token_headers):
     user_in = UserCreateDto(email=username, password=password)
     user = service.create(db_session, params=user_in)
     user_id = user.id
-    r = requests.get(f"{server_api}{config.API_V1_STR}/users/{user_id}", headers=superuser_token_headers,)
+    r = requests.get(
+        f"{server_api}{config.API_V1_STR}/users/{user_id}",
+        headers=superuser_token_headers,
+    )
     assert 200 <= r.status_code < 300
     api_user = r.json()
     user = service.get_by_email(db_session, email=username)
@@ -52,7 +59,11 @@ def test_create_user_existing_username(superuser_token_headers):
     user_in = UserCreateDto(email=username, password=password)
     user = service.create(db_session, params=user_in)
     data = {"email": username, "password": password}
-    r = requests.post(f"{server_api}{config.API_V1_STR}/users/", headers=superuser_token_headers, json=data,)
+    r = requests.post(
+        f"{server_api}{config.API_V1_STR}/users/",
+        headers=superuser_token_headers,
+        json=data,
+    )
     created_user = r.json()
     assert r.status_code == 400
     assert "_id" not in created_user

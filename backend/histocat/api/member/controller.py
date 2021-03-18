@@ -21,7 +21,8 @@ def create_group_member(
     item = service.get_by_group_id_and_user_id(db, group_id=group_id, user_id=params.user_id)
     if item:
         raise HTTPException(
-            status_code=400, detail="Member already exists.",
+            status_code=400,
+            detail="Member already exists.",
         )
     item = service.create(db, group_id=group_id, params=params)
     return item
@@ -52,7 +53,10 @@ def update(
 
 @router.delete("/groups/{group_id}/members/{member_id}", response_model=int)
 def delete_by_id(
-    group_id: int, member_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    member_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Delete member by id

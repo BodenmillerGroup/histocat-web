@@ -54,7 +54,8 @@ def create(
     item = service.get_by_group_id_and_name(db, group_id=group_id, name=params.name)
     if item:
         raise HTTPException(
-            status_code=400, detail="The project with this name already exists.",
+            status_code=400,
+            detail="The project with this name already exists.",
         )
     item = service.create(db, group_id=group_id, params=params, member_id=member.id)
     return item
@@ -62,7 +63,10 @@ def create(
 
 @router.get("/groups/{group_id}/projects/{project_id}", response_model=ProjectDto)
 def get_by_id(
-    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    project_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get project by id
@@ -73,7 +77,10 @@ def get_by_id(
 
 @router.delete("/groups/{group_id}/projects/{project_id}", response_model=ProjectDto)
 def delete_by_id(
-    group_id: int, project_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
+    group_id: int,
+    project_id: int,
+    member: MemberModel = Depends(get_group_admin),
+    db: Session = Depends(get_db),
 ):
     """
     Delete project by id
@@ -96,7 +103,8 @@ def update(
     item = service.get(db, id=project_id)
     if not item:
         raise HTTPException(
-            status_code=404, detail="The project with this id does not exist.",
+            status_code=404,
+            detail="The project with this id does not exist.",
         )
     item = service.update(db, item=item, params=params)
     return item
@@ -122,7 +130,10 @@ def upload_slide(
         actor_name="import_slide",
         queue_name="import",
         args=(),
-        kwargs={"uri": uri, "project_id": project_id,},
+        kwargs={
+            "uri": uri,
+            "project_id": project_id,
+        },
         options={},
     )
     broker.enqueue(message)
@@ -131,7 +142,10 @@ def upload_slide(
 
 @router.get("/groups/{group_id}/projects/{project_id}/data", response_model=ProjectFullDto)
 async def read_data(
-    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    project_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get all project data

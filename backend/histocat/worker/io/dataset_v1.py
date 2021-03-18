@@ -66,9 +66,7 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
         channel_order, channel_mass = _import_channels_csv(channels_filename)
         break
 
-    cell_df = _import_cell_csv(
-        src_folder, dst_folder, image_number_to_acquisition_id, channel_order
-    )
+    cell_df = _import_cell_csv(src_folder, dst_folder, image_number_to_acquisition_id, channel_order)
 
     # Register heatmap columns
     neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]

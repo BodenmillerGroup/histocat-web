@@ -30,7 +30,9 @@ def get_all_models(db: Session = Depends(get_db), user: UserModel = Depends(get_
 
 @router.get("/models/{model_id}", response_model=ModelDto)
 def get_by_id(
-    model_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    model_id: int,
+    user: UserModel = Depends(get_active_user),
+    db: Session = Depends(get_db),
 ):
     """
     Get model by id
@@ -41,7 +43,9 @@ def get_by_id(
 
 @router.delete("/models/{model_id}", response_model=int)
 def delete_by_id(
-    model_id: int, user: UserModel = Depends(get_admin), db: Session = Depends(get_db),
+    model_id: int,
+    user: UserModel = Depends(get_admin),
+    db: Session = Depends(get_db),
 ):
     """
     Delete model by id
@@ -52,7 +56,10 @@ def delete_by_id(
 
 @router.patch("/models/{model_id}", response_model=ModelDto)
 def update(
-    model_id: int, params: ModelUpdateDto, user: UserModel = Depends(get_admin), db: Session = Depends(get_db),
+    model_id: int,
+    params: ModelUpdateDto,
+    user: UserModel = Depends(get_admin),
+    db: Session = Depends(get_db),
 ):
     """
     Update model
@@ -75,7 +82,8 @@ def create(
     item = service.get_by_name(db, name=name)
     if item:
         raise HTTPException(
-            status_code=400, detail="The model with this name already exists.",
+            status_code=400,
+            detail="The model with this name already exists.",
         )
 
     params = ModelCreateDto(name=name, description=description)
@@ -90,7 +98,11 @@ def create(
 
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
-        actor_name="import_model", queue_name="import", args=(), kwargs={"uri": uri, "model_id": model.id}, options={},
+        actor_name="import_model",
+        queue_name="import",
+        args=(),
+        kwargs={"uri": uri, "model_id": model.id},
+        options={},
     )
     broker.enqueue(message)
     return model

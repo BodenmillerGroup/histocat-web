@@ -63,7 +63,8 @@ def recover_password(email: str, db: Session = Depends(get_db)):
 
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="The user with this username does not exist in the system.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user with this username does not exist in the system.",
         )
     password_reset_token = generate_password_reset_token(email=email)
     send_reset_password_email(email_to=user.email, email=email, token=password_reset_token)
@@ -81,7 +82,8 @@ def reset_password(token: str = Body(...), new_password: str = Body(...), db: Se
     user = service.get_by_email(db, email=email)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="The user with this username does not exist in the system.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user with this username does not exist in the system.",
         )
     elif not user.is_active:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
@@ -94,17 +96,22 @@ def reset_password(token: str = Body(...), new_password: str = Body(...), db: Se
 
 @router.post("/auth/signup", response_model=UserDto)
 def signup(
-    password: str = Body(...), email: EmailStr = Body(...), name: str = Body(None), db: Session = Depends(get_db),
+    password: str = Body(...),
+    email: EmailStr = Body(...),
+    name: str = Body(None),
+    db: Session = Depends(get_db),
 ):
     """Create new user without the need to be logged in."""
     if not config.USERS_OPEN_REGISTRATION:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Open user resgistration is forbidden on this server",
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Open user resgistration is forbidden on this server",
         )
     user = service.get_by_email(db, email=email)
     if user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="The user with this username already exists",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The user with this username already exists",
         )
 
     confirm_signup_token = generate_confirm_signup_token(email=email)
@@ -123,7 +130,8 @@ def confirm_signup(token: str, db: Session = Depends(get_db)):
     user = service.get_by_email(db, email=email)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User doesn't exist",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User doesn't exist",
         )
     service.confirm_signup(db, item=user)
     return RedirectResponse("/")

@@ -15,7 +15,10 @@ router = APIRouter()
 
 @router.get("/groups/{group_id}/gates/{gate_id}", response_model=GateDto)
 def get_by_id(
-    group_id: int, gate_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    gate_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get gate by id
@@ -26,7 +29,10 @@ def get_by_id(
 
 @router.get("/groups/{group_id}/datasets/{dataset_id}/gates", response_model=Sequence[GateDto])
 def get_dataset_gates(
-    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    dataset_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get all dataset gates
@@ -69,7 +75,10 @@ def update(
 
 @router.delete("/groups/{group_id}/gates/{gate_id}", response_model=int)
 def delete_by_id(
-    group_id: int, gate_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    gate_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Delete gate by id

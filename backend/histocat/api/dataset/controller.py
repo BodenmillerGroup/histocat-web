@@ -27,7 +27,10 @@ router = APIRouter()
 
 @router.get("/groups/{group_id}/projects/{project_id}/datasets", response_model=Sequence[DatasetDto])
 def get_project_datasets(
-    group_id: int, project_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
+    group_id: int,
+    project_id: int,
+    db: Session = Depends(get_db),
+    member: MemberModel = Depends(get_active_member),
 ):
     """Retrieve project's datasets"""
     items = dataset_service.get_project_datasets(db, project_id=project_id)
@@ -52,7 +55,10 @@ def update(
 
 @router.get("/groups/{group_id}/datasets/{dataset_id}/centroids")
 def get_centroids(
-    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    dataset_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Get dataset cell centroids"""
     dataset = dataset_service.get(db, id=dataset_id)
@@ -72,7 +78,10 @@ def get_centroids(
 
 @router.get("/groups/{group_id}/datasets/{dataset_id}", response_model=DatasetDto)
 def get_by_id(
-    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    dataset_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Get dataset by id"""
     item = dataset_service.get(db, id=dataset_id)
@@ -83,7 +92,10 @@ def get_by_id(
 
 @router.delete("/groups/{group_id}/datasets/{dataset_id}", response_model=DatasetDto)
 def delete_by_id(
-    group_id: int, dataset_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    dataset_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Delete a specific dataset by id"""
     item = dataset_service.remove(db, id=dataset_id)

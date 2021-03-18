@@ -7,7 +7,7 @@ import numpy as np
 import orjson
 import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import ORJSONResponse, FileResponse
+from fastapi.responses import FileResponse, ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage.util import img_as_ubyte
 from sqlalchemy.orm import Session
@@ -87,7 +87,8 @@ def update(
     item = acquisition_service.get_by_id(db, acquisition_id)
     if not item:
         raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND, detail="The acquisition with this id does not exist.",
+            status_code=HTTP_404_NOT_FOUND,
+            detail="The acquisition with this id does not exist.",
         )
     item = acquisition_service.update_custom_label(db, item=item, params=params)
     return item

@@ -26,13 +26,16 @@ def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_active_
 
 @router.post("/users", response_model=UserDto)
 def create(
-    params: UserCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_admin),
+    params: UserCreateDto,
+    db: Session = Depends(get_db),
+    user: UserModel = Depends(get_admin),
 ):
     """Create new user."""
     item = service.get_by_email(db, email=params.email)
     if item:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="The user with this username already exists in the system.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The user with this username already exists in the system.",
         )
     item = service.create(db, params=params)
     if config.EMAILS_ENABLED and params.email:
@@ -69,7 +72,9 @@ def get_me(db: Session = Depends(get_db), user: UserModel = Depends(get_active_u
 
 @router.get("/users/{id}", response_model=UserDto)
 def get_by_id(
-    id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_active_user),
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_active_user),
 ):
     """Get user by id."""
     user = service.get_by_id(db, id)
@@ -82,13 +87,17 @@ def get_by_id(
 
 @router.put("/users/{id}", response_model=UserDto)
 def update(
-    id: int, params: UserUpdateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_admin),
+    id: int,
+    params: UserUpdateDto,
+    db: Session = Depends(get_db),
+    user: UserModel = Depends(get_admin),
 ):
     """Update user."""
     item = service.get_by_id(db, id)
     if not item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="The user with this username does not exist in the system",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user with this username does not exist in the system",
         )
     item = service.update(db, item=item, params=params)
     return item
