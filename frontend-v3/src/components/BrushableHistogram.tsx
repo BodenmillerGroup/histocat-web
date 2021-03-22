@@ -1,11 +1,12 @@
 import styles from "./BrushableHistogram.module.scss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import memoize from "memoize-one";
 import { IChannel, IChannelStats } from "../modules/projects/models";
 import { useProjectsStore } from "../modules/projects";
 import shallow from "zustand/shallow";
 import { useSettingsStore } from "../modules/settings";
+import { debounce } from "lodash-es";
 
 type BrushableHistogramProps = {
   channel: IChannel;
@@ -24,7 +25,7 @@ const width = 340 - marginLeft - marginRight;
 const height = 80 - marginTop - marginBottom;
 
 export function BrushableHistogram(props: BrushableHistogramProps) {
-  const svgRef = useRef<any>({});
+  const svgRef = useRef<any>(null);
   const { activeAcquisitionId, getChannelStats, getChannelStackImage } = useProjectsStore(
     (state) => ({
       activeAcquisitionId: state.activeAcquisitionId,
@@ -33,21 +34,18 @@ export function BrushableHistogram(props: BrushableHistogramProps) {
     }),
     shallow
   );
-  const { channelsSettings, setChannelLevels } = useSettingsStore(
+  const { channelsSettings, setChannelLevels, setChannelColor } = useSettingsStore(
     (state) => ({
       channelsSettings: state.channelsSettings,
       setChannelLevels: state.setChannelLevels,
+      setChannelColor: state.setChannelColor,
     }),
     shallow
   );
-  const [brushX, setBrushX] = useState<any>(null);
-  const [brushXselection, setBrushXselection] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   const settings = channelsSettings[props.channel.name];
   const metalColor = settings ? settings.color : "#ffffff";
   const color = props.channel ? metalColor : "#ffffff";
-  const label = props.channel.customLabel;
   const unclippedRangeMin = props.channel.min_intensity;
   const unclippedRangeMax = props.channel.max_intensity;
 
@@ -82,33 +80,106 @@ export function BrushableHistogram(props: BrushableHistogramProps) {
     return histogramCache;
   });
 
-  const mounted = async () => {
-    if (activeAcquisitionId) {
-      const stats = await getChannelStats(activeAcquisitionId, props.channel.name);
-      const histogram = calcHistogramCache(stats!);
-      renderHistogram(histogram);
+  useEffect(() => {
+    const mounted = async () => {
+      if (activeAcquisitionId) {
+        const stats = await getChannelStats(activeAcquisitionId, props.channel.name);
+        const histogram = calcHistogramCache(stats!);
+        const { x, y, bins, binStart, binEnd, binWidth } = histogram;
+        const svg = d3.select(svgRef.current);
 
-      // if the selection has changed, ensure that the brush correctly reflects the underlying selection.
+        /* Remove everything */
+        svg.selectAll("*").remove();
 
-      if (settings && settings.levels) {
-        const range =
-          settings!.levels!.min !== props.channel.min_intensity ||
-          settings!.levels!.max !== props.channel.max_intensity;
+        /* Set margins within the SVG */
+        const container = svg
+          .attr("width", width + marginLeft + marginRight)
+          .attr("height", height + marginTop + marginBottom)
+          .append("g")
+          .attr("class", "histogram-container")
+          .attr("transform", `translate(${marginLeft},${marginTop})`);
 
-        if (brushXselection && range) {
-          const min = props.channel.min_intensity;
-          const max = props.channel.max_intensity;
-          const x0 = histogram.x(clamp(settings!.levels!.min, [min, max]));
-          const x1 = histogram.x(clamp(settings!.levels!.max, [min, max]));
-          brushXselection.call(brushX.move, [x0, x1]);
+        if (binWidth > 0) {
+          /* BINS */
+          container
+            .insert("g", "*")
+            .selectAll("rect")
+            .data(bins)
+            .enter()
+            .append("rect")
+            .attr("x", (d, i) => x(binStart(i)) + 1)
+            .attr("y", (d) => y(d))
+            .attr("width", (d, i) => x(binEnd(i)) - x(binStart(i)) - 1)
+            .attr("height", (d) => y(0) - y(d))
+            .style("fill", "#bbb");
+        }
+
+        // BRUSH
+        // Note the brushable area is bounded by the data on three sides, but goes down to cover the x-axis
+        const brushX = d3
+          .brushX()
+          .extent([
+            [x.range()[0], y.range()[1]],
+            [x.range()[1], marginTop + height + marginBottom],
+          ])
+          /*
+      emit start so that the Undoable history can save an undo point
+      upon drag start, and ignore the subsequent intermediate drag events.
+      */
+          .on("start", (event) => onBrush(event, x.invert))
+          .on("brush", (event) => onBrush(event, x.invert))
+          .on("end", (event) => onBrushEnd(event, x.invert));
+
+        const brushXselection = container.insert("g").attr("class", "brush").call(brushX);
+
+        /* X AXIS */
+        container
+          .insert("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", `translate(0,${marginTop + height})`)
+          .call(
+            d3
+              .axisBottom(x)
+              .ticks(4)
+              .tickFormat(d3.format(".0s") as any)
+          );
+
+        /* Y AXIS */
+        container
+          .insert("g")
+          .attr("class", "axis axis--y")
+          .attr("transform", `translate(${marginLeft + width},0)`)
+          .call(
+            d3
+              .axisRight(y)
+              .ticks(3)
+              .tickFormat(d3.format(".0s") as any)
+          );
+
+        /* axis style */
+        svg.selectAll(".axis text").style("fill", "rgb(80,80,80)");
+        svg.selectAll(".axis path").style("stroke", "rgb(230,230,230)");
+        svg.selectAll(".axis line").style("stroke", "rgb(230,230,230)");
+
+        // if the selection has changed, ensure that the brush correctly reflects the underlying selection.
+
+        if (settings && settings.levels) {
+          const range =
+            settings!.levels!.min !== props.channel.min_intensity ||
+            settings!.levels!.max !== props.channel.max_intensity;
+
+          if (brushXselection && range) {
+            const min = props.channel.min_intensity;
+            const max = props.channel.max_intensity;
+            const x0 = histogram.x(clamp(settings!.levels!.min, [min, max]));
+            const x1 = histogram.x(clamp(settings!.levels!.max, [min, max]));
+            brushXselection.call(brushX.move, [x0, x1]);
+          }
         }
       }
-    }
-  };
-
-  useEffect(() => {
-    mounted().then(() => setLoading(false));
-  }, [mounted]);
+    };
+    mounted();
+  }, [activeAcquisitionId]);
 
   const onBrush = (event: any, x: any) => {
     // const { dispatch, field, isObs, isUserDefined, isDiffExp } = this.props;
@@ -180,100 +251,27 @@ export function BrushableHistogram(props: BrushableHistogramProps) {
     getChannelStackImage();
   };
 
-  const renderHistogram = (histogram: any) => {
-    const { x, y, bins, binStart, binEnd, binWidth } = histogram;
-    const svg = d3.select(svgRef.current);
-
-    /* Remove everything */
-    svg.selectAll("*").remove();
-
-    /* Set margins within the SVG */
-    const container = svg
-      .attr("width", width + marginLeft + marginRight)
-      .attr("height", height + marginTop + marginBottom)
-      .append("g")
-      .attr("class", "histogram-container")
-      .attr("transform", `translate(${marginLeft},${marginTop})`);
-
-    if (binWidth > 0) {
-      /* BINS */
-      container
-        .insert("g", "*")
-        .selectAll("rect")
-        .data(bins)
-        .enter()
-        .append("rect")
-        .attr("x", (d, i) => x(binStart(i)) + 1)
-        .attr("y", (d) => y(d))
-        .attr("width", (d, i) => x(binEnd(i)) - x(binStart(i)) - 1)
-        .attr("height", (d) => y(0) - y(d))
-        .style("fill", "#bbb");
-    }
-
-    // BRUSH
-    // Note the brushable area is bounded by the data on three sides, but goes down to cover the x-axis
-    const brushX = d3
-      .brushX()
-      .extent([
-        [x.range()[0], y.range()[1]],
-        [x.range()[1], marginTop + height + marginBottom],
-      ])
-      /*
-      emit start so that the Undoable history can save an undo point
-      upon drag start, and ignore the subsequent intermediate drag events.
-      */
-      .on("start", (event) => onBrush(event, x.invert))
-      .on("brush", (event) => onBrush(event, x.invert))
-      .on("end", (event) => onBrushEnd(event, x.invert));
-
-    const brushXselection = container.insert("g").attr("class", "brush").call(brushX);
-
-    /* X AXIS */
-    container
-      .insert("g")
-      .attr("class", "axis axis--x")
-      .attr("transform", `translate(0,${marginTop + height})`)
-      .call(
-        d3
-          .axisBottom(x)
-          .ticks(4)
-          .tickFormat(d3.format(".0s") as any)
-      );
-
-    /* Y AXIS */
-    container
-      .insert("g")
-      .attr("class", "axis axis--y")
-      .attr("transform", `translate(${marginLeft + width},0)`)
-      .call(
-        d3
-          .axisRight(y)
-          .ticks(3)
-          .tickFormat(d3.format(".0s") as any)
-      );
-
-    /* axis style */
-    svg.selectAll(".axis text").style("fill", "rgb(80,80,80)");
-    svg.selectAll(".axis path").style("stroke", "rgb(230,230,230)");
-    svg.selectAll(".axis line").style("stroke", "rgb(230,230,230)");
-
-    setBrushX(brushX);
-    setBrushXselection(brushXselection);
-  };
-
-  if (loading || !props.channel || !brushX || !brushXselection) {
-    return <h1>Loading</h1>
-  }
-
   return (
     <div className={styles.root}>
       <div className={styles.container}>
-        <input type="color" color={color} onClick={(e) => e.stopPropagation()} />
+        <input
+          type="color"
+          color={color}
+          onClick={(e) => e.stopPropagation()}
+          onChange={debounce(
+            function (e) {
+              setChannelColor(props.channel.name, e.target.value);
+              getChannelStackImage();
+            },
+            500,
+            { leading: false }
+          )}
+        />
       </div>
-      <svg width={width} height={height} id="svg" ref={svgRef.current} />
+      <svg width={width} height={height} id="svg" ref={svgRef} />
       <div className={styles.labels}>
         <span className={styles.rangeLabel}> min {unclippedRangeMin.toPrecision(4)} </span>
-        <span className={styles.label}>{ label }</span>
+        <span className={styles.label}>{props.channel.customLabel}</span>
         <span className={styles.rangeLabel}> max {unclippedRangeMax.toPrecision(4)} </span>
       </div>
     </div>

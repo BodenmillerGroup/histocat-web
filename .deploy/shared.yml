@@ -118,7 +118,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.9.0
+    image: redislabs/redisinsight:1.10.0
     depends_on:
       - redis
     ports:
@@ -138,7 +138,7 @@ services:
 
   proxy:
     restart: always
-    image: library/traefik:2.4.6
+    image: library/traefik:2.4.7
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:

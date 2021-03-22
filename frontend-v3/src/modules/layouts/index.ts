@@ -5,9 +5,10 @@ import { MosaicNode } from "react-mosaic-component";
 const PROJECT_LAYOUTS_STORAGE_KEY = "ProjectLayouts";
 
 export const TITLE_MAP: Record<ViewId, string> = {
-  a: "Slides",
-  b: "Image View",
-  c: "Channels",
+  slides: "Slides",
+  image: "Image View",
+  channels: "Channels",
+  settings: "Settings",
   new: "New Window",
 };
 
@@ -16,12 +17,17 @@ const DEFAULT_LAYOUTS: ILayout[] = [
     name: "Default",
     node: {
       direction: "row",
-      first: "a",
+      first: "slides",
       splitPercentage: 20,
       second: {
         direction: "row",
-        first: "b",
-        second: "c",
+        first: "image",
+        second: {
+          direction: "column",
+          first: "channels",
+          second: "settings",
+          splitPercentage: 50,
+        },
         splitPercentage: 80,
       },
     },
@@ -47,7 +53,7 @@ if (localStorage.getItem(PROJECT_LAYOUTS_STORAGE_KEY)) {
 }
 
 export const useLayoutsStore = create<LayoutsState>((set, get) => ({
-  layouts:  initialLayouts,
+  layouts: initialLayouts,
   activeLayout: initialLayouts[0],
   activeNode: initialLayouts[0].node,
 
@@ -60,7 +66,7 @@ export const useLayoutsStore = create<LayoutsState>((set, get) => ({
   },
 
   addLayout(name: string) {
-    console.log(get().activeNode)
+    console.log(get().activeNode);
     const activeNode = get().activeNode;
     if (activeNode) {
       const layout: ILayout = {

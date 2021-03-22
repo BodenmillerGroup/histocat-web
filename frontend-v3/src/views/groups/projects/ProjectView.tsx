@@ -33,6 +33,9 @@ export function ProjectView() {
   return (
     <div className={styles.container}>
       <Mosaic<ViewId>
+        resize={{
+          minimumPaneSizePercentage: 15,
+        }}
         initialValue={activeLayout.node}
         onChange={handleLayoutChange}
         className={classNames("mosaic-blueprint-theme", Classes.DARK)}
@@ -40,9 +43,10 @@ export function ProjectView() {
           <MosaicWindow<ViewId> path={path} title={TITLE_MAP[id]}>
             {
               {
-                a: <SlidesView />,
-                b: <ChannelsSettingsView />,
-                c: <ChannelsView />,
+                slides: <SlidesView />,
+                image: <ChannelsSettingsView />,
+                channels: <ChannelsView />,
+                settings: <ChannelsSettingsView />,
                 new: <SettingsView />,
               }[id]
             }

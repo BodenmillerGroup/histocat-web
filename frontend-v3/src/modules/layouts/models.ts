@@ -1,6 +1,6 @@
 import { MosaicNode } from "react-mosaic-component";
 
-export type ViewId = "a" | "b" | "c" | "new";
+export type ViewId = "slides" | "image" | "channels" | "settings" | "new";
 
 export interface ILayout {
   name: string;
