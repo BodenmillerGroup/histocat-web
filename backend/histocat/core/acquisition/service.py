@@ -5,6 +5,7 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from histocat.core.project import service as project_service
 
+from ..slide.models import SlideModel
 from .dto import AcquisitionCreateDto, ChannelUpdateDto
 from .models import AcquisitionModel
 
@@ -17,6 +18,17 @@ def get_by_origin_id(session: Session, *, slide_id: int, origin_id: int) -> Opti
     return (
         session.query(AcquisitionModel)
         .filter(AcquisitionModel.slide_id == slide_id, AcquisitionModel.origin_id == origin_id)
+        .first()
+    )
+
+
+def get_by_project_id_and_description(
+    session: Session, *, project_id: int, description: str
+) -> Optional[AcquisitionModel]:
+    return (
+        session.query(AcquisitionModel)
+        .join(SlideModel.acquisitions)
+        .filter(SlideModel.project_id == project_id, AcquisitionModel.description == description)
         .first()
     )
 

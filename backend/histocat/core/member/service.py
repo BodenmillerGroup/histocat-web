@@ -19,7 +19,12 @@ def get_group_members(session: Session, *, group_id: int) -> Sequence[MemberMode
 
 
 def create(session: Session, *, group_id: int, params: MemberCreateDto) -> MemberModel:
-    entity = MemberModel(group_id=group_id, user_id=params.user_id, role=params.role, is_active=params.is_active,)
+    entity = MemberModel(
+        group_id=group_id,
+        user_id=params.user_id,
+        role=params.role,
+        is_active=params.is_active,
+    )
     session.add(entity)
     session.commit()
     session.refresh(entity)

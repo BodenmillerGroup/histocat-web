@@ -30,13 +30,16 @@ def get_all(db: Session = Depends(get_db), user: UserModel = Depends(get_active_
 
 @router.post("/groups", response_model=GroupDto)
 def create(
-    params: GroupCreateDto, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
+    params: GroupCreateDto,
+    db: Session = Depends(get_db),
+    user: UserModel = Depends(get_active_user),
 ):
     """Create new group"""
     item = service.get_by_name(db, name=params.name)
     if item:
         raise HTTPException(
-            status_code=400, detail="The group with this name already exists.",
+            status_code=400,
+            detail="The group with this name already exists.",
         )
     item = service.create(db, params=params, user_id=user.id)
     return item
@@ -64,7 +67,9 @@ def update(
 
 @router.post("/groups/{group_id}/join", response_model=GroupDto)
 def join(
-    group_id: int, db: Session = Depends(get_db), user: UserModel = Depends(get_active_user),
+    group_id: int,
+    db: Session = Depends(get_db),
+    user: UserModel = Depends(get_active_user),
 ):
     """Join the group."""
     return service.join(db, group_id=group_id, user_id=user.id)
@@ -72,7 +77,9 @@ def join(
 
 @router.delete("/groups/{group_id}", response_model=int)
 def delete_by_id(
-    group_id: int, member: MemberModel = Depends(get_group_admin), db: Session = Depends(get_db),
+    group_id: int,
+    member: MemberModel = Depends(get_group_admin),
+    db: Session = Depends(get_db),
 ):
     """Delete group by id"""
     item = service.delete_by_id(db, id=group_id)

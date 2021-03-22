@@ -37,7 +37,10 @@ if os.environ.get("BACKEND_ENV") == "development":
 
 
 app = FastAPI(
-    title=config.PROJECT_NAME, openapi_url=f"{config.API_V1_STR}/openapi.json", docs_url="/docs", redoc_url="/redoc",
+    title=config.PROJECT_NAME,
+    openapi_url=f"{config.API_V1_STR}/openapi.json",
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
 # GZIP compression
@@ -53,7 +56,11 @@ if config.BACKEND_CORS_ORIGINS:
         use_origin = origin.strip()
         origins.append(use_origin)
     app.add_middleware(
-        CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
 app.include_router(api_router, prefix=config.API_V1_STR)

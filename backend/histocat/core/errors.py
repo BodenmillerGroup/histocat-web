@@ -16,23 +16,19 @@
 
 
 class NotSupportedError(Exception):
-    """Error class that is raised when a feature is not supported by the program.
-    """
+    """Error class that is raised when a feature is not supported by the program."""
 
 
 class MetadataError(Exception):
-    """Error class that is raised when a metadata element cannot be retrieved.
-    """
+    """Error class that is raised when a metadata element cannot be retrieved."""
 
 
 class SubmissionError(Exception):
-    """Error class that is raised when submitted jobs failed.
-    """
+    """Error class that is raised when submitted jobs failed."""
 
 
 class JobDescriptionError(OSError):
-    """Error class that is raised when no job descriptor files are found.
-    """
+    """Error class that is raised when no job descriptor files are found."""
 
 
 class CliArgError(Exception):
@@ -42,8 +38,7 @@ class CliArgError(Exception):
 
 
 class RegexError(Exception):
-    """Error class that is raised when a regular expression pattern didn't match.
-    """
+    """Error class that is raised when a regular expression pattern didn't match."""
 
 
 class StitchError(Exception):
@@ -59,13 +54,11 @@ class PyramidCreationError(Exception):
 
 
 class PipelineError(Exception):
-    """Base class for jterator pipeline errors.
-    """
+    """Base class for jterator pipeline errors."""
 
 
 class SegmentationError(Exception):
-    """Base class for segmentation pipeline errors.
-    """
+    """Base class for segmentation pipeline errors."""
 
 
 class PipelineRunError(PipelineError):
@@ -87,18 +80,15 @@ class PipelineOSError(PipelineError):
 
 
 class WorkflowError(Exception):
-    """Base class for workflow errors.
-    """
+    """Base class for workflow errors."""
 
 
 class DataError(Exception):
-    """Error class that is raised when data is not available.
-    """
+    """Error class that is raised when data is not available."""
 
 
 class WorkflowDescriptionError(WorkflowError):
-    """Error class that is raised when the workflow is not correctly described.
-    """
+    """Error class that is raised when the workflow is not correctly described."""
 
 
 class WorkflowTransitionError(WorkflowError):
@@ -108,8 +98,7 @@ class WorkflowTransitionError(WorkflowError):
 
 
 class DataIntegrityError(Exception):
-    """Error class that is raised when a dataset doesn't fullfile certain requirements.
-    """
+    """Error class that is raised when a dataset doesn't fullfile certain requirements."""
 
 
 class RegistryError(Exception):
@@ -117,8 +106,7 @@ class RegistryError(Exception):
 
 
 class DataModelError(Exception):
-    """Error class that is raised when a model class has attributes that are not supported.
-    """
+    """Error class that is raised when a model class has attributes that are not supported."""
 
 
 class DataImportError(Exception):

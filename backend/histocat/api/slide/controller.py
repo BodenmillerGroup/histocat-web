@@ -24,13 +24,17 @@ async def read_slide_image(
     """
     item = service.get(db, id=id)
     return FileResponse(
-        os.path.join(item.location, "origin", f"{item.name}_s{item.origin_id}_slide.png"), media_type="image/png",
+        os.path.join(item.location, "origin", f"{item.name}_s{item.origin_id}_slide.png"),
+        media_type="image/png",
     )
 
 
 @router.delete("/groups/{group_id}/slides/{id}", response_model=SlideDto)
 def delete_by_id(
-    group_id: int, id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Delete a specific slide by id

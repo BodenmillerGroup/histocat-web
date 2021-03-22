@@ -83,5 +83,6 @@ def process_pipeline(db: Session, params: PipelineProcessDto):
     result = result_service.update(db, item=result, params=result_update_params)
 
     redis_manager.publish(
-        UPDATES_CHANNEL_NAME, Message(dataset.project_id, "result_ready", result.as_dict()),
+        UPDATES_CHANNEL_NAME,
+        Message(dataset.project_id, "result_ready", result.as_dict()),
     )

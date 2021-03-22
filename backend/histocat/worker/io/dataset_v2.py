@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 PANEL_CSV_FILE = "panel.csv"
+VAR_CELL_CSV_FILE = "var_cell.csv"
 
 
 def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, project_id: int):
@@ -56,20 +57,17 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     meta["masks"] = masks
 
     # Import panel data: { Metal Tag : channel number }
-    channel_order, channel_mass = _import_panel(os.path.join(src_folder, PANEL_CSV_FILE))
+    channel_order = _import_panel(os.path.join(src_folder, VAR_CELL_CSV_FILE))
 
     # Convert cell.csv to AnnData file format
-    cell_df = _import_cell_csv(
-        src_folder, dst_folder, image_number_to_acquisition_id, channel_order
-    )
+    cell_df = _import_cell_csv(src_folder, dst_folder, image_number_to_acquisition_id, channel_order)
 
     # Register neighbors columns
     neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]
     meta["columns"] = {"neighbors": neighbors_cols}
 
     acquisition_ids = sorted(list(masks.keys()))
-    channels_sorted = sorted(channel_mass.items(), key=lambda kv: kv[1])
-    channels = [c[0] for c in channels_sorted]
+    channels = [c[0] for c in channel_order]
 
     update_params = DatasetUpdateDto(
         name=f"Dataset {dataset.id}", status="ready", acquisition_ids=acquisition_ids, channels=channels, meta=meta
@@ -88,15 +86,18 @@ def _import_image_csv(src_folder: Path):
     return df
 
 
-def _import_panel(src: str):
-    df = pd.read_csv(src)
-    # Map Metal Tag to its order number and mass
-    channel_order = {}
-    channel_mass = {}
-    for _, row in df.iterrows():
-        channel_order[row.loc["Metal Tag"]] = int(row.loc["channel"])
-        channel_mass[row.loc["Metal Tag"]] = int(row.loc["mass"])
-    return channel_order, channel_mass
+def _import_panel(var_cell_src: str):
+    var_cell_df = pd.read_csv(var_cell_src)
+    var_cell_df = var_cell_df[
+        (var_cell_df.category == "Intensity")
+        & (var_cell_df.image_name == "FullStack")
+        & (var_cell_df.feature_name == "MeanIntensity")
+    ].drop_duplicates(subset="channel_id")
+    # Map Metal Tag to its order number
+    channel_order = dict(
+        [(metal_name, int(order)) for metal_name, order in zip(var_cell_df.channel_id, var_cell_df.channel)]
+    )
+    return channel_order
 
 
 def _import_cell_csv(

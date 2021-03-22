@@ -21,7 +21,10 @@ router = APIRouter()
 
 @router.get("/groups/{group_id}/pipelines/{pipeline_id}", response_model=PipelineDto)
 def get_by_id(
-    group_id: int, pipeline_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    pipeline_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get pipeline by id
@@ -32,7 +35,10 @@ def get_by_id(
 
 @router.get("/groups/{group_id}/projects/{project_id}/pipelines", response_model=Sequence[PipelineDto])
 def get_project_pipelines(
-    group_id: int, project_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    project_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Get all project pipelines
@@ -69,7 +75,8 @@ def update(
     item = service.get_by_id(db, id=pipeline_id)
     if not item:
         raise HTTPException(
-            status_code=404, detail="The pipeline with this id does not exist.",
+            status_code=404,
+            detail="The pipeline with this id does not exist.",
         )
     item = service.update(db, item=item, params=params)
     return item
@@ -77,7 +84,10 @@ def update(
 
 @router.delete("/groups/{group_id}/pipelines/{pipeline_id}", response_model=int)
 def delete_by_id(
-    group_id: int, pipeline_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    pipeline_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """
     Delete pipeline by id
@@ -98,7 +108,11 @@ def process(
     """
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
-        actor_name="process_pipeline", queue_name="process", args=(), kwargs={"payload": params.json()}, options={},
+        actor_name="process_pipeline",
+        queue_name="process",
+        args=(),
+        kwargs={"payload": params.json()},
+        options={},
     )
     broker.enqueue(message)
     return ORJSONResponse({"status": "submitted"})

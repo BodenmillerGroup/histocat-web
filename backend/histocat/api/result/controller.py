@@ -31,7 +31,10 @@ router = APIRouter()
 
 @router.get("/groups/{group_id}/datasets/{dataset_id}/results", response_model=Sequence[ResultDto])
 def get_dataset_results(
-    group_id: int, dataset_id: int, db: Session = Depends(get_db), member: MemberModel = Depends(get_active_member),
+    group_id: int,
+    dataset_id: int,
+    db: Session = Depends(get_db),
+    member: MemberModel = Depends(get_active_member),
 ):
     """Retrieve own results for specified dataset"""
     items = service.get_dataset_results(db, dataset_id=dataset_id)
@@ -40,7 +43,10 @@ def get_dataset_results(
 
 @router.get("/groups/{group_id}/results/{result_id}", response_model=ResultDto)
 def get_by_id(
-    group_id: int, result_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    result_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Get result by id"""
     item = service.get(db, id=result_id)
@@ -51,7 +57,10 @@ def get_by_id(
 
 @router.get("/groups/{group_id}/results/{result_id}/data", response_model=ResultDataDto)
 def get_result_data(
-    group_id: int, result_id: int, member: MemberModel = Depends(get_active_member), db: Session = Depends(get_db),
+    group_id: int,
+    result_id: int,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
 ):
     """Get result data by id"""
     result = service.get(db, id=result_id)
@@ -74,20 +83,38 @@ def get_result_data(
     mappings = {}
     if "pca" in result.output:
         mappings["pca"] = {
-            "x": {"label": "PCA1", "data": adata.obsm["X_pca"][:, 0].tolist(),},
-            "y": {"label": "PCA2", "data": adata.obsm["X_pca"][:, 1].tolist(),},
+            "x": {
+                "label": "PCA1",
+                "data": adata.obsm["X_pca"][:, 0].tolist(),
+            },
+            "y": {
+                "label": "PCA2",
+                "data": adata.obsm["X_pca"][:, 1].tolist(),
+            },
         }
 
     if "tsne" in result.output:
         mappings["tsne"] = {
-            "x": {"label": "tSNE1", "data": adata.obsm["X_tsne"][:, 0].tolist(),},
-            "y": {"label": "tSNE2", "data": adata.obsm["X_tsne"][:, 1].tolist(),},
+            "x": {
+                "label": "tSNE1",
+                "data": adata.obsm["X_tsne"][:, 0].tolist(),
+            },
+            "y": {
+                "label": "tSNE2",
+                "data": adata.obsm["X_tsne"][:, 1].tolist(),
+            },
         }
 
     if "umap" in result.output:
         mappings["umap"] = {
-            "x": {"label": "UMAP1", "data": adata.obsm["X_umap"][:, 0].tolist(),},
-            "y": {"label": "UMAP2", "data": adata.obsm["X_umap"][:, 1].tolist(),},
+            "x": {
+                "label": "UMAP1",
+                "data": adata.obsm["X_umap"][:, 0].tolist(),
+            },
+            "y": {
+                "label": "UMAP2",
+                "data": adata.obsm["X_umap"][:, 1].tolist(),
+            },
         }
 
     output["mappings"] = mappings
@@ -148,7 +175,10 @@ def update(
 
 @router.delete("/groups/{group_id}/results/{result_id}", response_model=ResultDto)
 def delete_by_id(
-    group_id: int, result_id: int, user: UserModel = Depends(get_active_user), db: Session = Depends(get_db),
+    group_id: int,
+    result_id: int,
+    user: UserModel = Depends(get_active_user),
+    db: Session = Depends(get_db),
 ):
     """Delete a specific dataset by id"""
     item = service.remove(db, id=result_id)
@@ -214,8 +244,14 @@ async def get_scatter_plot_data(
 
     output = {
         "cellIds": adata.obs["CellId"].tolist(),
-        "x": {"label": marker_x, "data": adata.X[:, adata.var.index == marker_x][:, 0].tolist(),},
-        "y": {"label": marker_y, "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),},
+        "x": {
+            "label": marker_x,
+            "data": adata.X[:, adata.var.index == marker_x][:, 0].tolist(),
+        },
+        "y": {
+            "label": marker_y,
+            "data": adata.X[:, adata.var.index == marker_y][:, 0].tolist(),
+        },
     }
 
     return ORJSONResponse(output)

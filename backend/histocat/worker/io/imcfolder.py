@@ -85,7 +85,10 @@ def _import_slide(db: Session, item: data.Slide, project_id: int, name: str):
 
 def _import_panorama(db: Session, item: data.Panorama, slide: SlideModel):
     origin_location = os.path.join(slide.location, "origin")
-    location = os.path.join(origin_location, f"{item.metaname}_pano.png",)
+    location = os.path.join(
+        origin_location,
+        f"{item.metaname}_pano.png",
+    )
     params = PanoramaCreateDto(
         slide_id=slide.id,
         origin_id=item.id,
@@ -109,7 +112,10 @@ def _import_panorama(db: Session, item: data.Panorama, slide: SlideModel):
 
 def _import_acquisition(db: Session, item: data.Acquisition, slide: SlideModel, basename: str):
     origin_location = os.path.join(slide.location, "origin")
-    location = os.path.join(origin_location, f"{item.metaname}_ac.ome.tiff",)
+    location = os.path.join(
+        origin_location,
+        f"{item.metaname}_ac.ome.tiff",
+    )
 
     # Import channel data
     channels = dict()

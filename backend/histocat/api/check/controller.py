@@ -17,7 +17,11 @@ def test_worker(msg: MsgDto, user=Depends(get_admin)):
     """
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
-        actor_name="test_worker", queue_name="default", args=(), kwargs={"word": msg.msg}, options={},
+        actor_name="test_worker",
+        queue_name="default",
+        args=(),
+        kwargs={"word": msg.msg},
+        options={},
     )
     broker.enqueue(message)
     return {"msg": "Word received"}
@@ -25,7 +29,8 @@ def test_worker(msg: MsgDto, user=Depends(get_admin)):
 
 @router.post("/test-email/", response_model=MsgDto, status_code=201)
 def test_email(
-    email_to: EmailStr, user=Depends(get_admin),
+    email_to: EmailStr,
+    user=Depends(get_admin),
 ):
     """
     Test emails
