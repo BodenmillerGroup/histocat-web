@@ -4,11 +4,9 @@ import React, { useState } from "react";
 import { Intent } from "@blueprintjs/core";
 import { useProjectsStore } from "modules/projects";
 import { SuggestionView } from "components/SuggestionView";
-// @ts-ignore
-import { Scatterplot } from "vitessce/dist/es/production/scatterplot.js";
-// @ts-ignore
-import { Status } from "vitessce/dist/es/production/status.js";
-import "vitessce/dist/es/production/static/css/index.css";
+import "vitessce/css/index.scss";
+import Scatterplot from "vitessce/components/scatterplot/Scatterplot";
+import { Status } from "vitessce/components/status";
 
 export function BlendView() {
   const { activeAcquisition, selectedMetals, setSelectedMetals, getChannelStackImage } = useProjectsStore(
@@ -32,8 +30,8 @@ export function BlendView() {
     2: { mappings: { [mapping]: [1, 1] } },
     3: { mappings: { [mapping]: [1, 2] } },
   };
-  const selectedCellIds = new Set();
-  const dimensions = { width: "400px", height: "400px", margin: "10px" };
+  const selectedCellIds: any = [];
+  const dimensions = { width: "800px", height: "400px", margin: "10px" };
 
   return (
     <div className={styles.container}>
@@ -45,11 +43,12 @@ export function BlendView() {
           <div className="card card-body bg-secondary" style={dimensions}>
             <Scatterplot
               uuid="my-vitessce-scatterplot"
-              view={view}
+              viewState={view}
               mapping={mapping}
               cells={cells}
-              selectedCellIds={selectedCellIds}
+              cellSelection={selectedCellIds}
               cellColors={null}
+              setViewState={() => {}}
               updateStatus={(message: any) => {}}
               updateCellsSelection={(selectedIds: any) => {}}
               updateCellsHover={(hoverInfo: any) => {}}

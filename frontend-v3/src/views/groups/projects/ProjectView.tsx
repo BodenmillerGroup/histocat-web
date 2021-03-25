@@ -44,7 +44,7 @@ export function ProjectView() {
             {
               {
                 slides: <SlidesView />,
-                image: <ChannelsSettingsView />,
+                image: <BlendView />,
                 channels: <ChannelsView />,
                 settings: <ChannelsSettingsView />,
                 new: <SettingsView />,

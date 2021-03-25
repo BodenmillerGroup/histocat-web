@@ -1,13 +1,16 @@
 import { NonIdealState, Spinner } from "@blueprintjs/core";
 import styles from "./LoadingView.module.scss";
 
-export function LoadingView() {
+type LoadingViewProps = {
+  title?: string;
+  description?: string;
+};
+
+export function LoadingView(props: LoadingViewProps) {
+  const { title = "Loading...", description = "Please wait while data is loading" } = props;
   return (
-    <NonIdealState
-      title="Loading..."
-      icon={<Spinner />}
-      description="Please wait while data is loading."
-      className={styles.container}
-    />
+    <div className={styles.container}>
+      <NonIdealState title={title} icon={<Spinner />} description={description} />
+    </div>
   );
 }
