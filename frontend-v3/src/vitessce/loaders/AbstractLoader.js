@@ -1,4 +1,4 @@
-import uuidv4 from 'uuid/v4';
+import {v4} from 'uuid';
 
 /**
  * A loader ancestor class containing a default constructor
@@ -22,7 +22,7 @@ export default class AbstractLoader {
   }
 
   subscribe(subscriber) {
-    const token = uuidv4();
+    const token = v4();
     this.subscriptions[token] = subscriber;
     return token;
   }

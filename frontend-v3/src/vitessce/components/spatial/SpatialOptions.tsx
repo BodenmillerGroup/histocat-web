@@ -2,7 +2,13 @@ import React from 'react';
 import OptionsContainer from '../shared-plot-options/OptionsContainer';
 import CellColorEncodingOption from '../shared-plot-options/CellColorEncodingOption';
 
-export default function SpatialOptions(props) {
+type SpatialOptionsProps = {
+  observationsLabel: string;
+  cellColorEncoding: any;
+  setCellColorEncoding: any;
+}
+
+export default function SpatialOptions(props: SpatialOptionsProps) {
   const {
     observationsLabel,
     cellColorEncoding,

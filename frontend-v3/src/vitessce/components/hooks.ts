@@ -1,8 +1,6 @@
-import {
-  useRef, useState, useEffect, useCallback,
-} from 'react';
-import debounce from 'lodash/debounce';
-import { useGridResize, useEmitGridResize } from '../app/state/hooks';
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useGridResize, useEmitGridResize } from "../app/state/hooks";
+import { debounce } from "lodash-es";
 
 /**
  * Custom hook, subscribes to GRID_RESIZE and window resize events.
@@ -10,10 +8,10 @@ import { useGridResize, useEmitGridResize } from '../app/state/hooks';
  * are numbers and containerRef is a React ref.
  */
 export function useGridItemSize() {
-  const containerRef = useRef();
+  const containerRef = useRef<any>();
 
-  const [height, setHeight] = useState();
-  const [width, setWidth] = useState();
+  const [height, setHeight] = useState<number>();
+  const [width, setWidth] = useState<number>();
 
   const resizeCount = useGridResize();
   const incrementResizeCount = useEmitGridResize();
@@ -24,10 +22,10 @@ export function useGridItemSize() {
       incrementResizeCount();
     }
     const onResizeDebounced = debounce(onWindowResize, 100, { trailing: true });
-    window.addEventListener('resize', onResizeDebounced);
+    window.addEventListener("resize", onResizeDebounced);
     onWindowResize();
     return () => {
-      window.removeEventListener('resize', onResizeDebounced);
+      window.removeEventListener("resize", onResizeDebounced);
     };
   }, [incrementResizeCount]);
 
@@ -51,10 +49,10 @@ export function useGridItemSize() {
  * a <DeckGL/> element (or a forwardRef to one).
  */
 export function useDeckCanvasSize() {
-  const deckRef = useRef();
+  const deckRef = useRef<any>();
 
-  const [height, setHeight] = useState();
-  const [width, setWidth] = useState();
+  const [height, setHeight] = useState<number>(0);
+  const [width, setWidth] = useState<number>(0);
 
   const resizeCount = useGridResize();
   const incrementResizeCount = useEmitGridResize();
@@ -65,10 +63,10 @@ export function useDeckCanvasSize() {
       incrementResizeCount();
     }
     const onResizeDebounced = debounce(onWindowResize, 100, { trailing: true });
-    window.addEventListener('resize', onResizeDebounced);
+    window.addEventListener("resize", onResizeDebounced);
     onWindowResize();
     return () => {
-      window.removeEventListener('resize', onResizeDebounced);
+      window.removeEventListener("resize", onResizeDebounced);
     };
   }, [incrementResizeCount]);
 
@@ -82,7 +80,7 @@ export function useDeckCanvasSize() {
     setWidth(canvasRect.width);
   }, [resizeCount]);
 
-  return [width, height, deckRef];
+  return [width, height, deckRef] as [width: number, height: number, deckRef: React.MutableRefObject<any>];
 }
 
 /**
@@ -99,18 +97,21 @@ export function useDeckCanvasSize() {
  * setItemIsReady marks one item as ready,
  * and resetReadyItem marks all items as waiting.
  */
-export function useReady(supportedItems) {
+export function useReady(supportedItems: string[]) {
   const items = supportedItems;
-  const [waiting, setWaiting] = useState(items);
+  const [waiting, setWaiting] = useState<string[]>(items);
 
-  const setItemIsReady = useCallback((readyItem) => {
-    setWaiting((waitingItems) => {
-      const nextWaitingItems = waitingItems.filter(item => item !== readyItem);
-      // eslint-disable-next-line no-console
-      console.log(`cleared ${readyItem}; waiting on ${nextWaitingItems.length}: ${JSON.stringify(nextWaitingItems)}`);
-      return nextWaitingItems;
-    });
-  }, [setWaiting]);
+  const setItemIsReady = useCallback(
+    (readyItem) => {
+      setWaiting((waitingItems) => {
+        const nextWaitingItems = waitingItems.filter((item) => item !== readyItem);
+        // eslint-disable-next-line no-console
+        console.log(`cleared ${readyItem}; waiting on ${nextWaitingItems.length}: ${JSON.stringify(nextWaitingItems)}`);
+        return nextWaitingItems;
+      });
+    },
+    [setWaiting]
+  );
 
   const resetReadyItems = useCallback(() => {
     setWaiting(items);
@@ -120,7 +121,7 @@ export function useReady(supportedItems) {
 
   const isReady = waiting.length === 0;
 
-  return [isReady, setItemIsReady, resetReadyItems];
+  return [isReady, setItemIsReady, resetReadyItems] as [isReady: boolean, setItemIsReady: (readyItem: any) => void, resetReadyItems: () => void];
 }
 
 /**
@@ -133,13 +134,16 @@ export function useReady(supportedItems) {
  * resetUrls is a function that clears the array.
  */
 export function useUrls() {
-  const [urls, setUrls] = useState([]);
+  const [urls, setUrls] = useState<any>([]);
 
-  const addUrl = useCallback((url, name) => {
-    if (url) {
-      setUrls(prev => ([...prev, { url, name }]));
-    }
-  }, [setUrls]);
+  const addUrl = useCallback(
+    (url, name) => {
+      if (url) {
+        setUrls((prev: any) => [...prev, { url, name }]);
+      }
+    },
+    [setUrls]
+  );
 
   const resetUrls = useCallback(() => {
     setUrls([]);

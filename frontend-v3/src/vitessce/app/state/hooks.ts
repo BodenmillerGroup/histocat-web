@@ -1,7 +1,18 @@
-import { useRef, useCallback } from 'react';
-import create from 'zustand';
-import shallow from 'zustand/shallow';
-import { fromEntries, capitalize } from '../../utils';
+import { useRef, useCallback } from "react";
+import create from "zustand";
+import shallow from "zustand/shallow";
+import { fromEntries, capitalize } from "../../utils";
+
+type ViewConfigState = {
+  viewConfig: any;
+  loaders: any;
+
+  setViewConfig(viewConfig: any): void;
+  setLoaders(loaders: any): void;
+  setCoordinationValue({ parameter, scope, value }: any): void;
+  removeComponent(i: number): void;
+  changeLayout(newComponentProps: any): void;
+}
 
 /**
  * The useViewConfigStore hook is initialized via the zustand
@@ -10,7 +21,7 @@ import { fromEntries, capitalize } from '../../utils';
  * Reference: https://github.com/react-spring/zustand
  * @returns {function} The useStore hook.
  */
-export const useViewConfigStore = create(set => ({
+export const useViewConfigStore = create<ViewConfigState>((set) => ({
   // State:
   // The viewConfig is an object which must conform to the schema
   // found in src/schemas/config.schema.json.
@@ -20,46 +31,54 @@ export const useViewConfigStore = create(set => ({
   loaders: null,
   // Reducer functions which update the state
   // (although technically also part of state):
-  setViewConfig: viewConfig => set({ viewConfig }),
-  setLoaders: loaders => set({ loaders }),
-  setCoordinationValue: ({ parameter, scope, value }) => set(state => ({
-    viewConfig: {
-      ...state.viewConfig,
-      coordinationSpace: {
-        ...state.viewConfig.coordinationSpace,
-        [parameter]: {
-          ...state.viewConfig.coordinationSpace[parameter],
-          [scope]: value,
+  setViewConfig: (viewConfig: any) => set({ viewConfig }),
+  setLoaders: (loaders: any) => set({ loaders }),
+  setCoordinationValue: ({ parameter, scope, value }: any) =>
+    set((state) => ({
+      viewConfig: {
+        ...state.viewConfig,
+        coordinationSpace: {
+          ...state.viewConfig.coordinationSpace,
+          [parameter]: {
+            ...state.viewConfig.coordinationSpace[parameter],
+            [scope]: value,
+          },
         },
       },
-    },
-  })),
-  removeComponent: i => set((state) => {
-    const newLayout = state.viewConfig.layout.slice();
-    newLayout.splice(i, 1);
-    return {
-      viewConfig: {
-        ...state.viewConfig,
-        layout: newLayout,
-      },
-    };
-  }),
-  changeLayout: newComponentProps => set((state) => {
-    const newLayout = state.viewConfig.layout.slice();
-    newComponentProps.forEach(([i, newProps]) => {
-      newLayout[i] = {
-        ...newLayout[i],
-        ...newProps,
+    })),
+  removeComponent: (i: number) =>
+    set((state) => {
+      const newLayout = state.viewConfig.layout.slice();
+      newLayout.splice(i, 1);
+      return {
+        viewConfig: {
+          ...state.viewConfig,
+          layout: newLayout,
+        },
       };
-    });
-    return {
-      viewConfig: {
-        ...state.viewConfig,
-        layout: newLayout,
-      },
-    };
-  }),
+    }),
+  changeLayout: (newComponentProps: any) =>
+    set((state) => {
+      const newLayout = state.viewConfig.layout.slice();
+      newComponentProps.forEach(([i, newProps]: any) => {
+        newLayout[i] = {
+          ...newLayout[i],
+          ...newProps,
+        };
+      });
+      return {
+        viewConfig: {
+          ...state.viewConfig,
+          layout: newLayout,
+        },
+      };
+    }),
 }));
+
+type HoverState = {
+  componentHover: any;
+  setComponentHover(componentHover: any): void;
+}
 
 /**
  * The hover store can be used to store global state
@@ -67,25 +86,35 @@ export const useViewConfigStore = create(set => ({
  * which is required for tooltip / crossover elements.
  * @returns {function} The useStore hook.
  */
-const useHoverStore = create(set => ({
+const useHoverStore = create<HoverState>((set) => ({
   // Components may need to know if they are the "hover source"
   // for tooltip interactions. This value should be a unique
   // component ID, such as its index in the view config layout.
   componentHover: null,
-  setComponentHover: componentHover => set({ componentHover }),
+  setComponentHover: (componentHover: any) => set({ componentHover }),
 }));
+
+type WarnState = {
+  warning: any;
+  setWarning(warning: any): void;
+}
 
 /**
  * The warning store can be used to store global state
  * related to app warning messages.
  * @returns {function} The useStore hook.
  */
-const useWarnStore = create(set => ({
+const useWarnStore = create<WarnState>((set) => ({
   // Want a global state to collect warning messages
   // that occur anywhere in the app.
   warning: null,
-  setWarning: warning => set({ warning }),
+  setWarning: (warning: any) => set({ warning }),
 }));
+
+type ViewInfoState = {
+  viewInfo: any;
+  setComponentViewInfo(uuid: string, viewInfo: any): void;
+}
 
 /**
  * The view info store can be used to store component-level
@@ -93,18 +122,24 @@ const useWarnStore = create(set => ({
  * which are required for tooltip / crossover elements.
  * @returns {function} The useStore hook.
  */
-const useViewInfoStore = create(set => ({
+const useViewInfoStore = create<ViewInfoState>((set) => ({
   // The viewInfo object is a mapping from
   // component IDs to component view info objects.
   // Each view info object must have a project() function.
   viewInfo: {},
-  setComponentViewInfo: (uuid, viewInfo) => set(state => ({
-    viewInfo: {
-      ...state.viewInfo,
-      [uuid]: viewInfo,
-    },
-  })),
+  setComponentViewInfo: (uuid, viewInfo) =>
+    set((state) => ({
+      viewInfo: {
+        ...state.viewInfo,
+        [uuid]: viewInfo,
+      },
+    })),
 }));
+
+type GridSizeState = {
+  resizeCount: any;
+  incrementResizeCount(): void;
+}
 
 /**
  * The grid size store can be used to store a
@@ -112,11 +147,12 @@ const useViewInfoStore = create(set => ({
  * resize event.
  * @returns {function} The useStore hook.
  */
-const useGridSizeStore = create(set => ({
+const useGridSizeStore = create<GridSizeState>((set) => ({
   resizeCount: {},
-  incrementResizeCount: () => set(state => ({
-    resizeCount: state.resizeCount + 1,
-  })),
+  incrementResizeCount: () =>
+    set((state) => ({
+      resizeCount: state.resizeCount + 1,
+    })),
 }));
 
 /**
@@ -135,29 +171,34 @@ const useGridSizeStore = create(set => ({
  * functions for the values in `values`, named with a "set"
  * prefix.
  */
-export function useCoordination(parameters, coordinationScopes) {
-  const setCoordinationValue = useViewConfigStore(state => state.setCoordinationValue);
+export function useCoordination(parameters: string[], coordinationScopes: any) {
+  const setCoordinationValue = useViewConfigStore((state) => state.setCoordinationValue);
 
   const values = useViewConfigStore((state) => {
     const { coordinationSpace } = state.viewConfig;
-    return fromEntries(parameters.map((parameter) => {
-      if (coordinationSpace && coordinationSpace[parameter]) {
-        const value = coordinationSpace[parameter][coordinationScopes[parameter]];
-        return [parameter, value];
-      }
-      return [parameter, undefined];
-    }));
+    return fromEntries(
+      parameters.map((parameter) => {
+        if (coordinationSpace && coordinationSpace[parameter]) {
+          const value = coordinationSpace[parameter][coordinationScopes[parameter]];
+          return [parameter, value];
+        }
+        return [parameter, undefined];
+      })
+    );
   }, shallow);
 
-  const setters = fromEntries(parameters.map((parameter) => {
-    const setterName = `set${capitalize(parameter)}`;
-    const setterFunc = value => setCoordinationValue({
-      parameter,
-      scope: coordinationScopes[parameter],
-      value,
-    });
-    return [setterName, setterFunc];
-  }));
+  const setters = fromEntries(
+    parameters.map((parameter) => {
+      const setterName = `set${capitalize(parameter)}`;
+      const setterFunc = (value: any) =>
+        setCoordinationValue({
+          parameter,
+          scope: coordinationScopes[parameter],
+          value,
+        });
+      return [setterName, setterFunc];
+    })
+  );
 
   return [values, setters];
 }
@@ -169,7 +210,7 @@ export function useCoordination(parameters, coordinationScopes) {
  * in the `useViewConfigStore` store.
  */
 export function useLoaders() {
-  return useViewConfigStore(state => state.loaders);
+  return useViewConfigStore((state) => state.loaders);
 }
 
 /**
@@ -179,7 +220,7 @@ export function useLoaders() {
  * in the `useViewConfigStore` store.
  */
 export function useLayout() {
-  return useViewConfigStore(state => state.viewConfig?.layout);
+  return useViewConfigStore((state) => state.viewConfig?.layout);
 }
 
 /**
@@ -189,7 +230,7 @@ export function useLayout() {
  * in the `useViewInfoStore` store.
  */
 export function useRemoveComponent() {
-  return useViewConfigStore(state => state.removeComponent);
+  return useViewConfigStore((state) => state.removeComponent);
 }
 
 /**
@@ -199,7 +240,7 @@ export function useRemoveComponent() {
  * in the `useViewInfoStore` store.
  */
 export function useChangeLayout() {
-  return useViewConfigStore(state => state.changeLayout);
+  return useViewConfigStore((state) => state.changeLayout);
 }
 
 /**
@@ -209,7 +250,7 @@ export function useChangeLayout() {
  * in the `useViewConfigStore` store.
  */
 export function useSetLoaders() {
-  return useViewConfigStore(state => state.setLoaders);
+  return useViewConfigStore((state) => state.setLoaders);
 }
 
 /**
@@ -231,7 +272,7 @@ export function useSetViewConfig() {
  * in the `useHoverStore` store.
  */
 export function useComponentHover() {
-  return useHoverStore(state => state.componentHover);
+  return useHoverStore((state) => state.componentHover);
 }
 
 /**
@@ -241,7 +282,7 @@ export function useComponentHover() {
  * in the `useHoverStore` store.
  */
 export function useSetComponentHover() {
-  return useHoverStore(state => state.setComponentHover);
+  return useHoverStore((state) => state.setComponentHover);
 }
 
 /**
@@ -251,7 +292,7 @@ export function useSetComponentHover() {
  * in the `useWarnStore` store.
  */
 export function useWarning() {
-  return useWarnStore(state => state.warning);
+  return useWarnStore((state) => state.warning);
 }
 
 /**
@@ -261,7 +302,7 @@ export function useWarning() {
  * in the `useWarnStore` store.
  */
 export function useSetWarning() {
-  return useWarnStore(state => state.setWarning);
+  return useWarnStore((state) => state.setWarning);
 }
 
 /**
@@ -270,8 +311,8 @@ export function useSetWarning() {
  * @returns {object} The view info object for the component
  * in the `useViewInfoStore` store.
  */
-export function useComponentViewInfo(uuid) {
-  return useViewInfoStore(useCallback(state => state.viewInfo[uuid], [uuid]));
+export function useComponentViewInfo(uuid: string) {
+  return useViewInfoStore(useCallback((state) => state.viewInfo[uuid], [uuid]));
 }
 
 /**
@@ -280,9 +321,9 @@ export function useComponentViewInfo(uuid) {
  * @returns {function} The component view info setter function
  * in the `useViewInfoStore` store.
  */
-export function useSetComponentViewInfo(uuid) {
+export function useSetComponentViewInfo(uuid: string) {
   const setViewInfoRef = useRef(useViewInfoStore.getState().setComponentViewInfo);
-  const setComponentViewInfo = viewInfo => setViewInfoRef.current(uuid, viewInfo);
+  const setComponentViewInfo = (viewInfo: any) => setViewInfoRef.current(uuid, viewInfo);
   return setComponentViewInfo;
 }
 
@@ -292,7 +333,7 @@ export function useSetComponentViewInfo(uuid) {
  * @returns {number} The grid resize increment value.
  */
 export function useGridResize() {
-  return useGridSizeStore(state => state.resizeCount);
+  return useGridSizeStore((state) => state.resizeCount);
 }
 
 /**
@@ -302,5 +343,5 @@ export function useGridResize() {
  * function.
  */
 export function useEmitGridResize() {
-  return useGridSizeStore(state => state.incrementResizeCount);
+  return useGridSizeStore((state) => state.incrementResizeCount);
 }

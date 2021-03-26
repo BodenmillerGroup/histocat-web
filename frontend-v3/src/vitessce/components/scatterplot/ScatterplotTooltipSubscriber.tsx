@@ -3,7 +3,15 @@ import Tooltip2D from '../tooltip/Tooltip2D';
 import TooltipContent from '../tooltip/TooltipContent';
 import { useComponentHover, useComponentViewInfo } from '../../app/state/hooks';
 
-export default function ScatterplotTooltipSubscriber(props) {
+type ScatterplotTooltipSubscriberProps = {
+  parentUuid: string;
+  cellHighlight: any;
+  width: number;
+  height: number;
+  getCellInfo: Function;
+}
+
+export default function ScatterplotTooltipSubscriber(props: ScatterplotTooltipSubscriberProps) {
   const {
     parentUuid,
     cellHighlight,

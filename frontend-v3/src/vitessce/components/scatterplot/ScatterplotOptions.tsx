@@ -8,7 +8,21 @@ import { useStyles } from '../shared-plot-options/styles';
 import OptionsContainer from '../shared-plot-options/OptionsContainer';
 import CellColorEncodingOption from '../shared-plot-options/CellColorEncodingOption';
 
-export default function ScatterplotOptions(props) {
+type ScatterplotOptionsProps = {
+  observationsLabel: string;
+  cellRadius: number;
+  setCellRadius(value: number): void;
+  cellSetLabelsVisible: boolean;
+  setCellSetLabelsVisible(value: boolean): void;
+  cellSetLabelSize: number;
+  setCellSetLabelSize(value: number): void;
+  cellSetPolygonsVisible: boolean;
+  setCellSetPolygonsVisible(value: boolean): void;
+  cellColorEncoding: any;
+  setCellColorEncoding(value: any): void;
+}
+
+export default function ScatterplotOptions(props: ScatterplotOptionsProps) {
   const {
     observationsLabel,
     cellRadius,
@@ -27,19 +41,19 @@ export default function ScatterplotOptions(props) {
 
   const classes = useStyles();
 
-  function handleRadiusChange(event, value) {
+  function handleRadiusChange(event: any, value: any) {
     setCellRadius(value);
   }
 
-  function handleLabelVisibilityChange(event) {
+  function handleLabelVisibilityChange(event: any) {
     setCellSetLabelsVisible(event.target.checked);
   }
 
-  function handleLabelSizeChange(event, value) {
+  function handleLabelSizeChange(event: any, value: any) {
     setCellSetLabelSize(value);
   }
 
-  function handlePolygonVisibilityChange(event) {
+  function handlePolygonVisibilityChange(event: any) {
     setCellSetPolygonsVisible(event.target.checked);
   }
 

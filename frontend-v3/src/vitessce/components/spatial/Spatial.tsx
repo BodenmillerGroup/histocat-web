@@ -1,34 +1,61 @@
-import React, { forwardRef } from 'react';
-import isEqual from 'lodash/isEqual';
-import { ScatterplotLayer, PolygonLayer, COORDINATE_SYSTEM } from 'deck.gl';
-import { Matrix4 } from 'math.gl';
-import { ScaleBarLayer } from '@hms-dbmi/viv';
-import { SelectablePolygonLayer, getSelectionLayers } from '../../layers';
-import { cellLayerDefaultProps, PALETTE, DEFAULT_COLOR } from '../utils';
-import { square, getLayerLoaderTuple } from './utils';
-import AbstractSpatialOrScatterplot from '../shared-spatial-scatterplot/AbstractSpatialOrScatterplot';
-import {
-  createCellsQuadTree,
-} from '../shared-spatial-scatterplot/quadtree';
+import React, { forwardRef } from "react";
+import { ScatterplotLayer, PolygonLayer, COORDINATE_SYSTEM } from "deck.gl";
+import { Matrix4 } from "math.gl";
+import { ScaleBarLayer } from "@hms-dbmi/viv";
+import { SelectablePolygonLayer, getSelectionLayers } from "../../layers";
+import { cellLayerDefaultProps, PALETTE, DEFAULT_COLOR } from "../utils";
+import { square, getLayerLoaderTuple } from "./utils";
+import AbstractSpatialOrScatterplot from "../shared-spatial-scatterplot/AbstractSpatialOrScatterplot";
+import { createCellsQuadTree } from "../shared-spatial-scatterplot/quadtree";
+import { isEqual } from "lodash-es";
 
-const CELLS_LAYER_ID = 'cells-layer';
-const MOLECULES_LAYER_ID = 'molecules-layer';
-const NEIGHBORHOODS_LAYER_ID = 'neighborhoods-layer';
+const CELLS_LAYER_ID = "cells-layer";
+const MOLECULES_LAYER_ID = "molecules-layer";
+const NEIGHBORHOODS_LAYER_ID = "neighborhoods-layer";
 
 // Default getter function props.
-const defaultGetCellCoords = cell => cell.xy;
-const makeDefaultGetCellPolygon = radius => (cellEntry) => {
+const defaultGetCellCoords = (cell: any) => cell.xy;
+const makeDefaultGetCellPolygon = (radius: number) => (cellEntry: any) => {
   const cell = cellEntry[1];
   return cell.poly?.length ? cell.poly : square(cell.xy[0], cell.xy[1], radius);
 };
-const makeDefaultGetCellColors = cellColors => cellEntry => (
-  cellColors && cellColors.get(cellEntry[0])
-) || DEFAULT_COLOR;
-const makeDefaultGetCellIsSelected = cellSelection => cellEntry => (
-  cellSelection
-    ? cellSelection.includes(cellEntry[0])
-    : true // If nothing is selected, everything is selected.
-);
+const makeDefaultGetCellColors = (cellColors: any) => (cellEntry: any) =>
+  (cellColors && cellColors.get(cellEntry[0])) || DEFAULT_COLOR;
+const makeDefaultGetCellIsSelected = (cellSelection: any) => (cellEntry: any) =>
+  cellSelection ? cellSelection.includes(cellEntry[0]) : true; // If nothing is selected, everything is selected.
+
+type SpatialProps = {
+  uuid: string;
+  width: number;
+  height: number;
+  viewState: any;
+  setViewState: Function;
+  molecules: any;
+  cells: any;
+  neighborhoods: any;
+  lineWidthScale?: number;
+  lineWidthMaxPixels?: number;
+  imageLayerLoaders: any;
+  cellColors: any;
+  getCellCoords?: Function;
+  getCellColor?: Function;
+  getCellPolygon?: Function;
+  getCellIsSelected?: Function;
+  getMoleculeColor?: Function;
+  getMoleculePosition?: Function;
+  getNeighborhoodPolygon?: Function;
+  updateViewInfo: Function;
+  onCellClick?: Function;
+  layers: any[];
+  cellFilter?: any;
+  setCellFilter: any;
+  cellSelection: any;
+  setCellSelection: any;
+  cellHighlight: any;
+  setCellHighlight: any;
+  setMoleculeHighlight: any;
+  setComponentHover: any;
+}
 
 /**
  * React component which expresses the spatial relationships between cells and molecules.
@@ -63,7 +90,15 @@ const makeDefaultGetCellIsSelected = cellSelection => cellEntry => (
  * @param {function} props.onCellClick Getter function for cell layer onClick.
  */
 class Spatial extends AbstractSpatialOrScatterplot {
-  constructor(props) {
+  private moleculesEntries: any[];
+  private cellsQuadTree: any;
+  private moleculesLayer: any;
+  private neighborhoodsLayer: any;
+  private imageLayers: any[];
+  private layerLoaderSelections: any;
+  private neighborhoodsEntries: any;
+
+  constructor(props: SpatialProps) {
     super(props);
 
     // To avoid storing large arrays/objects
@@ -89,10 +124,8 @@ class Spatial extends AbstractSpatialOrScatterplot {
     this.onUpdateImages();
   }
 
-  createCellsLayer(layerDef) {
-    const {
-      radius, stroked, visible, opacity,
-    } = layerDef;
+  createCellsLayer(layerDef: any) {
+    const { radius, stroked, visible, opacity } = layerDef;
     const { cellsEntries } = this;
     const {
       cellFilter,
@@ -100,7 +133,7 @@ class Spatial extends AbstractSpatialOrScatterplot {
       setCellHighlight,
       setComponentHover,
       getCellIsSelected = makeDefaultGetCellIsSelected(
-        cellsEntries.length === cellSelection.length ? null : cellSelection,
+        cellsEntries.length === cellSelection.length ? null : cellSelection
       ),
       cellColors,
       getCellColor = makeDefaultGetCellColors(cellColors),
@@ -109,9 +142,9 @@ class Spatial extends AbstractSpatialOrScatterplot {
       lineWidthScale = 10,
       lineWidthMaxPixels = 2,
     } = this.props;
-    const filteredCellsEntries = (cellFilter
-      ? cellsEntries.filter(cellEntry => cellFilter.includes(cellEntry[0]))
-      : cellsEntries);
+    const filteredCellsEntries = cellFilter
+      ? cellsEntries.filter((cellEntry) => cellFilter.includes(cellEntry[0]))
+      : cellsEntries;
 
     // Graphics rendering has the y-axis positive going south,
     // so we need to flip it for rendering tooltips.
@@ -126,17 +159,17 @@ class Spatial extends AbstractSpatialOrScatterplot {
         getFillColor: [opacity],
         getLineWidth: [stroked],
       },
-      getFillColor: (cellEntry) => {
+      getFillColor: (cellEntry: any) => {
         const color = getCellColor(cellEntry);
         color[3] = opacity * 255;
         return color;
       },
-      getLineColor: (cellEntry) => {
+      getLineColor: (cellEntry: any) => {
         const color = getCellColor(cellEntry);
         color[3] = 255;
         return color;
       },
-      onClick: (info) => {
+      onClick: (info: any) => {
         if (onCellClick) {
           onCellClick(info);
         }
@@ -145,18 +178,15 @@ class Spatial extends AbstractSpatialOrScatterplot {
       getLineWidth: stroked ? 1 : 0,
       lineWidthScale,
       lineWidthMaxPixels,
-      ...cellLayerDefaultProps(
-        filteredCellsEntries, undefined, setCellHighlight,
-        setComponentHover, flipYTooltip,
-      ),
+      ...cellLayerDefaultProps(filteredCellsEntries, undefined, setCellHighlight, setComponentHover),
     });
   }
 
-  createMoleculesLayer(layerDef) {
+  createMoleculesLayer(layerDef: any) {
     const {
       setMoleculeHighlight,
-      getMoleculeColor = d => PALETTE[d[2] % PALETTE.length],
-      getMoleculePosition = d => [d[0], d[1], 0],
+      getMoleculeColor = (d: any) => PALETTE[d[2] % PALETTE.length],
+      getMoleculePosition = (d: any) => [d[0], d[1], 0],
     } = this.props;
     const { moleculesEntries } = this;
 
@@ -173,7 +203,7 @@ class Spatial extends AbstractSpatialOrScatterplot {
       getPosition: getMoleculePosition,
       getLineColor: getMoleculeColor,
       getFillColor: getMoleculeColor,
-      onHover: (info) => {
+      onHover: (info: any) => {
         if (setMoleculeHighlight) {
           if (info.object) {
             setMoleculeHighlight(info.object[3]);
@@ -185,9 +215,9 @@ class Spatial extends AbstractSpatialOrScatterplot {
     });
   }
 
-  createNeighborhoodsLayer(layerDef) {
+  createNeighborhoodsLayer(layerDef: any) {
     const {
-      getNeighborhoodPolygon = (neighborhoodsEntry) => {
+      getNeighborhoodPolygon = (neighborhoodsEntry: any) => {
         const neighborhood = neighborhoodsEntry[1];
         return neighborhood.poly;
       },
@@ -213,33 +243,25 @@ class Spatial extends AbstractSpatialOrScatterplot {
     const { viewState, getCellCoords = defaultGetCellCoords, setCellSelection } = this.props;
     const { tool } = this.state;
     const { cellsQuadTree } = this;
-    return getSelectionLayers(
-      tool,
-      viewState.zoom,
-      CELLS_LAYER_ID,
-      getCellCoords,
-      setCellSelection,
-      cellsQuadTree,
-    );
+    return getSelectionLayers(tool, viewState.zoom, CELLS_LAYER_ID, getCellCoords, setCellSelection, cellsQuadTree);
   }
 
   createScaleBarLayer() {
-    const {
-      viewState, width, height, imageLayerLoaders = {},
-    } = this.props;
+    const { viewState, width, height, imageLayerLoaders = {} } = this.props;
     // Just get the first layer/loader since they should all be spatially
     // resolved and therefore have the same unit size scale.
     const loaders = Object.values(imageLayerLoaders);
     if (!viewState || !width || !height || loaders.length < 1) return null;
-    const loader = loaders[0];
+    const loader: any = loaders[0];
     if (!loader) return null;
     const { physicalSizes } = loader;
     if (physicalSizes) {
       const { x } = physicalSizes;
       const { unit, value } = x;
       if (unit && value) {
+        // @ts-ignore
         return new ScaleBarLayer({
-          id: 'scalebar-layer',
+          id: "scalebar-layer",
           loader,
           unit,
           size: value,
@@ -251,11 +273,10 @@ class Spatial extends AbstractSpatialOrScatterplot {
     return null;
   }
 
-  createImageLayer(rawLayerDef, loader, i) {
+  createImageLayer(rawLayerDef: any, loader: any, i: number) {
     const layerDef = {
       ...rawLayerDef,
-      channels: rawLayerDef.channels
-        .filter(channel => channel.selection && channel.color && channel.slider),
+      channels: rawLayerDef.channels.filter((channel: any) => channel.selection && channel.color && channel.slider),
     };
 
     // We need to keep the same loaderSelection array reference,
@@ -263,7 +284,7 @@ class Spatial extends AbstractSpatialOrScatterplot {
     // since loaderSelection is one of its `updateTriggers`.
     // Reference: https://github.com/hms-dbmi/viv/blob/ad86d0f/src/layers/MultiscaleImageLayer/MultiscaleImageLayer.js#L127
     let loaderSelection;
-    const nextLoaderSelection = layerDef.channels.map(c => c.selection);
+    const nextLoaderSelection = layerDef.channels.map((c: any) => c.selection);
     const prevLoaderSelection = this.layerLoaderSelections[layerDef.index];
     if (isEqual(prevLoaderSelection, nextLoaderSelection)) {
       loaderSelection = prevLoaderSelection;
@@ -275,17 +296,20 @@ class Spatial extends AbstractSpatialOrScatterplot {
       colormap: layerDef.colormap,
       opacity: layerDef.opacity,
       transparentColor: layerDef.transparentColor,
-      colors: layerDef.channels.map(c => c.color),
-      sliders: layerDef.channels.map(c => c.slider),
-      visibilities: layerDef.channels.map(c => c.visible),
+      colors: layerDef.channels.map((c: any) => c.color),
+      sliders: layerDef.channels.map((c: any) => c.slider),
+      visibilities: layerDef.channels.map((c: any) => c.visible),
     };
 
     if (!loader || !layerProps) return null;
-    const { metadata: { transform }, data } = loader;
+    const {
+      metadata: { transform },
+      data,
+    } = loader;
     let modelMatrix;
     if (transform) {
       const { scale, translate } = transform;
-      modelMatrix = new Matrix4().translate([translate.x, translate.y, 0]).scale(scale);
+      modelMatrix = new Matrix4([]).translate([translate.x, translate.y, 0]).scale(scale);
     } else if (layerDef.modelMatrix) {
       // eslint-disable-next-line prefer-destructuring
       modelMatrix = new Matrix4(layerDef.modelMatrix);
@@ -308,19 +332,12 @@ class Spatial extends AbstractSpatialOrScatterplot {
   createImageLayers() {
     const { layers, imageLayerLoaders = {} } = this.props;
     return (layers || [])
-      .filter(layer => layer.type === 'raster')
-      .map((layer, i) => this.createImageLayer(
-        layer, imageLayerLoaders[layer.index], i,
-      ));
+      .filter((layer: any) => layer.type === "raster")
+      .map((layer: any, i: number) => this.createImageLayer(layer, imageLayerLoaders[layer.index], i));
   }
 
   getLayers() {
-    const {
-      imageLayers,
-      cellsLayer,
-      neighborhoodsLayer,
-      moleculesLayer,
-    } = this;
+    const { imageLayers, cellsLayer, neighborhoodsLayer, moleculesLayer } = this;
     return [
       ...imageLayers,
       cellsLayer,
@@ -332,10 +349,7 @@ class Spatial extends AbstractSpatialOrScatterplot {
   }
 
   onUpdateCellsData() {
-    const {
-      cells = {},
-      getCellCoords = defaultGetCellCoords,
-    } = this.props;
+    const { cells = {}, getCellCoords = defaultGetCellCoords } = this.props;
     const cellsEntries = Object.entries(cells);
     this.cellsEntries = cellsEntries;
     this.cellsQuadTree = createCellsQuadTree(cellsEntries, getCellCoords);
@@ -343,7 +357,7 @@ class Spatial extends AbstractSpatialOrScatterplot {
 
   onUpdateCellsLayer() {
     const { layers } = this.props;
-    const layerDef = (layers || []).find(layer => layer.type === 'cells');
+    const layerDef = (layers || []).find((layer: any) => layer.type === "cells");
     if (layerDef) {
       this.cellsLayer = this.createCellsLayer(layerDef);
     } else {
@@ -353,17 +367,15 @@ class Spatial extends AbstractSpatialOrScatterplot {
 
   onUpdateMoleculesData() {
     const { molecules = {} } = this.props;
-    const moleculesEntries = Object
-      .entries(molecules)
-      .flatMap(([molecule, coords], index) => coords.map(([x, y]) => [
-        x, y, index, molecule,
-      ]));
+    const moleculesEntries = Object.entries(molecules).flatMap(([molecule, coords]: [molecule: string, coords: any], index) =>
+      coords.map(([x, y]: [x: number, y: number]) => [x, y, index, molecule])
+    );
     this.moleculesEntries = moleculesEntries;
   }
 
   onUpdateMoleculesLayer() {
     const { layers } = this.props;
-    const layerDef = (layers || []).find(layer => layer.type === 'molecules');
+    const layerDef = (layers || []).find((layer: any) => layer.type === "molecules");
     if (layerDef) {
       this.moleculesLayer = this.createMoleculesLayer(layerDef);
     } else {
@@ -373,14 +385,13 @@ class Spatial extends AbstractSpatialOrScatterplot {
 
   onUpdateNeighborhoodsData() {
     const { neighborhoods = {} } = this.props;
-    const neighborhoodsEntries = Object
-      .entries(neighborhoods);
+    const neighborhoodsEntries = Object.entries(neighborhoods);
     this.neighborhoodsEntries = neighborhoodsEntries;
   }
 
   onUpdateNeighborhoodsLayer() {
     const { layers } = this.props;
-    const layerDef = (layers || []).find(layer => layer.type === 'neighborhoods');
+    const layerDef = (layers || []).find((layer: any) => layer.type === "neighborhoods");
     if (layerDef) {
       this.neighborhoodsLayer = this.createNeighborhoodsLayer(layerDef);
     } else {
@@ -406,49 +417,47 @@ class Spatial extends AbstractSpatialOrScatterplot {
    * performance.
    * @param {object} prevProps The previous props to diff against.
    */
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: any) {
     this.viewInfoDidUpdate();
 
-    const shallowDiff = propName => (prevProps[propName] !== this.props[propName]);
-    if (['cells'].some(shallowDiff)) {
+    const shallowDiff = (propName: string) => prevProps[propName] !== this.props[propName];
+    if (["cells"].some(shallowDiff)) {
       // Cells data changed.
       this.onUpdateCellsData();
       this.forceUpdate();
     }
 
-    if ([
-      'layers', 'cells', 'cellFilter', 'cellSelection', 'cellColors',
-    ].some(shallowDiff)) {
+    if (["layers", "cells", "cellFilter", "cellSelection", "cellColors"].some(shallowDiff)) {
       // Cells layer props changed.
       this.onUpdateCellsLayer();
       this.forceUpdate();
     }
 
-    if (['molecules'].some(shallowDiff)) {
+    if (["molecules"].some(shallowDiff)) {
       // Molecules data changed.
       this.onUpdateMoleculesData();
       this.forceUpdate();
     }
 
-    if (['layers', 'molecules'].some(shallowDiff)) {
+    if (["layers", "molecules"].some(shallowDiff)) {
       // Molecules layer props changed.
       this.onUpdateMoleculesLayer();
       this.forceUpdate();
     }
 
-    if (['neighborhoods'].some(shallowDiff)) {
+    if (["neighborhoods"].some(shallowDiff)) {
       // Neighborhoods data changed.
       this.onUpdateNeighborhoodsData();
       this.forceUpdate();
     }
 
-    if (['layers', 'neighborhoods'].some(shallowDiff)) {
+    if (["layers", "neighborhoods"].some(shallowDiff)) {
       // Neighborhoods layer props changed.
       this.onUpdateNeighborhoodsLayer();
       this.forceUpdate();
     }
 
-    if (['layers', 'imageLayerLoaders'].some(shallowDiff)) {
+    if (["layers", "imageLayerLoaders"].some(shallowDiff)) {
       // Image layers changed.
       this.onUpdateImages();
       this.forceUpdate();
@@ -465,5 +474,5 @@ class Spatial extends AbstractSpatialOrScatterplot {
  * access the grandchild DeckGL ref,
  * but we are using a class component.
  */
-const SpatialWrapper = forwardRef((props, deckRef) => <Spatial {...props} deckRef={deckRef} />);
+const SpatialWrapper = forwardRef((props: SpatialProps, deckRef) => <Spatial {...props} deckRef={deckRef} />);
 export default SpatialWrapper;

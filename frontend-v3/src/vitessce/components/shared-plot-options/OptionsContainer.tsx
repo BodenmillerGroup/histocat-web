@@ -5,7 +5,11 @@ import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import { useStyles } from './styles';
 
-export default function OptionsContainer(props) {
+type OptionsContainerProps = {
+  children: any;
+}
+
+export default function OptionsContainer(props: OptionsContainerProps) {
   const {
     children,
   } = props;
@@ -15,7 +19,7 @@ export default function OptionsContainer(props) {
   return (
     <Box className={classes.box}>
       <TableContainer className={classes.tableContainer}>
-        <Table className={classes.table} size="small">
+        <Table className={(classes as any).table} size="small">
           <TableBody>
             {children}
           </TableBody>

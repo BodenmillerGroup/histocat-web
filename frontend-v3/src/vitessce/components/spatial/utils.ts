@@ -1,25 +1,21 @@
 /* eslint-disable no-plusplus */
-import shortNumber from 'short-number';
-import isEqual from 'lodash/isEqual';
-import {
-  getChannelStats,
-  getDefaultInitialViewState,
-  MultiscaleImageLayer,
-  ImageLayer,
-} from '@hms-dbmi/viv';
-import { extent } from 'd3-array';
-import { Matrix4 } from 'math.gl';
-import { divide, compare, unit } from 'mathjs';
-import { pluralize, getSourceFromLoader, isRgb } from '../../utils';
-import { VIEWER_PALETTE } from '../utils';
-import {
-  GLOBAL_LABELS,
-  DEFAULT_RASTER_LAYER_PROPS,
-  DEFAULT_LAYER_TYPE_ORDERING,
-} from './constants';
+import { getChannelStats, getDefaultInitialViewState, MultiscaleImageLayer, ImageLayer } from "@hms-dbmi/viv";
+import { extent } from "d3-array";
+import { Matrix4 } from "math.gl";
+import { divide, compare, unit } from "mathjs";
+import { pluralize, getSourceFromLoader, isRgb } from "../../utils";
+import { VIEWER_PALETTE } from "../utils";
+import { GLOBAL_LABELS, DEFAULT_RASTER_LAYER_PROPS, DEFAULT_LAYER_TYPE_ORDERING } from "./constants";
+import { shortNumber } from "../../../utils/short-number";
+import { isEqual } from "lodash-es";
 
-export function square(x, y, r) {
-  return [[x, y + r], [x + r, y], [x, y - r], [x - r, y]];
+export function square(x: number, y: number, r: number) {
+  return [
+    [x, y + r],
+    [x + r, y],
+    [x, y - r],
+    [x - r, y],
+  ];
 }
 
 /**
@@ -32,10 +28,10 @@ export function square(x, y, r) {
  * @param {object[]} layers Array of layer definition objects.
  * Object must have a .type property.
  */
-export function sortLayers(layers) {
-  return layers.sort((a, b) => (
-    DEFAULT_LAYER_TYPE_ORDERING.indexOf(a.type) - DEFAULT_LAYER_TYPE_ORDERING.indexOf(b.type)
-  ));
+export function sortLayers(layers: any[]) {
+  return layers.sort(
+    (a, b) => DEFAULT_LAYER_TYPE_ORDERING.indexOf(a.type) - DEFAULT_LAYER_TYPE_ORDERING.indexOf(b.type)
+  );
 }
 
 /**
@@ -43,14 +39,11 @@ export function sortLayers(layers) {
  * @param {object} source PixelSource object from Viv
  * @returns {object} The selection.
  */
-function getDefaultGlobalSelection(source) {
-  const globalIndices = source.labels
-    .filter(dim => GLOBAL_LABELS.includes(dim));
-  const selection = {};
-  globalIndices.forEach((dim) => {
-    selection[dim] = Math.floor(
-      (source.shape[source.labels.indexOf(dim)] || 0) / 2,
-    );
+function getDefaultGlobalSelection(source: any) {
+  const globalIndices = source.labels.filter((dim: any) => GLOBAL_LABELS.includes(dim));
+  const selection: any = {};
+  globalIndices.forEach((dim: any) => {
+    selection[dim] = Math.floor((source.shape[source.labels.indexOf(dim)] || 0) / 2);
   });
   return selection;
 }
@@ -61,23 +54,18 @@ function getDefaultGlobalSelection(source) {
  * @param {object} source PixelSource object from Viv
  * @returns {object} The selection.
  */
-function buildDefaultSelection(source) {
+function buildDefaultSelection(source: any) {
   const selection = [];
   const globalSelection = getDefaultGlobalSelection(source);
   // First non-global dimension with some sort of selectable values
   const firstNonGlobalDimension = source.labels.filter(
-    dim => !GLOBAL_LABELS.includes(dim)
-      && source.shape[source.labels.indexOf(dim)],
+    (dim: any) => !GLOBAL_LABELS.includes(dim) && source.shape[source.labels.indexOf(dim)]
   )[0];
-  for (let i = 0; i < Math.min(4, source.shape[
-    source.labels.indexOf(firstNonGlobalDimension)
-  ]); i += 1) {
-    selection.push(
-      {
-        [firstNonGlobalDimension]: i,
-        ...globalSelection,
-      },
-    );
+  for (let i = 0; i < Math.min(4, source.shape[source.labels.indexOf(firstNonGlobalDimension)]); i += 1) {
+    selection.push({
+      [firstNonGlobalDimension]: i,
+      ...globalSelection,
+    });
   }
   return selection;
 }
@@ -89,26 +77,36 @@ function buildDefaultSelection(source) {
  * @returns {object[]} An array of selected channels with default
  * domain/slider settings.
  */
-export async function initializeLayerChannels(loader) {
-  const result = [];
+export async function initializeLayerChannels(loader: any) {
+  const result: any[] = [];
   const source = getSourceFromLoader(loader);
   // Add channel automatically as the first avaialable value for each dimension.
   const defaultSelection = buildDefaultSelection(source);
   // Get stats because initial value is Min/Max for domainType.
-  const raster = await Promise.all(
-    defaultSelection.map(selection => source.getRaster({ selection })),
-  );
+  const raster = await Promise.all(defaultSelection.map((selection) => source.getRaster({ selection })));
   const stats = raster.map(({ data: d }) => getChannelStats(d));
 
   const domains = isRgb(loader)
-    ? [[0, 255], [0, 255], [0, 255]]
-    : stats.map(stat => stat.domain);
+    ? [
+        [0, 255],
+        [0, 255],
+        [0, 255],
+      ]
+    : stats.map((stat) => stat.domain);
   const colors = isRgb(loader)
-    ? [[255, 0, 0], [0, 255, 0], [0, 0, 255]]
+    ? [
+        [255, 0, 0],
+        [0, 255, 0],
+        [0, 0, 255],
+      ]
     : null;
   const sliders = isRgb(loader)
-    ? [[0, 255], [0, 255], [0, 255]]
-    : stats.map(stat => stat.autoSliders);
+    ? [
+        [0, 255],
+        [0, 255],
+        [0, 255],
+      ]
+    : stats.map((stat) => stat.autoSliders);
 
   defaultSelection.forEach((selection, i) => {
     const domain = domains[i];
@@ -124,34 +122,35 @@ export async function initializeLayerChannels(loader) {
   return result;
 }
 
-function getMetaWithTransformMatrices(imageMeta, imageLoaders) {
+function getMetaWithTransformMatrices(imageMeta: any, imageLoaders: any) {
   // Do not fill in transformation matrices if any of the layers specify one.
-  const sources = imageLoaders.map(loader => getSourceFromLoader(loader));
+  const sources = imageLoaders.map((loader: any) => getSourceFromLoader(loader));
   if (
-    imageMeta.map(meta => meta?.metadata?.transform?.matrix
-      || meta?.metadata?.transform?.scale
-      || meta?.metadata?.transform?.translate).some(Boolean)
-    || sources.every(
-      source => !source.meta?.physicalSizes?.x || !source.meta?.physicalSizes?.y,
-    )
+    imageMeta
+      .map(
+        (meta: any) =>
+          meta?.metadata?.transform?.matrix || meta?.metadata?.transform?.scale || meta?.metadata?.transform?.translate
+      )
+      .some(Boolean) ||
+    sources.every((source: any) => !source.meta?.physicalSizes?.x || !source.meta?.physicalSizes?.y)
   ) {
     return imageMeta;
   }
   // Get the minimum physical among all the current images.
-  const minPhysicalSize = sources.reduce((acc, source) => {
+  const minPhysicalSize = sources.reduce((acc: any[], source: any) => {
     const sizes = [
-      unit(`${source.meta?.physicalSizes.x.size} ${source.meta?.physicalSizes.x.unit}`.replace('µ', 'u')),
-      unit(`${source.meta?.physicalSizes.y.size} ${source.meta?.physicalSizes.y.unit}`.replace('µ', 'u')),
+      unit(`${source.meta?.physicalSizes.x.size} ${source.meta?.physicalSizes.x.unit}`.replace("µ", "u")),
+      unit(`${source.meta?.physicalSizes.y.size} ${source.meta?.physicalSizes.y.unit}`.replace("µ", "u")),
     ];
-    acc[0] = (acc[0] === undefined || compare(sizes[0], acc[0]) === -1) ? sizes[0] : acc[0];
-    acc[1] = (acc[1] === undefined || compare(sizes[1], acc[1]) === -1) ? sizes[1] : acc[1];
+    acc[0] = acc[0] === undefined || compare(sizes[0], acc[0]) === -1 ? sizes[0] : acc[0];
+    acc[1] = acc[1] === undefined || compare(sizes[1], acc[1]) === -1 ? sizes[1] : acc[1];
     return acc;
   }, []);
-  const imageMetaWithTransform = imageMeta.map((meta, j) => {
+  const imageMetaWithTransform = imageMeta.map((meta: any, j: number) => {
     const source = sources[j];
     const sizes = [
-      unit(`${source.meta?.physicalSizes.x.size} ${source.meta?.physicalSizes.x.unit}`.replace('µ', 'u')),
-      unit(`${source.meta?.physicalSizes.y.size} ${source.meta?.physicalSizes.y.unit}`.replace('µ', 'u')),
+      unit(`${source.meta?.physicalSizes.x.size} ${source.meta?.physicalSizes.x.unit}`.replace("µ", "u")),
+      unit(`${source.meta?.physicalSizes.y.size} ${source.meta?.physicalSizes.y.unit}`.replace("µ", "u")),
     ];
     // Find the ratio of the sizes to get the scaling factor.
     const scale = sizes.map((i, k) => divide(i, minPhysicalSize[k]));
@@ -160,7 +159,7 @@ function getMetaWithTransformMatrices(imageMeta, imageLoaders) {
       return meta;
     }
     // Make sure to scale the z direction by one.
-    const matrix = new Matrix4().scale([...scale, 1]);
+    const matrix = new Matrix4([]).scale([...scale, 1]);
     const newMeta = { ...meta };
     newMeta.metadata = {
       ...newMeta.metadata,
@@ -182,19 +181,15 @@ function getMetaWithTransformMatrices(imageMeta, imageLoaders) {
  * shape { name, type, url, createLoader }.
  * @param {(string[]|null)} rasterRenderLayers A list of default raster layers. Optional.
  */
-export async function initializeRasterLayersAndChannels(
-  rasterLayers,
-  rasterRenderLayers,
-  usePhysicalSizeScaling,
-) {
+export async function initializeRasterLayersAndChannels(rasterLayers: any[], rasterRenderLayers: string[] | null, usePhysicalSizeScaling: boolean) {
   const nextImageLoaders = [];
-  let nextImageMetaAndLayers = [];
+  let nextImageMetaAndLayers: any[] = [];
   const autoImageLayerDefPromises = [];
 
   // Start all loader creators immediately.
   // Reference: https://eslint.org/docs/rules/no-await-in-loop
-  const loaders = await Promise.all(rasterLayers.map(layer => layer.loaderCreator()));
-  const sources = loaders.map(loader => getSourceFromLoader(loader));
+  const loaders = await Promise.all(rasterLayers.map((layer) => layer.loaderCreator()));
+  const sources = loaders.map((loader) => getSourceFromLoader(loader));
 
   for (let i = 0; i < rasterLayers.length; i++) {
     const layer = rasterLayers[i];
@@ -210,48 +205,60 @@ export async function initializeRasterLayersAndChannels(
     // Midpoint of images list as default image to show.
     const layerIndex = Math.floor(rasterLayers.length / 2);
     const loader = nextImageLoaders[layerIndex];
-    const autoImageLayerDefPromise = initializeLayerChannels(loader)
-      .then(channels => Promise.resolve({
+    const autoImageLayerDefPromise = initializeLayerChannels(loader).then((channels) =>
+      Promise.resolve({
         type: sources[layerIndex].constructor.name,
         index: layerIndex,
         ...DEFAULT_RASTER_LAYER_PROPS,
         channels: channels.map((channel, j) => ({
           ...channel,
-          ...(nextImageMetaAndLayers[layerIndex].channels
-            ? nextImageMetaAndLayers[layerIndex].channels[j] : []),
+          ...(nextImageMetaAndLayers[layerIndex].channels ? nextImageMetaAndLayers[layerIndex].channels[j] : []),
         })),
         modelMatrix: nextImageMetaAndLayers[layerIndex]?.metadata?.transform?.matrix,
         transparentColor: layerIndex > 0 ? [0, 0, 0] : null,
-      }));
+      })
+    );
     autoImageLayerDefPromises.push(autoImageLayerDefPromise);
   } else {
     // The renderLayers parameter is a list of layer names to show by default.
-    const globalIndicesOfRenderLayers = rasterRenderLayers
-      .map(imageName => rasterLayers.findIndex(image => image.name === imageName));
+    const globalIndicesOfRenderLayers = rasterRenderLayers.map((imageName) =>
+      rasterLayers.findIndex((image) => image.name === imageName)
+    );
     for (let i = 0; i < globalIndicesOfRenderLayers.length; i++) {
       const layerIndex = globalIndicesOfRenderLayers[i];
       const loader = nextImageLoaders[layerIndex];
       const autoImageLayerDefPromise = initializeLayerChannels(loader)
         // eslint-disable-next-line no-loop-func
-        .then(channels => Promise.resolve({
-          type: sources[layerIndex].constructor.name,
-          index: layerIndex,
-          ...DEFAULT_RASTER_LAYER_PROPS,
-          channels: channels.map((channel, j) => ({
-            ...channel,
-            ...(nextImageMetaAndLayers[layerIndex].channels
-              ? nextImageMetaAndLayers[layerIndex].channels[j] : []),
-          })),
-          domainType: 'Min/Max',
-          modelMatrix: nextImageMetaAndLayers[layerIndex]?.metadata?.transform?.matrix,
-          transparentColor: i > 0 ? [0, 0, 0] : null,
-        }));
+        .then((channels) =>
+          Promise.resolve({
+            type: sources[layerIndex].constructor.name,
+            index: layerIndex,
+            ...DEFAULT_RASTER_LAYER_PROPS,
+            channels: channels.map((channel, j) => ({
+              ...channel,
+              ...(nextImageMetaAndLayers[layerIndex].channels ? nextImageMetaAndLayers[layerIndex].channels[j] : []),
+            })),
+            domainType: "Min/Max",
+            modelMatrix: nextImageMetaAndLayers[layerIndex]?.metadata?.transform?.matrix,
+            transparentColor: i > 0 ? [0, 0, 0] : null,
+          })
+        );
       autoImageLayerDefPromises.push(autoImageLayerDefPromise);
     }
   }
 
   const autoImageLayerDefs = await Promise.all(autoImageLayerDefPromises);
   return [autoImageLayerDefs, nextImageLoaders, nextImageMetaAndLayers];
+}
+
+type MakeSpatialSubtitleParams = {
+  observationsCount: number;
+  observationsLabel: string;
+  observationsPluralLabel: string;
+  subobservationsCount: number;
+  subobservationsLabel: string;
+  subobservationsPluralLabel: string;
+  locationsCount: number;
 }
 
 /**
@@ -268,13 +275,21 @@ export async function initializeRasterLayersAndChannels(
  * with info about items with zero counts omitted.
  */
 export function makeSpatialSubtitle({
-  observationsCount, observationsLabel, observationsPluralLabel,
-  subobservationsCount, subobservationsLabel, subobservationsPluralLabel,
+  observationsCount,
+  observationsLabel,
+  observationsPluralLabel,
+  subobservationsCount,
+  subobservationsLabel,
+  subobservationsPluralLabel,
   locationsCount,
-}) {
+}: MakeSpatialSubtitleParams) {
   const parts = [];
   if (subobservationsCount > 0) {
-    let part = `${subobservationsCount} ${pluralize(subobservationsLabel, subobservationsPluralLabel, subobservationsCount)}`;
+    let part = `${subobservationsCount} ${pluralize(
+      subobservationsLabel,
+      subobservationsPluralLabel,
+      subobservationsCount
+    )}`;
     if (locationsCount > 0) {
       part += ` at ${shortNumber(locationsCount)} locations`;
     }
@@ -283,15 +298,10 @@ export function makeSpatialSubtitle({
   if (observationsCount > 0) {
     parts.push(`${observationsCount} ${pluralize(observationsLabel, observationsPluralLabel, observationsCount)}`);
   }
-  return parts.join(', ');
+  return parts.join(", ");
 }
 
-export function getInitialSpatialTargets({
-  width,
-  height,
-  cells,
-  imageLayerLoaders,
-}) {
+export function getInitialSpatialTargets({ width, height, cells, imageLayerLoaders }: {width: number, height: number, cells: any, imageLayerLoaders: any}) {
   let initialTargetX = -Infinity;
   let initialTargetY = -Infinity;
   let initialZoom = -Infinity;
@@ -304,7 +314,7 @@ export function getInitialSpatialTargets({
       const { target, zoom: newViewStateZoom } = getDefaultInitialViewState(
         imageLayerLoaders[i].data,
         viewSize,
-        zoomBackoff,
+        zoomBackoff
       );
       if (target[0] > initialTargetX) {
         // eslint-disable-next-line prefer-destructuring
@@ -318,9 +328,9 @@ export function getInitialSpatialTargets({
       }
     }
   } else if (cellValues.length > 0) {
-    const cellCoordinates = cellValues.map(c => c.xy);
-    const xExtent = extent(cellCoordinates, c => c[0]);
-    const yExtent = extent(cellCoordinates, c => c[1]);
+    const cellCoordinates = cellValues.map((c: any) => c.xy);
+    const xExtent = extent(cellCoordinates, (c) => c[0]);
+    const yExtent = extent(cellCoordinates, (c) => c[1]);
     const xRange = xExtent[1] - xExtent[0];
     const yRange = yExtent[1] - yExtent[0];
     initialTargetX = xExtent[0] + xRange / 2;
@@ -337,9 +347,8 @@ export function getInitialSpatialTargets({
  * @param {object} data PixelSource | PixelSource[]
  * @returns {Array} [Layer, PixelSource | PixelSource[]] tuple.
  */
-export function getLayerLoaderTuple(data) {
-  const Layer = (Array.isArray(data) && data.length > 1) ? MultiscaleImageLayer : ImageLayer;
-  const loader = ((Array.isArray(data) && data.length > 1) || !Array.isArray(data))
-    ? data : data[0];
+export function getLayerLoaderTuple(data: any) {
+  const Layer = Array.isArray(data) && data.length > 1 ? MultiscaleImageLayer : ImageLayer;
+  const loader = (Array.isArray(data) && data.length > 1) || !Array.isArray(data) ? data : data[0];
   return [Layer, loader];
 }

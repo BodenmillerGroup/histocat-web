@@ -1,7 +1,6 @@
-import expect from 'expect';
 import { interpolateRdBu, interpolatePlasma } from './interpolate-colors';
 
-const expectRgb = ([testR, testG, testB], [r, g, b]) => ([
+const expectRgb = ([testR, testG, testB]: any, [r, g, b]: [r: number, g: number, b: number]) => ([
   expect(testR).toBeCloseTo(r),
   expect(testG).toBeCloseTo(g),
   expect(testB).toBeCloseTo(b),

@@ -1,8 +1,6 @@
-import {
-  useState, useEffect, useRef,
-} from 'react';
-// import { fileTypeToLoader } from '../loaders/types';
-// import JsonLoader from '../loaders/JsonLoader';
+import { useState, useEffect, useRef } from "react";
+import { fileTypeToLoader } from '../loaders/types';
+import JsonLoader from '../loaders/JsonLoader';
 
 /**
  * Return the bottom coordinate of the layout.
@@ -37,16 +35,16 @@ function getRowHeight(containerHeight: number, numRows: number, margin: number, 
   return effectiveContainerHeight / numRows;
 }
 
-export function useRowHeight(config: any, initialRowHeight: number, height: number, margin: number, padding: number) {
-  const [containerHeight, setContainerHeight] = useState(height);
-  const [rowHeight, setRowHeight] = useState(initialRowHeight);
+export function useRowHeight(config: any, initialRowHeight: number | null | undefined, height: number | null | undefined, margin: number, padding: number) {
+  const [containerHeight, setContainerHeight] = useState<number | null | undefined>(height);
+  const [rowHeight, setRowHeight] = useState<number | null | undefined>(initialRowHeight);
   const containerRef = useRef<HTMLInputElement>();
 
   // Detect when the `config` or `containerHeight` variables
   // have changed, and update `rowHeight` in response.
   useEffect(() => {
     const numRows = getNumRows(config.layout);
-    const newRowHeight = getRowHeight(containerHeight, numRows, margin, padding);
+    const newRowHeight = getRowHeight(containerHeight as number, numRows, margin, padding);
     setRowHeight(newRowHeight);
   }, [containerHeight, config, margin, padding]);
 
@@ -73,40 +71,39 @@ export function useRowHeight(config: any, initialRowHeight: number, height: numb
       const containerRect = containerRef.current.getBoundingClientRect();
       setContainerHeight(containerRect.height);
     }
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener("resize", onWindowResize);
     onWindowResize();
     return () => {
-      window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener("resize", onWindowResize);
     };
   }, [containerRef, height]);
 
-
-  return [rowHeight, containerRef];
+  return [rowHeight, containerRef] as [rowHeight: number, containerRef: React.MutableRefObject<HTMLInputElement>];
 }
 
-// /**
-//  * Create a mapping from dataset ID to loader objects by data type.
-//  * @param {object[]} datasets The datasets array from the view config.
-//  * @param {string} configDescription The top-level description in the
-//  * view config.
-//  * @returns {object} Mapping from dataset ID to data type to loader
-//  * instance.
-//  */
-// export function createLoaders(datasets: any[], configDescription: string) {
-//   const result: any = {};
-//   datasets.forEach((dataset) => {
-//     const datasetLoaders = {
-//       name: dataset.name,
-//       description: dataset.description || configDescription,
-//       loaders: {} as any,
-//     };
-//     dataset.files.forEach((file: any) => {
-//       // Fall back to JsonLoader if a loader is not found for the file type.
-//       const matchingLoaderClass = fileTypeToLoader[file.fileType] || JsonLoader;
-//       // eslint-disable-next-line new-cap
-//       datasetLoaders.loaders[file.type] = new matchingLoaderClass(file);
-//     });
-//     result[dataset.uid] = datasetLoaders;
-//   });
-//   return result;
-// }
+/**
+ * Create a mapping from dataset ID to loader objects by data type.
+ * @param {object[]} datasets The datasets array from the view config.
+ * @param {string} configDescription The top-level description in the
+ * view config.
+ * @returns {object} Mapping from dataset ID to data type to loader
+ * instance.
+ */
+export function createLoaders(datasets: any[], configDescription: string) {
+  const result: any = {};
+  datasets.forEach((dataset) => {
+    const datasetLoaders = {
+      name: dataset.name,
+      description: dataset.description || configDescription,
+      loaders: {} as any,
+    };
+    dataset.files.forEach((file: any) => {
+      // Fall back to JsonLoader if a loader is not found for the file type.
+      const matchingLoaderClass = fileTypeToLoader[file.fileType] || JsonLoader;
+      // eslint-disable-next-line new-cap
+      datasetLoaders.loaders[file.type] = new matchingLoaderClass(file);
+    });
+    result[dataset.uid] = datasetLoaders;
+  });
+  return result;
+}

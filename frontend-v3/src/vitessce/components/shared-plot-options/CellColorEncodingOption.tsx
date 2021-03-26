@@ -5,7 +5,13 @@ import TableRow from '@material-ui/core/TableRow';
 import { capitalize } from '../../utils';
 import { useStyles } from './styles';
 
-export default function CellColorEncodingOption(props) {
+type CellColorEncodingOptionProps = {
+  observationsLabel: string;
+  cellColorEncoding: any;
+  setCellColorEncoding: any;
+}
+
+export default function CellColorEncodingOption(props: CellColorEncodingOptionProps) {
   const {
     observationsLabel,
     cellColorEncoding,
@@ -16,13 +22,14 @@ export default function CellColorEncodingOption(props) {
 
   const observationsLabelNice = capitalize(observationsLabel);
 
-  function handleColorEncodingChange(event) {
+  function handleColorEncodingChange(event: any) {
     setCellColorEncoding(event.target.value);
   }
 
   return (
     <TableRow>
-      <TableCell className={classes.labelCell} htmlFor="cell-color-encoding-select">
+      {/*<TableCell className={classes.labelCell} htmlFor="cell-color-encoding-select">*/}
+      <TableCell className={classes.labelCell}>
         {observationsLabelNice} Color Encoding
       </TableCell>
       <TableCell className={classes.inputCell}>
