@@ -8,7 +8,7 @@ import { quadtree } from 'd3-quadtree';
  * spatial/scatterplot coordinates [x, y].
  * @returns {object} Quadtree instance.
  */
-export function createCellsQuadTree(cellsEntries: any[], getCellCoords: Function) {
+export function createCellsQuadTree(cellsEntries: [string, any][], getCellCoords: Function) {
   // Use the cellsEntries variable since it is already
   // an array, converted by Object.entries().
   if (!cellsEntries) {
@@ -18,6 +18,6 @@ export function createCellsQuadTree(cellsEntries: any[], getCellCoords: Function
   const tree = quadtree()
     .x(d => getCellCoords(d[1])[0])
     .y(d => getCellCoords(d[1])[1])
-    .addAll(cellsEntries);
+    .addAll(cellsEntries as any);
   return tree;
 }

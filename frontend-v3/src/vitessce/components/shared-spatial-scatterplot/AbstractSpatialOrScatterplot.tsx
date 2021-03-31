@@ -4,24 +4,39 @@ import ToolMenu from './ToolMenu';
 import { DEFAULT_GL_OPTIONS } from '../utils';
 import { getCursor, getCursorWithTool } from './cursor';
 
+type AbstractSpatialOrScatterplotProps = {
+  uuid: string;
+  deckRef?: any;
+  viewState: any;
+  setViewState: any;
+  onToolChange?: any;
+  updateViewInfo: any;
+  cells: any;
+}
+
+type AbstractSpatialOrScatterplotState = {
+  gl: any | null;
+  tool: any | null;
+}
+
 /**
  * Abstract class component intended to be inherited by
  * the Spatial and Scatterplot class components.
  * Contains a common constructor, common DeckGL callbacks,
  * and common render function.
  */
-export default class AbstractSpatialOrScatterplot extends PureComponent<any, any> {
+export default class AbstractSpatialOrScatterplot<TProps extends AbstractSpatialOrScatterplotProps, TState extends AbstractSpatialOrScatterplotState> extends PureComponent<TProps, TState> {
   protected viewport: any;
   protected cellsLayer: any;
   protected cellsEntries: any[] = [];
 
-  constructor(props: any) {
+  constructor(props: TProps) {
     super(props);
 
     this.state = {
       gl: null,
       tool: null,
-    };
+    } as TState;
 
     this.viewport = null;
 

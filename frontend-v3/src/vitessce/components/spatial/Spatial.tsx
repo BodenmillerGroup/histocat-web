@@ -1,5 +1,5 @@
 import React, { forwardRef } from "react";
-import { ScatterplotLayer, PolygonLayer, COORDINATE_SYSTEM } from "deck.gl";
+import { ScatterplotLayer, PolygonLayer, COORDINATE_SYSTEM, Position, RGBAColor } from "deck.gl";
 import { Matrix4 } from "math.gl";
 import { ScaleBarLayer } from "@hms-dbmi/viv";
 import { SelectablePolygonLayer, getSelectionLayers } from "../../layers";
@@ -26,6 +26,7 @@ const makeDefaultGetCellIsSelected = (cellSelection: any) => (cellEntry: any) =>
 
 type SpatialProps = {
   uuid: string;
+  deckRef?: any;
   width: number;
   height: number;
   viewState: any;
@@ -41,9 +42,9 @@ type SpatialProps = {
   getCellColor?: Function;
   getCellPolygon?: Function;
   getCellIsSelected?: Function;
-  getMoleculeColor?: Function;
-  getMoleculePosition?: Function;
-  getNeighborhoodPolygon?: Function;
+  getMoleculeColor?: RGBAColor | ((d: unknown) => RGBAColor);
+  getMoleculePosition?: (d: unknown) => Position;
+  getNeighborhoodPolygon?: (x: unknown) => Position[];
   updateViewInfo: Function;
   onCellClick?: Function;
   layers: any[];
@@ -51,10 +52,16 @@ type SpatialProps = {
   setCellFilter: any;
   cellSelection: any;
   setCellSelection: any;
-  cellHighlight: any;
-  setCellHighlight: any;
+  cellHighlight: string | null;
+  setCellHighlight: (cellId: string | null) => void;
   setMoleculeHighlight: any;
   setComponentHover: any;
+  onToolChange?: any;
+}
+
+type SpatialState = {
+  gl: any;
+  tool: any;
 }
 
 /**
@@ -89,7 +96,7 @@ type SpatialProps = {
  * used when rendering tooltips and crosshairs.
  * @param {function} props.onCellClick Getter function for cell layer onClick.
  */
-class Spatial extends AbstractSpatialOrScatterplot {
+class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
   private moleculesEntries: any[];
   private cellsQuadTree: any;
   private moleculesLayer: any;
@@ -420,7 +427,7 @@ class Spatial extends AbstractSpatialOrScatterplot {
   componentDidUpdate(prevProps: any) {
     this.viewInfoDidUpdate();
 
-    const shallowDiff = (propName: string) => prevProps[propName] !== this.props[propName];
+    const shallowDiff = (propName: string) => prevProps[propName] !== (this.props as any)[propName];
     if (["cells"].some(shallowDiff)) {
       // Cells data changed.
       this.onUpdateCellsData();

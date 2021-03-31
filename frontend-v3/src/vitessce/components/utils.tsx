@@ -1,15 +1,20 @@
-import React from 'react';
-import { COORDINATE_SYSTEM } from 'deck.gl';
-import { PRIMARY_CARD } from './classNames';
+import React from "react";
+import { COORDINATE_SYSTEM, RGBAColor } from "deck.gl";
+import { PRIMARY_CARD } from "./classNames";
 import { HIERARCHICAL_SCHEMAS, SETS_DATATYPE_CELL } from "./sets/constants";
 
 export function makeCellStatusMessage(cellInfoFactors: any[]) {
-  return Object.entries(cellInfoFactors).map(
-    ([factor, value]) => `${factor}: ${value}`,
-  ).join('; ');
+  return Object.entries(cellInfoFactors)
+    .map(([factor, value]) => `${factor}: ${value}`)
+    .join("; ");
 }
 
-export function cellLayerDefaultProps(cells: any, updateStatus: any, setCellHighlight: any, setComponentHover: any) {
+export function cellLayerDefaultProps(
+  cells: any,
+  updateStatus: any,
+  setCellHighlight: (cellId: string | null) => void,
+  setComponentHover: any
+) {
   return {
     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
     data: cells,
@@ -35,7 +40,7 @@ export function cellLayerDefaultProps(cells: any, updateStatus: any, setCellHigh
         }
       } else if (setCellHighlight) {
         // Clear the currently-hovered cell info by passing null.
-        setCellHighlight('');
+        setCellHighlight("");
       }
     },
   };
@@ -54,7 +59,7 @@ export const PALETTE = [
   [204, 102, 119],
   [136, 34, 85],
   [170, 68, 153],
-];
+] as RGBAColor[];
 
 export const VIEWER_PALETTE = [
   [0, 0, 255],
@@ -65,19 +70,19 @@ export const VIEWER_PALETTE = [
   [255, 255, 255],
   [255, 128, 0],
   [255, 0, 0],
-];
+] as RGBAColor[];
 
 export const COLORMAP_OPTIONS = [
-  'viridis',
-  'greys',
-  'magma',
-  'jet',
-  'hot',
-  'bone',
-  'copper',
-  'summer',
-  'density',
-  'inferno',
+  "viridis",
+  "greys",
+  "magma",
+  "jet",
+  "hot",
+  "bone",
+  "copper",
+  "summer",
+  "density",
+  "inferno",
 ];
 
 export const DEFAULT_GL_OPTIONS = { webgl2: true };
@@ -91,11 +96,11 @@ export function createDefaultUpdateCellsSelection(componentName: string) {
 }
 
 export function createDefaultUpdateCellsHover(componentName: string) {
-  return (hoverInfo: { cellId: any; }) => console.warn(`${componentName} updateCellsHover: ${hoverInfo.cellId}`);
+  return (hoverInfo: { cellId: any }) => console.warn(`${componentName} updateCellsHover: ${hoverInfo.cellId}`);
 }
 
 export function createDefaultUpdateGenesHover(componentName: string) {
-  return (hoverInfo: { geneId: any; }) => console.warn(`${componentName} updateGenesHover: ${hoverInfo.geneId}`);
+  return (hoverInfo: { geneId: any }) => console.warn(`${componentName} updateGenesHover: ${hoverInfo.geneId}`);
 }
 
 export function createDefaultUpdateViewInfo(componentName: string) {
@@ -105,7 +110,6 @@ export function createDefaultUpdateViewInfo(componentName: string) {
 export function createDefaultClearPleaseWait() {
   return () => {};
 }
-
 
 /**
  * Copy a typed array into a new array buffer.
@@ -123,7 +127,7 @@ export function getNextNumberedNodeName(nodes: any[], prefix: string) {
   let i = 1;
   if (nodes) {
     // eslint-disable-next-line no-loop-func
-    while (nodes.find(n => n.name === `${prefix}${i}`)) {
+    while (nodes.find((n) => n.name === `${prefix}${i}`)) {
       // eslint-disable-next-line no-plusplus
       i++;
     }
@@ -138,12 +142,19 @@ export function getNextNumberedNodeName(nodes: any[], prefix: string) {
  * @param {function} setCellSetSelection The setter function for cell set selections.
  * @param {function} setAdditionalCellSets The setter function for user-defined cell sets.
  */
-export function setCellSelection(cellSelection: string[], additionalCellSets: any, cellSetColor: any, setCellSetSelection: any, setAdditionalCellSets: any, setCellSetColor: any, setCellColorEncoding: any, prefix = 'Selection ') {
-  const CELL_SELECTIONS_LEVEL_ZERO_NAME = 'My Selections';
+export function setCellSelection(
+  cellSelection: string[],
+  additionalCellSets: any,
+  cellSetColor: any,
+  setCellSetSelection: any,
+  setAdditionalCellSets: any,
+  setCellSetColor: any,
+  setCellColorEncoding: any,
+  prefix = "Selection "
+) {
+  const CELL_SELECTIONS_LEVEL_ZERO_NAME = "My Selections";
 
-  const selectionsLevelZeroNode = additionalCellSets?.tree.find(
-    (n: any) => n.name === CELL_SELECTIONS_LEVEL_ZERO_NAME,
-  );
+  const selectionsLevelZeroNode = additionalCellSets?.tree.find((n: any) => n.name === CELL_SELECTIONS_LEVEL_ZERO_NAME);
   const nextAdditionalCellSets = {
     version: HIERARCHICAL_SCHEMAS[SETS_DATATYPE_CELL].latestVersion,
     datatype: SETS_DATATYPE_CELL,
@@ -156,7 +167,7 @@ export function setCellSelection(cellSelection: string[], additionalCellSets: an
     colorIndex = selectionsLevelZeroNode.children.length;
     selectionsLevelZeroNode.children.push({
       name: nextName,
-      set: cellSelection.map(d => [d, null]),
+      set: cellSelection.map((d) => [d, null]),
     });
   } else {
     nextAdditionalCellSets.tree.push({
@@ -164,13 +175,13 @@ export function setCellSelection(cellSelection: string[], additionalCellSets: an
       children: [
         {
           name: nextName,
-          set: cellSelection.map(d => [d, null]),
+          set: cellSelection.map((d) => [d, null]),
         },
       ],
     });
   }
   setAdditionalCellSets(nextAdditionalCellSets);
-  const nextPath = ['My Selections', nextName];
+  const nextPath = ["My Selections", nextName];
   setCellSetColor([
     ...(cellSetColor || []),
     {
@@ -179,26 +190,20 @@ export function setCellSelection(cellSelection: string[], additionalCellSets: an
     },
   ]);
   setCellSetSelection([nextPath]);
-  setCellColorEncoding('cellSetSelection');
+  setCellColorEncoding("cellSetSelection");
 }
 
 export function mergeCellSets(cellSets: any, additionalCellSets: any) {
   return {
     version: HIERARCHICAL_SCHEMAS[SETS_DATATYPE_CELL].latestVersion,
     datatype: SETS_DATATYPE_CELL,
-    tree: [
-      ...(cellSets ? cellSets.tree : []),
-      ...(additionalCellSets ? additionalCellSets.tree : []),
-    ],
+    tree: [...(cellSets ? cellSets.tree : []), ...(additionalCellSets ? additionalCellSets.tree : [])],
   };
 }
 
-export function createWarningComponent(props: { title: string; message: string; }) {
+export function createWarningComponent(props: { title: string; message: string }) {
   return () => {
-    const {
-      title,
-      message,
-    } = props;
+    const { title, message } = props;
     return (
       <div className={PRIMARY_CARD}>
         <h1>{title}</h1>

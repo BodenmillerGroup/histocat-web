@@ -1,14 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import { v4 } from "uuid";
-import isNil from "lodash/isNil";
-import isEqual from "lodash/isEqual";
-import range from "lodash/range";
 import { featureCollection as turfFeatureCollection, point as turfPoint } from "@turf/helpers";
 import centroid from "@turf/centroid";
-import concaveman from "concaveman";
 import { HIERARCHICAL_SCHEMAS } from "./constants";
 import { DEFAULT_COLOR, PALETTE } from "../utils";
 import { pathToKey } from "./utils";
+import concaveman from "concaveman";
+import { isEqual, isNil, range } from "lodash-es";
 
 /**
  * Alias for the uuidv4 function to make code more readable.
@@ -24,14 +22,14 @@ function generateKey() {
  * @param {object} currNode A node object.
  * @returns {array} The array representing the set associated with the node.
  */
-export function nodeToSet(currNode) {
+export function nodeToSet(currNode: any): any[] {
   if (!currNode) {
     return [];
   }
   if (!currNode.children) {
     return currNode.set || [];
   }
-  return currNode.children.flatMap((c) => nodeToSet(c));
+  return currNode.children.flatMap((c: any) => nodeToSet(c));
 }
 
 /**
@@ -41,12 +39,12 @@ export function nodeToSet(currNode) {
  * @returns {number} The height. If the node has a .children property,
  * then the minimum value returned is 1.
  */
-export function nodeToHeight(currNode, level = 0) {
+export function nodeToHeight(currNode: any, level = 0) {
   if (!currNode.children) {
     return level;
   }
   const newLevel = level + 1;
-  const childrenHeights = currNode.children.map((c) => nodeToHeight(c, newLevel));
+  const childrenHeights = currNode.children.map((c: any) => nodeToHeight(c, newLevel));
   return Math.max(...childrenHeights, newLevel);
 }
 
@@ -57,7 +55,7 @@ export function nodeToHeight(currNode, level = 0) {
  * @param {number} currLevelIndex The index of the current hierarchy level.
  * @returns {object|null} A matching node object, or null if none is found.
  */
-function nodeFindNodeByNamePath(node, path, currLevelIndex) {
+function nodeFindNodeByNamePath(node: any, path: string[], currLevelIndex: number) {
   const currNodeName = path[currLevelIndex];
   if (node.name === currNodeName) {
     if (currLevelIndex === path.length - 1) {
@@ -65,7 +63,7 @@ function nodeFindNodeByNamePath(node, path, currLevelIndex) {
     }
     if (node.children) {
       const foundNodes = node.children
-        .map((child) => nodeFindNodeByNamePath(child, path, currLevelIndex + 1))
+        .map((child: any) => nodeFindNodeByNamePath(child, path, currLevelIndex + 1))
         .filter(Boolean);
       if (foundNodes.length === 1) {
         return foundNodes[0];
@@ -81,9 +79,9 @@ function nodeFindNodeByNamePath(node, path, currLevelIndex) {
  * @param {string[]} targetNamePath The name path for the node of interest.
  * @returns {object|null} A matching node object, or null if none is found.
  */
-export function treeFindNodeByNamePath(currTree, targetNamePath) {
+export function treeFindNodeByNamePath(currTree: any, targetNamePath: string[]) {
   const foundNodes = currTree.tree
-    .map((levelZeroNode) => nodeFindNodeByNamePath(levelZeroNode, targetNamePath, 0))
+    .map((levelZeroNode: any) => nodeFindNodeByNamePath(levelZeroNode, targetNamePath, 0))
     .filter(Boolean);
   if (foundNodes.length === 1) {
     return foundNodes[0];
@@ -103,8 +101,14 @@ export function treeFindNodeByNamePath(currTree, targetNamePath) {
  * during recursion.
  * @returns {object} The updated node.
  */
-export function nodeTransform(node, predicate, transform, transformedPaths, currPath) {
-  let newPath;
+export function nodeTransform(
+  node: any,
+  predicate: Function,
+  transform: Function,
+  transformedPaths: string[][],
+  currPath: string[]
+) {
+  let newPath: any;
   if (!currPath) {
     newPath = [node.name];
   } else {
@@ -117,7 +121,7 @@ export function nodeTransform(node, predicate, transform, transformedPaths, curr
   if (node.children) {
     return {
       ...node,
-      children: node.children.map((child) =>
+      children: node.children.map((child: any) =>
         nodeTransform(child, predicate, transform, transformedPaths, newPath.concat([child.name]))
       ),
     };
@@ -137,8 +141,14 @@ export function nodeTransform(node, predicate, transform, transformedPaths, curr
  * during recursion.
  * @returns {object} The updated node.
  */
-export function nodeTransformAll(node, predicate, transform, transformedPaths, currPath) {
-  let newPath;
+export function nodeTransformAll(
+  node: any,
+  predicate: Function,
+  transform: Function,
+  transformedPaths: string[][],
+  currPath?: string[]
+) {
+  let newPath: any;
   if (!currPath) {
     newPath = [node.name];
   } else {
@@ -152,7 +162,7 @@ export function nodeTransformAll(node, predicate, transform, transformedPaths, c
   if (node.children) {
     return {
       ...newNode,
-      children: newNode.children.map((child) =>
+      children: newNode.children.map((child: any) =>
         nodeTransformAll(child, predicate, transform, transformedPaths, newPath.concat([child.name]))
       ),
     };
@@ -166,7 +176,7 @@ export function nodeTransformAll(node, predicate, transform, transformedPaths, c
  * @param {object} newChild The child node object.
  * @returns {object} The updated node.
  */
-export function nodeAppendChild(currNode, newChild) {
+export function nodeAppendChild(currNode: any, newChild: any) {
   return {
     ...currNode,
     children: [...currNode.children, newChild],
@@ -179,7 +189,7 @@ export function nodeAppendChild(currNode, newChild) {
  * @param {object} newChild The child node object.
  * @returns {object} The updated node.
  */
-export function nodePrependChild(currNode, newChild) {
+export function nodePrependChild(currNode: any, newChild: any) {
   return {
     ...currNode,
     children: [newChild, ...currNode.children],
@@ -193,7 +203,7 @@ export function nodePrependChild(currNode, newChild) {
  * @param {*} insertIndex The index at which to insert the child.
  * @returns {object} The updated node.
  */
-export function nodeInsertChild(currNode, newChild, insertIndex) {
+export function nodeInsertChild(currNode: any, newChild: any, insertIndex: number) {
   const newChildren = Array.from(currNode.children);
   newChildren.splice(insertIndex, 0, newChild);
   return {
@@ -207,7 +217,7 @@ export function nodeInsertChild(currNode, newChild, insertIndex) {
  * @param {object} currTree A tree object.
  * @returns {array} An array representing the union of the sets of checked nodes.
  */
-export function treeToUnion(currTree, checkedPaths) {
+export function treeToUnion(currTree: any, checkedPaths: string[][]) {
   const nodes = checkedPaths.map((path) => treeFindNodeByNamePath(currTree, path));
   const nodeSets = nodes.map((node) => nodeToSet(node).map(([cellId]) => cellId));
   return nodeSets.reduce((a, h) => a.concat(h.filter((hEl) => !a.includes(hEl))), nodeSets[0] || []);
@@ -218,7 +228,7 @@ export function treeToUnion(currTree, checkedPaths) {
  * @param {object} currTree A tree object.
  * @returns {array} An array representing the intersection of the sets of checked nodes.
  */
-export function treeToIntersection(currTree, checkedPaths) {
+export function treeToIntersection(currTree: any, checkedPaths: string[][]) {
   const nodes = checkedPaths.map((path) => treeFindNodeByNamePath(currTree, path));
   const nodeSets = nodes.map((node) => nodeToSet(node).map(([cellId]) => cellId));
   return nodeSets.reduce((a, h) => h.filter((hEl) => a.includes(hEl)), nodeSets[0] || []);
@@ -230,7 +240,7 @@ export function treeToIntersection(currTree, checkedPaths) {
  * @returns {array} An array representing the complement of the
  * union of the sets of checked nodes.
  */
-export function treeToComplement(currTree, checkedPaths, items) {
+export function treeToComplement(currTree: any, checkedPaths: string[][], items: any[]) {
   const primaryUnion = treeToUnion(currTree, checkedPaths);
   return items.filter((el) => !primaryUnion.includes(el));
 }
@@ -245,7 +255,7 @@ export function treeToComplement(currTree, checkedPaths, items) {
  * @returns {object[]} An array of descendants at the specified level,
  * where the level is relative to the node.
  */
-export function nodeToLevelDescendantNamePaths(node, level, prevPath, stopEarly = false) {
+export function nodeToLevelDescendantNamePaths(node: any, level: number, prevPath: string[], stopEarly = false) {
   if (!node.children) {
     if (!stopEarly) {
       return null;
@@ -256,7 +266,7 @@ export function nodeToLevelDescendantNamePaths(node, level, prevPath, stopEarly 
     return [[...prevPath, node.name]];
   }
   return node.children
-    .flatMap((c) => nodeToLevelDescendantNamePaths(c, level - 1, [...prevPath, node.name], stopEarly))
+    .flatMap((c: any) => nodeToLevelDescendantNamePaths(c, level - 1, [...prevPath, node.name], stopEarly))
     .filter(Boolean);
 }
 
@@ -265,7 +275,7 @@ export function nodeToLevelDescendantNamePaths(node, level, prevPath, stopEarly 
  * @param {object} currTree A tree object.
  * @returns {object} Tree object with tree and node state removed.
  */
-export function treeExport(currTree, datatype) {
+export function treeExport(currTree: any, datatype: string) {
   return {
     version: HIERARCHICAL_SCHEMAS[datatype].latestVersion,
     datatype,
@@ -281,12 +291,12 @@ export function treeExport(currTree, datatype) {
  * @returns {object} { treeToExport, nodeName }
  * Tree with one level zero node, and with state removed.
  */
-export function treeExportLevelZeroNode(currTree, nodePath, datatype, cellSetColors) {
+export function treeExportLevelZeroNode(currTree: any, nodePath: string[], datatype: string, cellSetColors: any[]) {
   const node = treeFindNodeByNamePath(currTree, nodePath);
   const nodeWithColors = nodeTransformAll(
     node,
     () => true,
-    (n, nPath) => {
+    (n: any, nPath: any) => {
       const nodeColor = cellSetColors?.find((c) => isEqual(c.path, nPath))?.color ?? DEFAULT_COLOR;
       return {
         ...n,
@@ -311,7 +321,7 @@ export function treeExportLevelZeroNode(currTree, nodePath, datatype, cellSetCol
  * @param {string} nodeKey The key of the node of interest.
  * @returns {object} { setToExport, nodeName } The set as an array.
  */
-export function treeExportSet(currTree, nodePath) {
+export function treeExportSet(currTree: any, nodePath: string[]) {
   const node = treeFindNodeByNamePath(currTree, nodePath);
   return { setToExport: nodeToSet(node), nodeName: node.name };
 }
@@ -321,7 +331,7 @@ export function treeExportSet(currTree, nodePath) {
  * @param {string} datatype The type of sets that this tree contains.
  * @returns {object} Empty tree.
  */
-export function treeInitialize(datatype) {
+export function treeInitialize(datatype: string) {
   return {
     version: HIERARCHICAL_SCHEMAS[datatype].latestVersion,
     datatype,
@@ -336,14 +346,14 @@ export function treeInitialize(datatype) {
  * @returns {object} An object containing properties required
  * by the TreeNode render functions.
  */
-export function nodeToRenderProps(node, path, cellSetColor) {
+export function nodeToRenderProps(node: any, path: string[], cellSetColor: any) {
   const level = path.length - 1;
   return {
     title: node.name,
     nodeKey: pathToKey(path),
     path,
     size: nodeToSet(node).length,
-    color: cellSetColor?.find((d) => isEqual(d.path, path))?.color,
+    color: cellSetColor?.find((d: any) => isEqual(d.path, path))?.color,
     level,
     isLeaf: (!node.children || node.children.length === 0) && Boolean(node.set),
     height: nodeToHeight(node),
@@ -360,7 +370,7 @@ export function nodeToRenderProps(node, path, cellSetColor) {
  * @param {number[]} mixingColor The color with which to mix. By default, [128, 128, 128] gray.
  * @returns {number[]} Returns the color after mixing.
  */
-function colorMixWithUncertainty(originalColor, p, mixingColor = [128, 128, 128]) {
+function colorMixWithUncertainty(originalColor: number[], p: number, mixingColor = [128, 128, 128]) {
   return [
     (originalColor[0] - mixingColor[0]) * p + mixingColor[0],
     (originalColor[1] - mixingColor[1]) * p + mixingColor[1],
@@ -380,13 +390,13 @@ function colorMixWithUncertainty(originalColor, p, mixingColor = [128, 128, 128]
  * where cellIds is an array of strings,
  * and cellColors is an object mapping cellIds to color [r,g,b] arrays.
  */
-export function treeToCellColorsBySetNames(currTree, selectedNamePaths, cellSetColor) {
-  let cellColorsArray = [];
+export function treeToCellColorsBySetNames(currTree: any, selectedNamePaths: string[][], cellSetColor: any) {
+  let cellColorsArray: any[] = [];
   selectedNamePaths.forEach((setNamePath) => {
     const node = treeFindNodeByNamePath(currTree, setNamePath);
     if (node) {
       const nodeSet = nodeToSet(node);
-      const nodeColor = cellSetColor?.find((d) => isEqual(d.path, setNamePath))?.color || DEFAULT_COLOR;
+      const nodeColor = cellSetColor?.find((d: any) => isEqual(d.path, setNamePath))?.color || DEFAULT_COLOR;
       cellColorsArray = [
         ...cellColorsArray,
         ...nodeSet.map(([cellId, prob]) => [
@@ -411,13 +421,13 @@ export function treeToCellColorsBySetNames(currTree, selectedNamePaths, cellSetC
  * @returns {object[]} Array of objects with properties
  * `obsId`, `name`, and `color`.
  */
-export function treeToObjectsBySetNames(currTree, selectedNamePaths, setColor) {
-  let cellsArray = [];
+export function treeToObjectsBySetNames(currTree: any, selectedNamePaths: string[][], setColor: any) {
+  let cellsArray: any = [];
   selectedNamePaths.forEach((setNamePath) => {
     const node = treeFindNodeByNamePath(currTree, setNamePath);
     if (node) {
       const nodeSet = nodeToSet(node);
-      const nodeColor = setColor?.find((d) => isEqual(d.path, setNamePath))?.color || DEFAULT_COLOR;
+      const nodeColor = setColor?.find((d: any) => isEqual(d.path, setNamePath))?.color || DEFAULT_COLOR;
       cellsArray = [
         ...cellsArray,
         ...nodeSet.map(([cellId]) => ({
@@ -431,19 +441,19 @@ export function treeToObjectsBySetNames(currTree, selectedNamePaths, setColor) {
   return cellsArray;
 }
 
-export function treeToCellPolygonsBySetNames(currTree, cells, mapping, selectedNamePaths, cellSetColor) {
-  const cellSetPolygons = [];
+export function treeToCellPolygonsBySetNames(currTree: any, cells: any, mapping: string, selectedNamePaths: string[][], cellSetColor: any) {
+  const cellSetPolygons: any[] = [];
   selectedNamePaths.forEach((setNamePath) => {
     const node = treeFindNodeByNamePath(currTree, setNamePath);
     if (node) {
       const nodeSet = nodeToSet(node);
-      const nodeColor = cellSetColor?.find((d) => isEqual(d.path, setNamePath))?.color || DEFAULT_COLOR;
+      const nodeColor = cellSetColor?.find((d: any) => isEqual(d.path, setNamePath))?.color || DEFAULT_COLOR;
       const cellPositions = nodeSet
         .map(([cellId]) => [cells[cellId]?.mappings[mapping][0], -cells[cellId]?.mappings[mapping][1]])
         .filter((cell) => cell.every((i) => typeof i === "number"));
 
       if (cellPositions.length > 2) {
-        const points = turfFeatureCollection(cellPositions.map(turfPoint));
+        const points = turfFeatureCollection(cellPositions.map(turfPoint as any));
         const concavity = Infinity;
         const hullCoords = concaveman(cellPositions, concavity);
         if (hullCoords) {
@@ -474,8 +484,8 @@ export function treeToCellPolygonsBySetNames(currTree, cells, mapping, selectedN
  * with the properties `name`, `size`, `key`,
  * and `color`.
  */
-export function treeToSetSizesBySetNames(currTree, selectedNamePaths, setColor) {
-  const sizes = [];
+export function treeToSetSizesBySetNames(currTree: any, selectedNamePaths: string[][], setColor: any[]) {
+  const sizes: any[] = [];
   selectedNamePaths.forEach((setNamePath) => {
     const node = treeFindNodeByNamePath(currTree, setNamePath);
     if (node) {
@@ -499,7 +509,7 @@ export function treeToSetSizesBySetNames(currTree, selectedNamePaths, setColor) 
  * @param {array} filterPath The path sought.
  * @returns {object} A new node without a node at filterPath.
  */
-export function filterNode(node, prevPath, filterPath) {
+export function filterNode(node: any, prevPath: string[], filterPath: string[]) {
   if (isEqual([...prevPath, node.name], filterPath)) {
     return null;
   }
@@ -508,14 +518,14 @@ export function filterNode(node, prevPath, filterPath) {
   }
   return {
     ...node,
-    children: node.children.map((c) => filterNode(c, [...prevPath, node.name], filterPath)).filter(Boolean),
+    children: node.children.map((c: any) => filterNode(c, [...prevPath, node.name], filterPath)).filter(Boolean),
   };
 }
 
-export function treeToExpectedCheckedLevel(currTree, checkedPaths) {
+export function treeToExpectedCheckedLevel(currTree: any, checkedPaths: string[][]) {
   let result = null;
   if (currTree) {
-    currTree.tree.forEach((lzn) => {
+    currTree.tree.forEach((lzn: any) => {
       const levelZeroPath = [lzn.name];
       const height = nodeToHeight(lzn);
       range(height).forEach((i) => {
@@ -530,26 +540,26 @@ export function treeToExpectedCheckedLevel(currTree, checkedPaths) {
   return result;
 }
 
-export function treesConflict(cellSets, testCellSets) {
-  const paths = [];
-  const testPaths = [];
+export function treesConflict(cellSets: any, testCellSets: any) {
+  const paths: any[] = [];
+  const testPaths: any[] = [];
   let hasConflict = false;
 
-  function getPaths(node, prevPath) {
+  function getPaths(node: any, prevPath: string[]) {
     paths.push([...prevPath, node.name]);
     if (node.children) {
-      node.children.forEach((c) => getPaths(c, [...prevPath, node.name]));
+      node.children.forEach((c: any) => getPaths(c, [...prevPath, node.name]));
     }
   }
-  cellSets.tree.forEach((lzn) => getPaths(lzn, []));
+  cellSets.tree.forEach((lzn: any) => getPaths(lzn, []));
 
-  function getTestPaths(node, prevPath) {
+  function getTestPaths(node: any, prevPath: string[]) {
     testPaths.push([...prevPath, node.name]);
     if (node.children) {
-      node.children.forEach((c) => getPaths(c, [...prevPath, node.name]));
+      node.children.forEach((c: any) => getPaths(c, [...prevPath, node.name]));
     }
   }
-  testCellSets.tree.forEach((lzn) => getTestPaths(lzn, []));
+  testCellSets.tree.forEach((lzn: any) => getTestPaths(lzn, []));
 
   testPaths.forEach((testPath) => {
     if (paths.find((p) => isEqual(p, testPath))) {
@@ -559,15 +569,15 @@ export function treesConflict(cellSets, testCellSets) {
   return hasConflict;
 }
 
-export function initializeCellSetColor(cellSets, cellSetColor) {
+export function initializeCellSetColor(cellSets: any, cellSetColor: any[]) {
   const nextCellSetColor = [...(cellSetColor || [])];
-  const nodeCountPerTreePerLevel = cellSets.tree.map((tree) =>
+  const nodeCountPerTreePerLevel = cellSets.tree.map((tree: any) =>
     Array.from({
       length: nodeToHeight(tree) + 1, // Need to add one because its an array.
     }).fill(0)
   );
 
-  function processNode(node, prevPath, hierarchyLevel, treeIndex) {
+  function processNode(node: any, prevPath: string[], hierarchyLevel: number, treeIndex: number) {
     const index = nodeCountPerTreePerLevel[treeIndex][hierarchyLevel];
     const nodePath = [...prevPath, node.name];
 
@@ -580,15 +590,15 @@ export function initializeCellSetColor(cellSets, cellSetColor) {
     }
     nodeCountPerTreePerLevel[treeIndex][hierarchyLevel] += 1;
     if (node.children) {
-      node.children.forEach((c) => processNode(c, nodePath, hierarchyLevel + 1, treeIndex));
+      node.children.forEach((c: any) => processNode(c, nodePath, hierarchyLevel + 1, treeIndex));
     }
   }
 
-  cellSets.tree.forEach((lzn, treeIndex) => processNode(lzn, [], 0, treeIndex));
+  cellSets.tree.forEach((lzn: any, treeIndex: number) => processNode(lzn, [], 0, treeIndex));
   return nextCellSetColor;
 }
 
-export function getCellSetPolygons(params) {
+export function getCellSetPolygons(params: { cells: any; mapping: string; cellSets: any; cellSetSelection: any; cellSetColor: any; }) {
   const { cells, mapping, cellSets, cellSetSelection, cellSetColor } = params;
   if (cellSetSelection && cellSetSelection.length > 0 && cellSets && cells) {
     return treeToCellPolygonsBySetNames(cellSets, cells, mapping, cellSetSelection, cellSetColor);

@@ -5,10 +5,10 @@ import { useComponentHover, useComponentViewInfo } from '../../app/state/hooks';
 
 type ScatterplotTooltipSubscriberProps = {
   parentUuid: string;
-  cellHighlight: any;
+  cellHighlight: string | null;
   width: number;
   height: number;
-  getCellInfo: Function;
+  getCellInfo: (cellId: string) => object;
 }
 
 export default function ScatterplotTooltipSubscriber(props: ScatterplotTooltipSubscriberProps) {

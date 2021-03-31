@@ -23,27 +23,25 @@ export function BlendView() {
   );
   const setViewConfig = useSetViewConfig();
   const config = {
-    name: 'Linnarsson',
-    version: '1.0.0',
+    name: "Linnarsson",
+    version: "1.0.0",
     description: "SSSSS",
     public: true,
     datasets: [
       {
-        uid: 'linnarsson-2018',
-        name: 'Linnarsson 2018',
+        uid: "linnarsson-2018",
+        name: "Linnarsson 2018",
         description: `Linnarsson: SSSS`,
         files: [],
       },
     ],
-    initStrategy: 'auto',
+    initStrategy: "auto",
     coordinationSpace: {
       embeddingZoom: {
         PCA: 0,
-        TSNE: 0.75,
       },
       embeddingType: {
-        PCA: 'PCA',
-        TSNE: 't-SNE',
+        PCA: "PCA",
       },
       spatialZoom: {
         A: -5.5,
@@ -56,25 +54,17 @@ export function BlendView() {
       },
     },
     layout: [
-      { component: 'spatial',
+      {
+        component: "scatterplot",
         coordinationScopes: {
-          spatialZoom: 'A',
-          spatialTargetX: 'A',
-          spatialTargetY: 'A',
+          embeddingType: "PCA",
+          embeddingZoom: "PCA",
         },
-        x: 2, y: 0, w: 4, h: 4 },
-      { component: 'scatterplot',
-        coordinationScopes: {
-          embeddingType: 'PCA',
-          embeddingZoom: 'PCA',
-        },
-        x: 6, y: 0, w: 3, h: 2 },
-      { component: 'scatterplot',
-        coordinationScopes: {
-          embeddingType: 'TSNE',
-          embeddingZoom: 'TSNE',
-        },
-        x: 6, y: 2, w: 3, h: 2 },
+        x: 6,
+        y: 0,
+        w: 3,
+        h: 2,
+      },
     ],
   };
   setViewConfig(config);
@@ -101,29 +91,19 @@ export function BlendView() {
             <Status info="Hello world" removeGridComponent={() => {}} />
           </div>
           <div className="card card-body bg-secondary" style={dimensions}>
-            <Scatterplot
-              uuid="my-vitessce-scatterplot"
-              viewState={view}
-              mapping={mapping}
-              cells={cells}
-              cellSelection={selectedCellIds}
-              cellColors={null}
-              setViewState={() => {}}
-              updateStatus={(message: any) => {}}
-              updateCellsSelection={(selectedIds: any) => {}}
-              updateCellsHover={(hoverInfo: any) => {}}
-              updateViewInfo={(viewInfo: any) => {}}
-              clearPleaseWait={(layerName: any) => {}}
-            />
+            {/*<Scatterplot*/}
+            {/*  uuid="my-vitessce-scatterplot"*/}
+            {/*  viewState={view}*/}
+            {/*  mapping={mapping}*/}
+            {/*  cells={cells}*/}
+            {/*  cellSelection={selectedCellIds}*/}
+            {/*  cellColors={null}*/}
+            {/*  setViewState={() => {}}*/}
+            {/*  updateViewInfo={(viewInfo: any) => {}}*/}
+            {/*/>*/}
           </div>
           <div className="card card-body bg-secondary" style={dimensions}>
-            <VitessceGrid
-              config={config}
-              getComponent={getComponent}
-              rowHeight={200}
-              height={800}
-              theme="dark"
-            />
+            <VitessceGrid config={config} getComponent={getComponent} rowHeight={200} height={800} theme="dark" />
           </div>
         </div>
       </span>

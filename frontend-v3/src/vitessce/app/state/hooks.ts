@@ -210,7 +210,9 @@ export function useCoordination(parameters: string[], coordinationScopes: any) {
  * in the `useViewConfigStore` store.
  */
 export function useLoaders() {
-  return useViewConfigStore((state) => state.loaders);
+  return useViewConfigStore((state) => {
+    return state.loaders
+  });
 }
 
 /**

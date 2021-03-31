@@ -29,8 +29,44 @@ const makeDefaultGetCellPosition = (mapping: string) => (cellEntry: any) => {
 const makeDefaultGetCellCoords = (mapping: string) => (cell: any) => cell.mappings[mapping];
 const makeDefaultGetCellColors = (cellColors: any) => (cellEntry: any) =>
   (cellColors && cellColors.get(cellEntry[0])) || DEFAULT_COLOR;
-const makeDefaultGetCellIsSelected = (cellSelection: number[]) => (cellEntry: any) =>
+const makeDefaultGetCellIsSelected = (cellSelection: string[] | null) => (cellEntry: any) =>
   cellSelection ? cellSelection.includes(cellEntry[0]) : true; // If nothing is selected, everything is selected.
+
+type ScatterplotProps = {
+  uuid: string;
+  deckRef?: any;
+  viewState: any;
+  setViewState: any;
+  onToolChange?: any;
+  updateViewInfo: any;
+  cells: any;
+  theme: string;
+  mapping: string;
+  cellColors: any;
+  cellSelection: any[];
+  cellFilter?: any[];
+  setCellFilter: any;
+  cellRadiusScale?: number;
+  cellOpacity?: number;
+  getCellCoords?: any;
+  getCellPosition?: any;
+  getCellColor?: any;
+  getCellIsSelected?: any;
+  setCellSelection: any;
+  cellHighlight: string | null;
+  setCellHighlight: (cellId: string | null) => void;
+  onCellClick?: any;
+  setComponentHover: any;
+  cellSetPolygons: any;
+  cellSetPolygonsVisible: any;
+  cellSetLabelsVisible: any;
+  cellSetLabelSize: any;
+};
+
+type ScatterplotState = {
+  gl: any;
+  tool: any;
+};
 
 /**
  * React component which renders a scatterplot from cell data, typically tSNE or PCA.
@@ -61,13 +97,13 @@ const makeDefaultGetCellIsSelected = (cellSelection: number[]) => (cellEntry: an
  * (lasso/pan/rectangle selection tools).
  * @param {function} props.onCellClick Getter function for cell layer onClick.
  */
-class Scatterplot extends AbstractSpatialOrScatterplot {
+class Scatterplot extends AbstractSpatialOrScatterplot<ScatterplotProps, ScatterplotState> {
   private cellsQuadTree: any;
   private cellSetsForceSimulation;
   private cellSetsLabelPrevZoom: any;
   private cellSetsLayers: any[];
 
-  constructor(props: any) {
+  constructor(props: ScatterplotProps) {
     super(props);
 
     // To avoid storing large arrays/objects
@@ -269,6 +305,7 @@ class Scatterplot extends AbstractSpatialOrScatterplot {
   componentDidUpdate(prevProps: any) {
     this.viewInfoDidUpdate();
 
+    // @ts-ignore
     const shallowDiff = (propName: string) => prevProps[propName] !== this.props[propName];
     if (["cells"].some(shallowDiff)) {
       // Cells data changed.
@@ -303,5 +340,7 @@ class Scatterplot extends AbstractSpatialOrScatterplot {
  * access the grandchild DeckGL ref,
  * but we are using a class component.
  */
-const ScatterplotWrapper = forwardRef((props, deckRef) => <Scatterplot {...props} deckRef={deckRef} />);
-export default ScatterplotWrapper as any;
+const ScatterplotWrapper = forwardRef((props: ScatterplotProps, deckRef) => (
+  <Scatterplot {...props} deckRef={deckRef} />
+));
+export default ScatterplotWrapper;
