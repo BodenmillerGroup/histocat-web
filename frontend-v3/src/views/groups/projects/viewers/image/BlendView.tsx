@@ -5,11 +5,8 @@ import { Intent } from "@blueprintjs/core";
 import { useProjectsStore } from "modules/projects";
 import { SuggestionView } from "components/SuggestionView";
 import "vitessce/css/index.scss";
-import Scatterplot from "vitessce/components/scatterplot/Scatterplot";
 import { Status } from "vitessce/components/status";
 import { useSetViewConfig } from "vitessce/app/state/hooks";
-import VitessceGrid from "vitessce/app/VitessceGrid";
-import { getComponent } from "vitessce/app/component-registry";
 
 export function BlendView() {
   const { activeAcquisition, selectedMetals, setSelectedMetals, getChannelStackImage } = useProjectsStore(
@@ -55,15 +52,18 @@ export function BlendView() {
     },
     layout: [
       {
-        component: "scatterplot",
-        coordinationScopes: {
-          embeddingType: "PCA",
-          embeddingZoom: "PCA",
-        },
-        x: 6,
+        component: "slides",
+        x: 0,
         y: 0,
-        w: 3,
-        h: 2,
+        w: 2,
+        h: 3,
+      },
+      {
+        component: "channels",
+        x: 2,
+        y: 3,
+        w: 2,
+        h: 3,
       },
     ],
   };
@@ -89,21 +89,6 @@ export function BlendView() {
         <div className="vitessce-container vitessce-theme-light">
           <div className="card card-body bg-secondary" style={dimensions}>
             <Status info="Hello world" removeGridComponent={() => {}} />
-          </div>
-          <div className="card card-body bg-secondary" style={dimensions}>
-            {/*<Scatterplot*/}
-            {/*  uuid="my-vitessce-scatterplot"*/}
-            {/*  viewState={view}*/}
-            {/*  mapping={mapping}*/}
-            {/*  cells={cells}*/}
-            {/*  cellSelection={selectedCellIds}*/}
-            {/*  cellColors={null}*/}
-            {/*  setViewState={() => {}}*/}
-            {/*  updateViewInfo={(viewInfo: any) => {}}*/}
-            {/*/>*/}
-          </div>
-          <div className="card card-body bg-secondary" style={dimensions}>
-            <VitessceGrid config={config} getComponent={getComponent} rowHeight={200} height={800} theme="dark" />
           </div>
         </div>
       </span>

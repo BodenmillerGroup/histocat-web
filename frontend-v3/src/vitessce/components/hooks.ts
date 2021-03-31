@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import { useGridResize, useEmitGridResize } from "../app/state/hooks";
 import { debounce } from "lodash-es";
+import DeckGL from "deck.gl";
 
 /**
  * Custom hook, subscribes to GRID_RESIZE and window resize events.
@@ -49,7 +50,7 @@ export function useGridItemSize() {
  * a <DeckGL/> element (or a forwardRef to one).
  */
 export function useDeckCanvasSize() {
-  const deckRef = useRef<any>();
+  const deckRef = useRef<DeckGL>();
 
   const [height, setHeight] = useState<number>(0);
   const [width, setWidth] = useState<number>(0);
@@ -80,7 +81,7 @@ export function useDeckCanvasSize() {
     setWidth(canvasRect.width);
   }, [resizeCount]);
 
-  return [width, height, deckRef] as [width: number, height: number, deckRef: React.MutableRefObject<any>];
+  return [width, height, deckRef] as [width: number, height: number, deckRef: React.MutableRefObject<DeckGL>];
 }
 
 /**

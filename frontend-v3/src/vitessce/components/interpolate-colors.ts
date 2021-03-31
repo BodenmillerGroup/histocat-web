@@ -95,7 +95,7 @@ export function getCellColors(params: any) {
   if (cellColorEncoding === 'geneSelection' && expressionData && expressionDataAttrs) {
     // TODO: allow other color maps.
     const geneExpColormap = interpolatePlasma;
-    const colors = new Map();
+    const colors = new Map<string, any>();
     for (let i = 0; i < expressionData.length; i += 1) {
       const value = expressionData[i];
       const cellColor = geneExpColormap(value / 255);
@@ -109,5 +109,5 @@ export function getCellColors(params: any) {
     // with defaults and returns the processed tree object.
     return treeToCellColorsBySetNames(cellSets, cellSetSelection, cellSetColor);
   }
-  return new Map();
+  return new Map<string, any>();
 }

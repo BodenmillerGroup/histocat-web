@@ -5,6 +5,7 @@ import { useSetWarning } from "../app/state/hooks";
 import { AbstractLoaderError, LoaderNotFoundError } from "../loaders/errors/index";
 import { DEFAULT_MOLECULES_LAYER, DEFAULT_CELLS_LAYER, DEFAULT_NEIGHBORHOODS_LAYER } from "./spatial/constants";
 import { DEFAULT_COORDINATION_VALUES } from "../app/state/coordination";
+import { Cell } from "../types";
 
 /**
  * Warn via publishing to the console
@@ -107,7 +108,7 @@ export function useCellsData(
   coordinationSetters?: any,
   initialCoordinationValues?: any
 ) {
-  const [cells, setCells] = useState({});
+  const [cells, setCells] = useState<{ [p: string]: Cell }>({});
   const [cellsCount, setCellsCount] = useState<number>(0);
 
   const setWarning = useSetWarning();
@@ -149,7 +150,7 @@ export function useCellsData(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaders, dataset]);
 
-  return [cells, cellsCount] as [cells: any, cellsCount: number];
+  return [cells, cellsCount] as [cells: { [p: string]: Cell }, cellsCount: number];
 }
 
 /**

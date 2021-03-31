@@ -1,4 +1,5 @@
 import { range } from "../../utils";
+import { Layout } from "../../types";
 
 export const COMPONENT_ID_PREFIX = 'i';
 
@@ -30,14 +31,14 @@ export function getMaxRows(layouts: object) {
   );
 }
 
-export function resolveLayout(layout: any) {
+export function resolveLayout(layout: Layout) {
   const cols: any = {};
   const layouts: any = {};
   const breakpoints: any = {};
   const components: any = {};
   const positions: any = {};
 
-  (('components' in layout) ? layout.components : layout).forEach(
+  (('components' in layout) ? (layout as any).components : layout).forEach(
     (def: any, i: number) => {
       const id = `${COMPONENT_ID_PREFIX}${i}`;
       components[id] = {
@@ -52,7 +53,7 @@ export function resolveLayout(layout: any) {
   );
 
   if ('components' in layout) {
-    Object.entries<number[]>(layout.columns).forEach(
+    Object.entries<number[]>((layout as any).columns).forEach(
       ([width, columnXs]) => {
         cols[width] = columnXs[columnXs.length - 1];
         layouts[width] = makeGridLayout(columnXs, positions);

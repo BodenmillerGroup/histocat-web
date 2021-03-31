@@ -19,7 +19,7 @@ const SCATTERPLOT_DATA_TYPES = ["cells", "expression-matrix", "cell-sets"];
 type ScatterplotSubscriberProps = {
   uuid: string;
   coordinationScopes: any;
-  removeGridComponent: (event: any) => void;
+  removeGridComponent(event: any): void;
   theme: string;
   disableTooltip: boolean;
   observationsLabelOverride: string;
@@ -205,7 +205,7 @@ export default function ScatterplotSubscriber(props: ScatterplotSubscriberProps)
   }, [cells, mapping]);
 
   const getCellInfo = useCallback(
-    (cellId) => {
+    (cellId: string) => {
       const cellInfo = cells[cellId];
       return {
         [`${capitalize(observationsLabel)} ID`]: cellId,

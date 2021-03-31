@@ -5,10 +5,10 @@ import { useComponentHover, useComponentViewInfo } from "../../app/state/hooks";
 
 type SpatialTooltipSubscriberProps = {
   parentUuid: string;
-  cellHighlight: any;
+  cellHighlight: string;
   width: number;
   height: number;
-  getCellInfo: any;
+  getCellInfo(cellId: string): {[p: string]: string} | null;
 };
 
 export default function SpatialTooltipSubscriber(props: SpatialTooltipSubscriberProps) {

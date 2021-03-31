@@ -2,6 +2,7 @@ import React from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { getMaxRows, resolveLayout, COMPONENT_ID_PREFIX } from "./layout-utils";
 import { isEqual } from "lodash-es";
+import { Layout } from "../../types";
 
 const ResponsiveGridLayout = WidthProvider<any>(Responsive);
 
@@ -13,7 +14,21 @@ class ResponsiveHeightGridLayout extends ResponsiveGridLayout {
   }
 }
 
-export default function VitessceGridLayout(props: any) {
+type VitessceGridLayoutProps = {
+  layout: Layout;
+  getComponent(p: string): any;
+  padding: number;
+  margin: number;
+  draggableHandle: string;
+  reactGridLayoutProps: any;
+  rowHeight: number;
+  theme: string;
+  height?: number;
+  onRemoveComponent(p: number): void;
+  onLayoutChange(p: any[]): void;
+}
+
+export default function VitessceGridLayout(props: VitessceGridLayoutProps) {
   const {
     layout,
     getComponent,

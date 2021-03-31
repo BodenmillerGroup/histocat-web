@@ -1,11 +1,17 @@
-import React, { forwardRef } from "react";
+import React, { ForwardedRef, forwardRef } from "react";
 import { PolygonLayer, TextLayer } from "@deck.gl/layers"; // eslint-disable-line import/no-extraneous-dependencies
 import { forceSimulation } from "d3-force";
 import { SelectableScatterplotLayer, getSelectionLayers } from "../../layers";
 import { cellLayerDefaultProps, DEFAULT_COLOR } from "../utils";
 import { createCellsQuadTree } from "../shared-spatial-scatterplot/quadtree";
-import AbstractSpatialOrScatterplot from "../shared-spatial-scatterplot/AbstractSpatialOrScatterplot";
+import AbstractSpatialOrScatterplot, {
+  AbstractSpatialOrScatterplotProps,
+  AbstractSpatialOrScatterplotState,
+} from "../shared-spatial-scatterplot/AbstractSpatialOrScatterplot";
 import { forceCollideRects } from "../shared-spatial-scatterplot/force-collide-rects";
+import DeckGL, { RGBAColor } from "deck.gl";
+import { Cell, CellEntry } from "../../types";
+import { Quadtree } from "d3";
 
 const CELLS_LAYER_ID = "scatterplot";
 const LABEL_FONT_FAMILY = "-apple-system, 'Helvetica Neue', Arial, sans-serif";
@@ -13,7 +19,7 @@ const NUM_FORCE_SIMULATION_TICKS = 100;
 const LABEL_UPDATE_ZOOM_DELTA = 0.25;
 
 // Default getter function props.
-const makeDefaultGetCellPosition = (mapping: string) => (cellEntry: any) => {
+const makeDefaultGetCellPosition = (mapping: string) => (cellEntry: CellEntry) => {
   const { mappings } = cellEntry[1];
   if (!(mapping in mappings)) {
     const available = Object.keys(mappings)
@@ -26,47 +32,37 @@ const makeDefaultGetCellPosition = (mapping: string) => (cellEntry: any) => {
   // graphics rendering has the y-axis positive going south.
   return [mappedCell[0], -mappedCell[1], 0];
 };
-const makeDefaultGetCellCoords = (mapping: string) => (cell: any) => cell.mappings[mapping];
-const makeDefaultGetCellColors = (cellColors: any) => (cellEntry: any) =>
+const makeDefaultGetCellCoords = (mapping: string) => (cell: Cell) => cell.mappings[mapping];
+const makeDefaultGetCellColors = (cellColors: Map<string, RGBAColor>) => (cellEntry: CellEntry) =>
   (cellColors && cellColors.get(cellEntry[0])) || DEFAULT_COLOR;
-const makeDefaultGetCellIsSelected = (cellSelection: string[] | null) => (cellEntry: any) =>
+const makeDefaultGetCellIsSelected = (cellSelection: string[] | null) => (cellEntry: CellEntry) =>
   cellSelection ? cellSelection.includes(cellEntry[0]) : true; // If nothing is selected, everything is selected.
 
 type ScatterplotProps = {
-  uuid: string;
-  deckRef?: any;
-  viewState: any;
-  setViewState: any;
-  onToolChange?: any;
-  updateViewInfo: any;
-  cells: any;
   theme: string;
   mapping: string;
-  cellColors: any;
-  cellSelection: any[];
-  cellFilter?: any[];
-  setCellFilter: any;
+  cellColors: Map<string, RGBAColor>;
+  cellSelection: string[];
+  cellFilter?: string[];
+  setCellFilter(cellFilter: string[]): void;
   cellRadiusScale?: number;
   cellOpacity?: number;
-  getCellCoords?: any;
-  getCellPosition?: any;
-  getCellColor?: any;
-  getCellIsSelected?: any;
-  setCellSelection: any;
+  getCellCoords?(cell: Cell): number[];
+  getCellPosition?(cellEntry: CellEntry): number[];
+  getCellColor?(cellEntry: CellEntry): RGBAColor;
+  getCellIsSelected?(cellEntry: CellEntry): boolean;
+  setCellSelection(cellSelection: string[]): void;
   cellHighlight: string | null;
-  setCellHighlight: (cellId: string | null) => void;
-  onCellClick?: any;
-  setComponentHover: any;
-  cellSetPolygons: any;
-  cellSetPolygonsVisible: any;
-  cellSetLabelsVisible: any;
-  cellSetLabelSize: any;
+  setCellHighlight(cellId: string | null): void;
+  onCellClick?(info: any): void;
+  setComponentHover(): void;
+  cellSetPolygons: any[];
+  cellSetPolygonsVisible: boolean;
+  cellSetLabelsVisible: boolean;
+  cellSetLabelSize: number;
 };
 
-type ScatterplotState = {
-  gl: any;
-  tool: any;
-};
+type ScatterplotState = {};
 
 /**
  * React component which renders a scatterplot from cell data, typically tSNE or PCA.
@@ -97,13 +93,16 @@ type ScatterplotState = {
  * (lasso/pan/rectangle selection tools).
  * @param {function} props.onCellClick Getter function for cell layer onClick.
  */
-class Scatterplot extends AbstractSpatialOrScatterplot<ScatterplotProps, ScatterplotState> {
-  private cellsQuadTree: any;
+class Scatterplot extends AbstractSpatialOrScatterplot<
+  ScatterplotProps & AbstractSpatialOrScatterplotProps,
+  ScatterplotState & AbstractSpatialOrScatterplotState
+> {
+  private cellsQuadTree: Quadtree<[number, number]> | null;
   private cellSetsForceSimulation;
-  private cellSetsLabelPrevZoom: any;
-  private cellSetsLayers: any[];
+  private cellSetsLabelPrevZoom: number | null;
+  private cellSetsLayers: (PolygonLayer<any> | TextLayer<any>)[];
 
-  constructor(props: ScatterplotProps) {
+  constructor(props: ScatterplotProps & AbstractSpatialOrScatterplotProps) {
     super(props);
 
     // To avoid storing large arrays/objects
@@ -290,7 +289,7 @@ class Scatterplot extends AbstractSpatialOrScatterplot<ScatterplotProps, Scatter
 
   viewInfoDidUpdate() {
     const { mapping, getCellPosition = makeDefaultGetCellPosition(mapping) } = this.props;
-    super.viewInfoDidUpdate((cell: any) => getCellPosition([null, cell]));
+    super.viewInfoDidUpdate((cell: Cell) => getCellPosition([null as any, cell]));
   }
 
   /**
@@ -340,7 +339,9 @@ class Scatterplot extends AbstractSpatialOrScatterplot<ScatterplotProps, Scatter
  * access the grandchild DeckGL ref,
  * but we are using a class component.
  */
-const ScatterplotWrapper = forwardRef((props: ScatterplotProps, deckRef) => (
-  <Scatterplot {...props} deckRef={deckRef} />
-));
+const ScatterplotWrapper = forwardRef(
+  (props: ScatterplotProps & AbstractSpatialOrScatterplotProps, deckRef: ForwardedRef<DeckGL>) => (
+    <Scatterplot {...props} deckRef={deckRef} />
+  )
+);
 export default ScatterplotWrapper;

@@ -2,6 +2,7 @@ import { useRef, useCallback } from "react";
 import create from "zustand";
 import shallow from "zustand/shallow";
 import { fromEntries, capitalize } from "../../utils";
+import { Layout } from "../../types";
 
 type ViewConfigState = {
   viewConfig: any;
@@ -77,7 +78,7 @@ export const useViewConfigStore = create<ViewConfigState>((set) => ({
 
 type HoverState = {
   componentHover: any;
-  setComponentHover(componentHover: any): void;
+  setComponentHover(componentHover: string): void;
 }
 
 /**
@@ -91,7 +92,7 @@ const useHoverStore = create<HoverState>((set) => ({
   // for tooltip interactions. This value should be a unique
   // component ID, such as its index in the view config layout.
   componentHover: null,
-  setComponentHover: (componentHover: any) => set({ componentHover }),
+  setComponentHover: (componentHover: string) => set({ componentHover }),
 }));
 
 type WarnState = {
@@ -221,7 +222,7 @@ export function useLoaders() {
  * @returns {object[]} The layout array
  * in the `useViewConfigStore` store.
  */
-export function useLayout() {
+export function useLayout(): Layout {
   return useViewConfigStore((state) => state.viewConfig?.layout);
 }
 

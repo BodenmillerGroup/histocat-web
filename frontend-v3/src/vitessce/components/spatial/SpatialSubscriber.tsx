@@ -19,13 +19,14 @@ import SpatialTooltipSubscriber from "./SpatialTooltipSubscriber";
 import { makeSpatialSubtitle, getInitialSpatialTargets } from "./utils";
 import { useCoordination, useLoaders, useSetComponentHover, useSetComponentViewInfo } from "../../app/state/hooks";
 import { COMPONENT_COORDINATION_TYPES } from "../../app/state/coordination";
+import { CoordinationScopes } from "../../types";
 
 const SPATIAL_DATA_TYPES = ["cells", "molecules", "raster", "cell-sets", "expression-matrix"];
 
 type SpatialSubscriberProps = {
   uuid: string;
-  coordinationScopes: any;
-  removeGridComponent: (event: any) => void;
+  coordinationScopes: CoordinationScopes;
+  removeGridComponent(event: any): void;
   observationsLabelOverride?: string;
   observationsPluralLabelOverride?: string;
   subobservationsLabelOverride?: string;

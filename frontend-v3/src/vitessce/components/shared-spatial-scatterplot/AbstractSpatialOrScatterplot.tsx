@@ -1,23 +1,25 @@
-import React, { PureComponent } from 'react';
-import DeckGL, { OrthographicView } from 'deck.gl';
-import ToolMenu from './ToolMenu';
-import { DEFAULT_GL_OPTIONS } from '../utils';
-import { getCursor, getCursorWithTool } from './cursor';
+import React, { ForwardedRef, PureComponent } from "react";
+import DeckGL, { OrthographicView, Viewport } from "deck.gl";
+import ToolMenu from "./ToolMenu";
+import { DEFAULT_GL_OPTIONS } from "../utils";
+import { getCursor, getCursorWithTool } from "./cursor";
+import { Cell, CellEntry, ViewInfo, ViewState } from "../../types";
+import { SelectablePolygonLayer, SelectableScatterplotLayer } from "../../layers";
 
-type AbstractSpatialOrScatterplotProps = {
+export type AbstractSpatialOrScatterplotProps = {
   uuid: string;
-  deckRef?: any;
-  viewState: any;
-  setViewState: any;
-  onToolChange?: any;
-  updateViewInfo: any;
-  cells: any;
-}
+  deckRef?: ForwardedRef<DeckGL>;
+  viewState: ViewState;
+  setViewState(viewState: ViewState): void;
+  onToolChange?(tool: string): void;
+  updateViewInfo(viewInfo: ViewInfo): void;
+  cells: { [p: string]: Cell };
+};
 
-type AbstractSpatialOrScatterplotState = {
-  gl: any | null;
-  tool: any | null;
-}
+export type AbstractSpatialOrScatterplotState = {
+  gl: WebGLRenderingContext | null;
+  tool: string | null;
+};
 
 /**
  * Abstract class component intended to be inherited by
@@ -25,10 +27,13 @@ type AbstractSpatialOrScatterplotState = {
  * Contains a common constructor, common DeckGL callbacks,
  * and common render function.
  */
-export default class AbstractSpatialOrScatterplot<TProps extends AbstractSpatialOrScatterplotProps, TState extends AbstractSpatialOrScatterplotState> extends PureComponent<TProps, TState> {
-  protected viewport: any;
-  protected cellsLayer: any;
-  protected cellsEntries: any[] = [];
+export default class AbstractSpatialOrScatterplot<
+  TProps extends AbstractSpatialOrScatterplotProps,
+  TState extends AbstractSpatialOrScatterplotState
+> extends PureComponent<TProps, TState> {
+  protected viewport: Viewport | null;
+  protected cellsLayer: SelectableScatterplotLayer | SelectablePolygonLayer | null | undefined;
+  protected cellsEntries: CellEntry[] = [];
 
   constructor(props: TProps) {
     super(props);
@@ -75,7 +80,7 @@ export default class AbstractSpatialOrScatterplot<TProps extends AbstractSpatial
    * to the DeckGL component.
    * @param {object} gl The WebGL context object.
    */
-  onWebGLInitialized(gl: object) {
+  onWebGLInitialized(gl: WebGLRenderingContext) {
     this.setState({ gl });
   }
 
@@ -132,9 +137,7 @@ export default class AbstractSpatialOrScatterplot<TProps extends AbstractSpatial
   /**
    * Intended to be overriden by descendants.
    */
-  componentDidUpdate(prevProps: any) {
-
-  }
+  componentDidUpdate(prevProps: AbstractSpatialOrScatterplotProps) {}
 
   /**
    * A common render function for both Spatial
@@ -166,14 +169,14 @@ export default class AbstractSpatialOrScatterplot<TProps extends AbstractSpatial
         <DeckGL
           id={`deckgl-overlay-${uuid}`}
           ref={deckRef}
-          views={[new OrthographicView({ id: 'ortho' })]} // id is a fix for https://github.com/uber/deck.gl/issues/3259
-          layers={(gl && viewState.target.every((i: any) => typeof i === 'number')) ? layers : ([])}
-          glOptions={DEFAULT_GL_OPTIONS as any}
+          views={[new OrthographicView({ id: "ortho" })]} // id is a fix for https://github.com/uber/deck.gl/issues/3259
+          layers={gl && viewState.target.every((i: any) => typeof i === "number") ? layers : []}
+          glOptions={DEFAULT_GL_OPTIONS}
           onWebGLInitialized={this.onWebGLInitialized}
           onViewStateChange={this.onViewStateChange}
           viewState={viewState}
           useDevicePixels={useDevicePixels}
-          controller={tool ? ({ dragPan: false }) : true}
+          controller={tool ? { dragPan: false } : true}
           getCursor={tool ? getCursorWithTool : getCursor}
         >
           {this.onInitializeViewInfo}

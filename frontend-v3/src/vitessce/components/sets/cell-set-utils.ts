@@ -406,7 +406,7 @@ export function treeToCellColorsBySetNames(currTree: any, selectedNamePaths: str
       ];
     }
   });
-  return new Map(cellColorsArray);
+  return new Map<string, any>(cellColorsArray);
 }
 
 /**

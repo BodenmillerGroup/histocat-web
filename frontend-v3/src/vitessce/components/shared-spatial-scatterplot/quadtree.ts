@@ -1,4 +1,5 @@
 import { quadtree } from 'd3-quadtree';
+import { Cell } from "../../types";
 
 /**
  * Create a d3-quadtree object for cells data points.
@@ -8,7 +9,7 @@ import { quadtree } from 'd3-quadtree';
  * spatial/scatterplot coordinates [x, y].
  * @returns {object} Quadtree instance.
  */
-export function createCellsQuadTree(cellsEntries: [string, any][], getCellCoords: Function) {
+export function createCellsQuadTree(cellsEntries: [string, Cell][], getCellCoords: Function) {
   // Use the cellsEntries variable since it is already
   // an array, converted by Object.entries().
   if (!cellsEntries) {

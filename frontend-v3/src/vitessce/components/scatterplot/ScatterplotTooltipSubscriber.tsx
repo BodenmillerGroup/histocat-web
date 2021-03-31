@@ -8,7 +8,7 @@ type ScatterplotTooltipSubscriberProps = {
   cellHighlight: string | null;
   width: number;
   height: number;
-  getCellInfo: (cellId: string) => object;
+  getCellInfo(cellId: string): {[p: string]: string} | null;
 }
 
 export default function ScatterplotTooltipSubscriber(props: ScatterplotTooltipSubscriberProps) {

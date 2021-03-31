@@ -1,68 +1,72 @@
-import React, { forwardRef } from "react";
-import { ScatterplotLayer, PolygonLayer, COORDINATE_SYSTEM, Position, RGBAColor } from "deck.gl";
+import React, { ForwardedRef, forwardRef } from "react";
+import DeckGL, { ScatterplotLayer, PolygonLayer, COORDINATE_SYSTEM, Position, RGBAColor } from "deck.gl";
 import { Matrix4 } from "math.gl";
 import { ScaleBarLayer } from "@hms-dbmi/viv";
 import { SelectablePolygonLayer, getSelectionLayers } from "../../layers";
 import { cellLayerDefaultProps, PALETTE, DEFAULT_COLOR } from "../utils";
 import { square, getLayerLoaderTuple } from "./utils";
-import AbstractSpatialOrScatterplot from "../shared-spatial-scatterplot/AbstractSpatialOrScatterplot";
+import AbstractSpatialOrScatterplot, {
+  AbstractSpatialOrScatterplotProps,
+  AbstractSpatialOrScatterplotState,
+} from "../shared-spatial-scatterplot/AbstractSpatialOrScatterplot";
 import { createCellsQuadTree } from "../shared-spatial-scatterplot/quadtree";
 import { isEqual } from "lodash-es";
+import {
+  Cell,
+  CellEntry,
+  CellsLayerDef,
+  MoleculeEntry,
+  Molecules,
+  MoleculesLayerDef, NeighborhoodEntry, Neighborhoods,
+  NeighborhoodsLayerDef,
+  RawLayerDef,
+} from "../../types";
+import { Quadtree } from "d3";
 
 const CELLS_LAYER_ID = "cells-layer";
 const MOLECULES_LAYER_ID = "molecules-layer";
 const NEIGHBORHOODS_LAYER_ID = "neighborhoods-layer";
 
 // Default getter function props.
-const defaultGetCellCoords = (cell: any) => cell.xy;
-const makeDefaultGetCellPolygon = (radius: number) => (cellEntry: any) => {
+const defaultGetCellCoords = (cell: Cell) => cell.xy;
+const makeDefaultGetCellPolygon = (radius: number) => (cellEntry: CellEntry) => {
   const cell = cellEntry[1];
   return cell.poly?.length ? cell.poly : square(cell.xy[0], cell.xy[1], radius);
 };
-const makeDefaultGetCellColors = (cellColors: any) => (cellEntry: any) =>
+const makeDefaultGetCellColors = (cellColors: Map<string, RGBAColor>) => (cellEntry: CellEntry) =>
   (cellColors && cellColors.get(cellEntry[0])) || DEFAULT_COLOR;
-const makeDefaultGetCellIsSelected = (cellSelection: any) => (cellEntry: any) =>
+const makeDefaultGetCellIsSelected = (cellSelection: string[] | null) => (cellEntry: CellEntry) =>
   cellSelection ? cellSelection.includes(cellEntry[0]) : true; // If nothing is selected, everything is selected.
 
 type SpatialProps = {
-  uuid: string;
-  deckRef?: any;
   width: number;
   height: number;
-  viewState: any;
-  setViewState: Function;
-  molecules: any;
-  cells: any;
-  neighborhoods: any;
+  molecules: Molecules;
+  neighborhoods: Neighborhoods;
   lineWidthScale?: number;
   lineWidthMaxPixels?: number;
   imageLayerLoaders: any;
-  cellColors: any;
-  getCellCoords?: Function;
-  getCellColor?: Function;
-  getCellPolygon?: Function;
-  getCellIsSelected?: Function;
+  cellColors: Map<string, RGBAColor>;
+  getCellCoords?(cell: Cell): number[];
+  getCellColor?(cellEntry: CellEntry): RGBAColor;
+  getCellPolygon?(cellEntry: CellEntry): number[];
+  getCellIsSelected?(cellEntry: CellEntry): boolean;
   getMoleculeColor?: RGBAColor | ((d: unknown) => RGBAColor);
-  getMoleculePosition?: (d: unknown) => Position;
-  getNeighborhoodPolygon?: (x: unknown) => Position[];
-  updateViewInfo: Function;
-  onCellClick?: Function;
+  getMoleculePosition?(d: unknown): Position;
+  getNeighborhoodPolygon?(neighborhoodsEntry: NeighborhoodEntry): Position[];
+  onCellClick?(info: any): void;
   layers: any[];
-  cellFilter?: any;
-  setCellFilter: any;
-  cellSelection: any;
-  setCellSelection: any;
+  cellFilter?: string[];
+  setCellFilter(cellFilter: string[]): void;
+  cellSelection: string[];
+  setCellSelection(cellSelection: string[]): void;
   cellHighlight: string | null;
-  setCellHighlight: (cellId: string | null) => void;
-  setMoleculeHighlight: any;
-  setComponentHover: any;
-  onToolChange?: any;
-}
+  setCellHighlight(cellId: string | null): void;
+  setMoleculeHighlight(moleculeHighlight: any): void;
+  setComponentHover(): void;
+};
 
-type SpatialState = {
-  gl: any;
-  tool: any;
-}
+type SpatialState = {};
 
 /**
  * React component which expresses the spatial relationships between cells and molecules.
@@ -96,16 +100,19 @@ type SpatialState = {
  * used when rendering tooltips and crosshairs.
  * @param {function} props.onCellClick Getter function for cell layer onClick.
  */
-class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
-  private moleculesEntries: any[];
-  private cellsQuadTree: any;
-  private moleculesLayer: any;
-  private neighborhoodsLayer: any;
+class Spatial extends AbstractSpatialOrScatterplot<
+  SpatialProps & AbstractSpatialOrScatterplotProps,
+  SpatialState & AbstractSpatialOrScatterplotState
+> {
+  private moleculesEntries: MoleculeEntry[];
+  private cellsQuadTree:  Quadtree<[number, number]> | null;
+  private moleculesLayer: ScatterplotLayer<any, any> | null;
+  private neighborhoodsLayer: PolygonLayer<any, any> | null;
   private imageLayers: any[];
   private layerLoaderSelections: any;
-  private neighborhoodsEntries: any;
+  private neighborhoodsEntries: NeighborhoodEntry[] | undefined;
 
-  constructor(props: SpatialProps) {
+  constructor(props: SpatialProps & AbstractSpatialOrScatterplotProps) {
     super(props);
 
     // To avoid storing large arrays/objects
@@ -131,7 +138,7 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
     this.onUpdateImages();
   }
 
-  createCellsLayer(layerDef: any) {
+  createCellsLayer(layerDef: CellsLayerDef) {
     const { radius, stroked, visible, opacity } = layerDef;
     const { cellsEntries } = this;
     const {
@@ -166,12 +173,12 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
         getFillColor: [opacity],
         getLineWidth: [stroked],
       },
-      getFillColor: (cellEntry: any) => {
+      getFillColor: (cellEntry: CellEntry) => {
         const color = getCellColor(cellEntry);
         color[3] = opacity * 255;
         return color;
       },
-      getLineColor: (cellEntry: any) => {
+      getLineColor: (cellEntry: CellEntry) => {
         const color = getCellColor(cellEntry);
         color[3] = 255;
         return color;
@@ -189,7 +196,7 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
     });
   }
 
-  createMoleculesLayer(layerDef: any) {
+  createMoleculesLayer(layerDef: MoleculesLayerDef) {
     const {
       setMoleculeHighlight,
       getMoleculeColor = (d: any) => PALETTE[d[2] % PALETTE.length],
@@ -222,9 +229,9 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
     });
   }
 
-  createNeighborhoodsLayer(layerDef: any) {
+  createNeighborhoodsLayer(layerDef: NeighborhoodsLayerDef) {
     const {
-      getNeighborhoodPolygon = (neighborhoodsEntry: any) => {
+      getNeighborhoodPolygon = (neighborhoodsEntry: NeighborhoodEntry) => {
         const neighborhood = neighborhoodsEntry[1];
         return neighborhood.poly;
       },
@@ -235,7 +242,7 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
       id: NEIGHBORHOODS_LAYER_ID,
       getPolygon: getNeighborhoodPolygon,
       coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
-      data: neighborhoodsEntries,
+      data: neighborhoodsEntries!,
       pickable: true,
       autoHighlight: true,
       stroked: true,
@@ -280,7 +287,7 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
     return null;
   }
 
-  createImageLayer(rawLayerDef: any, loader: any, i: number) {
+  createImageLayer(rawLayerDef: RawLayerDef, loader: any, i: number) {
     const layerDef = {
       ...rawLayerDef,
       channels: rawLayerDef.channels.filter((channel: any) => channel.selection && channel.color && channel.slider),
@@ -357,7 +364,7 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
 
   onUpdateCellsData() {
     const { cells = {}, getCellCoords = defaultGetCellCoords } = this.props;
-    const cellsEntries = Object.entries(cells);
+    const cellsEntries: CellEntry[] = Object.entries(cells);
     this.cellsEntries = cellsEntries;
     this.cellsQuadTree = createCellsQuadTree(cellsEntries, getCellCoords);
   }
@@ -374,8 +381,8 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
 
   onUpdateMoleculesData() {
     const { molecules = {} } = this.props;
-    const moleculesEntries = Object.entries(molecules).flatMap(([molecule, coords]: [molecule: string, coords: any], index) =>
-      coords.map(([x, y]: [x: number, y: number]) => [x, y, index, molecule])
+    const moleculesEntries = Object.entries(molecules).flatMap(([molecule, coords], index) =>
+      coords.map(([x, y]) => [x, y, index, molecule] as MoleculeEntry)
     );
     this.moleculesEntries = moleculesEntries;
   }
@@ -424,10 +431,10 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
    * performance.
    * @param {object} prevProps The previous props to diff against.
    */
-  componentDidUpdate(prevProps: any) {
+  componentDidUpdate(prevProps: SpatialProps & AbstractSpatialOrScatterplotProps) {
     this.viewInfoDidUpdate();
 
-    const shallowDiff = (propName: string) => prevProps[propName] !== (this.props as any)[propName];
+    const shallowDiff = (propName: string) => (prevProps as any)[propName] !== (this.props as any)[propName];
     if (["cells"].some(shallowDiff)) {
       // Cells data changed.
       this.onUpdateCellsData();
@@ -481,5 +488,9 @@ class Spatial extends AbstractSpatialOrScatterplot<SpatialProps, SpatialState> {
  * access the grandchild DeckGL ref,
  * but we are using a class component.
  */
-const SpatialWrapper = forwardRef((props: SpatialProps, deckRef) => <Spatial {...props} deckRef={deckRef} />);
+const SpatialWrapper = forwardRef(
+  (props: SpatialProps & AbstractSpatialOrScatterplotProps, deckRef: ForwardedRef<DeckGL>) => (
+    <Spatial {...props} deckRef={deckRef} />
+  )
+);
 export default SpatialWrapper;

@@ -124,14 +124,14 @@ function ClosePaneButton(props: ClosePaneButtonProps) {
 
 type TitleInfoProps = {
   title: string;
-  info: string;
-  children: any;
+  info?: string;
+  children?: any;
   isScroll?: boolean;
   isSpatial?: boolean;
   removeGridComponent(event: any): void;
-  urls: any[];
+  urls?: any[];
   isReady: boolean;
-  options: any;
+  options?: any;
   theme: string;
 };
 

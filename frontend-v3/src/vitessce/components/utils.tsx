@@ -2,6 +2,7 @@ import React from "react";
 import { COORDINATE_SYSTEM, RGBAColor } from "deck.gl";
 import { PRIMARY_CARD } from "./classNames";
 import { HIERARCHICAL_SCHEMAS, SETS_DATATYPE_CELL } from "./sets/constants";
+import { CellEntry } from "../types";
 
 export function makeCellStatusMessage(cellInfoFactors: any[]) {
   return Object.entries(cellInfoFactors)
@@ -10,10 +11,10 @@ export function makeCellStatusMessage(cellInfoFactors: any[]) {
 }
 
 export function cellLayerDefaultProps(
-  cells: any,
+  cells: CellEntry[],
   updateStatus: any,
   setCellHighlight: (cellId: string | null) => void,
-  setComponentHover: any
+  setComponentHover: () => void,
 ) {
   return {
     coordinateSystem: COORDINATE_SYSTEM.CARTESIAN,
@@ -85,7 +86,7 @@ export const COLORMAP_OPTIONS = [
   "inferno",
 ];
 
-export const DEFAULT_GL_OPTIONS = { webgl2: true };
+export const DEFAULT_GL_OPTIONS = { webgl2: true } as WebGLContextAttributes;
 
 export function createDefaultUpdateStatus(componentName: string) {
   return (message: string) => console.warn(`${componentName} updateStatus: ${message}`);
