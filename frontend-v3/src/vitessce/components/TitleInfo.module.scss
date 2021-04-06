@@ -1,0 +1,47 @@
+.scrollCard {
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 2px;
+  overflow-y: auto;
+}
+
+.spatialCard {
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 2px;
+}
+
+.card {
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 2px;
+}
+
+.title {
+  overflow-x: hidden;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.titleContent {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-weight: bold;
+}
+
+.details {
+  font-size: 80%;
+  opacity: 0.8;
+  padding-left: 0.5rem;
+  align-items: flex-end;
+}
+
+.detailsContent {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-between;
+}

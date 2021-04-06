@@ -1,10 +1,11 @@
 import { Spinner } from '@blueprintjs/core';
 import React from 'react';
+import styles from "./LoadingIndicator.module.scss";
 
 export default function LoadingIndicator() {
   return (
-    <div className="loading-indicator-backdrop">
-      <div className="loading-indicator-container">
+    <div className={styles.backdrop}>
+      <div className={styles.container}>
         <Spinner />
       </div>
     </div>

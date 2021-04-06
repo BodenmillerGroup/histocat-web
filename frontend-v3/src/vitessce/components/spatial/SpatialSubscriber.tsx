@@ -254,7 +254,7 @@ export default function SpatialSubscriber(props: SpatialSubscriberProps) {
     <TitleInfo
       title={title}
       info={subtitle}
-      isSpatial
+      isSpatial={true}
       urls={urls}
       theme={theme}
       removeGridComponent={removeGridComponent}

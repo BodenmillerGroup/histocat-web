@@ -1,15 +1,15 @@
 import ScatterplotSubscriber from "../components/scatterplot/ScatterplotSubscriber";
 import SpatialSubscriber from "../components/spatial/SpatialSubscriber";
-import { SlidesView } from "../../views/groups/projects/viewers/slides/SlidesView";
-import { BlendView } from "../../views/groups/projects/viewers/image/BlendView";
-import { ChannelsView } from "../../views/groups/projects/viewers/channels/ChannelsView";
-import { ChannelsSettingsView } from "../../views/groups/projects/viewers/settings/ChannelsSettingsView";
+import { ChannelsViewSubscriber } from "../../views/groups/projects/viewers/channels/ChannelsViewSubscriber";
+import { SlidesViewSubscriber } from "../../views/groups/projects/viewers/slides/SlidesViewSubscriber";
+import { ChannelsSettingsViewSubscriber } from "../../views/groups/projects/viewers/settings/ChannelsSettingsViewSubscriber";
+import { BlendViewSubscriber } from "../../views/groups/projects/viewers/image/BlendViewSubscriber";
 
 const registry = {
-  slides: SlidesView,
-  image: BlendView,
-  channels: ChannelsView,
-  settings: ChannelsSettingsView,
+  slides: SlidesViewSubscriber,
+  image: BlendViewSubscriber,
+  channels: ChannelsViewSubscriber,
+  settings: ChannelsSettingsViewSubscriber,
   scatterplot: ScatterplotSubscriber,
   spatial: SpatialSubscriber,
 } as any;

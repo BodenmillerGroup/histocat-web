@@ -11,9 +11,10 @@ import {
   useChangeLayout,
   useLayout,
 } from './state/hooks';
+import styles from "./VitessceGrid.module.scss";
 
-const padding = 10;
-const margin = 5;
+const padding = 4;
+const margin = 0;
 
 type VitessceGridProps = {
   rowHeight?: number;
@@ -72,7 +73,7 @@ export default function VitessceGrid(props: VitessceGridProps) {
   return (
     <div
       ref={containerRef}
-      className={`vitessce-container vitessce-theme-${theme}`}
+      className={styles.container}
     >
       {layout && (
         <VitessceGridLayout

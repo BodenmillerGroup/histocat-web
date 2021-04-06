@@ -8,9 +8,13 @@ import history from "utils/history";
 import { SignupForm } from "./views/auth/SignupForm";
 import { PasswordRecoveryForm } from "./views/auth/PasswordRecoveryForm";
 import { ResetPasswordForm } from "./views/auth/ResetPasswordForm";
-import "./App.scss";
 import { LoadingView } from "./components/LoadingView";
 import shallow from "zustand/shallow";
+
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
+// import "vitessce/css/index.scss";
+import "./App.scss";
 const GroupsView = React.lazy(() => import("./views/groups/GroupsView"));
 const ProfileView = React.lazy(() => import("./views/profile/ProfileView"));
 const AdminView = React.lazy(() => import("./views/admin/AdminView"));

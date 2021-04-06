@@ -145,7 +145,3 @@ export default function VitessceGridLayout(props: VitessceGridLayoutProps) {
   );
 }
 
-VitessceGridLayout.defaultProps = {
-  padding: 10,
-  margin: 10,
-};

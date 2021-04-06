@@ -1,13 +1,11 @@
 import styles from "./ProjectView.module.scss";
 import React from "react";
-import "react-mosaic-component/react-mosaic-component.css";
 import { TITLE_MAP, useLayoutsStore } from "modules/layouts";
 import shallow from "zustand/shallow";
 import { ViewId } from "modules/layouts/models";
 import { getComponent } from "vitessce/app/component-registry";
 import VitessceGrid from "vitessce/app/VitessceGrid";
 import { useSetViewConfig } from "vitessce/app/state/hooks";
-import "vitessce/css/index.scss";
 
 export function ProjectView() {
   const { setActiveNode, activeLayout } = useLayoutsStore(
@@ -64,50 +62,34 @@ export function ProjectView() {
         x: 0,
         y: 0,
         w: 2,
-        h: 24,
+        h: 12,
+      },
+      {
+        component: "image",
+        x: 2,
+        y: 0,
+        w: 8,
+        h: 12,
       },
       {
         component: "channels",
         x: 10,
         y: 0,
-        w: 6,
-        h: 12,
+        w: 2,
+        h: 6,
       },
       {
         component: "settings",
         x: 10,
-        y: 12,
+        y: 6,
         w: 2,
-        h: 12,
+        h: 6,
       },
     ],
   };
   setViewConfig(config);
 
   return (
-    <VitessceGrid config={config} getComponent={getComponent} height={1400} theme="dark" />
-    // <div className={styles.container}>
-    //   <Mosaic<ViewId>
-    //     resize={{
-    //       minimumPaneSizePercentage: 15,
-    //     }}
-    //     initialValue={activeLayout.node}
-    //     onChange={handleLayoutChange}
-    //     className={classNames("mosaic-blueprint-theme", Classes.DARK)}
-    //     renderTile={(id, path) => (
-    //       <MosaicWindow<ViewId> path={path} title={TITLE_MAP[id]}>
-    //         {
-    //           {
-    //             slides: <SlidesView />,
-    //             image: <BlendView />,
-    //             channels: <ChannelsView />,
-    //             settings: <ChannelsSettingsView />,
-    //             new: <SettingsView />,
-    //           }[id]
-    //         }
-    //       </MosaicWindow>
-    //     )}
-    //   />
-    // </div>
+    <VitessceGrid config={config} getComponent={getComponent} height={1200} theme="dark" />
   );
 }

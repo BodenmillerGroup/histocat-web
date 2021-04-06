@@ -3,3 +3,42 @@
 body {
   background-color: $pt-dark-app-background-color;
 }
+
+.react-grid-layout {
+  height: auto;
+  position: absolute;
+  width: 100%;
+}
+
+/* Flex grid items */
+.react-grid-item {
+  /* emulate bootstrap .flex-column: */
+  -webkit-box-orient: vertical !important;
+  -webkit-box-direction: normal !important;
+  -ms-flex-direction: column !important;
+  flex-direction: column !important;
+
+  /* emulate bootstrap .d-flex: */
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+
+  /* So the resize handle position looks correct: */
+  padding-right: 10px;
+}
+
+.react-draggable-transparent-selection .react-grid-item {
+  /* These styles prevent text selection during resize drag interactions.
+     The react-draggable-transparent-selection class is added to the body
+     element during resizing and removed after resizing has finished.
+     Not part of mixin because acts outside of .vitessce-container. */
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -o-user-select: none !important;
+  user-select: none !important;
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+}

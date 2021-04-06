@@ -162,7 +162,7 @@ export function SlidesView() {
   };
 
   return (
-    <div className={styles.container}>
+    <>
       <span className={styles.toolbar}>
         <InputGroup
           asyncControl={true}
@@ -183,7 +183,6 @@ export function SlidesView() {
         onNodeCollapse={handleNodeCollapse}
         onNodeExpand={handleNodeExpand}
         onNodeContextMenu={(node) => setActiveItem(node.nodeData as ISlide)}
-        className={styles.scrollable}
       />
       <AddSlideDialog isOpen={addDialogOpen} handleClose={() => setAddDialogOpen(false)} />
       <Alert
@@ -199,6 +198,6 @@ export function SlidesView() {
       >
         <p>Are you sure you want to delete the slide?</p>
       </Alert>
-    </div>
+    </>
   );
 }

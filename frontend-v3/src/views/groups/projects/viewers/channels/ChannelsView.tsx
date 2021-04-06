@@ -52,7 +52,7 @@ export function ChannelsView() {
   };
 
   return (
-    <div className={styles.container}>
+    <>
       <span className={styles.toolbar}>
         <InputGroup
           asyncControl={true}
@@ -66,7 +66,7 @@ export function ChannelsView() {
           fill={true}
         />
       </span>
-      <div className={styles.scrollable}>
+      <div>
         {data.map((channel) => (
           <ChannelView
             key={channel.name}
@@ -87,6 +87,6 @@ export function ChannelsView() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
