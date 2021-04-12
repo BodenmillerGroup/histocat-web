@@ -89,9 +89,21 @@ export default class ScatterPlot2d extends Vue {
         showlegend: true,
         xaxis: {
           title: this.xAxisTitle,
+          spikesnap: 'cursor',
+          spikemode: 'across',
+          spikethickness: 1,
+          spikedash: 'solid',
+          showspikes: true,
+          spikecolor: "grey"
         },
         yaxis: {
           title: this.yAxisTitle,
+          spikesnap: 'cursor',
+          spikemode: 'across',
+          spikethickness: 1,
+          spikedash: 'solid',
+          showspikes: true,
+          spikecolor: "grey"
         },
         hovermode: "closest",
         dragmode: "lasso",

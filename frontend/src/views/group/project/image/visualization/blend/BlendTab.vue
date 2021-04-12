@@ -20,12 +20,27 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-radio-group label="Mode:" v-model="mode" row dense mandatory hide-details :disabled="!hasMask" class="ml-8">
-        <v-radio label="Raw" value="raw" />
-        <v-radio label="Mask" value="mask" />
-        <v-radio label="Mask Origin" value="origin" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'" />
-      </v-radio-group>
-      <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
+      <v-menu offset-y open-on-hover>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on" small elevation="1" :disabled="!activeAcquisition || !hasMask" class="ml-2">
+            <v-icon left small>mdi-cog-outline</v-icon>
+            Mode
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item-group v-model="mode" color="primary">
+            <v-list-item value="raw">
+              <v-list-item-title>Raw</v-list-item-title>
+            </v-list-item>
+            <v-list-item value="mask">
+              <v-list-item-title>Mask</v-list-item-title>
+            </v-list-item>
+            <v-list-item value="origin" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'">
+              <v-list-item-title>Mask Origin</v-list-item-title>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+      </v-menu>
       <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
         <v-btn value="panZoom" small>
           <v-icon>mdi-arrow-top-left</v-icon>
@@ -34,6 +49,7 @@
           <v-icon>mdi-lasso</v-icon>
         </v-btn>
       </v-btn-toggle>
+      <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
     </v-toolbar>
     <ImageViewer />
   </div>

@@ -276,7 +276,7 @@ export default class ImageViewer extends Vue {
       pointColor: [255, 140, 0],
       lassoMinDelay: 15,
       lassoClearEvent: "lassoEnd",
-      showRecticle: false,
+      showReticle: false,
       deselectOnDblClick: true,
       deselectOnEscape: true,
       mouseMode: "panZoom",

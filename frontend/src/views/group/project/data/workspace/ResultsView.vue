@@ -38,14 +38,6 @@
             <v-row>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" download color="primary lighten-2" @click.stop="getResultData(item.id)">
-                    <v-icon small>mdi-refresh-circle</v-icon>
-                  </v-btn>
-                </template>
-                <span>Load result</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
                   <v-btn
                     icon
                     small
@@ -133,12 +125,13 @@ export default class ResultsView extends Vue {
 
   @Watch("selected")
   resultChanged(index: number | null | undefined) {
-    // if (index !== null && index !== undefined) {
-    //   const result = this.results[index];
-    //   this.resultsContext.mutations.setActiveResultId(result.id);
-    // } else {
-    //   this.resultsContext.mutations.setActiveResultId(null);
-    // }
+    if (index !== null && index !== undefined) {
+      const result = this.results[index];
+      this.resultsContext.mutations.setActiveResultId(result.id);
+      this.getResultData(result.id);
+    } else {
+      this.resultsContext.mutations.setActiveResultId(null);
+    }
   }
 
   get channels() {
@@ -260,6 +253,6 @@ export default class ResultsView extends Vue {
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 132px);
+  height: calc(50vh - 100px);
 }
 </style>

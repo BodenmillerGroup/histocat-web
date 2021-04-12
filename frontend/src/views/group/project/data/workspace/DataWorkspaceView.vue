@@ -1,13 +1,10 @@
 <template>
   <v-tabs v-model="tab">
     <v-tab>Datasets</v-tab>
-    <v-tab>Results</v-tab>
     <v-tab>Pipelines</v-tab>
     <v-tab>Gates</v-tab>
     <v-tab-item>
       <DatasetsView />
-    </v-tab-item>
-    <v-tab-item>
       <ResultsView />
     </v-tab-item>
     <v-tab-item>

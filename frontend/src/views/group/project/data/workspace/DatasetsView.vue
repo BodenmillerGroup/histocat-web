@@ -117,7 +117,7 @@ import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 export default class DatasetsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
-  readonly resultContext = resultsModule.context(this.$store);
+  readonly resultsContext = resultsModule.context(this.$store);
   readonly centroidsContext = centroidsModule.context(this.$store);
 
   readonly apiUrl = apiUrl;
@@ -135,7 +135,7 @@ export default class DatasetsView extends Vue {
 
   @Watch("selected")
   datasetChanged(index?: number | null) {
-    this.resultContext.mutations.reset();
+    this.resultsContext.mutations.reset();
     this.centroidsContext.mutations.reset();
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
@@ -143,12 +143,13 @@ export default class DatasetsView extends Vue {
         this.datasetsContext.mutations.setActiveDatasetId(dataset.id);
         Promise.all([
           this.centroidsContext.actions.getCentroids({ datasetId: dataset.id }),
-          this.resultContext.actions.getDatasetResults(dataset.id),
+          this.resultsContext.actions.getDatasetResults(dataset.id),
           this.projectsContext.actions.getChannelStackImage(),
         ]);
       }
     } else {
       this.datasetsContext.mutations.setActiveDatasetId(null);
+      this.resultsContext.mutations.setActiveResultId(null);
     }
   }
 
@@ -200,7 +201,7 @@ export default class DatasetsView extends Vue {
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 132px);
+  height: calc(50vh - 100px);
 }
 .card {
   height: 40vh;
