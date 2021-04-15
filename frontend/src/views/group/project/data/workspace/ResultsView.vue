@@ -105,14 +105,14 @@
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
-import { resultsModule } from "@/modules/results";
 import { apiUrl } from "@/env";
+import { cellsModule } from "@/modules/cells";
 
 @Component
 export default class ResultsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
   readonly apiUrl = apiUrl;
 
@@ -127,10 +127,10 @@ export default class ResultsView extends Vue {
   resultChanged(index: number | null | undefined) {
     if (index !== null && index !== undefined) {
       const result = this.results[index];
-      this.resultsContext.mutations.setActiveResultId(result.id);
+      this.cellsContext.mutations.setActiveResultId(result.id);
       this.getResultData(result.id);
     } else {
-      this.resultsContext.mutations.setActiveResultId(null);
+      this.cellsContext.mutations.setActiveResultId(null);
     }
   }
 
@@ -141,7 +141,7 @@ export default class ResultsView extends Vue {
 
   get heatmaps() {
     const activeDataset = this.datasetContext.getters.activeDataset;
-    const markers = this.resultsContext.getters.markers;
+    const markers = this.cellsContext.getters.markers;
 
     if (!activeDataset || !activeDataset.meta["columns"]) {
       return [];
@@ -170,14 +170,14 @@ export default class ResultsView extends Vue {
       };
     });
     const clusteringItems: any[] = [];
-    if (this.resultsContext.getters.activeResult?.output.leiden) {
+    if (this.cellsContext.getters.activeResult?.output.leiden) {
       clusteringItems.push({
         type: "clustering",
         value: "leiden",
         label: "leiden",
       });
     }
-    if (this.resultsContext.getters.activeResult?.output.louvain) {
+    if (this.cellsContext.getters.activeResult?.output.louvain) {
       clusteringItems.push({
         type: "clustering",
         value: "louvain",
@@ -188,19 +188,19 @@ export default class ResultsView extends Vue {
   }
 
   get heatmap() {
-    return this.resultsContext.getters.heatmap;
+    return this.cellsContext.getters.heatmap;
   }
 
   set heatmap(value) {
     if (value === undefined) {
       value = null;
     }
-    this.resultsContext.mutations.setHeatmap(value);
+    this.cellsContext.mutations.setHeatmap(value);
   }
 
   @Watch("heatmap")
   async heatmapChanged(value: { type: string; label: string; value: string } | null | undefined) {
-    await this.resultsContext.actions.getColorsData();
+    await this.cellsContext.actions.getColorsData();
   }
 
   get activeDatasetId() {
@@ -208,7 +208,7 @@ export default class ResultsView extends Vue {
   }
 
   get results() {
-    return this.resultsContext.getters.results;
+    return this.cellsContext.getters.results;
   }
 
   get items() {
@@ -220,25 +220,25 @@ export default class ResultsView extends Vue {
   }
 
   async getResultData(id: number) {
-    await this.resultsContext.actions.getResultData(id);
+    await this.cellsContext.actions.getResultData(id);
   }
 
   async deleteResult(id: number) {
     if (self.confirm("Do you really want to delete result?")) {
-      await this.resultsContext.actions.deleteResult(id);
+      await this.cellsContext.actions.deleteResult(id);
     }
   }
 
   async refreshResults() {
     if (this.activeDatasetId) {
-      await this.resultsContext.actions.getDatasetResults(this.activeDatasetId);
+      await this.cellsContext.actions.getDatasetResults(this.activeDatasetId);
     }
   }
 
   async updateResult() {
     this.dialog = false;
     if (this.activeId) {
-      await this.resultsContext.actions.updateResult({
+      await this.cellsContext.actions.updateResult({
         resultId: this.activeId,
         data: { name: this.name, description: this.description },
       });

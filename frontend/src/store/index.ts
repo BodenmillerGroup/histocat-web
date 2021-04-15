@@ -11,15 +11,15 @@ import { createStore, Module } from "vuex-smart-module";
 import createLogger from "vuex/dist/logger";
 import { responsiveModule } from "@/modules/responsive";
 import { RootActions } from "@/store/actions";
-import { centroidsModule } from "@/modules/centroids";
 import { presetsModule } from "@/modules/presets";
 import { gatesModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
-import { resultsModule } from "@/modules/results";
 import { pipelinesModule } from "@/modules/pipelines";
 import { modelsModule } from "@/modules/models";
 import { segmentationModule } from "@/modules/segmentation";
+import { annotationsModule } from "@/modules/annotations";
+import { cellsModule } from "@/modules/cells";
 
 Vue.use(Vuex);
 
@@ -31,18 +31,18 @@ const rootModule = new Module({
     member: memberModule,
     analysis: analysisModule,
     dataset: datasetsModule,
-    results: resultsModule,
     projects: projectsModule,
     main: mainModule,
     responsive: responsiveModule,
     settings: settingsModule,
     user: userModule,
-    centroids: centroidsModule,
     presets: presetsModule,
     gates: gatesModule,
     pipelines: pipelinesModule,
     models: modelsModule,
     segmentation: segmentationModule,
+    annotations: annotationsModule,
+    cells: cellsModule,
   },
   actions: RootActions,
 });

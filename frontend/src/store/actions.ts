@@ -3,29 +3,29 @@ import { Store } from "vuex";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
-import { centroidsModule } from "@/modules/centroids";
 import { presetsModule } from "@/modules/presets";
 import { gatesModule } from "@/modules/gates";
 import { groupModule } from "@/modules/group";
 import { memberModule } from "@/modules/member";
-import { resultsModule } from "@/modules/results";
 import { pipelinesModule } from "@/modules/pipelines";
 import { modelsModule } from "@/modules/models";
 import { segmentationModule } from "@/modules/segmentation";
+import { annotationsModule } from "@/modules/annotations";
+import { cellsModule } from "@/modules/cells";
 
 export class RootActions extends Actions {
   group?: Context<typeof groupModule>;
   member?: Context<typeof memberModule>;
   analysis?: Context<typeof analysisModule>;
   datasets?: Context<typeof datasetsModule>;
-  results?: Context<typeof resultsModule>;
   projects?: Context<typeof projectsModule>;
-  centroids?: Context<typeof centroidsModule>;
   presets?: Context<typeof presetsModule>;
   gates?: Context<typeof gatesModule>;
   pipelines?: Context<typeof pipelinesModule>;
   models?: Context<typeof modelsModule>;
   segmentation?: Context<typeof segmentationModule>;
+  annotations?: Context<typeof annotationsModule>;
+  cells?: Context<typeof cellsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -33,14 +33,14 @@ export class RootActions extends Actions {
     this.member = memberModule.context(store);
     this.analysis = analysisModule.context(store);
     this.datasets = datasetsModule.context(store);
-    this.results = resultsModule.context(store);
     this.projects = projectsModule.context(store);
-    this.centroids = centroidsModule.context(store);
     this.presets = presetsModule.context(store);
     this.gates = gatesModule.context(store);
     this.pipelines = pipelinesModule.context(store);
     this.models = modelsModule.context(store);
     this.segmentation = segmentationModule.context(store);
+    this.annotations = annotationsModule.context(store);
+    this.cells = cellsModule.context(store);
   }
 
   // Reset project store
@@ -48,13 +48,13 @@ export class RootActions extends Actions {
     this.member?.mutations.reset();
     this.analysis?.mutations.reset();
     this.datasets?.mutations.reset();
-    this.results?.mutations.reset();
     this.projects?.mutations.reset();
-    this.centroids?.mutations.reset();
     this.presets?.mutations.reset();
     this.gates?.mutations.reset();
     this.pipelines?.mutations.reset();
     this.segmentation?.mutations.reset();
+    this.annotations?.mutations.reset();
+    this.cells?.mutations.reset();
   }
 
   // Reset global store

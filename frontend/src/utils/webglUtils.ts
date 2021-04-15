@@ -1,8 +1,8 @@
-import { ICellPoint } from "@/modules/results/models";
+import { ICell } from "@/modules/cells/models";
 
-export function transformToWebGl(data: ICellPoint[], width: number, height: number) {
+export function transformToWebGl(data: ICell[], width: number, height: number) {
   return data.map((c, i) => {
-    return [-1 + 2 * (c.x / width), -1 + 2 * (1 - c.y / height), c.acquisitionId, c.cellId]; // [x, y, category, value]
+    return [-1 + 2 * (c.xy[0] / width), -1 + 2 * (1 - c.xy[1] / height), c.color, c.cellId]; // [x, y, category, value]
   });
 }
 

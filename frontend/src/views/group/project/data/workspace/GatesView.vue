@@ -164,6 +164,6 @@ export default class GatesView extends Vue {
 
 <style scoped>
 .scroll-view {
-  height: calc(100vh - 132px);
+  height: calc(33vh - 100px);
 }
 </style>

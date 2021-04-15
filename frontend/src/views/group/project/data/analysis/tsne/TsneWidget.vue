@@ -6,10 +6,11 @@
     </v-card-title>
     <v-divider />
     <ScatterPlot2d
-      v-if="plotData"
+      v-if="hasData"
       plot-id="tsnePlot"
       :ignore-selection="false"
       :data="plotData"
+      mapping="tsne"
       title="tSNE"
       x-axis-title="tSNE1"
       y-axis-title="tSNE2"
@@ -21,16 +22,20 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
-import { resultsModule } from "@/modules/results";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: { ScatterPlot2d },
 })
 export default class TsneWidget extends Vue {
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
+
+  get hasData() {
+    return this.cellsContext.getters.activeResult && this.cellsContext.getters.activeResult.output.tsne;
+  }
 
   get plotData() {
-    return this.resultsContext.getters.tsneData;
+    return this.cellsContext.getters.cellsByAcquisition;
   }
 }
 </script>

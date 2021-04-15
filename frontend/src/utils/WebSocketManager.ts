@@ -13,16 +13,16 @@ import { MainMutations } from "@/modules/main/mutations";
 import { WebSocketMessage } from "@/utils/WebSocketMessage";
 import { Store } from "vuex";
 import { Context, Module } from "vuex-smart-module";
-import { resultsModule, ResultsState } from "@/modules/results";
-import { ResultsGetters } from "@/modules/results/getters";
-import { ResultsMutations } from "@/modules/results/mutations";
-import { ResultsActions } from "@/modules/results/actions";
+import { cellsModule, CellsState } from "@/modules/cells";
+import { CellsGetters } from "@/modules/cells/getters";
+import { CellsMutations } from "@/modules/cells/mutations";
+import { CellsActions } from "@/modules/cells/actions";
 
 export class WebSocketManager {
   static mainContext: Context<Module<MainState, MainGetters, MainMutations, MainActions>>;
   static projectsContext: Context<Module<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions>>;
   static datasetContext: Context<Module<DatasetsState, DatasetsGetters, DatasetsMutations, DatasetsActions>>;
-  static resultContext: Context<Module<ResultsState, ResultsGetters, ResultsMutations, ResultsActions>>;
+  static cellsContext: Context<Module<CellsState, CellsGetters, CellsMutations, CellsActions>>;
   static socket: WebSocket;
   static token: string;
   static protocol: string;
@@ -31,7 +31,7 @@ export class WebSocketManager {
     WebSocketManager.mainContext = mainModule.context(store);
     WebSocketManager.projectsContext = projectsModule.context(store);
     WebSocketManager.datasetContext = datasetsModule.context(store);
-    WebSocketManager.resultContext = resultsModule.context(store);
+    WebSocketManager.cellsContext = cellsModule.context(store);
     WebSocketManager.token = WebSocketManager.mainContext.getters.token;
     WebSocketManager.protocol = self.location.protocol === "https:" ? "wss:" : "ws:";
   }
@@ -78,7 +78,7 @@ export class WebSocketManager {
           }
           case "result_ready": {
             if (message.payload.dataset_id === WebSocketManager.datasetContext.getters.activeDatasetId) {
-              WebSocketManager.resultContext.mutations.addEntity(message.payload);
+              WebSocketManager.cellsContext.mutations.addEntity(message.payload);
               WebSocketManager.mainContext.mutations.addNotification({
                 content: "Pipeline processing result is ready",
                 color: "success",

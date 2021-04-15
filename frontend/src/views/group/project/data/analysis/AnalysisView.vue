@@ -19,8 +19,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import PipelineView from "@/views/group/project/data/analysis/pipeline/PipelineView.vue";
 import ResultGridView from "@/views/group/project/data/analysis/ResultGridView.vue";
-import { resultsModule } from "@/modules/results";
 import ClusteringGridView from "@/views/group/project/data/analysis/clustering/ClusteringGridView.vue";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: {
@@ -30,12 +30,12 @@ import ClusteringGridView from "@/views/group/project/data/analysis/clustering/C
   },
 })
 export default class AnalysisView extends Vue {
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
   tab = 0;
 
   get activeResult() {
-    return this.resultsContext.getters.activeResult;
+    return this.cellsContext.getters.activeResult;
   }
 }
 </script>

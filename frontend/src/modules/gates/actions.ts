@@ -8,22 +8,21 @@ import { GatesGetters } from "./getters";
 import { GatesMutations } from "./mutations";
 import { datasetsModule } from "@/modules/datasets";
 import { groupModule } from "@/modules/group";
-import { resultsModule } from "@/modules/results";
-import { ISelectedCell } from "@/modules/results/models";
+import { cellsModule } from "@/modules/cells";
 
 export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutations, GatesActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
   dataset?: Context<typeof datasetsModule>;
-  results?: Context<typeof resultsModule>;
+  cells?: Context<typeof cellsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.dataset = datasetsModule.context(store);
-    this.results = resultsModule.context(store);
+    this.cells = cellsModule.context(store);
   }
 
   async getGates(datasetId: number) {
@@ -42,7 +41,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const datasetId = this.dataset!.getters.activeDatasetId;
-      const selectedCells = this.results!.getters.selectedCells;
+      const selectedCells = this.cells!.getters.selectedCells;
       if (datasetId && selectedCells) {
         const acquisitionIds: number[] = [];
         const indices: number[] = [];
@@ -73,14 +72,14 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getGate(groupId, id);
       if (data) {
-        const selectedCells: ISelectedCell[] = [];
+        const selectedCellIds: string[] = [];
         for (let i = 0; i < data.acquisition_ids.length; i++) {
-          const acquisitionId = data.acquisition_ids[i];
-          const index = data.indices[i];
+          // const acquisitionId = data.acquisition_ids[i];
+          // const index = data.indices[i];
           const cellId = data.cell_ids[i];
-          selectedCells.push(Object.freeze({ acquisitionId: acquisitionId, cellId: cellId, objectNumber: index }));
+          selectedCellIds.push(cellId);
         }
-        this.results?.mutations.setSelectedCells(selectedCells);
+        this.cells?.mutations.setSelectedCellIds(selectedCellIds);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

@@ -1,17 +1,17 @@
-import { mainModule } from "@/modules/main";
 import { Store } from "vuex";
 import { Actions, Context } from "vuex-smart-module";
-import { ResultsState } from ".";
+import { CellsState } from ".";
+import { CellsGetters } from "./getters";
+import { CellsMutations } from "./mutations";
 import { api } from "./api";
-import { ResultsGetters } from "./getters";
-import { ResultsMutations } from "./mutations";
+import { ICentroidsSubmission, IResultUpdate } from "./models";
+import { mainModule } from "@/modules/main";
 import { groupModule } from "@/modules/group";
 import { pipelinesModule } from "@/modules/pipelines";
 import { analysisModule } from "@/modules/analysis";
-import { IResultUpdate } from "@/modules/results/models";
 import { datasetsModule } from "@/modules/datasets";
 
-export class ResultsActions extends Actions<ResultsState, ResultsGetters, ResultsMutations, ResultsActions> {
+export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutations, CellsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
@@ -21,12 +21,21 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
-    // Create and retain main module context
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.pipelines = pipelinesModule.context(store);
     this.analysis = analysisModule.context(store);
     this.datasets = datasetsModule.context(store);
+  }
+
+  async getCentroids(payload: ICentroidsSubmission) {
+    try {
+      const groupId = this.group?.getters.activeGroupId!;
+      const response = await api.getCentroids(groupId, payload);
+      this.mutations.setStateFromCentroids(response);
+    } catch (error) {
+      await this.main!.actions.checkApiError(error);
+    }
   }
 
   async getDatasetResults(datasetId: number) {
@@ -45,7 +54,7 @@ export class ResultsActions extends Actions<ResultsState, ResultsGetters, Result
       this.mutations.resetResultData();
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getResultData(groupId, resultId);
-      this.mutations.setData(data);
+      this.mutations.setStateFromResult(data);
       const result = this.getters.activeResult;
       if (result) {
         this.pipelines?.mutations.setSteps(result.pipeline);

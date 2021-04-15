@@ -10,7 +10,7 @@ import { ProjectsGetters } from "./getters";
 import { ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate } from "./models";
 import { ProjectsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
-import { resultsModule } from "@/modules/results";
+import { cellsModule } from "@/modules/cells";
 
 export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions> {
   // Declare context type
@@ -18,7 +18,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetsModule>;
-  results?: Context<typeof resultsModule>;
+  cells?: Context<typeof cellsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -26,7 +26,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetsModule.context(store);
-    this.results = resultsModule.context(store);
+    this.cells = cellsModule.context(store);
   }
 
   async getGroupProjects(groupId: number) {
@@ -283,15 +283,15 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
             mode: maskSettings.mode,
             location: mask.location,
           };
-          if (this.results?.getters.heatmap) {
-            output["mask"]["colorsType"] = this.results.getters.heatmap.type;
-            output["mask"]["colorsName"] = this.results.getters.heatmap.label;
+          if (this.cells?.getters.heatmap) {
+            output["mask"]["colorsType"] = this.cells.getters.heatmap.type;
+            output["mask"]["colorsName"] = this.cells.getters.heatmap.label;
           }
-          if (this.results?.getters.activeResultId) {
-            output["mask"]["resultId"] = this.results?.getters.activeResultId;
+          if (this.cells?.getters.activeResultId) {
+            output["mask"]["resultId"] = this.cells?.getters.activeResultId;
           }
           // Prepare selected cell ids visualisation
-          const selectedCells = this.results?.getters.selectedCells?.filter(
+          const selectedCells = this.cells?.getters.selectedCells?.filter(
             (v) => v.acquisitionId === activeAcquisitionId
           );
           if (selectedCells && selectedCells.length > 0) {

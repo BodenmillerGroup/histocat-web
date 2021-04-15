@@ -106,10 +106,9 @@ import { apiUrl } from "@/env";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { centroidsModule } from "@/modules/centroids";
-import { resultsModule } from "@/modules/results";
 import UploadButton from "@/components/UploadButton.vue";
 import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: { TreeView, UploadButton },
@@ -117,8 +116,7 @@ import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 export default class DatasetsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
-  readonly centroidsContext = centroidsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
   readonly apiUrl = apiUrl;
   readonly icons = {
@@ -135,21 +133,20 @@ export default class DatasetsView extends Vue {
 
   @Watch("selected")
   datasetChanged(index?: number | null) {
-    this.resultsContext.mutations.reset();
-    this.centroidsContext.mutations.reset();
+    this.cellsContext.mutations.reset();
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];
       if (dataset.status === "ready") {
         this.datasetsContext.mutations.setActiveDatasetId(dataset.id);
         Promise.all([
-          this.centroidsContext.actions.getCentroids({ datasetId: dataset.id }),
-          this.resultsContext.actions.getDatasetResults(dataset.id),
+          this.cellsContext.actions.getCentroids({ datasetId: dataset.id }),
+          this.cellsContext.actions.getDatasetResults(dataset.id),
           this.projectsContext.actions.getChannelStackImage(),
         ]);
       }
     } else {
       this.datasetsContext.mutations.setActiveDatasetId(null);
-      this.resultsContext.mutations.setActiveResultId(null);
+      this.cellsContext.mutations.setActiveResultId(null);
     }
   }
 

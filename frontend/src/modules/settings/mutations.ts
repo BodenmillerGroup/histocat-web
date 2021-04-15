@@ -4,7 +4,7 @@ import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./mod
 
 export class SettingsMutations extends Mutations<SettingsState> {
   setChannelsSettings(payload) {
-    this.state.channelsSettings = { ...this.state.channelsSettings, payload };
+    this.state.channelsSettings = { ...this.state.channelsSettings, ...payload };
   }
 
   setChannelColor(payload: { channelName: string; color: string }) {

@@ -50,8 +50,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import VueGridLayout from "vue-grid-layout";
 import PlotWidget from "@/components/PlotWidget.vue";
-import { resultsModule } from "@/modules/results";
 import { apiUrl } from "@/env";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: {
@@ -61,7 +61,7 @@ import { apiUrl } from "@/env";
   },
 })
 export default class ClusteringGridView extends Vue {
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
   readonly layout = [
     { x: 0, y: 0, w: 6, h: 1, i: "leidenViolin" },
@@ -71,7 +71,7 @@ export default class ClusteringGridView extends Vue {
   ];
 
   get activeResultId() {
-    return this.resultsContext.getters.activeResultId;
+    return this.cellsContext.getters.activeResultId;
   }
 
   get url() {

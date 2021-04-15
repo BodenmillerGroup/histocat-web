@@ -13,11 +13,10 @@ import { projectsModule } from "@/modules/projects";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
 import { transformToWebGl, transformFromWebGl } from "@/utils/webglUtils";
-import { centroidsModule } from "@/modules/centroids";
 import { mainModule } from "@/modules/main";
-import { resultsModule } from "@/modules/results";
-import { ICellPoint, ISelectedCell } from "@/modules/results/models";
 import { IRegionStatsSubmission } from "@/modules/analysis/models";
+import { cellsModule } from "@/modules/cells";
+import { ICell } from "@/modules/cells/models";
 
 @Component
 export default class ImageViewer extends Vue {
@@ -26,13 +25,12 @@ export default class ImageViewer extends Vue {
   readonly datasetContext = datasetsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly centroidsContext = centroidsModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
   private readonly canvas2d = "canvas2d";
   private readonly canvasWebGl = "canvasWebGl";
 
-  points: ICellPoint[] = [];
+  points: ICell[] = [];
   scatterplot: any;
   selection: any[] = [];
 
@@ -68,8 +66,8 @@ export default class ImageViewer extends Vue {
     return this.projectsContext.getters.channelStackImage;
   }
 
-  get centroids() {
-    return this.centroidsContext.getters.centroids;
+  get cellsByAcquisition() {
+    return this.cellsContext.getters.cellsByAcquisition;
   }
 
   get selectedChannels() {
@@ -148,8 +146,8 @@ export default class ImageViewer extends Vue {
           prevBackgroundImage.destroy();
         }
 
-        if (this.applyMask && this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
-          this.points = this.centroids.get(this.activeAcquisitionId!)!;
+        if (this.applyMask && this.cellsByAcquisition && this.cellsByAcquisition.has(this.activeAcquisitionId!)) {
+          this.points = this.cellsByAcquisition.get(this.activeAcquisitionId!)!;
           const x = transformToWebGl(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
           this.scatterplot.draw(x);
         } else {
@@ -164,14 +162,14 @@ export default class ImageViewer extends Vue {
   pointoverHandler(idx: number) {
     const point = this.points[idx];
     console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
+      `X: ${point.xy[0]}\nY: ${point.xy[1]}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
     );
   }
 
   pointoutHandler(idx: number) {
     const point = this.points[idx];
     console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
+      `X: ${point.xy[0]}\nY: ${point.xy[1]}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
     );
   }
 
@@ -179,20 +177,18 @@ export default class ImageViewer extends Vue {
     console.log("ImageViewer Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const newSelectedCells: ISelectedCell[] = [];
+      const selectedCells: string[] = [];
       for (const i of this.selection) {
         const point = this.points[i];
         const acquisitionId = point.acquisitionId;
-        newSelectedCells.push(
-          Object.freeze({ acquisitionId: acquisitionId, cellId: point.cellId, objectNumber: point.objectNumber })
-        );
+        selectedCells.push(point.cellId);
       }
-      this.resultsContext.mutations.setSelectedCells(newSelectedCells);
+      this.cellsContext.mutations.setSelectedCellIds(selectedCells);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }
     } else {
-      this.resultsContext.mutations.setSelectedCells([]);
+      this.cellsContext.mutations.setSelectedCellIds([]);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }
@@ -280,6 +276,8 @@ export default class ImageViewer extends Vue {
       deselectOnDblClick: true,
       deselectOnEscape: true,
       mouseMode: "panZoom",
+      keyMap: { shift: "lasso", ctrl: "merge" },
+      colorBy: "valueA",
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);

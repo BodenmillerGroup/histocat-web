@@ -6,10 +6,11 @@
     </v-card-title>
     <v-divider />
     <ScatterPlot2d
-      v-if="plotData"
+      v-if="hasData"
       plot-id="pcaPlot"
       :ignore-selection="false"
       :data="plotData"
+      mapping="pca"
       title="PCA"
       x-axis-title="PC1"
       y-axis-title="PC2"
@@ -21,16 +22,20 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
-import { resultsModule } from "@/modules/results";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: { ScatterPlot2d },
 })
 export default class PcaWidget extends Vue {
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
+
+  get hasData() {
+    return this.cellsContext.getters.activeResult && this.cellsContext.getters.activeResult.output.pca;
+  }
 
   get plotData() {
-    return this.resultsContext.getters.pcaData;
+    return this.cellsContext.getters.cellsByAcquisition;
   }
 }
 </script>

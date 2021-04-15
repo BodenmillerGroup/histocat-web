@@ -6,10 +6,11 @@
     </v-card-title>
     <v-divider />
     <ScatterPlot2d
-      v-if="plotData"
+      v-if="hasData"
       plot-id="umapPlot"
       :ignore-selection="false"
       :data="plotData"
+      mapping="umap"
       title="UMAP"
       x-axis-title="UMAP1"
       y-axis-title="UMAP2"
@@ -21,16 +22,20 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
-import { resultsModule } from "@/modules/results";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: { ScatterPlot2d },
 })
 export default class UmapWidget extends Vue {
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
+
+  get hasData() {
+    return this.cellsContext.getters.activeResult && this.cellsContext.getters.activeResult.output.umap;
+  }
 
   get plotData() {
-    return this.resultsContext.getters.umapData;
+    return this.cellsContext.getters.cellsByAcquisition;
   }
 }
 </script>

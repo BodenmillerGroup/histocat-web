@@ -1,3 +1,24 @@
+export interface ICentroidsSubmission {
+  datasetId: number;
+}
+
+export interface ICentroidsData {
+  acquisitionIds: number[];
+  cellIds: string[];
+  objectNumbers: number[];
+  x: number[];
+  y: number[];
+}
+
+export interface ICell {
+  cellId: string;
+  objectNumber: number;
+  acquisitionId: number;
+  xy: [number, number];
+  color: any;
+  mappings: { [name: string]: [number, number] };
+}
+
 export interface IResult {
   id: number;
   dataset_id: number;
@@ -47,36 +68,6 @@ export interface IRawColorsData {
   colors: IResultDataColors;
 }
 
-export interface ICellData {
-  cellId: string;
-  acquisitionId: number;
-  objectNumber: number;
-  x: number;
-  y: number;
-  mappings?: {
-    [key: string]: {
-      x: number;
-      y: number;
-    };
-  };
-  color?: any;
-}
-
-export interface ICellPoint {
-  cellId: string;
-  acquisitionId: number;
-  objectNumber: number;
-  x: number;
-  y: number;
-  color: any;
-}
-
-export interface ISelectedCell {
-  cellId: string;
-  acquisitionId: number;
-  objectNumber: number;
-}
-
 export interface IPlotSeries {
   label: string;
   data: number[];
@@ -86,8 +77,4 @@ export interface IRawScatterData {
   cellIds: string[];
   x: IPlotSeries;
   y: IPlotSeries;
-}
-
-export interface IPhenoGraphData {
-  community: IPlotSeries;
 }

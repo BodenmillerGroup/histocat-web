@@ -34,13 +34,13 @@
         item-text="label"
         item-value="tag"
       />
-      <!--      <v-switch v-model="showRegression" label="Show regression" hide-details inset dense />-->
     </v-toolbar>
     <ScatterPlot2d
-      v-if="plotData"
+      v-if="hasData"
       :ignore-selection="true"
       plot-id="scatterPlot"
       :data="plotData"
+      mapping="scatterplot"
       title="Scatter Plot"
       :x-axis-title="markerX"
       :y-axis-title="markerY"
@@ -50,33 +50,34 @@
 </template>
 
 <script lang="ts">
-import { datasetsModule } from "@/modules/datasets";
 import { required } from "@/utils/validators";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import ScatterPlot2d from "@/components/charts/ScatterPlot2d.vue";
-import { resultsModule } from "@/modules/results";
 import { projectsModule } from "@/modules/projects";
+import { cellsModule } from "@/modules/cells";
 
 @Component({
   components: { ScatterPlot2d },
 })
 export default class ScatterWidget extends Vue {
-  readonly datasetContext = datasetsModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
   readonly required = required;
 
-  showRegression = false;
   markerX: string | null = null;
   markerY: string | null = null;
 
-  get plotData() {
-    return this.resultsContext.getters.scatterPlotData;
+  get hasData() {
+    if (!this.cellsContext.getters.cellsByAcquisition) {
+      return false;
+    }
+    const value = this.cellsContext.getters.cellsByAcquisition.values().next().value;
+    return (value && value[0] && value[0].mappings && value[0].mappings.scatterplot);
   }
 
-  get activeDataset() {
-    return this.datasetContext.getters.activeDataset;
+  get plotData() {
+    return this.cellsContext.getters.cellsByAcquisition;
   }
 
   get channels() {
@@ -85,7 +86,7 @@ export default class ScatterWidget extends Vue {
   }
 
   get markers() {
-    return this.resultsContext.getters.markers.map((tag) => {
+    return this.cellsContext.getters.markers.map((tag) => {
       return {
         tag: tag,
         label: this.channels && this.channels[tag] ? this.channels[tag].customLabel : tag,
@@ -109,14 +110,9 @@ export default class ScatterWidget extends Vue {
     this.submit();
   }
 
-  @Watch("showRegression")
-  showRegressionChanged(value) {
-    this.submit();
-  }
-
   async submit() {
     if (this.markerX && this.markerY) {
-      await this.resultsContext.actions.getScatterPlotData({
+      await this.cellsContext.actions.getScatterPlotData({
         markerX: this.markerX,
         markerY: this.markerY,
       });
