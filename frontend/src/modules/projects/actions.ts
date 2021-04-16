@@ -273,14 +273,14 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     const activeDataset = this.datasets!.getters.activeDataset;
     if (activeDataset) {
       output["datasetId"] = activeDataset.id;
-      const maskSettings = this.settings!.getters.maskSettings;
+      const maskMode = this.main!.getters.maskMode;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
       if (activeAcquisitionId && activeDataset.meta.masks) {
         const mask = activeDataset.meta.masks[activeAcquisitionId];
         if (mask) {
           output["mask"] = {
             colorize: false,
-            mode: maskSettings.mode,
+            mode: maskMode,
             location: mask.location,
           };
           if (this.cells?.getters.heatmap) {

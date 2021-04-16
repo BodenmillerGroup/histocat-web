@@ -72,12 +72,8 @@ def get_result_data(
     adata = ad.read_h5ad(location)
 
     output = {
-        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
-        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
         "markers": adata.var_names.tolist(),
-        "x": adata.obs["CentroidX"].round(2).tolist(),
-        "y": adata.obs["CentroidY"].round(2).tolist(),
     }
 
     mappings = {}

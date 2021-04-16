@@ -28,11 +28,11 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
     this.datasets = datasetsModule.context(store);
   }
 
-  async getCentroids(payload: ICentroidsSubmission) {
+  async initializeCells(payload: ICentroidsSubmission) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const response = await api.getCentroids(groupId, payload);
-      this.mutations.setStateFromCentroids(response);
+      this.mutations.initializeCells(response);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -50,11 +50,11 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
 
   async getResultData(resultId: number) {
     try {
-      this.mutations.setActiveResultId(resultId);
       this.mutations.resetResultData();
+      this.mutations.setActiveResultId(resultId);
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getResultData(groupId, resultId);
-      this.mutations.setStateFromResult(data);
+      this.mutations.updateCellsByResult(data);
       const result = this.getters.activeResult;
       if (result) {
         this.pipelines?.mutations.setSteps(result.pipeline);
@@ -70,13 +70,13 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
       const colorsType = this.getters.heatmap ? this.getters.heatmap.type : undefined;
       const colorsName = this.getters.heatmap ? this.getters.heatmap.value : undefined;
       if (!colorsType || !colorsName) {
-        this.mutations.setColors(null);
+        this.mutations.updateCellsByColors(null);
         return;
       }
       const groupId = this.group?.getters.activeGroupId!;
       const resultId = this.getters.activeResultId!;
       const data = await api.getColorsData(groupId, resultId, colorsType, colorsName);
-      this.mutations.setColors(data);
+      this.mutations.updateCellsByColors(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
@@ -87,7 +87,7 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
       const groupId = this.group?.getters.activeGroupId!;
       const resultId = this.getters.activeResultId!;
       const data = await api.getScatterPlotData(groupId, resultId, payload.markerX, payload.markerY);
-      this.mutations.setScatterData(data);
+      this.mutations.updateCellsByScatterplot(data);
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }

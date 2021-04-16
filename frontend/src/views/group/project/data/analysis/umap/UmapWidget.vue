@@ -6,7 +6,6 @@
     </v-card-title>
     <v-divider />
     <ScatterPlot2d
-      v-if="hasData"
       plot-id="umapPlot"
       :ignore-selection="false"
       :data="plotData"
@@ -29,10 +28,6 @@ import { cellsModule } from "@/modules/cells";
 })
 export default class UmapWidget extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
-
-  get hasData() {
-    return this.cellsContext.getters.activeResult && this.cellsContext.getters.activeResult.output.umap;
-  }
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;

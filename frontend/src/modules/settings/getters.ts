@@ -17,12 +17,4 @@ export class SettingsGetters extends Getters<SettingsState> {
   get scalebar() {
     return this.state.scalebar;
   }
-
-  get maskSettings() {
-    return this.state.mask;
-  }
-
-  get mouseMode() {
-    return this.state.mouseMode;
-  }
 }

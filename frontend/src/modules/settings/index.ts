@@ -1,7 +1,7 @@
 import { Module } from "vuex-smart-module";
 import { SettingsActions } from "./actions";
 import { SettingsGetters } from "./getters";
-import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
+import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar } from "./models";
 import { SettingsMutations } from "./mutations";
 
 export class SettingsState {
@@ -25,10 +25,6 @@ export class SettingsState {
       scale: 1.0,
     },
   };
-  mask: IMaskSettings = {
-    mode: "raw",
-  };
-  mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom";
 }
 
 export const settingsModule = new Module({

@@ -28,7 +28,7 @@
           </v-btn>
         </template>
         <v-list dense>
-          <v-list-item-group v-model="mode" color="primary">
+          <v-list-item-group v-model="maskMode" color="primary">
             <v-list-item value="raw">
               <v-list-item-title>Raw</v-list-item-title>
             </v-list-item>
@@ -59,7 +59,6 @@
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { ExportFormat } from "@/modules/projects/models";
-import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import ImageViewer from "@/components/ImageViewer.vue";
 import { mainModule } from "@/modules/main";
@@ -71,28 +70,24 @@ import { analysisModule } from "@/modules/analysis";
 export default class BlendTab extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly settingsContext = settingsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
 
-  get mode() {
-    return this.settingsContext.getters.maskSettings.mode;
+  get maskMode() {
+    return this.mainContext.getters.maskMode;
   }
 
-  set mode(value: "raw" | "mask" | "origin") {
-    this.settingsContext.mutations.setMaskSettings({
-      ...this.settingsContext.getters.maskSettings,
-      mode: value,
-    });
+  set maskMode(value: "raw" | "mask" | "origin") {
+    this.mainContext.mutations.setMaskMode(value);
     this.projectsContext.actions.getChannelStackImage();
   }
 
   get mouseMode() {
-    return this.settingsContext.getters.mouseMode;
+    return this.mainContext.getters.mouseMode;
   }
 
   set mouseMode(value: "panZoom" | "lasso" | "rotate") {
-    this.settingsContext.mutations.setMouseMode(value);
+    this.mainContext.mutations.setMouseMode(value);
   }
 
   get regionsEnabled() {

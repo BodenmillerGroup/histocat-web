@@ -6,16 +6,16 @@
 
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
-import { settingsModule } from "@/modules/settings";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Plotly from "plotly.js/dist/plotly";
 import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
+import { mainModule } from "@/modules/main";
 
 @Component
 export default class ScatterPlot2d extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly settingsContext = settingsModule.context(this.$store);
+  readonly mainContext = mainModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
 
   @Prop({ type: String, required: true }) plotId;
@@ -27,7 +27,7 @@ export default class ScatterPlot2d extends Vue {
   @Prop({ type: Boolean, required: true }) ignoreSelection!: boolean;
 
   get applyMask() {
-    return this.settingsContext.getters.maskSettings.mode === "mask";
+    return this.mainContext.getters.maskMode === "mask";
   }
 
   get heatmap() {
@@ -59,19 +59,20 @@ export default class ScatterPlot2d extends Vue {
 
   private refreshOnDataChange(data: Readonly<Map<number, ICell[]>>) {
     const traces: any[] = [];
-    data.forEach((v, k) => {
+    data.forEach((cells, k) => {
+      const filteredCells = cells.filter((v) => v.mappings[this.mapping]);
       traces.push({
         type: "scattergl",
         mode: "markers",
         name: `Acquisition ${k}`,
-        x: v.map((v) => v.mappings[this.mapping][0]),
-        y: v.map((v) => v.mappings[this.mapping][1]),
-        text: v.map((v) => `CellID: ${v.cellId}`),
-        customdata: v,
+        x: filteredCells.map((v) => v.mappings[this.mapping][0]),
+        y: filteredCells.map((v) => v.mappings[this.mapping][1]),
+        text: filteredCells.map((v) => `CellID: ${v.cellId}`),
+        customdata: filteredCells,
         marker: this.heatmap
           ? {
               size: 3,
-              color: v.map((v) => v.color),
+              color: filteredCells.map((v) => v.color),
               colorscale: "Jet",
             }
           : {
@@ -110,7 +111,10 @@ export default class ScatterPlot2d extends Vue {
       autosize: true,
     };
 
-    Plotly.react(this.plotId, traces, layout);
+    // Remove empty series
+    const filteredTraces = traces.filter((v) => v.x.length > 0);
+
+    Plotly.react(this.plotId, filteredTraces, layout);
   }
 
   @Watch("data")
@@ -189,6 +193,13 @@ export default class ScatterPlot2d extends Vue {
   mounted() {
     this.initPlot();
   }
+
+  // TODO: check how plotly WebGl context should be destroyed
+  // beforeDestroy() {
+  //   if (this.plotId) {
+  //     Plotly.purge(this.plotId);
+  //   }
+  // }
 }
 </script>
 

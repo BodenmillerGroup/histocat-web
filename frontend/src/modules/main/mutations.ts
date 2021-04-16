@@ -55,6 +55,14 @@ export class MainMutations extends Mutations<MainState> {
     this.state.viewMode = value;
   }
 
+  setMaskMode(payload: "raw" | "mask" | "origin") {
+    this.state.maskMode = payload;
+  }
+
+  setMouseMode(mode: "panZoom" | "lasso" | "rotate") {
+    this.state.mouseMode = mode;
+  }
+
   reset() {
     // acquire initial state
     const s = new MainState();

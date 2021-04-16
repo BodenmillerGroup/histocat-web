@@ -19,6 +19,9 @@ export class MainState {
 
   processing = false;
   processingProgress = 0;
+
+  maskMode: "raw" | "mask" | "origin" = "raw";
+  mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom";
 }
 
 export const mainModule = new Module({

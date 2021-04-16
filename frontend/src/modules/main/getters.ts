@@ -54,6 +54,14 @@ export class MainGetters extends Getters<MainState> {
     return this.state.viewMode;
   }
 
+  get maskMode() {
+    return this.state.maskMode;
+  }
+
+  get mouseMode() {
+    return this.state.mouseMode;
+  }
+
   get isAdmin() {
     return this.state.userProfile ? this.state.userProfile.is_admin : false;
   }

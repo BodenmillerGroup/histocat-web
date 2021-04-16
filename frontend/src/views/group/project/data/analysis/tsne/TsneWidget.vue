@@ -6,7 +6,6 @@
     </v-card-title>
     <v-divider />
     <ScatterPlot2d
-      v-if="hasData"
       plot-id="tsnePlot"
       :ignore-selection="false"
       :data="plotData"
@@ -29,10 +28,6 @@ import { cellsModule } from "@/modules/cells";
 })
 export default class TsneWidget extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
-
-  get hasData() {
-    return this.cellsContext.getters.activeResult && this.cellsContext.getters.activeResult.output.tsne;
-  }
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;

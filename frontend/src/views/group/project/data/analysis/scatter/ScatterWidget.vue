@@ -36,7 +36,6 @@
       />
     </v-toolbar>
     <ScatterPlot2d
-      v-if="hasData"
       :ignore-selection="true"
       plot-id="scatterPlot"
       :data="plotData"
@@ -67,14 +66,6 @@ export default class ScatterWidget extends Vue {
 
   markerX: string | null = null;
   markerY: string | null = null;
-
-  get hasData() {
-    if (!this.cellsContext.getters.cellsByAcquisition) {
-      return false;
-    }
-    const value = this.cellsContext.getters.cellsByAcquisition.values().next().value;
-    return (value && value[0] && value[0].mappings && value[0].mappings.scatterplot);
-  }
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;

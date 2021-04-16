@@ -11,7 +11,6 @@ import createScatterplot from "regl-scatterplot";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { projectsModule } from "@/modules/projects";
 import { analysisModule } from "@/modules/analysis";
-import { datasetsModule } from "@/modules/datasets";
 import { transformToWebGl, transformFromWebGl } from "@/utils/webglUtils";
 import { mainModule } from "@/modules/main";
 import { IRegionStatsSubmission } from "@/modules/analysis/models";
@@ -22,7 +21,6 @@ import { ICell } from "@/modules/cells/models";
 export default class ImageViewer extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
-  readonly datasetContext = datasetsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
@@ -43,7 +41,7 @@ export default class ImageViewer extends Vue {
   }
 
   get applyMask() {
-    return this.settingsContext.getters.maskSettings.mode === "mask";
+    return this.mainContext.getters.maskMode === "mask";
   }
 
   get showLegend() {
@@ -52,10 +50,6 @@ export default class ImageViewer extends Vue {
 
   get activeAcquisitionId() {
     return this.projectsContext.getters.activeAcquisitionId;
-  }
-
-  get activeDataset() {
-    return this.datasetContext.getters.activeDataset;
   }
 
   get activeAcquisition() {
@@ -83,7 +77,7 @@ export default class ImageViewer extends Vue {
   }
 
   get mouseMode() {
-    return this.settingsContext.getters.mouseMode;
+    return this.mainContext.getters.mouseMode;
   }
 
   @Watch("mouseMode")
@@ -153,7 +147,7 @@ export default class ImageViewer extends Vue {
         } else {
           this.scatterplot.draw([]);
         }
-        this.scatterplot.deselect({ preventEvent: true });
+        // this.scatterplot.deselect({ preventEvent: true });
       };
       img.src = value;
     }
@@ -180,7 +174,6 @@ export default class ImageViewer extends Vue {
       const selectedCells: string[] = [];
       for (const i of this.selection) {
         const point = this.points[i];
-        const acquisitionId = point.acquisitionId;
         selectedCells.push(point.cellId);
       }
       this.cellsContext.mutations.setSelectedCellIds(selectedCells);

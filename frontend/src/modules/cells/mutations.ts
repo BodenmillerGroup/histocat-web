@@ -3,8 +3,20 @@ import { CellsState, resultListSchema } from ".";
 import { ICell, ICentroidsData, IRawColorsData, IRawResultData, IRawScatterData, IResult } from "./models";
 import { normalize } from "normalizr";
 
+function getCellsByAcquisition(cells: { [p: string]: ICell }) {
+  // Refresh cellsByAcquisition mapping
+  const cellsByAcquisition = new Map<number, ICell[]>();
+  Object.values(cells).forEach((c) => {
+    if (!cellsByAcquisition.has(c.acquisitionId)) {
+      cellsByAcquisition.set(c.acquisitionId, []);
+    }
+    cellsByAcquisition.get(c.acquisitionId)!.push(c);
+  });
+  return cellsByAcquisition;
+}
+
 export class CellsMutations extends Mutations<CellsState> {
-  setStateFromCentroids(payload: ICentroidsData) {
+  initializeCells(payload: ICentroidsData) {
     const cells = {};
     const cellsByAcquisition = new Map<number, ICell[]>();
     payload.cellIds.forEach((cellId, i) => {
@@ -27,22 +39,20 @@ export class CellsMutations extends Mutations<CellsState> {
     this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
-  setStateFromResult(payload: IRawResultData) {
-    const cells = {};
-    const cellsByAcquisition = new Map<number, ICell[]>();
+  updateCellsByResult(payload: IRawResultData) {
+    if (!this.state.cells) {
+      return;
+    }
+    const cells = { ...this.state.cells };
+
+    // Reset mappings for all cells
+    Object.values(cells).forEach((cell) => {
+      cell.mappings = {};
+      cell.color = cell.acquisitionId;
+    });
+
     for (let i = 0; i < payload.cellIds.length; i++) {
-      const acquisitionId = payload.acquisitionIds[i];
-      if (!cellsByAcquisition.has(acquisitionId)) {
-        cellsByAcquisition.set(acquisitionId, []);
-      }
-      const cell: ICell = {
-        cellId: payload.cellIds[i],
-        objectNumber: payload.objectNumbers[i],
-        acquisitionId: acquisitionId,
-        xy: [payload.x[i], payload.y[i]],
-        color: payload.acquisitionIds[i],
-        mappings: {},
-      };
+      const cell = cells[payload.cellIds[i]];
       if (payload.mappings) {
         const mappings: { [key: string]: [number, number] } = {};
         if (payload.mappings.pca) {
@@ -56,59 +66,59 @@ export class CellsMutations extends Mutations<CellsState> {
         }
         cell.mappings = mappings;
       }
-      cells[cell.cellId] = cell;
-      cellsByAcquisition.get(acquisitionId)!.push(cell);
     }
+
+    const cellsByAcquisition = getCellsByAcquisition(cells);
+
     this.state.markers = Object.freeze(payload.markers);
     this.state.cells = Object.freeze(cells);
     this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
-  setColors(payload: IRawColorsData | null) {
+  updateCellsByColors(payload: IRawColorsData | null) {
     if (!this.state.cells) {
       return;
     }
-    const cells = {};
-    const cellsByAcquisition = new Map<number, ICell[]>();
-    if (payload === null) {
-      Object.values(this.state.cells).forEach((cell) => {
-        if (!cellsByAcquisition.has(cell.acquisitionId)) {
-          cellsByAcquisition.set(cell.acquisitionId, []);
-        }
-        cell.color = cell.acquisitionId;
-        cells[cell.cellId] = cell;
-        cellsByAcquisition.get(cell.acquisitionId)!.push(cell);
-      });
-    } else {
+    const cells = { ...this.state.cells };
+
+    // Reset color for all cells
+    Object.values(cells).forEach((cell) => {
+      cell.color = cell.acquisitionId;
+    });
+
+    if (payload !== null) {
       for (let i = 0; i < payload.cellIds.length; i++) {
-        const cell = this.state.cells[payload.cellIds[i]]!;
-        if (!cellsByAcquisition.has(cell.acquisitionId)) {
-          cellsByAcquisition.set(cell.acquisitionId, []);
-        }
+        const cell = cells[payload.cellIds[i]]!;
         cell.color = Number(payload.colors.data[i]);
-        cells[cell.cellId] = cell;
-        cellsByAcquisition.get(cell.acquisitionId)!.push(cell);
       }
     }
+
+    const cellsByAcquisition = getCellsByAcquisition(cells);
+
     this.state.cells = Object.freeze(cells);
     this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
-  setScatterData(payload: IRawScatterData | null) {
-    if (payload == null || !this.state.cells) {
+  updateCellsByScatterplot(payload: IRawScatterData | null) {
+    if (!this.state.cells) {
       return;
     }
-    const cells = {};
-    const cellsByAcquisition = new Map<number, ICell[]>();
-    for (let i = 0; i < payload.cellIds.length; i++) {
-      const cell = this.state.cells[payload.cellIds[i]]!;
-      if (!cellsByAcquisition.has(cell.acquisitionId)) {
-        cellsByAcquisition.set(cell.acquisitionId, []);
+    const cells = { ...this.state.cells };
+
+    // Reset scatterplot data for all cells
+    Object.values(cells).forEach((cell) => {
+      delete cell.mappings.scatterplot;
+    });
+
+    if (payload !== null) {
+      for (let i = 0; i < payload.cellIds.length; i++) {
+        const cell = cells[payload.cellIds[i]]!;
+        cell.mappings.scatterplot = [payload.x.data[i], payload.y.data[i]];
       }
-      cell.mappings.scatterplot = [payload.x.data[i], payload.y.data[i]];
-      cells[cell.cellId] = cell;
-      cellsByAcquisition.get(cell.acquisitionId)!.push(cell);
     }
+
+    const cellsByAcquisition = getCellsByAcquisition(cells);
+
     this.state.cells = Object.freeze(cells);
     this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
@@ -119,6 +129,20 @@ export class CellsMutations extends Mutations<CellsState> {
 
   setActiveResultId(id: number | null) {
     this.state.activeResultId = id;
+    if (this.state.cells && id === null) {
+      const cells = { ...this.state.cells };
+
+      // Reset mappings for all cells
+      Object.values(cells).forEach((cell) => {
+        cell.mappings = {};
+        cell.color = cell.acquisitionId;
+      });
+
+      const cellsByAcquisition = getCellsByAcquisition(cells);
+
+      this.state.cells = Object.freeze(cells);
+      this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
+    }
   }
 
   setHeatmap(heatmap: { type: string; label: string; value: string } | null) {
