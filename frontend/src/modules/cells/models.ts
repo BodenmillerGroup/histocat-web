@@ -8,6 +8,7 @@ export interface ICentroidsData {
   objectNumbers: number[];
   x: number[];
   y: number[];
+  colors: string[];
 }
 
 export interface ICell {
@@ -15,7 +16,8 @@ export interface ICell {
   objectNumber: number;
   acquisitionId: number;
   xy: [number, number];
-  color: any;
+  color: string;
+  defaultColor: string;
   mappings: { [name: string]: [number, number] };
 }
 
@@ -50,7 +52,7 @@ export interface IResultDataMapping {
 export interface IResultDataColors {
   type: string;
   name: string;
-  data: any[];
+  data: string[];
 }
 
 export interface IRawResultData {

@@ -9,6 +9,7 @@ from mahotas import bwperim
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
 from skimage import img_as_ubyte, io
+from skimage.color import label2rgb
 from skimage.segmentation import find_boundaries
 
 from histocat.core.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
@@ -21,6 +22,14 @@ OTSU_GRAYSCALE = "Otsu Grayscale"
 OTSU_HUE_ALGORITHM = "Otsu Hue"
 OTSU_SATURATION_ALGORITHM = "Otsu Saturation"
 OTSU_LIGHTNESS_ALGORITHM = "Otsu Lightness"
+
+
+def get_sequential_colors():
+    return cm.ScalarMappable(None, 'jet')
+
+
+def get_qualitative_colors():
+    return cm.ScalarMappable(None, 'Accent')
 
 
 def gen_lut():
@@ -93,16 +102,16 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
     boundary = find_boundaries(mask, connectivity=1, mode="inner")
     image[boundary > 0] = 1
 
-    # if heatmap_dict:
-    #     mask = replace_with_dict(mask, heatmap_dict)
-    #
-    #     max_value = max(heatmap_dict.values())
-    #     colors = [cmap(i / max_value) for i in heatmap_dict.values()]
-    # else:
-    #     colors = ("darkorange", "darkorange")
+    if heatmap_dict:
+        # mask = replace_with_dict(mask, heatmap_dict)
 
-    # img = label2rgb(label=mask, image=image, colors=colors, alpha=0.3, bg_label=0, image_alpha=1, kind="overlay")
-    return image
+
+        colors = [i for i in heatmap_dict.values()]
+    else:
+        colors = ("darkorange", "darkorange")
+
+    img = label2rgb(label=mask, image=image, colors=colors, alpha=1, bg_label=0, image_alpha=1, kind="overlay")
+    return img
 
 
 def draw_overlay(mask_settings: MaskSettingsDto):
@@ -248,7 +257,7 @@ def normalize_embedding(embedding):
 def replace_with_dict(a, d):
     b = np.copy(a)
     for old, new in d.items():
-        b[a == int(old)] = new
+        b[a == old] = new
     return b
 
 

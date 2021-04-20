@@ -1,46 +1,56 @@
 import { Mutations } from "vuex-smart-module";
-import { AnnotationsState } from ".";
+import { AnnotationsState, defaultCellClasses } from ".";
 
 export class AnnotationsMutations extends Mutations<AnnotationsState> {
   addCellClass(payload: { name: string; color: string }) {
-    const newValue = { ...this.state.classes };
+    const newValue = { ...this.state.cellClasses };
     newValue[payload.name] = payload.color;
-    this.state.classes = newValue;
+    this.state.cellClasses = newValue;
   }
 
   updateCellClass(payload: { prevName: string; nextName: string; color: string }) {
-    const newValue = { ...this.state.classes };
+    const newValue = { ...this.state.cellClasses };
     delete newValue[payload.prevName];
     newValue[payload.nextName] = payload.color;
-    this.state.classes = newValue;
+    this.state.cellClasses = newValue;
   }
 
   deleteCellClass(name: string) {
-    const newValue = { ...this.state.classes };
+    const newValue = { ...this.state.cellClasses };
     delete newValue[name];
-    this.state.classes = newValue;
+    this.state.cellClasses = newValue;
   }
 
-  addAnnotation(payload: { name: string; cellClass: string; cells: string[] }) {
-    this.state.annotations = this.state.annotations.concat({
-      name: payload.name,
+  resetCellClasses() {
+    this.state.cellClasses = { ...defaultCellClasses };
+  }
+
+  addAnnotation(payload: { cellClass: string; cells: string[] }) {
+    const cellSet = new Set(payload.cells);
+    const newAnnotations = [...this.state.annotations];
+    // Calculate sets difference
+    newAnnotations.forEach((annotation) => {
+      annotation.cells = new Set([...annotation.cells].filter(x => !cellSet.has(x)));
+    });
+    this.state.annotations = newAnnotations.concat({
       cellClass: payload.cellClass,
-      cells: payload.cells,
+      cells: cellSet,
       visible: true,
     });
   }
 
-  updateAnnotation(payload: { prevName: string; nextName: string; cellClass: string }) {
-    const annotation = this.state.annotations.find((v) => v.name === payload.prevName);
+  updateAnnotation(payload: { index: number; cellClass: string }) {
+    const annotation = this.state.annotations[payload.index];
     if (annotation) {
-      annotation.name = payload.nextName;
       annotation.cellClass = payload.cellClass;
       this.state.annotations = this.state.annotations.slice();
     }
   }
 
-  deleteAnnotation(name: string) {
-    this.state.annotations = this.state.annotations.filter((v) => v.name !== name);
+  deleteAnnotation(index: number) {
+    const newValue = [...this.state.annotations];
+    newValue.splice(index, 1)
+    this.state.annotations = newValue;
   }
 
   reset() {

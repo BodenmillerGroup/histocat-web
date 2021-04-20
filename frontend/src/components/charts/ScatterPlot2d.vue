@@ -12,6 +12,8 @@ import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
 import { mainModule } from "@/modules/main";
 
+const pointSize = 3;
+
 @Component
 export default class ScatterPlot2d extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
@@ -69,15 +71,10 @@ export default class ScatterPlot2d extends Vue {
         y: filteredCells.map((v) => v.mappings[this.mapping][1]),
         text: filteredCells.map((v) => `CellID: ${v.cellId}`),
         customdata: filteredCells,
-        marker: this.heatmap
-          ? {
-              size: 3,
-              color: filteredCells.map((v) => v.color),
-              colorscale: "Jet",
-            }
-          : {
-              size: 3,
-            },
+        marker: {
+          size: pointSize,
+          color: filteredCells.map((v) => v.color),
+        },
         unselected: {
           marker: {
             opacity: 0.1,
@@ -111,10 +108,7 @@ export default class ScatterPlot2d extends Vue {
       autosize: true,
     };
 
-    // Remove empty series
-    const filteredTraces = traces.filter((v) => v.x.length > 0);
-
-    Plotly.react(this.plotId, filteredTraces, layout);
+    Plotly.react(this.plotId, traces, layout);
   }
 
   @Watch("data")
@@ -166,7 +160,6 @@ export default class ScatterPlot2d extends Vue {
     plot.on("plotly_selected", (eventData) => {
       if (eventData) {
         if (eventData.points.length > 0) {
-          // console.log(eventData.points);
           const selectedCells: string[] = [];
           eventData.points.forEach((point, i) => {
             const cellPoint = point.customdata as ICell;

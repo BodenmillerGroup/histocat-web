@@ -7,23 +7,22 @@
           cellClass = '';
           addDialog = true;
         "
-        :disabled="selectedCells.length === 0"
+        :disabled="selectedCellIds.length === 0"
         color="primary"
         elevation="1"
-        small
+        x-small
         >Add annotation</v-btn
       >
     </v-toolbar>
     <v-list dense class="overflow-y-auto scroll-view pa-0">
       <v-list-item-group v-model="selected" color="primary">
-        <v-list-item v-for="item in annotations" :key="item[0]">
-          <v-list-item-avatar size="16" :color="annotationsContext.getters.classes[item.cellClass]" />
+        <v-list-item v-for="(item, index) in annotations" :key="index">
+          <v-list-item-avatar size="16" :color="cellClasses[item.cellClass]" />
           <v-list-item-action>
             <v-checkbox v-model="item.visible" hide-details dense />
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title class="item">
-              <span>{{ item.name }}</span>
+            <v-list-item-title>
               <span>{{ item.cellClass }}</span>
             </v-list-item-title>
           </v-list-item-content>
@@ -38,7 +37,6 @@
                     color="primary lighten-2"
                     @click.stop="
                       selected = item;
-                      name = item.name;
                       cellClass = item.cellClass;
                       editDialog = true;
                     "
@@ -50,7 +48,7 @@
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" color="secondary lighten-2" @click.stop="deleteAnnotation(item.name)">
+                  <v-btn icon small v-on="on" color="secondary lighten-2" @click.stop="deleteAnnotation(item)">
                     <v-icon small>mdi-delete-outline</v-icon>
                   </v-btn>
                 </template>
@@ -65,8 +63,7 @@
       <v-card>
         <v-card-title>Add annotation</v-card-title>
         <v-card-text>
-          <v-text-field label="Name" v-model="name" />
-          <v-select dense :items="classes" v-model="cellClass" label="Class" />
+          <v-select :items="cellClassItems" v-model="cellClass" label="Class" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -79,8 +76,7 @@
       <v-card>
         <v-card-title>Edit annotation</v-card-title>
         <v-card-text>
-          <v-text-field label="Name" v-model="name" />
-          <v-select dense :items="classes" v-model="cellClass" label="Class" />
+          <v-select :items="cellClassItems" v-model="cellClass" label="Class" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -96,6 +92,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import { annotationsModule } from "@/modules/annotations";
 import { cellsModule } from "@/modules/cells";
+import { IAnnotation } from "@/modules/annotations/models";
 
 @Component
 export default class AnnotationsView extends Vue {
@@ -105,7 +102,6 @@ export default class AnnotationsView extends Vue {
   addDialog = false;
   editDialog = false;
   activeId: number | null = null;
-  name: string | null = null;
   cellClass: string | null = null;
 
   selected?: any | null = null;
@@ -114,26 +110,31 @@ export default class AnnotationsView extends Vue {
     return this.annotationsContext.getters.annotations;
   }
 
-  get classes() {
-    return Object.keys(this.annotationsContext.getters.classes).sort((a, b) => a.localeCompare(b));
+  get cellClasses() {
+    return this.annotationsContext.getters.cellClasses;
+  }
+
+  get cellClassItems() {
+    return Object.keys(this.cellClasses).sort((a, b) => a.localeCompare(b));
   }
 
   get selectedCellIds() {
     return this.cellsContext.getters.selectedCellIds;
   }
 
-  deleteAnnotation(name: string) {
+  deleteAnnotation(item: IAnnotation) {
     if (self.confirm("Do you really want to delete this annotation?")) {
-      this.annotationsContext.mutations.deleteAnnotation(name);
+      const index = this.annotations.indexOf(item);
+      this.annotationsContext.mutations.deleteAnnotation(index);
     }
   }
 
   updateAnnotation() {
     this.editDialog = false;
     if (this.selected) {
+      const index = this.annotations.indexOf(this.selected);
       this.annotationsContext.mutations.updateAnnotation({
-        prevName: this.selected.name,
-        nextName: this.name!,
+        index: index,
         cellClass: this.cellClass!,
       });
     }
@@ -143,11 +144,20 @@ export default class AnnotationsView extends Vue {
     this.addDialog = false;
     if (this.selectedCellIds) {
       this.annotationsContext.mutations.addAnnotation({
-        name: this.name!,
         cellClass: this.cellClass!,
         cells: this.selectedCellIds,
       });
     }
+    const colors = this.selectedCellIds.map(cellId => this.cellClasses[this.cellClass!]);
+    console.log(colors)
+    this.cellsContext.mutations.updateCellsByColors({
+      cellIds: this.selectedCellIds,
+      colors: {
+        type: "clustering",
+        name: "Annotations",
+        data: colors,
+      }
+    });
   }
 }
 </script>
@@ -155,9 +165,5 @@ export default class AnnotationsView extends Vue {
 <style scoped>
 .scroll-view {
   height: calc(33vh - 100px);
-}
-.item {
-  display: flex;
-  justify-content: space-between;
 }
 </style>

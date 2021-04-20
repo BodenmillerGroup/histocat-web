@@ -50,7 +50,7 @@ class ColorsDto(BaseModel):
 
     type: str
     name: str
-    data: List[Any]
+    data: List[str]
 
 
 class ResultDataDto(BaseModel):

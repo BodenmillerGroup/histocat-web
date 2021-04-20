@@ -285,7 +285,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
           };
           if (this.cells?.getters.heatmap) {
             output["mask"]["colorsType"] = this.cells.getters.heatmap.type;
-            output["mask"]["colorsName"] = this.cells.getters.heatmap.label;
+            output["mask"]["colorsName"] = this.cells.getters.heatmap.value;
           }
           if (this.cells?.getters.activeResultId) {
             output["mask"]["resultId"] = this.cells?.getters.activeResultId;

@@ -7,6 +7,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import anndata as ad
 import dramatiq
+import matplotlib
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
@@ -18,6 +19,7 @@ from histocat.api.security import get_active_member
 from histocat.config import config
 from histocat.core.dataset import service as dataset_service
 from histocat.core.dataset.dto import DatasetDto, DatasetUpdateDto
+from histocat.core.image import get_qualitative_colors
 from histocat.core.member.models import MemberModel
 from histocat.core.utils import stream_bytes
 
@@ -66,12 +68,15 @@ def get_centroids(
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Dataset id:{dataset_id} not found")
 
     adata = ad.read_h5ad(dataset.cell_file_location())
+    mappable = get_qualitative_colors()
+    colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(adata.obs["AcquisitionId"])]
     output = {
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
         "x": adata.obs["CentroidX"].round(2).tolist(),
         "y": adata.obs["CentroidY"].round(2).tolist(),
+        "colors": colors
     }
     return ORJSONResponse(output)
 

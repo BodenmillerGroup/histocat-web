@@ -5,7 +5,7 @@
       <v-select
         :items="heatmaps"
         v-model="heatmap"
-        label="Heatmap"
+        label="Color"
         return-object
         hide-details
         solo
@@ -15,7 +15,7 @@
         item-value="value"
         item-text="label"
       />
-      <v-spacer></v-spacer>
+      <v-spacer/>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" @click="refreshResults">
@@ -162,13 +162,6 @@ export default class ResultsView extends Vue {
               label: this.channels && this.channels[item] ? this.channels[item].customLabel : item,
             };
           });
-    const neighborItems = activeDataset.meta["columns"]["neighbors"].map((item) => {
-      return {
-        type: "neighbor",
-        value: item,
-        label: item,
-      };
-    });
     const clusteringItems: any[] = [];
     if (this.cellsContext.getters.activeResult?.output.leiden) {
       clusteringItems.push({
@@ -184,7 +177,7 @@ export default class ResultsView extends Vue {
         label: "louvain",
       });
     }
-    return channelItems.concat(neighborItems, clusteringItems);
+    return channelItems.concat(clusteringItems);
   }
 
   get heatmap() {
@@ -205,6 +198,11 @@ export default class ResultsView extends Vue {
 
   get activeDatasetId() {
     return this.datasetContext.getters.activeDatasetId;
+  }
+
+  @Watch("activeDatasetId")
+  async activeDatasetIdChanged(value: number | null) {
+    this.selected = null;
   }
 
   get results() {

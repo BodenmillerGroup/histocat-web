@@ -4,8 +4,7 @@ import { AnnotationsGetters } from "./getters";
 import { AnnotationsMutations } from "./mutations";
 import { IAnnotation } from "@/modules/annotations/models";
 
-export class AnnotationsState {
-  classes: { [name: string]: string } = {
+export const defaultCellClasses = {
     none: "#ffffff",
     tumor: "#ff0000",
     stroma: "#37ff00",
@@ -17,6 +16,9 @@ export class AnnotationsState {
     positive: "#ff4800",
     negative: "#c800ff",
   };
+
+export class AnnotationsState {
+  cellClasses: { [name: string]: string } = defaultCellClasses;
   annotations: IAnnotation[] = [];
 }
 

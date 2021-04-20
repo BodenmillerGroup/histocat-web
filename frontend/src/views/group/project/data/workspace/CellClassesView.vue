@@ -9,12 +9,13 @@
         "
         color="primary"
         elevation="1"
-        small
+        x-small
         >Add cell class</v-btn
       >
+      <v-btn @click="resetCellClasses" color="primary" elevation="1" x-small class="ml-1">Reset</v-btn>
     </v-toolbar>
     <v-list dense class="overflow-y-auto scroll-view pa-0">
-      <v-list-item v-for="item in classes" :key="item[0]">
+      <v-list-item v-for="item in cellClasses" :key="item[0]">
         <v-list-item-avatar size="16" :color="item[1]" />
         <v-list-item-content>
           <v-list-item-title>{{ item[0] }}</v-list-item-title>
@@ -98,8 +99,8 @@ export default class CellClassesView extends Vue {
   prevName: string | null = null;
   color: string | null = null;
 
-  get classes() {
-    return Object.entries(this.annotationsContext.getters.classes).sort((a, b) => a[0].localeCompare(b[0]));
+  get cellClasses() {
+    return Object.entries(this.annotationsContext.getters.cellClasses).sort((a, b) => a[0].localeCompare(b[0]));
   }
 
   deleteCellClass(name: string) {
@@ -126,11 +127,15 @@ export default class CellClassesView extends Vue {
       });
     }
   }
+
+  resetCellClasses() {
+    this.annotationsContext.mutations.resetCellClasses();
+  }
 }
 </script>
 
 <style scoped>
 .scroll-view {
-  height: calc(33vh - 100px);
+  height: calc(33vh - 30px);
 }
 </style>

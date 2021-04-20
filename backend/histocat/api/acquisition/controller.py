@@ -38,6 +38,7 @@ from histocat.core.project.dto import ProjectFullDto
 from histocat.core.redis_manager import redis_manager
 from histocat.core.result import service as result_service
 from histocat.core.utils import stream_bytes
+from histocat.core.image import get_sequential_colors, get_qualitative_colors
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -63,9 +64,6 @@ async def read_channel_stats(
     parser = OmeTiffParser(acquisition.location)
     acq = parser.get_acquisition_data()
     data = acq.get_image_by_name(channel_name)
-
-    # TODO: check if the transformation is really needed
-    # data = np.arcsinh(data / 5, out=data)
 
     hist, _ = np.histogram(data.ravel(), bins=bins)
     content = {"bins": hist.tolist()}
@@ -153,15 +151,18 @@ async def download_channel_stack(
             adata = sc.read_h5ad(location)
             adata = adata[adata.obs["AcquisitionId"] == params.acquisitionId]
 
-            heatmap_values = None
             if params.mask.colorsType == "marker":
                 heatmap_values = adata.X[:, adata.var.index == params.mask.colorsName]
-                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], heatmap_values[:, 0].tolist()))
+                mappable = get_sequential_colors()
+                colors = [c for c in mappable.to_rgba(heatmap_values[:, 0])]
+                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], colors))
                 heatmap_dict.pop("0", None)
-            elif params.mask.colorsType == "neighbor" or params.mask.colorsType == "clustering":
-                heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName])
+            elif params.mask.colorsType == "clustering":
+                heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName]).astype(int)
+                mappable = get_qualitative_colors()
+                colors = [c for c in mappable.to_rgba(heatmap_values[params.mask.colorsName])]
                 heatmap_dict = dict(
-                    zip(adata.obs["ObjectNumber"], heatmap_values[params.mask.colorsName].astype("uint"))
+                    zip(adata.obs["ObjectNumber"], colors)
                 )
                 heatmap_dict.pop("0", None)
 

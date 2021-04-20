@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequence[Dict]):
     """Import dataset from the segmentation pipeline output."""
 
-    meta = {"columns": {"neighbors": []}}
+    meta = {"columns": {}}
 
     masks = {}
     for ac_segmentation_data in segmentation_data:

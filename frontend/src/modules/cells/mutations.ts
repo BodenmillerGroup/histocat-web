@@ -29,7 +29,8 @@ export class CellsMutations extends Mutations<CellsState> {
         objectNumber: payload.objectNumbers[i],
         acquisitionId: acquisitionId,
         xy: [payload.x[i], payload.y[i]],
-        color: payload.objectNumbers[i],
+        color: payload.colors[i],
+        defaultColor: payload.colors[i],
         mappings: {},
       };
       cells[cellId] = cell;
@@ -48,7 +49,6 @@ export class CellsMutations extends Mutations<CellsState> {
     // Reset mappings for all cells
     Object.values(cells).forEach((cell) => {
       cell.mappings = {};
-      cell.color = cell.acquisitionId;
     });
 
     for (let i = 0; i < payload.cellIds.length; i++) {
@@ -83,13 +83,13 @@ export class CellsMutations extends Mutations<CellsState> {
 
     // Reset color for all cells
     Object.values(cells).forEach((cell) => {
-      cell.color = cell.acquisitionId;
+      cell.color = cell.defaultColor;
     });
 
     if (payload !== null) {
       for (let i = 0; i < payload.cellIds.length; i++) {
         const cell = cells[payload.cellIds[i]]!;
-        cell.color = Number(payload.colors.data[i]);
+        cell.color = payload.colors.data[i];
       }
     }
 
@@ -135,7 +135,6 @@ export class CellsMutations extends Mutations<CellsState> {
       // Reset mappings for all cells
       Object.values(cells).forEach((cell) => {
         cell.mappings = {};
-        cell.color = cell.acquisitionId;
       });
 
       const cellsByAcquisition = getCellsByAcquisition(cells);

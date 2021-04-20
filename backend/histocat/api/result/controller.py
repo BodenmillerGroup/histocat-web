@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import anndata as ad
+import matplotlib
 import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, ORJSONResponse, StreamingResponse
@@ -24,6 +25,7 @@ from histocat.core.result.dto import (
 )
 from histocat.core.user.models import UserModel
 from histocat.core.utils import stream_bytes
+from histocat.core.image import get_sequential_colors, get_qualitative_colors
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -139,15 +141,21 @@ def get_colors_data(
         "cellIds": adata.obs["CellId"].tolist(),
     }
 
+    colors = None
     if colors_type == "marker":
-        colors = adata.X[:, adata.var.index == colors_name]
-        output["colors"] = {"type": colors_type, "name": colors_name, "data": colors[:, 0].tolist()}
-    elif colors_type == "neighbor" or colors_type == "clustering":
-        colors = sc.get.obs_df(adata, keys=[colors_name])
+        values = adata.X[:, adata.var.index == colors_name]
+        mappable = get_sequential_colors()
+        colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
+    elif colors_type == "clustering":
+        values = sc.get.obs_df(adata, keys=[colors_name]).astype(int)
+        mappable = get_qualitative_colors()
+        colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
+
+    if colors is not None:
         output["colors"] = {
             "type": colors_type,
             "name": colors_name,
-            "data": colors[colors_name].tolist(),
+            "data": colors
         }
 
     return ORJSONResponse(output)
