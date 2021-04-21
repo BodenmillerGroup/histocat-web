@@ -5,11 +5,11 @@
     </div>
     <svg :width="width" :height="height" id="svg" ref="svg" />
     <div class="labels">
-      <span class="range-label"> min {{ unclippedRangeMin.toPrecision(4) }} </span>
+      <span class="range-label">{{ levels[0] }}</span>
       <span class="label">
         {{ label }}
       </span>
-      <span class="range-label"> max {{ unclippedRangeMax.toPrecision(4) }} </span>
+      <span class="range-label">{{ levels[1] }}</span>
     </div>
   </div>
 </template>
@@ -43,16 +43,16 @@ export default class BrushableHistogram extends Vue {
   width = 340 - this.marginLeft - this.marginRight;
   height = 80 - this.marginTop - this.marginBottom;
 
-  unclippedRangeMin = this.channel.min_intensity;
   unclippedRangeMax = this.channel.max_intensity;
 
   brushX: any = null;
   brushXselection: any = null;
 
-  levels: number[] =
-    this.settings && this.settings.levels
+  get levels() {
+    return this.settings && this.settings.levels
       ? [this.settings.levels.min, this.settings.levels.max]
       : [this.channel.min_intensity, this.channel.max_intensity];
+  }
 
   get metalColor() {
     return this.settings ? this.settings.color : "#ffffff";
@@ -107,39 +107,6 @@ export default class BrushableHistogram extends Vue {
     return histogramCache;
   });
 
-  onBrush(event, x) {
-    // const { dispatch, field, isObs, isUserDefined, isDiffExp } = this.props;
-
-    // ignore programmatically generated events
-    if (!event.sourceEvent) return;
-    // ignore cascading events, which are programmatically generated
-    if (event.sourceEvent.sourceEvent) return;
-
-    if (event.selection) {
-      // dispatch({
-      //   type,
-      //   selection: field,
-      //   continuousNamespace: {
-      //     isObs,
-      //     isUserDefined,
-      //     isDiffExp,
-      //   },
-      //   range: [x(d3.event.selection[0]), x(d3.event.selection[1])],
-      // });
-    } else {
-      // dispatch({
-      //   type,
-      //   selection: field,
-      //   continuousNamespace: {
-      //     isObs,
-      //     isUserDefined,
-      //     isDiffExp,
-      //   },
-      //   range: null,
-      // });
-    }
-  }
-
   onBrushEnd(event, x) {
     const minAllowedBrushSize = 10;
     const smallAmountToAvoidInfiniteLoop = 0.1;
@@ -170,14 +137,13 @@ export default class BrushableHistogram extends Vue {
   }
 
   submitRange(range: number[]) {
-    if (!this.activeAcquisitionId) {
-      return;
+    if (this.activeAcquisitionId) {
+      this.settingsContext.mutations.setChannelLevels({
+        channelName: this.channel.name,
+        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+      });
+      this.projectsContext.actions.getChannelStackImage();
     }
-    this.settingsContext.mutations.setChannelLevels({
-      channelName: this.channel.name,
-      levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-    });
-    this.projectsContext.actions.getChannelStackImage();
   }
 
   renderHistogram(histogram) {
@@ -222,8 +188,6 @@ export default class BrushableHistogram extends Vue {
       emit start so that the Undoable history can save an undo point
       upon drag start, and ignore the subsequent intermediate drag events.
       */
-      .on("start", (event) => this.onBrush(event, x.invert))
-      .on("brush", (event) => this.onBrush(event, x.invert))
       .on("end", (event) => this.onBrushEnd(event, x.invert));
 
     const brushXselection = container.insert("g").attr("class", "brush").call(brushX);
@@ -309,7 +273,7 @@ export default class BrushableHistogram extends Vue {
   font-style: italic;
 }
 .range-label {
-  color: #bbb;
+  color: rgb(145, 145, 145);
   font-size: xx-small;
 }
 </style>

@@ -137,9 +137,6 @@ async def download_channel_stack(
     """Download channel stack (additive) image."""
     additive_image = get_additive_image(db, params)
 
-    # TODO: Bright-field effect
-    # additive_image = additive_image[..., ::-1]
-
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)
 
@@ -152,15 +149,17 @@ async def download_channel_stack(
             adata = adata[adata.obs["AcquisitionId"] == params.acquisitionId]
 
             if params.mask.colorsType == "marker":
-                heatmap_values = adata.X[:, adata.var.index == params.mask.colorsName]
+                heatmap_values = adata.X[:, adata.var.index == params.mask.colorsName][:, 0]
                 mappable = get_sequential_colors()
-                colors = [c for c in mappable.to_rgba(heatmap_values[:, 0])]
-                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], colors))
+                colors = [c for c in mappable.to_rgba(heatmap_values)]
+                heatmap_dict = dict(
+                    zip(adata.obs["ObjectNumber"], colors)
+                )
                 heatmap_dict.pop("0", None)
             elif params.mask.colorsType == "clustering":
-                heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName]).astype(int)
+                heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName]).astype(int)[params.mask.colorsName]
                 mappable = get_qualitative_colors()
-                colors = [c for c in mappable.to_rgba(heatmap_values[params.mask.colorsName])]
+                colors = [c for c in mappable.to_rgba(heatmap_values)]
                 heatmap_dict = dict(
                     zip(adata.obs["ObjectNumber"], colors)
                 )

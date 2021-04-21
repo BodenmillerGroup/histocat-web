@@ -56,10 +56,10 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class ScaleStepEditor extends Vue {
-  @Prop({ type: Object, required: true }) step;
-  @Prop({ type: Function, required: true }) deleteStep;
-  @Prop({ type: Function, required: true }) moveUpStep;
-  @Prop({ type: Function, required: true }) moveDownStep;
+  @Prop({ type: Object, required: true }) readonly step;
+  @Prop({ type: Function, required: true }) readonly deleteStep;
+  @Prop({ type: Function, required: true }) readonly moveUpStep;
+  @Prop({ type: Function, required: true }) readonly moveDownStep;
 }
 </script>
 

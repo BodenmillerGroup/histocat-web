@@ -20,13 +20,13 @@ export default class ScatterPlot2d extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
 
-  @Prop({ type: String, required: true }) plotId;
-  @Prop({ type: String, required: true }) title;
-  @Prop({ type: String, required: false }) xAxisTitle;
-  @Prop({ type: String, required: false }) yAxisTitle;
-  @Prop({ type: String, required: true }) mapping!: string;
-  @Prop({ type: Map, required: true }) data!: Readonly<Map<number, ICell[]>>;
-  @Prop({ type: Boolean, required: true }) ignoreSelection!: boolean;
+  @Prop({ type: String, required: true }) readonly plotId;
+  @Prop({ type: String, required: true }) readonly title;
+  @Prop({ type: String, required: false }) readonly xAxisTitle;
+  @Prop({ type: String, required: false }) readonly yAxisTitle;
+  @Prop({ type: String, required: true }) readonly mapping!: string;
+  @Prop({ type: Map, required: true }) readonly data!: Readonly<Map<number, ICell[]>>;
+  @Prop({ type: Boolean, required: true }) readonly ignoreSelection!: boolean;
 
   get applyMask() {
     return this.mainContext.getters.maskMode === "mask";

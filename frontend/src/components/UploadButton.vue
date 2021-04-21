@@ -16,9 +16,9 @@ import { Component, Emit, Prop, Vue } from "vue-property-decorator";
 export default class UploadButton extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
 
-  @Prop({ type: String, required: true }) label!: string;
-  @Prop({ type: Function, required: true }) upload!: (data: FormData) => void;
-  @Prop({ default: false }) multiple!: boolean;
+  @Prop({ type: String, required: true }) readonly label!: string;
+  @Prop({ type: Function, required: true }) readonly upload!: (data: FormData) => void;
+  @Prop({ default: false }) readonly multiple!: boolean;
 
   @Emit()
   async files(e): Promise<FileList> {

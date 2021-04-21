@@ -28,18 +28,16 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
-import { settingsModule } from "@/modules/settings";
 import { isEqual } from "lodash-es";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
 
 @Component
 export default class MarkersSelector extends Vue {
-  readonly settingsContext = settingsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
-  @Prop(Object) step;
+  @Prop(Object) readonly step;
 
   search = "";
 

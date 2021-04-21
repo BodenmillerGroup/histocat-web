@@ -2,6 +2,7 @@ import { Mutations } from "vuex-smart-module";
 import { CellsState, resultListSchema } from ".";
 import { ICell, ICentroidsData, IRawColorsData, IRawResultData, IRawScatterData, IResult } from "./models";
 import { normalize } from "normalizr";
+import { IAnnotation } from "@/modules/annotations/models";
 
 function getCellsByAcquisition(cells: { [p: string]: ICell }) {
   // Refresh cellsByAcquisition mapping
@@ -91,6 +92,37 @@ export class CellsMutations extends Mutations<CellsState> {
         const cell = cells[payload.cellIds[i]]!;
         cell.color = payload.colors.data[i];
       }
+    }
+
+    const cellsByAcquisition = getCellsByAcquisition(cells);
+
+    this.state.cells = Object.freeze(cells);
+    this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
+  }
+
+  updateCellsByAnnotations(payload: { annotations: IAnnotation[]; cellClasses: { [name: string]: string } }) {
+    if (!this.state.cells) {
+      return;
+    }
+    const cells = { ...this.state.cells };
+
+    // Reset color for all cells
+    Object.values(cells).forEach((cell) => {
+      cell.color = cell.defaultColor;
+    });
+
+    let cellIds: string[] = [];
+    let colors: string[] = [];
+    payload.annotations.forEach((annotation) => {
+      if (annotation.visible) {
+        cellIds = cellIds.concat(Array.from(annotation.cells));
+        colors = colors.concat(Array(cellIds.length).fill(payload.cellClasses[annotation.cellClass]));
+      }
+    });
+
+    for (let i = 0; i < cellIds.length; i++) {
+      const cell = cells[cellIds[i]];
+      cell.color = colors[i];
     }
 
     const cellsByAcquisition = getCellsByAcquisition(cells);

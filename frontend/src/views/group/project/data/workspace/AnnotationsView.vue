@@ -148,16 +148,6 @@ export default class AnnotationsView extends Vue {
         cells: this.selectedCellIds,
       });
     }
-    const colors = this.selectedCellIds.map(cellId => this.cellClasses[this.cellClass!]);
-    console.log(colors)
-    this.cellsContext.mutations.updateCellsByColors({
-      cellIds: this.selectedCellIds,
-      colors: {
-        type: "clustering",
-        name: "Annotations",
-        data: colors,
-      }
-    });
   }
 }
 </script>

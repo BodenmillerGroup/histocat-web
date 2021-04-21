@@ -10,6 +10,7 @@ import { groupModule } from "@/modules/group";
 import { pipelinesModule } from "@/modules/pipelines";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
+import { annotationsModule } from "@/modules/annotations";
 
 export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutations, CellsActions> {
   // Declare context type
@@ -18,6 +19,7 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
   pipelines?: Context<typeof pipelinesModule>;
   analysis?: Context<typeof analysisModule>;
   datasets?: Context<typeof datasetsModule>;
+  annotations?: Context<typeof annotationsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -26,6 +28,7 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
     this.pipelines = pipelinesModule.context(store);
     this.analysis = analysisModule.context(store);
     this.datasets = datasetsModule.context(store);
+    this.annotations = annotationsModule.context(store);
   }
 
   async initializeCells(payload: ICentroidsSubmission) {
@@ -80,6 +83,12 @@ export class CellsActions extends Actions<CellsState, CellsGetters, CellsMutatio
     } catch (error) {
       await this.main!.actions.checkApiError(error);
     }
+  }
+
+  async getAnnotationData() {
+    const annotations = this.annotations!.getters.annotations;
+    const cellClasses = this.annotations!.getters.cellClasses;
+    this.mutations.updateCellsByAnnotations({ annotations: annotations, cellClasses: cellClasses });
   }
 
   async getScatterPlotData(payload: { markerX: string; markerY: string }) {

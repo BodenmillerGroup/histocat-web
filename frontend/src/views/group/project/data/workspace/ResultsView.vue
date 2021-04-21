@@ -15,7 +15,7 @@
         item-value="value"
         item-text="label"
       />
-      <v-spacer/>
+      <v-spacer />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon small v-on="on" @click="refreshResults">
@@ -167,17 +167,24 @@ export default class ResultsView extends Vue {
       clusteringItems.push({
         type: "clustering",
         value: "leiden",
-        label: "leiden",
+        label: "clustering [leiden]",
       });
     }
     if (this.cellsContext.getters.activeResult?.output.louvain) {
       clusteringItems.push({
         type: "clustering",
         value: "louvain",
-        label: "louvain",
+        label: "clustering [louvain]",
       });
     }
-    return channelItems.concat(clusteringItems);
+    const annotationsItems = [
+      {
+        type: "annotation",
+        value: "annotation",
+        label: "annotation",
+      },
+    ];
+    return channelItems.concat(clusteringItems, annotationsItems);
   }
 
   get heatmap() {
@@ -193,7 +200,11 @@ export default class ResultsView extends Vue {
 
   @Watch("heatmap")
   async heatmapChanged(value: { type: string; label: string; value: string } | null | undefined) {
-    await this.cellsContext.actions.getColorsData();
+    if (value && value.type === "annotation") {
+      await this.cellsContext.actions.getAnnotationData();
+    } else {
+      await this.cellsContext.actions.getColorsData();
+    }
   }
 
   get activeDatasetId() {

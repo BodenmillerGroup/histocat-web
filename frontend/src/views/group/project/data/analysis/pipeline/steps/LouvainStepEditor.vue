@@ -73,10 +73,10 @@ import { required } from "@/utils/validators";
 
 @Component
 export default class LouvainStepEditor extends Vue {
-  @Prop({ type: Object, required: true }) step;
-  @Prop({ type: Function, required: true }) deleteStep;
-  @Prop({ type: Function, required: true }) moveUpStep;
-  @Prop({ type: Function, required: true }) moveDownStep;
+  @Prop({ type: Object, required: true }) readonly step;
+  @Prop({ type: Function, required: true }) readonly deleteStep;
+  @Prop({ type: Function, required: true }) readonly moveUpStep;
+  @Prop({ type: Function, required: true }) readonly moveDownStep;
 
   readonly required = required;
 

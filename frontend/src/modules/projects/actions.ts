@@ -155,39 +155,17 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     }
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const response = await api.downloadChannelStackImage(groupId, params);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
-      };
+      const data = await api.downloadChannelStackImage(groupId, params);
+      if (data) {
+        const blob = await data.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          this.mutations.setChannelStackImage(reader.result);
+        };
+      }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getColorizedMaskImage() {
-    const params = await this.actions.prepareStackParams();
-    if (params.channels.length === 0 || !params.hasOwnProperty("mask")) {
-      return;
-    }
-    params["mask"]["apply"] = true;
-    params["mask"]["colorize"] = true;
-    try {
-      this.mutations.setColorizeMaskInProgress(true);
-      const groupId = this.group?.getters.activeGroupId!;
-      const response = await api.downloadChannelStackImage(groupId, params);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
-      };
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    } finally {
-      this.mutations.setColorizeMaskInProgress(false);
     }
   }
 
@@ -279,7 +257,6 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
         const mask = activeDataset.meta.masks[activeAcquisitionId];
         if (mask) {
           output["mask"] = {
-            colorize: false,
             mode: maskMode,
             location: mask.location,
           };
@@ -296,7 +273,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
           );
           if (selectedCells && selectedCells.length > 0) {
             output["mask"]["gated"] = true;
-            output["mask"]["cellIds"] = selectedCells.map((item) => item.objectNumber);
+            output["mask"]["objectNumbers"] = selectedCells.map((item) => item.objectNumber);
           }
         }
       }

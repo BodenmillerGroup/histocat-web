@@ -15,9 +15,9 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class ToolbarProgressBar extends Vue {
-  @Prop(Boolean) processing?: boolean;
-  @Prop(Number) progress?: boolean;
-  @Prop(Boolean) indeterminate?: boolean;
-  @Prop(String) color?: string;
+  @Prop(Boolean) readonly processing?: boolean;
+  @Prop(Number) readonly progress?: boolean;
+  @Prop(Boolean) readonly indeterminate?: boolean;
+  @Prop(String) readonly color?: string;
 }
 </script>

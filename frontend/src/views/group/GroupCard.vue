@@ -53,17 +53,8 @@ import { IGroup } from "@/modules/group/models";
 export default class GroupCard extends Vue {
   readonly groupContext = groupModule.context(this.$store);
 
-  @Prop({
-    type: Object,
-    required: true,
-  })
-  readonly user!: IUserProfile;
-
-  @Prop({
-    type: Object,
-    required: true,
-  })
-  readonly group!: IGroup;
+  @Prop({ type: Object, required: true }) readonly user!: IUserProfile;
+  @Prop({ type: Object, required: true }) readonly group!: IGroup;
 
   get userIds() {
     return this.group.members.filter((item) => item.is_active).map((member) => member.user_id);

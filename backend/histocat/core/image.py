@@ -1,27 +1,18 @@
 import logging
-import sys
-from typing import Optional, Sequence, Tuple
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
 import tifffile
-from mahotas import bwperim
 from matplotlib import cm
-from matplotlib.colors import LinearSegmentedColormap, rgb2hex, to_rgb
+from matplotlib.colors import LinearSegmentedColormap, to_rgb
 from skimage import img_as_ubyte, io
 from skimage.color import label2rgb
 from skimage.segmentation import find_boundaries
 
 from histocat.core.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDto
 
-EPSILON = sys.float_info.epsilon  # Smallest possible difference.
-
 logger = logging.getLogger(__name__)
-
-OTSU_GRAYSCALE = "Otsu Grayscale"
-OTSU_HUE_ALGORITHM = "Otsu Hue"
-OTSU_SATURATION_ALGORITHM = "Otsu Saturation"
-OTSU_LIGHTNESS_ALGORITHM = "Otsu Lightness"
 
 
 def get_sequential_colors():
@@ -30,32 +21,6 @@ def get_sequential_colors():
 
 def get_qualitative_colors():
     return cm.ScalarMappable(None, 'Accent')
-
-
-def gen_lut():
-    """
-    https://stackoverflow.com/questions/57068382/label2rgb-implementation-for-opencv
-    Generate a label colormap compatible with opencv lookup table, based on
-    Rick Szelski algorithm in `Computer Vision: Algorithms and Applications`,
-    appendix C2 `Pseudocolor Generation`.
-    :Returns:
-    color_lut : opencv compatible color lookup table
-    """
-    tobits = lambda x, o: np.array(list(np.binary_repr(x, 24)[o::-3]), np.uint8)
-    arr = np.arange(256)
-    r = np.concatenate([np.packbits(tobits(x, -3)) for x in arr])
-    g = np.concatenate([np.packbits(tobits(x, -2)) for x in arr])
-    b = np.concatenate([np.packbits(tobits(x, -1)) for x in arr])
-    return np.concatenate([[[b]], [[g]], [[r]]]).T
-
-    # label_range = np.linspace(0, 19, 256)
-    # cmap = cm.get_cmap('jet')
-    # result = np.uint8(cmap(label_range)[:, 2::-1] * 256).reshape(256, 1, 3)  # replace viridis with a matplotlib colormap of your choice
-    # return result
-
-
-lut = gen_lut()
-cmap = cm.get_cmap("jet")
 
 
 def apply_filter(image: np.ndarray, filter: FilterDto):
@@ -87,75 +52,30 @@ def scale_image(image: np.ndarray, levels: Tuple[float, float]):
     return np.clip(channel_image, 0, 1, out=channel_image)
 
 
-def normalize_image(image: np.ndarray):
-    """Normalize image to [0, 1] range"""
-    return (image - np.min(image)) / (np.max(image) - np.min(image))
-
-
 def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: Optional[dict] = None):
     mask = tifffile.imread(mask_settings.location)
 
     if mask_settings.gated:
-        m = np.isin(mask, mask_settings.cellIds)
+        m = np.isin(mask, mask_settings.objectNumbers)
         mask[~m] = 0
 
-    boundary = find_boundaries(mask, connectivity=1, mode="inner")
-    image[boundary > 0] = 1
-
     if heatmap_dict:
-        # mask = replace_with_dict(mask, heatmap_dict)
+        if mask_settings.gated:
+            heatmap_dict = {k: heatmap_dict[k] for k in np.unique(mask) if k != 0}
 
-
-        colors = [i for i in heatmap_dict.values()]
+        colors = heatmap_dict.values()
+        img = label2rgb(label=mask, image=image, colors=colors, alpha=1, bg_label=0, image_alpha=1, kind="overlay")
+        return img
     else:
-        colors = ("darkorange", "darkorange")
-
-    img = label2rgb(label=mask, image=image, colors=colors, alpha=1, bg_label=0, image_alpha=1, kind="overlay")
-    return img
+        boundary = find_boundaries(mask, connectivity=1, mode="inner")
+        image[boundary > 0] = 1
+        return image
 
 
 def draw_overlay(mask_settings: MaskSettingsDto):
     filename = mask_settings.location.replace("mask.tiff", "origin.png")
     overlay = io.imread(filename)
     return overlay
-
-
-def mask_gated_img(image: np.ndarray, mask: np.ndarray, cell_ids: Sequence[int], color=(0, 146, 63, 100), alpha=0.8):
-    """
-    img: cv2 image
-    mask: bool or np.where
-    color: BGR triplet [_, _, _]. Default: [0, 255, 255] is yellow.
-    alpha: float [0, 1].
-
-    Ref: http://www.pyimagesearch.com/2016/03/07/transparent-overlays-with-opencv/
-    """
-    m = np.isin(mask, cell_ids)
-    mask[~m] = 0
-    mask = bwperim(mask, n=2)
-    # bit_mask = mask == 0
-    mask_layer = image.copy()
-    mask_layer[mask] = color
-    # cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
-    # cv2.add(image, mask_layer, image)
-    return np.clip(mask_layer + image, 0, 1)
-
-
-def mask_color_img(image: np.ndarray, mask: np.ndarray, color=(0, 146, 63, 100), alpha=0.3):
-    """
-    img: cv2 image
-    mask: bool or np.where
-    color: BGR triplet [_, _, _]. Default: [0, 255, 255] is yellow.
-    alpha: float [0, 1].
-
-    Ref: http://www.pyimagesearch.com/2016/03/07/transparent-overlays-with-opencv/
-    """
-    mask = bwperim(mask, n=2)
-    # bit_mask = mask == 0
-    mask_layer = image.copy()
-    mask_layer[mask] = color
-    # cv2.addWeighted(mask_layer, alpha, image, 1 - alpha, 0, image)
-    # cv2.add(image, mask_layer, image)
-    return np.clip(mask_layer + image, 0, 1)
 
 
 def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
@@ -220,69 +140,3 @@ def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):
 #             cv2.LINE_AA,
 #         )
 #     return image
-
-
-def get_heatmap_colors(values: np.ndarray, categorical_values: bool):
-    keys = values.unique().tolist()
-    color_range = np.linspace(0, 1, len(keys), endpoint=False).tolist()
-    colors = [cm.tab20b(x) for x in color_range]
-    color_dict = dict(zip(keys, colors))
-    result = []
-    for v in values:
-        result.append(rgb2hex(color_dict[v]))
-    return result
-
-
-def normalize_embedding(embedding):
-    """Normalize embedding layout to meet client assumptions.
-    Embedding is an ndarray, shape (n_obs, n)., where n is normally 2.
-    """
-
-    # scale isotropically
-    min = embedding.min(axis=0)
-    max = embedding.max(axis=0)
-    scale = np.amax(max - min)
-    normalized_layout = (embedding - min) / scale
-
-    # translate to center on both axis
-    # translate = 0.5 - ((max - min) / scale / 2)
-    # TODO: improve translation
-    translate = -1 + ((max - min) / scale / 2)
-    normalized_layout = normalized_layout + translate
-
-    normalized_layout = normalized_layout.astype(dtype=np.float32)
-    return normalized_layout
-
-
-def replace_with_dict(a, d):
-    b = np.copy(a)
-    for old, new in d.items():
-        b[a == old] = new
-    return b
-
-
-def replace_with_dict2(ar, dic):
-    # TODO: https://stackoverflow.com/questions/47171356/replace-values-in-numpy-array-based-on-dictionary-and-avoid-overlap-between-new
-    # Extract out keys and values
-    k = np.array(list(dic.keys()))
-    v = np.array(list(dic.values()))
-
-    # Get argsort indices
-    sidx = k.argsort()
-
-    ks = k[sidx]
-    vs = v[sidx]
-    return vs[np.searchsorted(ks, ar)]
-
-
-def labels2rgb(labels, lut):
-    """
-    https://stackoverflow.com/questions/57068382/label2rgb-implementation-for-opencv
-    Convert a label image to an rgb image using a lookup table
-    :Parameters:
-    labels : an image of type np.uint8 2D array
-    lut : a lookup table of shape (256, 3) and type np.uint8
-    :Returns:
-    colorized_labels : a colorized label image
-    """
-    return cv2.LUT(cv2.merge((labels, labels, labels)), lut)

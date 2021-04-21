@@ -30,7 +30,7 @@ export class AnnotationsMutations extends Mutations<AnnotationsState> {
     const newAnnotations = [...this.state.annotations];
     // Calculate sets difference
     newAnnotations.forEach((annotation) => {
-      annotation.cells = new Set([...annotation.cells].filter(x => !cellSet.has(x)));
+      annotation.cells = new Set([...annotation.cells].filter((x) => !cellSet.has(x)));
     });
     this.state.annotations = newAnnotations.concat({
       cellClass: payload.cellClass,
@@ -49,7 +49,7 @@ export class AnnotationsMutations extends Mutations<AnnotationsState> {
 
   deleteAnnotation(index: number) {
     const newValue = [...this.state.annotations];
-    newValue.splice(index, 1)
+    newValue.splice(index, 1);
     this.state.annotations = newValue;
   }
 

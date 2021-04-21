@@ -20,7 +20,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class PlotWidget extends Vue {
-  @Prop(String) title!: string;
-  @Prop(String) src!: string;
+  @Prop(String) readonly title!: string;
+  @Prop(String) readonly src!: string;
 }
 </script>
