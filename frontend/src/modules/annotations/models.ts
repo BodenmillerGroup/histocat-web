@@ -1,5 +1,5 @@
 export interface IAnnotation {
   cellClass: string;
-  cells: Set<string>;
+  cellIds: string[];
   visible: boolean;
 }

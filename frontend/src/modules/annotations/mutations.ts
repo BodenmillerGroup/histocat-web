@@ -1,5 +1,6 @@
 import { Mutations } from "vuex-smart-module";
 import { AnnotationsState, defaultCellClasses } from ".";
+import { IAnnotation } from "@/modules/annotations/models";
 
 export class AnnotationsMutations extends Mutations<AnnotationsState> {
   addCellClass(payload: { name: string; color: string }) {
@@ -21,20 +22,28 @@ export class AnnotationsMutations extends Mutations<AnnotationsState> {
     this.state.cellClasses = newValue;
   }
 
+  setCellClasses(cellClasses: { [name: string]: string }) {
+    this.state.cellClasses = cellClasses;
+  }
+
   resetCellClasses() {
     this.state.cellClasses = { ...defaultCellClasses };
   }
 
-  addAnnotation(payload: { cellClass: string; cells: string[] }) {
-    const cellSet = new Set(payload.cells);
+  setAnnotations(annotations: IAnnotation[]) {
+    this.state.annotations = annotations;
+  }
+
+  addAnnotation(payload: { cellClass: string; cellIds: string[] }) {
+    const cellSet = new Set(payload.cellIds);
     const newAnnotations = [...this.state.annotations];
     // Calculate sets difference
     newAnnotations.forEach((annotation) => {
-      annotation.cells = new Set([...annotation.cells].filter((x) => !cellSet.has(x)));
+      annotation.cellIds = annotation.cellIds.filter((x) => !cellSet.has(x));
     });
     this.state.annotations = newAnnotations.concat({
       cellClass: payload.cellClass,
-      cells: cellSet,
+      cellIds: Array.from(cellSet),
       visible: true,
     });
   }

@@ -50,6 +50,7 @@ export default class ProjectView extends Vue {
     //   this.$store.dispatch("reset");
     // }
     this.$store.dispatch("resetProject");
+    this.mainContext.mutations.setViewMode("image");
   }
 }
 </script>

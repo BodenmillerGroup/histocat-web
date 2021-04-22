@@ -115,7 +115,7 @@ export class CellsMutations extends Mutations<CellsState> {
     let colors: string[] = [];
     payload.annotations.forEach((annotation) => {
       if (annotation.visible) {
-        cellIds = cellIds.concat(Array.from(annotation.cells));
+        cellIds = cellIds.concat(annotation.cellIds);
         colors = colors.concat(Array(cellIds.length).fill(payload.cellClasses[annotation.cellClass]));
       }
     });
@@ -178,6 +178,10 @@ export class CellsMutations extends Mutations<CellsState> {
 
   setHeatmap(heatmap: { type: string; label: string; value: string } | null) {
     this.state.heatmap = heatmap;
+  }
+
+  setMarkers(markers: string[]) {
+    this.state.markers = markers;
   }
 
   setEntities(payload: IResult[]) {

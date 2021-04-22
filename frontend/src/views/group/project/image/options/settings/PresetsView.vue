@@ -12,7 +12,7 @@
         <span>Refresh presets</span>
       </v-tooltip>
     </v-toolbar>
-    <v-list dense two-line class="overflow-y-auto scroll-view pa-0">
+    <v-list dense class="overflow-y-auto scroll-view pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>

@@ -109,6 +109,7 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import UploadButton from "@/components/UploadButton.vue";
 import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 import { cellsModule } from "@/modules/cells";
+import { gatesModule } from "@/modules/gates";
 
 @Component({
   components: { TreeView, UploadButton },
@@ -117,6 +118,7 @@ export default class DatasetsView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
+  readonly gatesContext = gatesModule.context(this.$store);
 
   readonly apiUrl = apiUrl;
   readonly icons = {
@@ -141,12 +143,14 @@ export default class DatasetsView extends Vue {
         Promise.all([
           this.cellsContext.actions.initializeCells({ datasetId: dataset.id }),
           this.cellsContext.actions.getDatasetResults(dataset.id),
+          this.gatesContext.actions.getGates(),
           this.projectsContext.actions.getChannelStackImage(),
         ]);
       }
     } else {
       this.cellsContext.mutations.setActiveResultId(null);
       this.datasetsContext.mutations.setActiveDatasetId(null);
+      this.gatesContext.mutations.reset();
     }
   }
 

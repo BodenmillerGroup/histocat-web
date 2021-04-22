@@ -2,23 +2,13 @@
   <v-card tile>
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn @click="createGate" color="primary" elevation="1" small>Save gate</v-btn>
-      <v-spacer></v-spacer>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon small v-on="on" @click="refreshGates">
-            <v-icon small>mdi-refresh</v-icon>
-          </v-btn>
-        </template>
-        <span>Refresh gates</span>
-      </v-tooltip>
     </v-toolbar>
-    <v-list dense two-line class="overflow-y-auto scroll-view pa-0">
+    <v-list dense class="overflow-y-auto scroll-view pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>
             <v-list-item-title>{{ item.name }}</v-list-item-title>
             <v-list-item-subtitle v-if="item.description">{{ item.description }}</v-list-item-subtitle>
-            <v-list-item-subtitle class="font-weight-light">{{ item.createdAt }}</v-list-item-subtitle>
           </v-list-item-content>
 
           <v-list-item-action>
@@ -29,7 +19,7 @@
                     <v-icon small>mdi-refresh-circle</v-icon>
                   </v-btn>
                 </template>
-                <span>Apply gate</span>
+                <span>Load gate</span>
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
@@ -81,16 +71,12 @@
 </template>
 
 <script lang="ts">
-import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { gatesModule } from "@/modules/gates";
-import { datasetsModule } from "@/modules/datasets";
 
 @Component
 export default class GatesView extends Vue {
-  readonly projectsContext = projectsModule.context(this.$store);
   readonly gateContext = gatesModule.context(this.$store);
-  readonly datasetContext = datasetsModule.context(this.$store);
 
   dialog = false;
   activeId: number | null = null;
@@ -122,8 +108,7 @@ export default class GatesView extends Vue {
   }
 
   async applyGate(id: number) {
-    await this.gateContext.actions.applyGate(id);
-    await this.projectsContext.actions.getChannelStackImage();
+    await this.gateContext.actions.loadGate(id);
   }
 
   async deleteGate(id: number) {
@@ -139,13 +124,6 @@ export default class GatesView extends Vue {
     }
   }
 
-  async refreshGates() {
-    const dataset = this.datasetContext.getters.activeDataset;
-    if (dataset) {
-      await this.gateContext.actions.getGates(dataset.id);
-    }
-  }
-
   async updateGate() {
     this.dialog = false;
     if (this.activeId) {
@@ -154,10 +132,6 @@ export default class GatesView extends Vue {
         data: { name: this.name, description: this.description },
       });
     }
-  }
-
-  mounted() {
-    this.refreshGates();
   }
 }
 </script>

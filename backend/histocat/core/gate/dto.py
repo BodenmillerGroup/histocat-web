@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Sequence
+from typing import Optional, Any
 
 from pydantic import BaseModel
 
@@ -8,9 +8,8 @@ class GateCreateDto(BaseModel):
     dataset_id: int
     name: Optional[str]
     description: Optional[str]
-    acquisition_ids: Sequence[int]
-    indices: Sequence[int]
-    cell_ids: Sequence[int]
+    cell_classes: Optional[Any]
+    annotations: Optional[Any]
 
 
 class GateUpdateDto(BaseModel):
@@ -23,9 +22,8 @@ class GateDto(BaseModel):
     dataset_id: int
     name: Optional[str]
     description: Optional[str]
-    acquisition_ids: Sequence[int]
-    indices: Sequence[int]
-    cell_ids: Sequence[int]
+    cell_classes: Optional[Any]
+    annotations: Optional[Any]
     created_at: datetime
 
     class Config:

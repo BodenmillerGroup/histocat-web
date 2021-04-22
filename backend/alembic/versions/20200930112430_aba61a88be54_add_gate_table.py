@@ -7,7 +7,7 @@ Create Date: 2020-09-30 11:24:30.348903
 """
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 # revision identifiers, used by Alembic.
@@ -24,9 +24,8 @@ def upgrade():
         sa.Column('dataset_id', sa.Integer(), sa.ForeignKey("dataset.id", ondelete="CASCADE"), index=True, nullable=False),
         sa.Column('name', sa.String()),
         sa.Column('description', sa.String()),
-        sa.Column('acquisition_ids', ARRAY(sa.Integer())),
-        sa.Column('indices', ARRAY(sa.Integer())),
-        sa.Column('cell_ids', ARRAY(sa.Integer())),
+        sa.Column('cell_classes', JSONB()),
+        sa.Column('annotations', JSONB()),
         sa.Column('created_at', sa.DateTime(), default=sa.sql.func.now(), nullable=False),
     )
 

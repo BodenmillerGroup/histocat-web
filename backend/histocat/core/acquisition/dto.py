@@ -36,7 +36,7 @@ class ScalebarDto(BaseModel):
 class MaskSettingsDto(BaseModel):
     mode: str
     gated: Optional[bool]
-    objectNumbers: Optional[Sequence[int]]
+    cells: Optional[dict]
     resultId: Optional[int]
     colorsType: Optional[str]
     colorsName: Optional[str]

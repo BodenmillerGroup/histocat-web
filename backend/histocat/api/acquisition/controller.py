@@ -9,6 +9,7 @@ import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
+from matplotlib.colors import to_rgb
 from skimage.util import img_as_ubyte
 from sqlalchemy.orm import Session
 from starlette.requests import Request
@@ -37,6 +38,7 @@ from histocat.core.member.models import MemberModel
 from histocat.core.project.dto import ProjectFullDto
 from histocat.core.redis_manager import redis_manager
 from histocat.core.result import service as result_service
+from histocat.core.dataset import service as dataset_service
 from histocat.core.utils import stream_bytes
 from histocat.core.image import get_sequential_colors, get_qualitative_colors
 
@@ -142,10 +144,16 @@ async def download_channel_stack(
 
     if params.datasetId and params.mask and params.mask.mode == "mask":
         heatmap_dict = None
-        if params.mask.resultId and params.mask.colorsType and params.mask.colorsName:
-            result = result_service.get(db, id=params.mask.resultId)
-            location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
-            adata = sc.read_h5ad(location)
+        if params.mask.colorsType and params.mask.colorsName:
+
+            if params.mask.resultId:
+                result = result_service.get(db, id=params.mask.resultId)
+                location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+                adata = sc.read_h5ad(location)
+            else:
+                dataset = dataset_service.get(db, id=params.datasetId)
+                adata = sc.read_h5ad(dataset.cell_file_location())
+
             adata = adata[adata.obs["AcquisitionId"] == params.acquisitionId]
 
             if params.mask.colorsType == "marker":
@@ -163,6 +171,12 @@ async def download_channel_stack(
                 heatmap_dict = dict(
                     zip(adata.obs["ObjectNumber"], colors)
                 )
+                heatmap_dict.pop("0", None)
+            elif params.mask.colorsType == "annotation":
+                heatmap_dict = dict()
+                for color, object_numbers in params.mask.cells.items():
+                    for object_number in object_numbers:
+                        heatmap_dict[object_number] = to_rgb(color)
                 heatmap_dict.pop("0", None)
 
         additive_image = draw_mask(additive_image, params.mask, heatmap_dict)

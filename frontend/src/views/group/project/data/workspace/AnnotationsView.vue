@@ -145,7 +145,7 @@ export default class AnnotationsView extends Vue {
     if (this.selectedCellIds) {
       this.annotationsContext.mutations.addAnnotation({
         cellClass: this.cellClass!,
-        cells: this.selectedCellIds,
+        cellIds: this.selectedCellIds,
       });
     }
   }

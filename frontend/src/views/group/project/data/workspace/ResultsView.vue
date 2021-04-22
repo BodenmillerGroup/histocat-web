@@ -131,6 +131,7 @@ export default class ResultsView extends Vue {
       this.getResultData(result.id);
     } else {
       this.cellsContext.mutations.setActiveResultId(null);
+      this.cellsContext.mutations.setMarkers([]);
     }
   }
 
@@ -139,16 +140,23 @@ export default class ResultsView extends Vue {
     return acquisition ? acquisition.channels : null;
   }
 
+  get activeDataset() {
+    return this.datasetContext.getters.activeDataset;
+  }
+
+  get markers() {
+    return this.cellsContext.getters.markers;
+  }
+
   get heatmaps() {
-    const activeDataset = this.datasetContext.getters.activeDataset;
-    const markers = this.cellsContext.getters.markers;
+    const activeDataset = this.activeDataset;
 
     if (!activeDataset || !activeDataset.meta["columns"]) {
       return [];
     }
     const channelItems =
-      markers.length > 0
-        ? markers.map((item) => {
+      this.markers.length > 0
+        ? this.markers.map((item) => {
             return {
               type: "marker",
               value: item,
@@ -196,12 +204,13 @@ export default class ResultsView extends Vue {
       value = null;
     }
     this.cellsContext.mutations.setHeatmap(value);
+    this.projectsContext.actions.getChannelStackImage();
   }
 
   @Watch("heatmap")
   async heatmapChanged(value: { type: string; label: string; value: string } | null | undefined) {
     if (value && value.type === "annotation") {
-      await this.cellsContext.actions.getAnnotationData();
+      await this.projectsContext.actions.getAnnotationData();
     } else {
       await this.cellsContext.actions.getColorsData();
     }

@@ -26,7 +26,9 @@ export interface IImageScalebar {
 export interface IMaskSettings {
   mode: "raw" | "mask" | "origin";
   gated?: boolean;
-  objectNumbers?: number[];
+  cells: {
+    [color: string]: number[];
+  };
   resultId?: number;
   location?: string;
   settings?: any;

@@ -11,6 +11,7 @@ import { ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate } from "./
 import { ProjectsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 import { cellsModule } from "@/modules/cells";
+import { annotationsModule } from "@/modules/annotations";
 
 export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions> {
   // Declare context type
@@ -19,6 +20,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetsModule>;
   cells?: Context<typeof cellsModule>;
+  annotations?: Context<typeof annotationsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
@@ -27,6 +29,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     this.settings = settingsModule.context(store);
     this.datasets = datasetsModule.context(store);
     this.cells = cellsModule.context(store);
+    this.annotations = annotationsModule.context(store);
   }
 
   async getGroupProjects(groupId: number) {
@@ -218,6 +221,12 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     }
   }
 
+  async getAnnotationData() {
+    const annotations = this.annotations!.getters.annotations;
+    const cellClasses = this.annotations!.getters.cellClasses;
+    this.cells!.mutations.updateCellsByAnnotations({ annotations: annotations, cellClasses: cellClasses });
+  }
+
   /**
    * Prepare stack image call parameters
    */
@@ -260,20 +269,48 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
             mode: maskMode,
             location: mask.location,
           };
+          if (this.cells?.getters.activeResultId) {
+            output["mask"]["resultId"] = this.cells?.getters.activeResultId;
+          }
+
           if (this.cells?.getters.heatmap) {
             output["mask"]["colorsType"] = this.cells.getters.heatmap.type;
             output["mask"]["colorsName"] = this.cells.getters.heatmap.value;
           }
-          if (this.cells?.getters.activeResultId) {
-            output["mask"]["resultId"] = this.cells?.getters.activeResultId;
-          }
-          // Prepare selected cell ids visualisation
-          const selectedCells = this.cells?.getters.selectedCells?.filter(
-            (v) => v.acquisitionId === activeAcquisitionId
-          );
-          if (selectedCells && selectedCells.length > 0) {
+
+          if (this.cells?.getters.heatmap && this.cells.getters.heatmap.type === "annotation") {
+            const annotations = this.annotations?.getters.annotations;
+            const cellClasses = this.annotations?.getters.cellClasses;
+            const cellColors = {};
+            annotations?.forEach((annotation) => {
+              if (annotation.visible) {
+                const color = cellClasses![annotation.cellClass];
+                if (!cellColors.hasOwnProperty(color)) {
+                  cellColors[color] = [];
+                }
+                const objectNumbers: number[] = [];
+                annotation.cellIds.forEach((cellId) => {
+                  const cell = this.cells?.getters.cells[cellId];
+                  if (cell?.acquisitionId === activeAcquisitionId) {
+                    objectNumbers.push(cell.objectNumber);
+                  }
+                })
+                cellColors[color] = cellColors[color].concat(objectNumbers);
+              }
+            });
             output["mask"]["gated"] = true;
-            output["mask"]["objectNumbers"] = selectedCells.map((item) => item.objectNumber);
+            output["mask"]["cells"] = cellColors;
+          } else {
+            // Prepare selected cell objectNumbers visualisation
+            const selectedAcquisitionCells = this.cells?.getters.selectedCells?.filter(
+              (v) => v.acquisitionId === activeAcquisitionId
+            );
+            if (selectedAcquisitionCells && selectedAcquisitionCells.length > 0) {
+              output["mask"]["gated"] = true;
+              output["mask"]["cells"] = {
+                "#ffffff": selectedAcquisitionCells.map((item) => item.objectNumber),
+              };
+            }
           }
         }
       }

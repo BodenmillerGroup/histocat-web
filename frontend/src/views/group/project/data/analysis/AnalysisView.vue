@@ -1,12 +1,12 @@
 <template>
   <v-tabs v-model="tab">
     <v-tab>Pipeline</v-tab>
-    <v-tab>Result</v-tab>
+    <v-tab v-if="activeResult">Result</v-tab>
     <v-tab v-if="activeResult && (activeResult.output.leiden || activeResult.output.louvain)">Clustering</v-tab>
     <v-tab-item>
       <PipelineView />
     </v-tab-item>
-    <v-tab-item>
+    <v-tab-item v-if="activeResult">
       <ResultGridView />
     </v-tab-item>
     <v-tab-item v-if="activeResult && (activeResult.output.leiden || activeResult.output.louvain)">

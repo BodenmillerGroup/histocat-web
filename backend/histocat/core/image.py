@@ -56,7 +56,10 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
     mask = tifffile.imread(mask_settings.location)
 
     if mask_settings.gated:
-        m = np.isin(mask, mask_settings.objectNumbers)
+        object_numbers = []
+        for ann_object_numbers in mask_settings.cells.values():
+            object_numbers.extend(ann_object_numbers)
+        m = np.isin(mask, object_numbers)
         mask[~m] = 0
 
     if heatmap_dict:
@@ -64,7 +67,8 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
             heatmap_dict = {k: heatmap_dict[k] for k in np.unique(mask) if k != 0}
 
         colors = heatmap_dict.values()
-        img = label2rgb(label=mask, image=image, colors=colors, alpha=1, bg_label=0, image_alpha=1, kind="overlay")
+        alpha = 0.3 if mask_settings.gated else 1
+        img = label2rgb(label=mask, image=image, colors=colors, alpha=alpha, bg_label=0, image_alpha=1, kind="overlay")
         return img
     else:
         boundary = find_boundaries(mask, connectivity=1, mode="inner")
