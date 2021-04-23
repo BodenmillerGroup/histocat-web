@@ -13,6 +13,15 @@
         x-small
         >Add annotation</v-btn
       >
+      <v-btn
+        @click="trainCellClassifier"
+        :disabled="annotations.length === 0"
+        color="primary"
+        elevation="1"
+        x-small
+        class="ml-2"
+        >Train</v-btn
+      >
     </v-toolbar>
     <v-list dense class="overflow-y-auto scroll-view pa-0">
       <v-list-item-group v-model="selected" color="primary">
@@ -93,10 +102,12 @@ import { Component, Vue } from "vue-property-decorator";
 import { annotationsModule } from "@/modules/annotations";
 import { cellsModule } from "@/modules/cells";
 import { IAnnotation } from "@/modules/annotations/models";
+import { analysisModule } from "@/modules/analysis";
 
 @Component
 export default class AnnotationsView extends Vue {
   readonly annotationsContext = annotationsModule.context(this.$store);
+  readonly analysisContext = analysisModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
 
   addDialog = false;
@@ -148,6 +159,10 @@ export default class AnnotationsView extends Vue {
         cellIds: this.selectedCellIds,
       });
     }
+  }
+
+  trainCellClassifier() {
+    this.analysisContext.actions.classifyCells();
   }
 }
 </script>

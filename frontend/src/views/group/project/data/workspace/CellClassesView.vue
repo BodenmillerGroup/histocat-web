@@ -12,7 +12,7 @@
         x-small
         >Add cell class</v-btn
       >
-      <v-btn @click="resetCellClasses" color="primary" elevation="1" x-small class="ml-1">Reset</v-btn>
+      <v-btn @click="resetCellClasses" color="primary" elevation="1" x-small class="ml-2">Reset</v-btn>
     </v-toolbar>
     <v-list dense class="overflow-y-auto scroll-view pa-0">
       <v-list-item v-for="item in cellClasses" :key="item[0]">

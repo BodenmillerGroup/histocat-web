@@ -15,7 +15,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
   // Declare context type
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
-  dataset?: Context<typeof datasetsModule>;
+  datasets?: Context<typeof datasetsModule>;
   cells?: Context<typeof cellsModule>;
   annotations?: Context<typeof annotationsModule>;
 
@@ -23,7 +23,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
-    this.dataset = datasetsModule.context(store);
+    this.datasets = datasetsModule.context(store);
     this.cells = cellsModule.context(store);
     this.annotations = annotationsModule.context(store);
   }
@@ -31,7 +31,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
   async getGates() {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const datasetId = this.dataset!.getters.activeDatasetId;
+      const datasetId = this.datasets!.getters.activeDatasetId;
       if (datasetId) {
         const data = await api.getDatasetGates(groupId, datasetId);
         if (data) {
@@ -46,7 +46,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
   async createGate(name: string) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const datasetId = this.dataset!.getters.activeDatasetId;
+      const datasetId = this.datasets!.getters.activeDatasetId;
       const cellClasses = this.annotations?.getters.cellClasses;
       const annotations = this.annotations?.getters.annotations;
       if (datasetId && cellClasses && annotations) {

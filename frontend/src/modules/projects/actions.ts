@@ -294,7 +294,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
                   if (cell?.acquisitionId === activeAcquisitionId) {
                     objectNumbers.push(cell.objectNumber);
                   }
-                })
+                });
                 cellColors[color] = cellColors[color].concat(objectNumbers);
               }
             });

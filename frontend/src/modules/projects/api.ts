@@ -11,8 +11,6 @@ import {
 } from "./models";
 import { ApiManager } from "@/utils/api";
 
-const cacheAvailable = false; // 'caches' in self;
-
 export const api = {
   async getGroupProjects(groupId: number) {
     return ApiManager.api.get(`groups/${groupId}/projects`).json<IProject[]>();
@@ -77,20 +75,7 @@ export const api = {
   },
   async getChannelStats(groupId: number, acquisitionId: number, channelName: string) {
     const url = `groups/${groupId}/acquisitions/${acquisitionId}/${channelName}/stats?bins=40`;
-    let cache;
-    if (cacheAvailable) {
-      cache = await self.caches.open("stats");
-      const found = await cache.match(url);
-      if (found) {
-        return found.json() as Promise<IChannelStats>;
-      }
-    }
     const response = await ApiManager.api.get(url);
-    if (response.ok) {
-      if (cacheAvailable) {
-        await cache.put(url, response.clone());
-      }
-    }
     return response.json() as Promise<IChannelStats>;
   },
   async downloadChannelStackImage(groupId: number, params: IChannelStack) {
