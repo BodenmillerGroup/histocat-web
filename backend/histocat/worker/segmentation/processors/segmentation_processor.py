@@ -56,7 +56,7 @@ def process_segmentation(db: Session, project_id: int, params: SegmentationSubmi
     segmentation_data = []
     for acquisition_id in params.acquisition_ids:
         ac_output = acquisition_processor.process_acquisition(
-            db, acquisition_id=acquisition_id, params=params, model=keras_model, dataset=dataset
+            db, acquisition_id=acquisition_id, params=params, model=keras_model, application=model.application, dataset=dataset
         )
         segmentation_data.append(ac_output)
 

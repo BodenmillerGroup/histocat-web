@@ -14,12 +14,15 @@ export interface IRegionStatsSubmission {
 }
 
 export interface IClassifyCellsData {
-  gateId: number;
+  cellClasses: { [name: string]: string };
+  annotations: IAnnotation[];
 }
 
 export interface IClassifyCellsSubmission {
   dataset_id: number;
   result_id?: number;
+  channels: string[];
+  n_estimators: number;
   cell_classes: { [name: string]: string };
   annotations: IAnnotation[];
 }

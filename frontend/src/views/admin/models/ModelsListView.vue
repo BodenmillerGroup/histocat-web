@@ -80,6 +80,10 @@ export default class ModelsListView extends Vue {
       value: "name",
     },
     {
+      text: "Application",
+      value: "application",
+    },
+    {
       text: "Description",
       value: "description",
     },

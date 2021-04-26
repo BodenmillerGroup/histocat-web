@@ -167,7 +167,6 @@ export default class SegmentationSettingsView extends Vue {
   readonly maximaModelSmoothRules = [nonNegativeNumber];
   readonly pixelExpansionRules = [(value) => value === null || value >= 0 || "Should be null or non-negative number"];
 
-  readonly validCompartments = ["whole-cell", "nuclear", "both"];
   readonly validModelNames = ["inner-distance", "outer-distance", "fgbg-fg", "pixelwise-interior"];
 
   search = "";
@@ -232,6 +231,8 @@ export default class SegmentationSettingsView extends Vue {
 
   async submit() {
     if ((this.$refs.form as any).validate()) {
+      const application = this.models.find((model) => model.id === this.modelId)!.application;
+
       const acquisitionIds = this.segmentationContext.getters.selectedAcquisitionIds;
       const channels = this.segmentationContext.getters.channels;
       const nucleiChannels = this.segmentationContext.getters.nucleiChannels;
@@ -242,6 +243,46 @@ export default class SegmentationSettingsView extends Vue {
         return;
       }
 
+      const preprocessingParams =
+        application === "mesmer"
+          ? {
+              threshold: this.threshold,
+              percentile: this.percentile,
+              normalize: this.normalize,
+              kernel_size: this.kernelSize,
+            }
+          : {
+              normalize: this.normalize,
+              kernel_size: this.kernelSize,
+            };
+
+      const postprocessingParams =
+        application === "mesmer"
+          ? {
+              radius: this.radius,
+              maxima_threshold: this.maximaThreshold,
+              interior_threshold: this.interiorThreshold,
+              small_objects_threshold: this.smallObjectsThreshold,
+              fill_holes_threshold: this.fillHolesThreshold,
+              interior_model: this.interiorModel,
+              maxima_model: this.maximaModel,
+              interior_model_smooth: this.interiorModelSmooth,
+              maxima_model_smooth: this.maximaModelSmooth,
+              pixel_expansion: this.pixelExpansion,
+            }
+          : {
+              radius: this.radius,
+              maxima_threshold: this.maximaThreshold,
+              interior_threshold: this.interiorThreshold,
+              small_objects_threshold: this.smallObjectsThreshold,
+              fill_holes_threshold: this.fillHolesThreshold,
+              interior_model: this.interiorModel,
+              maxima_model: this.maximaModel,
+              interior_model_smooth: this.interiorModelSmooth,
+              maxima_model_smooth: this.maximaModelSmooth,
+              pixel_expansion: this.pixelExpansion,
+            };
+
       await this.segmentationContext.actions.processSegmentation({
         dataset_name: this.datasetName,
         dataset_description: this.datasetDescription,
@@ -250,24 +291,8 @@ export default class SegmentationSettingsView extends Vue {
         channels: channels,
         nuclei_channels: nucleiChannels,
         cytoplasm_channels: cytoplasmChannels,
-        preprocessing: {
-          threshold: this.threshold,
-          percentile: this.percentile,
-          normalize: this.normalize,
-          kernel_size: this.kernelSize,
-        },
-        postprocessing: {
-          radius: this.radius,
-          maxima_threshold: this.maximaThreshold,
-          interior_threshold: this.interiorThreshold,
-          small_objects_threshold: this.smallObjectsThreshold,
-          fill_holes_threshold: this.fillHolesThreshold,
-          interior_model: this.interiorModel,
-          maxima_model: this.maximaModel,
-          interior_model_smooth: this.interiorModelSmooth,
-          maxima_model_smooth: this.maximaModelSmooth,
-          pixel_expansion: this.pixelExpansion,
-        },
+        preprocessing: preprocessingParams,
+        postprocessing: postprocessingParams,
       });
     }
   }

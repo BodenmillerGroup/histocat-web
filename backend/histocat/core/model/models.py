@@ -13,6 +13,7 @@ class ModelModel(Base):
 
     id = sa.Column(sa.Integer(), primary_key=True, index=True)
     name = sa.Column(sa.String(), index=True, unique=True)
+    application = sa.Column(sa.String(), nullable=False)
     description = sa.Column(sa.Text())
     location = sa.Column(sa.String(4096))
     meta = sa.Column(JSONB())

@@ -1,6 +1,6 @@
 export interface ISegmentationPreprocessingSettings {
-  threshold: boolean;
-  percentile: number;
+  threshold?: boolean;
+  percentile?: number;
   normalize: boolean;
   kernel_size: number;
 }

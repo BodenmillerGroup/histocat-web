@@ -1,4 +1,4 @@
-from typing import Any, Sequence, Optional
+from typing import Any, Sequence, Optional, Dict
 
 from pydantic import BaseModel
 
@@ -28,10 +28,13 @@ class ClassifyCellsSubmissionDto(BaseModel):
     """Cell classification submission model."""
     dataset_id: int
     result_id: Optional[int]
+    channels: Sequence[str]
+    n_estimators: int
     cell_classes: Optional[Any]
     annotations: Optional[Any]
 
 
 class ClassifyCellsDto(BaseModel):
     """Cell classification result model."""
-    gate_id: int
+    cellClasses: Dict
+    annotations: Sequence[Any]

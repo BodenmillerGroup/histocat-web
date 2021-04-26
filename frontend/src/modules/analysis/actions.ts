@@ -35,21 +35,24 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async classifyCells() {
+  async classifyCells(payload: {channels: string[], nEstimators: number}) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const datasetId = this.datasets!.getters.activeDatasetId;
       const cellClasses = this.annotations?.getters.cellClasses;
       const annotations = this.annotations?.getters.annotations;
       if (datasetId && cellClasses && annotations) {
-        const payload: IClassifyCellsSubmission = {
+        const params: IClassifyCellsSubmission = {
           dataset_id: datasetId!,
+          channels: payload.channels,
+          n_estimators: payload.nEstimators,
           cell_classes: cellClasses,
           annotations: annotations,
         };
-        const data = await api.classifyCells(groupId, payload);
+        const data = await api.classifyCells(groupId, params);
         if (data) {
-          console.log(data);
+          this.annotations?.mutations.setCellClasses(data.cellClasses);
+          this.annotations?.mutations.setAnnotations(data.annotations);
         }
       }
     } catch (error) {

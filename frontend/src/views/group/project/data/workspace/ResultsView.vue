@@ -151,7 +151,7 @@ export default class ResultsView extends Vue {
   get heatmaps() {
     const activeDataset = this.activeDataset;
 
-    if (!activeDataset || !activeDataset.meta["columns"]) {
+    if (!activeDataset) {
       return [];
     }
     const channelItems =

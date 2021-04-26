@@ -5,13 +5,14 @@ from typing import Sequence
 import cv2
 import numpy as np
 import scanpy as sc
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage.measure import regionprops
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 from sklearn.ensemble import RandomForestClassifier
+from starlette import status
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member
@@ -89,21 +90,62 @@ async def classify_cells(
         ann_cell_classes = [annotation["cellClass"]] * len(ann_cell_ids)
         cell_classes.extend(ann_cell_classes)
 
+    # Convert cell ids to strings
+    cell_ids = list(map(str, cell_ids))
+
+    # Map cell ids to cell classes
     cells = dict(zip(cell_ids, cell_classes))
-    adata = adata[adata.obs["CellId"].isin(cell_ids)]
+
     df = adata.to_df()
-    df["cellClass"] = df.index
-    df["cellClass"] = df["cellClass"].astype(int)
-    df["cellClass"].replace(cells, inplace=True)
-    print(df)
+
+    df_train = df[df.index.isin(cell_ids)].copy()
+    if df_train.empty:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Train dataset is empty",
+        )
+
+    df_test = df[~df.index.isin(cell_ids)].copy()
+    if df_test.empty:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Test dataset is empty",
+        )
+
+    df_train["cellClass"] = df_train.index
+    df_train["cellClass"].replace(cells, inplace=True)
 
     # Create a Gaussian Classifier
-    # clf = RandomForestClassifier(n_estimators=100)
+    clf = RandomForestClassifier(n_estimators=params.n_estimators)
 
     # Train the model using the training sets y_pred=clf.predict(X_test)
-    # clf.fit(X_train, y_train)
-    #
-    # y_pred = clf.predict(X_test)
+    clf.fit(df_train[params.channels], df_train["cellClass"])
 
-    content = []
+    y_pred = clf.predict(df_test[params.channels])
+    y_pred_proba = clf.predict_proba(df_test[params.channels])
+
+    df_test["cellClass"] = y_pred
+
+    for index, cl in enumerate(clf.classes_):
+        df_test[cl + "Prob"] = [prob[index] for prob in y_pred_proba]
+
+    print(df_test)
+
+    # Combine train and test dataframes together
+    result_df = df_test.append(df_train)
+
+    annotations = []
+    for cell_class in result_df["cellClass"].unique():
+        cellIds = result_df[result_df["cellClass"] == cell_class].index.to_list()
+        annotation = {
+            "cellClass": cell_class,
+            "visible": True,
+            "cellIds": cellIds
+        }
+        annotations.append(annotation)
+
+    content = {
+        "cellClasses": params.cell_classes,
+        "annotations": annotations,
+    }
     return ORJSONResponse(content)

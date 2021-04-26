@@ -115,7 +115,7 @@ def _import_cell_csv(
 
     dst_uri = dst_folder / CELL_FILENAME
     df = pd.read_csv(src_uri)
-    df.index.astype(str, copy=False)
+    df.index = df.index.astype(str, copy=False)
 
     obs = pd.DataFrame(index=df.index)
     obs["CellId"] = df.index

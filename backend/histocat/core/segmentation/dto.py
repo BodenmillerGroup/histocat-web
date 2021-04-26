@@ -6,8 +6,8 @@ from pydantic import BaseModel
 class SegmentationPreprocessingSettingsDto(BaseModel):
     """Segmentation preprocessing settings model."""
 
-    threshold: bool
-    percentile: float
+    threshold: Optional[bool]
+    percentile: Optional[float]
     normalize: bool
     kernel_size: int
 

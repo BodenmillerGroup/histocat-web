@@ -15,7 +15,7 @@
       >
       <v-btn
         @click="trainCellClassifier"
-        :disabled="annotations.length === 0"
+        :disabled="!activeDataset || annotations.length === 0"
         color="primary"
         elevation="1"
         x-small
@@ -103,12 +103,14 @@ import { annotationsModule } from "@/modules/annotations";
 import { cellsModule } from "@/modules/cells";
 import { IAnnotation } from "@/modules/annotations/models";
 import { analysisModule } from "@/modules/analysis";
+import { datasetsModule } from "@/modules/datasets";
 
 @Component
 export default class AnnotationsView extends Vue {
   readonly annotationsContext = annotationsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
+  readonly datasetsContext = datasetsModule.context(this.$store);
 
   addDialog = false;
   editDialog = false;
@@ -116,6 +118,10 @@ export default class AnnotationsView extends Vue {
   cellClass: string | null = null;
 
   selected?: any | null = null;
+
+  get activeDataset() {
+    return this.datasetsContext.getters.activeDataset;
+  }
 
   get annotations() {
     return this.annotationsContext.getters.annotations;
@@ -162,7 +168,10 @@ export default class AnnotationsView extends Vue {
   }
 
   trainCellClassifier() {
-    this.analysisContext.actions.classifyCells();
+    if (this.activeDataset) {
+      const channels = this.activeDataset?.channels;
+      this.analysisContext.actions.classifyCells({ channels: channels, nEstimators: 100 });
+    }
   }
 }
 </script>

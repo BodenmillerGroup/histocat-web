@@ -165,6 +165,7 @@ def _import_cells(dataset: DatasetModel, segmentation_data: Sequence[Dict]):
             "CentroidY": centroids_y_all,
         }
     )
+    obs.index = obs.index.astype(str, copy=False)
     obs["CellId"] = obs.index
 
     var_names = []

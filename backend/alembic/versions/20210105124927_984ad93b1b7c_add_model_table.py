@@ -22,6 +22,7 @@ def upgrade():
         'model',
         sa.Column('id', sa.Integer(), primary_key=True, index=True),
         sa.Column('name', sa.String(), nullable=False, index=True, unique=True),
+        sa.Column('application', sa.String(), nullable=False),
         sa.Column('description', sa.String()),
         sa.Column('location', sa.String(4096)),
         sa.Column('meta', JSONB()),
