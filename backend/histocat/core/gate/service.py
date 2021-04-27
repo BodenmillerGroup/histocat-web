@@ -14,7 +14,7 @@ def get_by_id(session: Session, *, id: int) -> Optional[GateModel]:
 
 
 def get_dataset_gates(session: Session, *, dataset_id: int) -> Sequence[GateModel]:
-    return session.query(GateModel).filter(GateModel.dataset_id == dataset_id).all()
+    return session.query(GateModel).filter(GateModel.dataset_id == dataset_id).order_by(GateModel.id).all()
 
 
 def create(session: Session, *, params: GateCreateDto) -> GateModel:

@@ -83,14 +83,12 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue, Watch } from "vue-property-decorator";
-import { datasetsModule } from "@/modules/datasets";
 import { pipelinesModule } from "@/modules/pipelines";
 
 @Component
 export default class PipelinesView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly pipelinesContext = pipelinesModule.context(this.$store);
-  readonly datasetContext = datasetsModule.context(this.$store);
 
   dialog = false;
   activeId: number | null = null;

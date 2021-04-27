@@ -15,7 +15,7 @@ def get(session: Session, *, id: int) -> Optional[DatasetModel]:
 
 
 def get_project_datasets(session: Session, *, project_id: int) -> List[DatasetModel]:
-    return session.query(DatasetModel).filter(DatasetModel.project_id == project_id).all()
+    return session.query(DatasetModel).filter(DatasetModel.project_id == project_id).order_by(DatasetModel.id).all()
 
 
 def get_multi(session: Session, *, skip: int = 0, limit: int = 1000) -> List[DatasetModel]:

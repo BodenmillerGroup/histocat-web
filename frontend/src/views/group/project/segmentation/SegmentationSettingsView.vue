@@ -8,12 +8,6 @@
           <v-tab>Pre</v-tab>
           <v-tab>Post</v-tab>
           <v-tab-item>
-            <v-text-field label="Dataset Name" hint="Resulting dataset name" v-model="datasetName" />
-            <v-text-field
-              label="Dataset Description"
-              hint="Resulting dataset description"
-              v-model="datasetDescription"
-            />
             <v-select
               label="Model"
               v-model="modelId"
@@ -21,6 +15,16 @@
               item-value="id"
               item-text="name"
               :rules="modelRules"
+            />
+            <v-radio-group v-model="compartment" label="Compartment">
+              <v-radio label="Whole-Cell" value="whole-cell"/>
+              <v-radio label="Nuclear" value="nuclear"/>
+            </v-radio-group>
+            <v-text-field label="Dataset Name" hint="Resulting dataset name" v-model="datasetName" />
+            <v-text-field
+              label="Dataset Description"
+              hint="Resulting dataset description"
+              v-model="datasetDescription"
             />
           </v-tab-item>
           <v-tab-item>
@@ -169,13 +173,13 @@ export default class SegmentationSettingsView extends Vue {
 
   readonly validModelNames = ["inner-distance", "outer-distance", "fgbg-fg", "pixelwise-interior"];
 
-  search = "";
   valid = false;
   tab = 0;
 
   datasetName: string | null = null;
   datasetDescription: string | null = null;
   modelId: number | null = null;
+  compartment = "whole-cell";
 
   threshold = true;
   percentile = 99.9;
@@ -193,30 +197,6 @@ export default class SegmentationSettingsView extends Vue {
   maximaModelSmooth = 0;
   pixelExpansion: number | null = null;
 
-  readonly headers = [
-    {
-      text: "ID",
-      sortable: true,
-      filterable: false,
-      value: "id",
-      align: "end",
-      width: 70,
-    },
-    {
-      text: "Slide ID",
-      sortable: true,
-      filterable: false,
-      value: "slide_id",
-      align: "end",
-      width: 100,
-    },
-    {
-      text: "Descriptions",
-      sortable: true,
-      value: "description",
-    },
-  ];
-
   get selectedAcquisitionIds() {
     return this.segmentationContext.getters.selectedAcquisitionIds;
   }
@@ -231,8 +211,6 @@ export default class SegmentationSettingsView extends Vue {
 
   async submit() {
     if ((this.$refs.form as any).validate()) {
-      const application = this.models.find((model) => model.id === this.modelId)!.application;
-
       const acquisitionIds = this.segmentationContext.getters.selectedAcquisitionIds;
       const channels = this.segmentationContext.getters.channels;
       const nucleiChannels = this.segmentationContext.getters.nucleiChannels;
@@ -243,50 +221,31 @@ export default class SegmentationSettingsView extends Vue {
         return;
       }
 
-      const preprocessingParams =
-        application === "mesmer"
-          ? {
-              threshold: this.threshold,
-              percentile: this.percentile,
-              normalize: this.normalize,
-              kernel_size: this.kernelSize,
-            }
-          : {
-              normalize: this.normalize,
-              kernel_size: this.kernelSize,
-            };
+      const preprocessingParams = {
+        threshold: this.threshold,
+        percentile: this.percentile,
+        normalize: this.normalize,
+        kernel_size: this.kernelSize,
+      };
 
-      const postprocessingParams =
-        application === "mesmer"
-          ? {
-              radius: this.radius,
-              maxima_threshold: this.maximaThreshold,
-              interior_threshold: this.interiorThreshold,
-              small_objects_threshold: this.smallObjectsThreshold,
-              fill_holes_threshold: this.fillHolesThreshold,
-              interior_model: this.interiorModel,
-              maxima_model: this.maximaModel,
-              interior_model_smooth: this.interiorModelSmooth,
-              maxima_model_smooth: this.maximaModelSmooth,
-              pixel_expansion: this.pixelExpansion,
-            }
-          : {
-              radius: this.radius,
-              maxima_threshold: this.maximaThreshold,
-              interior_threshold: this.interiorThreshold,
-              small_objects_threshold: this.smallObjectsThreshold,
-              fill_holes_threshold: this.fillHolesThreshold,
-              interior_model: this.interiorModel,
-              maxima_model: this.maximaModel,
-              interior_model_smooth: this.interiorModelSmooth,
-              maxima_model_smooth: this.maximaModelSmooth,
-              pixel_expansion: this.pixelExpansion,
-            };
+      const postprocessingParams = {
+        radius: this.radius,
+        maxima_threshold: this.maximaThreshold,
+        interior_threshold: this.interiorThreshold,
+        small_objects_threshold: this.smallObjectsThreshold,
+        fill_holes_threshold: this.fillHolesThreshold,
+        interior_model: this.interiorModel,
+        maxima_model: this.maximaModel,
+        interior_model_smooth: this.interiorModelSmooth,
+        maxima_model_smooth: this.maximaModelSmooth,
+        pixel_expansion: this.pixelExpansion,
+      };
 
       await this.segmentationContext.actions.processSegmentation({
         dataset_name: this.datasetName,
         dataset_description: this.datasetDescription,
         model_id: this.modelId!,
+        compartment: this.compartment,
         acquisition_ids: acquisitionIds,
         channels: channels,
         nuclei_channels: nucleiChannels,

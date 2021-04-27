@@ -25,7 +25,7 @@ def get_all_models(session: Session) -> Sequence[Optional[ModelModel]]:
 
 
 def create(session: Session, *, params: ModelCreateDto) -> ModelModel:
-    entity = ModelModel(name=params.name, description=params.description, application=params.application)
+    entity = ModelModel(name=params.name, description=params.description)
     session.add(entity)
     session.commit()
     session.refresh(entity)

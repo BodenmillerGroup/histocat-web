@@ -17,7 +17,7 @@ from histocat.core.utils import timeit
 
 @timeit
 def process_acquisition(
-    db: Session, acquisition_id: int, params: SegmentationSubmissionDto, model, application: str, dataset: DatasetModel
+    db: Session, acquisition_id: int, params: SegmentationSubmissionDto, model, dataset: DatasetModel
 ):
     acquisition = acquisition_service.get_by_id(db, acquisition_id)
     if not acquisition:
@@ -26,91 +26,34 @@ def process_acquisition(
     parser = OmeTiffParser(acquisition.location)
     acquisition_data = parser.get_acquisition_data()
 
-    if application == "cytoplasm":
-        IA_stack = np.zeros(
-            (acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 1)
-        )
+    IA_stack = np.zeros(
+        (acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 2)
+    )
 
-        # sum up cytoplasmic/membranous markers
-        for c in params.cytoplasm_channels:
-            img = acquisition_data.get_image_by_name(c)
-            IA_stack[:, :, 0] = IA_stack[:, :, 0] + img
+    # sum up nuclear markers
+    for c in params.nuclei_channels:
+        img = acquisition_data.get_image_by_name(c)
+        IA_stack[:, :, 0] = IA_stack[:, :, 0] + img
 
-        im = IA_stack[:, :, 0]
-        im = np.expand_dims(im, (0, -1))
+    # sum up cytoplasmic/membranous markers
+    for c in params.cytoplasm_channels:
+        img = acquisition_data.get_image_by_name(c)
+        IA_stack[:, :, 1] = IA_stack[:, :, 1] + img
 
-        app = CytoplasmSegmentation(model)
-        segmentation_predictions = app.predict(
-            im,
-            batch_size=1,
-            image_mpp=1.0,
-            preprocess_kwargs=params.preprocessing.dict(),
-            postprocess_kwargs=params.postprocessing.dict(),
-        )
-        rgb_images = create_rgb_image(im, channel_colors=["green"])
-    elif application == "nuclear":
-        IA_stack = np.zeros(
-            (acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 1)
-        )
+    im = np.stack((IA_stack[:, :, 0], IA_stack[:, :, 1]), axis=-1)
+    im = np.expand_dims(im, 0)
 
-        # sum up nuclear markers
-        for c in params.nuclei_channels:
-            img = acquisition_data.get_image_by_name(c)
-            IA_stack[:, :, 0] = IA_stack[:, :, 0] + img
-
-        im = IA_stack[:, :, 0]
-        im = np.expand_dims(im, (0, -1))
-
-        app = NuclearSegmentation(model)
-        # segmentation_predictions = app.predict(
-        #     im,
-        #     batch_size=1,
-        #     image_mpp=1.0,
-        #     preprocess_kwargs=params.preprocessing.dict(),
-        #     postprocess_kwargs=params.postprocessing.dict(),
-        # )
-        segmentation_predictions = app.predict(
-            im,
-            batch_size=1,
-            image_mpp=1.0,
-            preprocess_kwargs={},
-            postprocess_kwargs={
-                'min_distance': 4,
-                'detection_threshold': 0.1,
-                'distance_threshold': 0.01,
-                'exclude_border': False,
-                'small_objects_threshold': 15
-            },
-        )
-        rgb_images = create_rgb_image(im, channel_colors=["green"])
-    else:
-        IA_stack = np.zeros(
-            (acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 2)
-        )
-
-        # sum up nuclear markers
-        for c in params.nuclei_channels:
-            img = acquisition_data.get_image_by_name(c)
-            IA_stack[:, :, 0] = IA_stack[:, :, 0] + img
-
-        # sum up cytoplasmic/membranous markers
-        for c in params.cytoplasm_channels:
-            img = acquisition_data.get_image_by_name(c)
-            IA_stack[:, :, 1] = IA_stack[:, :, 1] + img
-
-        im = np.stack((IA_stack[:, :, 0], IA_stack[:, :, 1]), axis=-1)
-        im = np.expand_dims(im, 0)
-
-        app = Mesmer(model)
-        segmentation_predictions = app.predict(
-            im,
-            batch_size=1,
-            image_mpp=1.0,
-            preprocess_kwargs=params.preprocessing.dict(),
-            postprocess_kwargs_whole_cell=params.postprocessing.dict(),
-        )
-        rgb_images = create_rgb_image(im, channel_colors=["green", "red"])
-
+    app = Mesmer(model)
+    segmentation_predictions = app.predict(
+        im,
+        batch_size=1,
+        image_mpp=1.0,
+        compartment=params.compartment,
+        preprocess_kwargs=params.preprocessing.dict(),
+        postprocess_kwargs_whole_cell=params.postprocessing.dict(),
+        postprocess_kwargs_nuclear=params.postprocessing.dict(),
+    )
+    rgb_images = create_rgb_image(im, channel_colors=["green", "red"])
     overlay_data = make_outline_overlay(rgb_data=rgb_images, predictions=segmentation_predictions)
 
     filename = os.path.basename(acquisition.location).replace("ome.tiff", "origin.png")

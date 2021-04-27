@@ -6,16 +6,12 @@ export class DatasetsGetters extends Getters<DatasetsState> {
     return this.state.ids.map((id) => this.state.entities[id]);
   }
 
-  getDataset(id: number) {
-    return this.state.entities[id];
-  }
-
   get activeDatasetId() {
     return this.state.activeDatasetId;
   }
 
   get activeDataset() {
-    return this.getters.activeDatasetId ? this.getters.getDataset(this.getters.activeDatasetId) : null;
+    return this.state.activeDatasetId ? this.state.entities[this.state.activeDatasetId] : null;
   }
 
   get channels() {

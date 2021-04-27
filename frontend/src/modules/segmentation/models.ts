@@ -22,6 +22,7 @@ export interface ISegmentationSubmission {
   dataset_name: string | null;
   dataset_description: string | null;
   model_id: number;
+  compartment: string;
   acquisition_ids: readonly number[];
   channels: string[];
   nuclei_channels: string[];

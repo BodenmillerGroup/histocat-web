@@ -6,7 +6,6 @@ from pydantic import BaseModel
 
 class ModelCreateDto(BaseModel):
     name: str
-    application: str
     description: Optional[str]
 
 
@@ -18,7 +17,6 @@ class ModelUpdateDto(BaseModel):
 class ModelDto(BaseModel):
     id: int
     name: Optional[str]
-    application: str
     description: Optional[str]
     location: Optional[str]
     meta: Optional[Dict[str, Optional[str]]]

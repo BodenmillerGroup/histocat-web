@@ -6,7 +6,6 @@ export interface IModelUpdate {
 export interface IModel {
   id: number;
   name: string;
-  application: string;
   description: string;
   location: string;
   meta: object;

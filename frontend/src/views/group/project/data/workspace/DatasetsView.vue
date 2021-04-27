@@ -14,7 +14,7 @@
     </v-toolbar>
     <v-list dense two-line class="overflow-y-auto scroll-view pa-0">
       <v-list-item-group v-model="selected" color="primary">
-        <v-list-item v-for="item in items" :key="item.uid">
+        <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-icon>
             <v-menu :close-on-content-click="false" :nudge-width="200" offset-x>
               <template v-slot:activator="{ on }">
