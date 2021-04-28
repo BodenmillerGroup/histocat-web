@@ -21,6 +21,7 @@ export class MainState {
   processingProgress = 0;
 
   maskMode: "raw" | "mask" | "origin" = "raw";
+  maskOpacity = 1.0;
   mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom";
 }
 

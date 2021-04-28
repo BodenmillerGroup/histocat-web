@@ -14,13 +14,13 @@
         >Add annotation</v-btn
       >
       <v-btn
-        @click="trainCellClassifier"
+        @click.stop="predictDialog = true"
         :disabled="!activeDataset || annotations.length === 0"
         color="primary"
         elevation="1"
         x-small
         class="ml-2"
-        >Train</v-btn
+        >Predict</v-btn
       >
     </v-toolbar>
     <v-list dense class="overflow-y-auto scroll-view pa-0">
@@ -94,6 +94,34 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="predictDialog" scrollable max-width="900px">
+      <v-card>
+        <v-card-title>Predict cell classes</v-card-title>
+        <v-card-text>
+          <v-row>
+            <v-col cols="8"><ChannelSelector ref="channelSelector" /></v-col>
+            <v-col cols="4">
+              <ThresholdSelector ref="thresholdSelector" />
+              <v-text-field
+                label="n Estimators"
+                v-model.number="nEstimators"
+                type="number"
+                min="1"
+                step="1"
+                dense
+                :rules="nEstimatorsRules"
+                class="ma-8"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="predictDialog = false">Cancel</v-btn>
+          <v-btn color="primary" text @click="trainCellClassifier">Predict</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -104,18 +132,28 @@ import { cellsModule } from "@/modules/cells";
 import { IAnnotation } from "@/modules/annotations/models";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
+import ChannelSelector from "@/views/group/project/data/workspace/ChannelSelector.vue";
+import ThresholdSelector from "@/views/group/project/data/workspace/ThresholdSelector.vue";
+import { required, positiveNumber } from "@/utils/validators";
 
-@Component
+@Component({
+  components: { ThresholdSelector, ChannelSelector },
+})
 export default class AnnotationsView extends Vue {
   readonly annotationsContext = annotationsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
 
+  readonly nEstimatorsRules = [required, positiveNumber];
+
   addDialog = false;
   editDialog = false;
+  predictDialog = false;
   activeId: number | null = null;
   cellClass: string | null = null;
+
+  nEstimators = 100;
 
   selected?: any | null = null;
 
@@ -168,10 +206,14 @@ export default class AnnotationsView extends Vue {
   }
 
   trainCellClassifier() {
-    if (this.activeDataset) {
-      const channels = this.activeDataset?.channels;
-      this.analysisContext.actions.classifyCells({ channels: channels, nEstimators: 100 });
-    }
+    this.predictDialog = false;
+    const channels = (this.$refs.channelSelector as any).getChannels();
+    const thresholds = (this.$refs.thresholdSelector as any).getThresholds();
+    this.analysisContext.actions.classifyCells({
+      channels: channels,
+      thresholds: thresholds,
+      nEstimators: this.nEstimators,
+    });
   }
 }
 </script>

@@ -126,10 +126,12 @@ async def classify_cells(
 
     df_test["cellClass"] = y_pred
 
-    for index, cl in enumerate(clf.classes_):
-        df_test[cl + "Prob"] = [prob[index] for prob in y_pred_proba]
+    # Assign max class probability to a column
+    df_test["Prob"] = [max(prob) for prob in y_pred_proba]
+    df_test["Threshold"] = [params.thresholds[pred] for pred in y_pred]
 
-    print(df_test)
+    # Filter cells by probability thresholds
+    df_test = df_test[df_test["Prob"] >= df_test["Threshold"]]
 
     # Combine train and test dataframes together
     result_df = df_test.append(df_train)

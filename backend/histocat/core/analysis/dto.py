@@ -29,6 +29,7 @@ class ClassifyCellsSubmissionDto(BaseModel):
     dataset_id: int
     result_id: Optional[int]
     channels: Sequence[str]
+    thresholds: Dict
     n_estimators: int
     cell_classes: Optional[Any]
     annotations: Optional[Any]

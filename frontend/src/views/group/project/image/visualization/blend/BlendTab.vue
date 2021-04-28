@@ -30,15 +30,23 @@
         <v-list dense>
           <v-list-item-group v-model="maskMode" color="primary">
             <v-list-item value="raw">
-              <v-list-item-title>Raw</v-list-item-title>
+              <v-list-item-title>Show Raw Image</v-list-item-title>
             </v-list-item>
             <v-list-item value="mask">
-              <v-list-item-title>Mask</v-list-item-title>
+              <v-list-item-title>Show Mask Overlay</v-list-item-title>
             </v-list-item>
             <v-list-item value="origin" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'">
-              <v-list-item-title>Mask Origin</v-list-item-title>
+              <v-list-item-title>Show Mask Source</v-list-item-title>
             </v-list-item>
           </v-list-item-group>
+        </v-list>
+        <v-list dense subheader>
+          <v-subheader>Mask Opacity</v-subheader>
+          <v-list-item>
+            <v-list-item-content>
+              <v-slider :value="maskOpacity" @end="maskOpacityHandler" hide-details min="0" max="1" step="0.01" />
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-menu>
       <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
@@ -79,6 +87,15 @@ export default class BlendTab extends Vue {
 
   set maskMode(value: "raw" | "mask" | "origin") {
     this.mainContext.mutations.setMaskMode(value);
+    this.projectsContext.actions.getChannelStackImage();
+  }
+
+  get maskOpacity() {
+    return this.mainContext.getters.maskOpacity;
+  }
+
+  maskOpacityHandler(value: number) {
+    this.mainContext.mutations.setMaskOpacity(value);
     this.projectsContext.actions.getChannelStackImage();
   }
 

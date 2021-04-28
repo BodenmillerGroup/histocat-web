@@ -59,6 +59,10 @@ export class MainMutations extends Mutations<MainState> {
     this.state.maskMode = payload;
   }
 
+  setMaskOpacity(payload: number) {
+    this.state.maskOpacity = payload;
+  }
+
   setMouseMode(mode: "panZoom" | "lasso" | "rotate") {
     this.state.mouseMode = mode;
   }

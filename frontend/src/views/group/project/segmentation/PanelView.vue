@@ -35,7 +35,6 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
-import { settingsModule } from "@/modules/settings";
 import { intersectionBy } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
 import { segmentationModule } from "@/modules/segmentation";
@@ -44,7 +43,6 @@ import { channelTypeToString } from "@/utils/converters";
 
 @Component
 export default class PanelView extends Vue {
-  readonly settingsContext = settingsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly segmentationContext = segmentationModule.context(this.$store);
 

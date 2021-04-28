@@ -35,7 +35,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
     }
   }
 
-  async classifyCells(payload: {channels: string[], nEstimators: number}) {
+  async classifyCells(payload: {channels: string[], thresholds: {[cellClass: string]: number}, nEstimators: number}) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const datasetId = this.datasets!.getters.activeDatasetId;
@@ -45,6 +45,7 @@ export class AnalysisActions extends Actions<AnalysisState, AnalysisGetters, Ana
         const params: IClassifyCellsSubmission = {
           dataset_id: datasetId!,
           channels: payload.channels,
+          thresholds: payload.thresholds,
           n_estimators: payload.nEstimators,
           cell_classes: cellClasses,
           annotations: annotations,

@@ -58,6 +58,10 @@ export class MainGetters extends Getters<MainState> {
     return this.state.maskMode;
   }
 
+  get maskOpacity() {
+    return this.state.maskOpacity;
+  }
+
   get mouseMode() {
     return this.state.mouseMode;
   }
