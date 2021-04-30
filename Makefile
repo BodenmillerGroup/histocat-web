@@ -2,7 +2,7 @@ PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
 bootstrap:
-	cd backend && JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 poetry install --extras "backend worker"
+	cd backend && poetry install --extras "backend worker"
 	cd frontend && yarn install
 
 deploy-development:
