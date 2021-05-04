@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="projectData">
     <v-toolbar flat dense color="grey lighten-4">
       <UploadButton label="Upload slide" :upload="upload" />
       <v-spacer />

@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%">
     <v-navigation-drawer
-      :mini-variant="miniDrawer"
+      mini-variant
       mini-variant-width="60"
       :clipped="$vuetify.breakpoint.lgAndUp"
       v-model="showDrawer"
@@ -144,26 +144,6 @@
         appName
       }}</v-toolbar-title>
       <v-spacer />
-      <v-btn-toggle v-if="activeGroupId && activeProjectId" v-model="views" multiple background-color="primary" group>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="workspace" color="primary">
-              <v-icon>mdi-file-tree</v-icon>
-            </v-btn>
-          </template>
-          <span v-if="!showWorkspace">Show workspace</span>
-          <span v-else>Hide workspace</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="options" color="primary">
-              <v-icon>mdi-tune</v-icon>
-            </v-btn>
-          </template>
-          <span v-if="!showOptions">Show options</span>
-          <span v-else>Hide options</span>
-        </v-tooltip>
-      </v-btn-toggle>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" icon href="https://plankter.gitbook.io/histocat" target="_blank">
@@ -213,10 +193,9 @@ import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { WebSocketManager } from "@/utils/WebSocketManager";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
 import { projectsModule } from "@/modules/projects";
-import { ViewMode } from "@/modules/ui/models";
 import { uiModule } from "@/modules/ui";
 
 const routeGuardMain = async (to, from, next) => {
@@ -237,7 +216,6 @@ export default class Main extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
 
   readonly appName = appName;
-  views: string[] = ["workspace", "options"];
 
   beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
@@ -245,26 +223,6 @@ export default class Main extends Vue {
 
   beforeRouteUpdate(to, from, next) {
     routeGuardMain(to, from, next);
-  }
-
-  @Watch("views")
-  viewsChanged(views: string[]) {
-    this.uiContext.mutations.setLayout({
-      showWorkspace: views.includes("workspace"),
-      showOptions: views.includes("options"),
-    });
-  }
-
-  get showWorkspace() {
-    return this.uiContext.getters.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.uiContext.getters.showOptions;
-  }
-
-  get miniDrawer() {
-    return this.uiContext.getters.dashboardMiniDrawer;
   }
 
   get showDrawer() {
@@ -301,10 +259,6 @@ export default class Main extends Vue {
 
   get processingProgress() {
     return this.uiContext.getters.processingProgress;
-  }
-
-  setViewMode(value: ViewMode) {
-    this.uiContext.mutations.setViewMode(value);
   }
 
   mounted() {

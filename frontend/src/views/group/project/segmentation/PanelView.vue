@@ -1,5 +1,5 @@
 <template>
-  <v-card tile class="ma-1">
+  <v-card v-if="projectData" tile class="ma-1">
     <v-card-title>Channels</v-card-title>
     <v-card-text>
       <v-data-table
@@ -83,6 +83,10 @@ export default class PanelView extends Vue {
 
   get selectedAcquisitionIds() {
     return this.segmentationContext.getters.selectedAcquisitionIds;
+  }
+
+  get projectData() {
+    return this.projectsContext.getters.projectData!;
   }
 
   get channels() {

@@ -1,10 +1,5 @@
 <template>
   <LoadingView v-if="!projectData" text="Loading..." />
-  <!--  <v-container v-else fluid class="ma-0 pa-0">-->
-  <!--    <ImageView v-show="viewMode === 'image'" />-->
-  <!--    <SegmentationView v-show="viewMode === 'segmentation'" />-->
-  <!--    <DataView v-show="viewMode === 'data'" />-->
-  <!--  </v-container>-->
   <section v-else id="layoutContainer" ref="layoutContainer"></section>
 </template>
 
@@ -27,6 +22,16 @@ import { PresetsComponent } from "@/views/group/project/presets/PresetsComponent
 import { HistogramComponent } from "@/views/group/project/histogram/HistogramComponent";
 import { SettingsComponent } from "@/views/group/project/settings/SettingsComponent";
 import { SegmentationComponent } from "@/views/group/project/segmentation/SegmentationComponent";
+import { CellsComponent } from "@/views/group/project/cells/CellsComponent";
+import { GatingComponent } from "@/views/group/project/gating/GatingComponent";
+import { PipelineComponent } from "@/views/group/project/pipeline/PipelineComponent";
+import { PcaComponent } from "@/views/group/project/pca/PcaComponent";
+import { UmapComponent } from "@/views/group/project/umap/UmapComponent";
+import { TsneComponent } from "@/views/group/project/tsne/TsneComponent";
+import { ScatterComponent } from "@/views/group/project/scatter/ScatterComponent";
+import { LeidenComponent } from "@/views/group/project/leiden/LeidenComponent";
+import { LouvainComponent } from "@/views/group/project/louvain/LouvainComponent";
+import { PipelinesComponent } from "@/views/group/project/pipelines/PipelinesComponent";
 
 @Component({
   components: {
@@ -45,10 +50,6 @@ export default class ProjectView extends Vue {
 
   get projectData() {
     return this.projectsContext.getters.projectData;
-  }
-
-  get viewMode() {
-    return this.uiContext.getters.viewMode;
   }
 
   get activeLayout() {
@@ -75,6 +76,26 @@ export default class ProjectView extends Vue {
         return new SettingsComponent(container, this.$store, this);
       case SegmentationComponent.typeName:
         return new SegmentationComponent(container, this.$store, this);
+      case CellsComponent.typeName:
+        return new CellsComponent(container, this.$store, this);
+      case GatingComponent.typeName:
+        return new GatingComponent(container, this.$store, this);
+      case PipelineComponent.typeName:
+        return new PipelineComponent(container, this.$store, this);
+      case PcaComponent.typeName:
+        return new PcaComponent(container, this.$store, this);
+      case UmapComponent.typeName:
+        return new UmapComponent(container, this.$store, this);
+      case TsneComponent.typeName:
+        return new TsneComponent(container, this.$store, this);
+      case ScatterComponent.typeName:
+        return new ScatterComponent(container, this.$store, this);
+      case LeidenComponent.typeName:
+        return new LeidenComponent(container, this.$store, this);
+      case LouvainComponent.typeName:
+        return new LouvainComponent(container, this.$store, this);
+      case PipelinesComponent.typeName:
+        return new PipelinesComponent(container, this.$store, this);
     }
   }
 
@@ -123,7 +144,6 @@ export default class ProjectView extends Vue {
     //   this.$store.dispatch("reset");
     // }
     this.$store.dispatch("resetProject");
-    this.uiContext.mutations.setViewMode("image");
   }
 }
 </script>

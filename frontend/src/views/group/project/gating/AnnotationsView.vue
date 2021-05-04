@@ -132,8 +132,8 @@ import { cellsModule } from "@/modules/cells";
 import { IAnnotation } from "@/modules/annotations/models";
 import { analysisModule } from "@/modules/analysis";
 import { datasetsModule } from "@/modules/datasets";
-import ChannelSelector from "@/views/group/project/data/workspace/ChannelSelector.vue";
-import ThresholdSelector from "@/views/group/project/data/workspace/ThresholdSelector.vue";
+import ChannelSelector from "@/views/group/project/gating/ChannelSelector.vue";
+import ThresholdSelector from "@/views/group/project/gating/ThresholdSelector.vue";
 import { required, positiveNumber } from "@/utils/validators";
 
 @Component({

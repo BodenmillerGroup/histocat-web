@@ -1,9 +1,9 @@
 import { ComponentContainer } from "golden-layout";
 import Vue from "vue";
-import ImageView from "./ImageView.vue";
+import PipelineView from "./PipelineView.vue";
 
-export class ImageComponent {
-  static readonly typeName = ImageComponent.name;
+export class PipelineComponent {
+  static readonly typeName = PipelineComponent.name;
 
   private readonly _element: any;
 
@@ -11,10 +11,9 @@ export class ImageComponent {
   private readonly _containerFocusinListener = () => this.handleClickFocusEvent();
   private readonly _beforeComponentReleaseEventListener = () => this.handleBeforeComponentReleaseEvent();
   private readonly _showEventListener = () => this.handleShowEvent();
-  private readonly _resizeEventListener = () => this.handleResizeEvent();
 
   constructor(private _container: ComponentContainer, store: any, parent) {
-    const ComponentClass = Vue.extend(ImageView);
+    const ComponentClass = Vue.extend(PipelineView);
     this._element = new ComponentClass({ store: store, parent: parent });
     this._element.$mount();
     this._container.element.appendChild(this._element.$el);
@@ -22,7 +21,6 @@ export class ImageComponent {
     this._container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
     this._container.addEventListener("beforeComponentRelease", this._beforeComponentReleaseEventListener);
     this._container.addEventListener("show", this._showEventListener);
-    this._container.addEventListener("resize", this._resizeEventListener);
 
     this._container.element.addEventListener("click", this._containerClickListener);
     this._container.element.addEventListener("focusin", this._containerFocusinListener);
@@ -37,7 +35,6 @@ export class ImageComponent {
     this._element.$destroy();
     this._container.element.removeChild(this._element.$el);
     this._container.removeEventListener("show", this._showEventListener);
-    this._container.removeEventListener("resize", this._resizeEventListener);
     this._container.removeEventListener("beforeComponentRelease", this._beforeComponentReleaseEventListener);
     this._container.element.removeEventListener("click", this._containerClickListener);
     this._container.element.removeEventListener("focusin", this._containerFocusinListener);
@@ -45,10 +42,6 @@ export class ImageComponent {
 
   private handleShowEvent(): void {
     console.log("handleShowEvent");
-  }
-
-  private handleResizeEvent(): void {
-    console.log("handleResizeEvent");
   }
 
   private handleClickFocusEvent(): void {

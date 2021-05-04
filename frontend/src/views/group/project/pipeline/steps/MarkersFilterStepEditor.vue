@@ -41,7 +41,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import MarkersSelector from "@/views/group/project/data/analysis/pipeline/steps/MarkersSelector.vue";
+import MarkersSelector from "@/views/group/project/pipeline/steps/MarkersSelector.vue";
 
 @Component({
   components: { MarkersSelector },

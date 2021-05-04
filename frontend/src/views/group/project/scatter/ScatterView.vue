@@ -1,11 +1,6 @@
 <template>
-  <v-card tile class="widget-container">
-    <v-card-title class="widget-title">
-      <v-icon left>mdi-drag</v-icon>
-      <span class="subtitle-1 font-weight-light">Scatter</span>
-    </v-card-title>
-    <v-divider />
-    <v-toolbar dense flat>
+  <div class="widget-container">
+    <v-toolbar v-if="activeResult" dense flat>
       x:
       <v-select
         :items="markers"
@@ -36,6 +31,7 @@
       />
     </v-toolbar>
     <ScatterPlot2d
+      v-if="activeResult"
       :ignore-selection="true"
       plot-id="scatterPlot"
       :data="plotData"
@@ -45,7 +41,7 @@
       :y-axis-title="markerY"
       class="plot"
     />
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -58,7 +54,7 @@ import { cellsModule } from "@/modules/cells";
 @Component({
   components: { ScatterPlot2d },
 })
-export default class ScatterWidget extends Vue {
+export default class ScatterView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
 
@@ -66,6 +62,10 @@ export default class ScatterWidget extends Vue {
 
   markerX: string | null = null;
   markerY: string | null = null;
+
+  get activeResult() {
+    return this.cellsContext.getters.activeResult;
+  }
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;

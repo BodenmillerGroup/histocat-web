@@ -4,7 +4,7 @@ import { UiGetters } from "./getters";
 import { UiMutations } from "./mutations";
 import { ComponentItemConfig, ItemType, LayoutConfig } from "golden-layout";
 import { ImageComponent } from "@/views/group/project/image/ImageComponent";
-import { ILayout, IResponsive, ViewMode } from "./models";
+import { ILayout, IResponsive } from "./models";
 import { SlidesComponent } from "@/views/group/project/slides/SlidesComponent";
 import { ChannelsComponent } from "@/views/group/project/channels/ChannelsComponent";
 import { TilesComponent } from "@/views/group/project/tiles/TilesComponent";
@@ -13,37 +13,34 @@ import { PresetsComponent } from "@/views/group/project/presets/PresetsComponent
 import { HistogramComponent } from "@/views/group/project/histogram/HistogramComponent";
 import { SettingsComponent } from "@/views/group/project/settings/SettingsComponent";
 import { SegmentationComponent } from "@/views/group/project/segmentation/SegmentationComponent";
+import { CellsComponent } from "@/views/group/project/cells/CellsComponent";
+import { GatingComponent } from "@/views/group/project/gating/GatingComponent";
+import { PipelineComponent } from "@/views/group/project/pipeline/PipelineComponent";
+import { PcaComponent } from "@/views/group/project/pca/PcaComponent";
+import { UmapComponent } from "@/views/group/project/umap/UmapComponent";
+import { TsneComponent } from "@/views/group/project/tsne/TsneComponent";
+import { ScatterComponent } from "@/views/group/project/scatter/ScatterComponent";
+import { LeidenComponent } from "@/views/group/project/leiden/LeidenComponent";
+import { LouvainComponent } from "@/views/group/project/louvain/LouvainComponent";
+import { PipelinesComponent } from "@/views/group/project/pipelines/PipelinesComponent";
 
 const defaultConfig: LayoutConfig = {
   root: {
     type: ItemType.row,
     content: [
       {
-        id: SlidesComponent.typeName,
-        componentType: SlidesComponent.typeName,
-        type: "component",
-        title: "Slides",
-        header: {
-          show: "top",
-          popout: false,
-        },
-        isClosable: true,
-        reorderEnabled: true,
-        width: 15,
-        componentState: undefined,
-      } as ComponentItemConfig,
-      {
         type: "stack",
+        width: 15,
         header: {
           show: "top",
           popout: false,
         },
         content: [
           {
-            id: ImageComponent.typeName,
-            componentType: ImageComponent.typeName,
+            id: SlidesComponent.typeName,
+            componentType: SlidesComponent.typeName,
             type: "component",
-            title: "Image",
+            title: "Slides",
             header: {
               show: "top",
               popout: false,
@@ -53,10 +50,10 @@ const defaultConfig: LayoutConfig = {
             componentState: undefined,
           } as ComponentItemConfig,
           {
-            id: TilesComponent.typeName,
-            componentType: TilesComponent.typeName,
+            id: CellsComponent.typeName,
+            componentType: CellsComponent.typeName,
             type: "component",
-            title: "Tiles",
+            title: "Datasets",
             header: {
               show: "top",
               popout: false,
@@ -66,10 +63,10 @@ const defaultConfig: LayoutConfig = {
             componentState: undefined,
           } as ComponentItemConfig,
           {
-            id: SegmentationComponent.typeName,
-            componentType: SegmentationComponent.typeName,
+            id: GatingComponent.typeName,
+            componentType: GatingComponent.typeName,
             type: "component",
-            title: "Segmentation",
+            title: "Gates",
             header: {
               show: "top",
               popout: false,
@@ -78,6 +75,172 @@ const defaultConfig: LayoutConfig = {
             reorderEnabled: true,
             componentState: undefined,
           } as ComponentItemConfig,
+          {
+            id: PipelinesComponent.typeName,
+            componentType: PipelinesComponent.typeName,
+            type: "component",
+            title: "Pipelines",
+            header: {
+              show: "top",
+              popout: false,
+            },
+            isClosable: true,
+            reorderEnabled: true,
+            componentState: undefined,
+          } as ComponentItemConfig,
+        ],
+      },
+      {
+        type: "column",
+        content: [
+          {
+            type: "stack",
+            header: {
+              show: "top",
+              popout: false,
+            },
+            content: [
+              {
+                id: ImageComponent.typeName,
+                componentType: ImageComponent.typeName,
+                type: "component",
+                title: "Image",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: TilesComponent.typeName,
+                componentType: TilesComponent.typeName,
+                type: "component",
+                title: "Tiles",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: SegmentationComponent.typeName,
+                componentType: SegmentationComponent.typeName,
+                type: "component",
+                title: "Segmentation",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+            ],
+          },
+          {
+            type: "stack",
+            header: {
+              show: "top",
+              popout: false,
+            },
+            content: [
+              {
+                id: ScatterComponent.typeName,
+                componentType: ScatterComponent.typeName,
+                type: "component",
+                title: "Scatterplot",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: PcaComponent.typeName,
+                componentType: PcaComponent.typeName,
+                type: "component",
+                title: "PCA",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: UmapComponent.typeName,
+                componentType: UmapComponent.typeName,
+                type: "component",
+                title: "UMAP",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: TsneComponent.typeName,
+                componentType: TsneComponent.typeName,
+                type: "component",
+                title: "tSNE",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: LeidenComponent.typeName,
+                componentType: LeidenComponent.typeName,
+                type: "component",
+                title: "Clusters [Leiden]",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: LouvainComponent.typeName,
+                componentType: LouvainComponent.typeName,
+                type: "component",
+                title: "Clusters [Louvain]",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+              {
+                id: PipelineComponent.typeName,
+                componentType: PipelineComponent.typeName,
+                type: "component",
+                title: "Pipeline",
+                header: {
+                  show: "top",
+                  popout: false,
+                },
+                isClosable: true,
+                reorderEnabled: true,
+                componentState: undefined,
+              } as ComponentItemConfig,
+            ],
+          },
         ],
       },
       {
@@ -186,12 +349,8 @@ export class UiState {
     width: null,
     height: null,
   };
-  dashboardMiniDrawer = true;
-  dashboardShowDrawer = true;
-  showWorkspace = true;
-  showOptions = true;
-  viewMode: ViewMode = "image";
 
+  dashboardShowDrawer = true;
   processing = false;
   processingProgress = 0;
 

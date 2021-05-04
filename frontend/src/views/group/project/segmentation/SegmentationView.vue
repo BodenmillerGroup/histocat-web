@@ -19,8 +19,7 @@ import SegmentationSettingsView from "@/views/group/project/segmentation/Segment
     AcquisitionsView,
   },
 })
-export default class SegmentationView extends Vue {
-}
+export default class SegmentationView extends Vue {}
 </script>
 
 <style scoped>

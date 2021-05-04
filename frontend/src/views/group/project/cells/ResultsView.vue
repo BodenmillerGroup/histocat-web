@@ -1,6 +1,6 @@
 <template>
   <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <v-card v-else tile>
+  <div v-else>
     <v-toolbar flat dense color="grey lighten-4">
       <v-select
         :items="heatmaps"
@@ -98,7 +98,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

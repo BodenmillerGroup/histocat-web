@@ -1,5 +1,5 @@
 <template>
-  <v-card tile class="ma-1">
+  <v-card v-if="projectData" tile class="ma-1">
     <v-card-title>Acquisitions</v-card-title>
     <v-card-text>
       <v-data-table

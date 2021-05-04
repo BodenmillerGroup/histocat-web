@@ -166,16 +166,16 @@ import { mainModule } from "@/modules/main";
 import { pipelinesModule } from "@/modules/pipelines";
 import { PipelineStepType } from "@/modules/pipelines/models";
 import { v4 as uuidv4 } from "uuid";
-import TransformationStepEditor from "@/views/group/project/data/analysis/pipeline/steps/TransformationStepEditor.vue";
-import TsneStepEditor from "@/views/group/project/data/analysis/pipeline/steps/TsneStepEditor.vue";
-import UmapStepEditor from "@/views/group/project/data/analysis/pipeline/steps/UmapStepEditor.vue";
-import PcaStepEditor from "@/views/group/project/data/analysis/pipeline/steps/PcaStepEditor.vue";
-import ScaleStepEditor from "@/views/group/project/data/analysis/pipeline/steps/ScaleStepEditor.vue";
-import MarkersFilterStepEditor from "@/views/group/project/data/analysis/pipeline/steps/MarkersFilterStepEditor.vue";
-import NeighborsStepEditor from "@/views/group/project/data/analysis/pipeline/steps/NeighborsStepEditor.vue";
-import AcquisitionsSelector from "@/views/group/project/data/analysis/pipeline/AcquisitionsSelector.vue";
-import LeidenStepEditor from "@/views/group/project/data/analysis/pipeline/steps/LeidenStepEditor.vue";
-import LouvainStepEditor from "@/views/group/project/data/analysis/pipeline/steps/LouvainStepEditor.vue";
+import TransformationStepEditor from "@/views/group/project/pipeline/steps/TransformationStepEditor.vue";
+import TsneStepEditor from "@/views/group/project/pipeline/steps/TsneStepEditor.vue";
+import UmapStepEditor from "@/views/group/project/pipeline/steps/UmapStepEditor.vue";
+import PcaStepEditor from "@/views/group/project/pipeline/steps/PcaStepEditor.vue";
+import ScaleStepEditor from "@/views/group/project/pipeline/steps/ScaleStepEditor.vue";
+import MarkersFilterStepEditor from "@/views/group/project/pipeline/steps/MarkersFilterStepEditor.vue";
+import NeighborsStepEditor from "@/views/group/project/pipeline/steps/NeighborsStepEditor.vue";
+import AcquisitionsSelector from "@/views/group/project/pipeline/AcquisitionsSelector.vue";
+import LeidenStepEditor from "@/views/group/project/pipeline/steps/LeidenStepEditor.vue";
+import LouvainStepEditor from "@/views/group/project/pipeline/steps/LouvainStepEditor.vue";
 
 @Component({
   components: {

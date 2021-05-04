@@ -1,11 +1,7 @@
 <template>
-  <v-card tile class="widget-container">
-    <v-card-title class="widget-title">
-      <v-icon left>mdi-drag</v-icon>
-      <span class="subtitle-1 font-weight-light">UMAP</span>
-    </v-card-title>
-    <v-divider />
+  <div class="widget-container">
     <ScatterPlot2d
+      v-if="activeResult"
       plot-id="umapPlot"
       :ignore-selection="false"
       :data="plotData"
@@ -15,7 +11,7 @@
       y-axis-title="UMAP2"
       class="plot"
     />
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -26,8 +22,12 @@ import { cellsModule } from "@/modules/cells";
 @Component({
   components: { ScatterPlot2d },
 })
-export default class UmapWidget extends Vue {
+export default class UmapView extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
+
+  get activeResult() {
+    return this.cellsContext.getters.activeResult;
+  }
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;

@@ -17,8 +17,8 @@
               :rules="modelRules"
             />
             <v-radio-group v-model="compartment" label="Compartment">
-              <v-radio label="Whole-Cell" value="whole-cell"/>
-              <v-radio label="Nuclear" value="nuclear"/>
+              <v-radio label="Whole-Cell" value="whole-cell" />
+              <v-radio label="Nuclear" value="nuclear" />
             </v-radio-group>
             <v-text-field label="Dataset Name" hint="Resulting dataset name" v-model="datasetName" />
             <v-text-field

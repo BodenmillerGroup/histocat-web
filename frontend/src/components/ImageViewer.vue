@@ -32,12 +32,8 @@ export default class ImageViewer extends Vue {
   scatterplot: any;
   selection: any[] = [];
 
-  get showWorkspace() {
-    return this.uiContext.getters.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.uiContext.getters.showOptions;
+  get dashboardShowDrawer() {
+    return this.uiContext.getters.dashboardShowDrawer;
   }
 
   get applyMask() {
@@ -99,13 +95,8 @@ export default class ImageViewer extends Vue {
     this.refresh();
   }
 
-  @Watch("showWorkspace")
+  @Watch("dashboardShowDrawer")
   showWorkspaceChanged(value) {
-    this.refresh();
-  }
-
-  @Watch("showOptions")
-  showOptionsChanged(value) {
     this.refresh();
   }
 
@@ -206,7 +197,9 @@ export default class ImageViewer extends Vue {
 
   lassoEndHandler(data: { coordinates: [number, number][] }) {
     if (this.regionsEnabled) {
-      this.calculateRegionStats(transformFromWebGl(data.coordinates, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y));
+      this.calculateRegionStats(
+        transformFromWebGl(data.coordinates, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y)
+      );
     }
   }
 

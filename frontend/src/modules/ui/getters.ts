@@ -14,28 +14,12 @@ export class UiGetters extends Getters<UiState> {
     return this.state.dashboardShowDrawer;
   }
 
-  get dashboardMiniDrawer() {
-    return this.state.dashboardMiniDrawer;
-  }
-
-  get showWorkspace() {
-    return this.state.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.state.showOptions;
-  }
-
   get processing() {
     return this.state.processing;
   }
 
   get processingProgress() {
     return this.state.processingProgress;
-  }
-
-  get viewMode() {
-    return this.state.viewMode;
   }
 
   get maskMode() {

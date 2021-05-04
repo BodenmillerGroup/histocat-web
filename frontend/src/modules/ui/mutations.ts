@@ -1,6 +1,6 @@
 import { Mutations } from "vuex-smart-module";
 import { UiState } from ".";
-import { ILayout, IResponsive, ViewMode } from "./models";
+import { ILayout, IResponsive } from "./models";
 
 export class UiMutations extends Mutations<UiState> {
   setActiveLayout(value: ILayout) {
@@ -11,17 +11,8 @@ export class UiMutations extends Mutations<UiState> {
     this.state.responsive = value;
   }
 
-  setDashboardMiniDrawer(payload: boolean) {
-    this.state.dashboardMiniDrawer = payload;
-  }
-
   setDashboardShowDrawer(payload: boolean) {
     this.state.dashboardShowDrawer = payload;
-  }
-
-  setLayout(payload: { showWorkspace: boolean; showOptions: boolean }) {
-    this.state.showWorkspace = payload.showWorkspace;
-    this.state.showOptions = payload.showOptions;
   }
 
   setProcessing(payload: boolean) {
@@ -30,10 +21,6 @@ export class UiMutations extends Mutations<UiState> {
 
   setProcessingProgress(payload: number) {
     this.state.processingProgress = payload;
-  }
-
-  setViewMode(value: ViewMode) {
-    this.state.viewMode = value;
   }
 
   setMaskMode(payload: "raw" | "mask" | "origin") {
