@@ -10,14 +10,6 @@ export class MainGetters extends Getters<MainState> {
     return this.state.logInError;
   }
 
-  get dashboardShowDrawer() {
-    return this.state.dashboardShowDrawer;
-  }
-
-  get dashboardMiniDrawer() {
-    return this.state.dashboardMiniDrawer;
-  }
-
   get userProfile() {
     return this.state.userProfile;
   }
@@ -32,38 +24,6 @@ export class MainGetters extends Getters<MainState> {
 
   get firstNotification() {
     return this.state.notifications.length > 0 && this.state.notifications[0];
-  }
-
-  get showWorkspace() {
-    return this.state.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.state.showOptions;
-  }
-
-  get processing() {
-    return this.state.processing;
-  }
-
-  get processingProgress() {
-    return this.state.processingProgress;
-  }
-
-  get viewMode() {
-    return this.state.viewMode;
-  }
-
-  get maskMode() {
-    return this.state.maskMode;
-  }
-
-  get maskOpacity() {
-    return this.state.maskOpacity;
-  }
-
-  get mouseMode() {
-    return this.state.mouseMode;
   }
 
   get isAdmin() {

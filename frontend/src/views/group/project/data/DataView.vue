@@ -11,10 +11,10 @@
 <script lang="ts">
 import LoadingView from "@/components/LoadingView.vue";
 import { projectsModule } from "@/modules/projects";
-import { mainModule } from "@/modules/main";
 import AnalysisView from "@/views/group/project/data/analysis/AnalysisView.vue";
 import DataWorkspaceView from "@/views/group/project/data/workspace/DataWorkspaceView.vue";
 import { Component, Vue } from "vue-property-decorator";
+import { uiModule } from "@/modules/ui";
 
 @Component({
   components: {
@@ -24,7 +24,7 @@ import { Component, Vue } from "vue-property-decorator";
   },
 })
 export default class DataView extends Vue {
-  readonly mainContext = mainModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
   get projectData() {
@@ -32,11 +32,11 @@ export default class DataView extends Vue {
   }
 
   get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
+    return this.uiContext.getters.showWorkspace;
   }
 
   get showOptions() {
-    return this.mainContext.getters.showOptions;
+    return this.uiContext.getters.showOptions;
   }
 
   get layoutClass() {

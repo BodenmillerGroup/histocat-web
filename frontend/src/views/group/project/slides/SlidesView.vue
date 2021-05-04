@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <div>
     <v-toolbar flat dense color="grey lighten-4">
       <UploadButton label="Upload slide" :upload="upload" />
       <v-spacer />
@@ -61,7 +61,7 @@
         </v-menu>
       </template>
     </v-treeview>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
@@ -69,8 +69,7 @@ import InfoCard from "@/components/InfoCard.vue";
 import UploadButton from "@/components/UploadButton.vue";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
-import { IProjectData } from "@/modules/projects/models";
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 
 @Component({
   components: { UploadButton, InfoCard },
@@ -78,8 +77,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 export default class ImageWorkspaceView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
-
-  @Prop(Object) readonly projectData!: IProjectData;
 
   search = null;
 
@@ -89,6 +86,10 @@ export default class ImageWorkspaceView extends Vue {
     roi: "mdi-blur",
     acquisition: "mdi-buffer",
   };
+
+  get projectData() {
+    return this.projectsContext.getters.projectData!;
+  }
 
   get active() {
     return [this.projectsContext.getters.activeWorkspaceNode];

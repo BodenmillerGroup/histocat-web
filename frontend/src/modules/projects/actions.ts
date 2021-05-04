@@ -12,10 +12,12 @@ import { ProjectsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 import { cellsModule } from "@/modules/cells";
 import { annotationsModule } from "@/modules/annotations";
+import { uiModule } from "@/modules/ui";
 
 export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  ui?: Context<typeof uiModule>;
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetsModule>;
@@ -25,6 +27,7 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
+    this.ui = uiModule.context(store);
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetsModule.context(store);
@@ -99,17 +102,17 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
         payload.data,
         () => {
           console.log("Upload has started.");
-          this.main!.mutations.setProcessing(true);
+          this.ui!.mutations.setProcessing(true);
         },
         () => {
           console.log("Upload completed successfully.");
-          this.main!.mutations.setProcessing(false);
-          this.main!.mutations.setProcessingProgress(0);
+          this.ui!.mutations.setProcessing(false);
+          this.ui!.mutations.setProcessingProgress(0);
           this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);
-          this.main!.mutations.setProcessingProgress(percent);
+          this.ui!.mutations.setProcessingProgress(percent);
         },
         () => {}
       );
@@ -260,8 +263,8 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     const activeDataset = this.datasets!.getters.activeDataset;
     if (activeDataset) {
       output["datasetId"] = activeDataset.id;
-      const maskMode = this.main!.getters.maskMode;
-      const maskOpacity = this.main!.getters.maskOpacity;
+      const maskMode = this.ui!.getters.maskMode;
+      const maskOpacity = this.ui!.getters.maskOpacity;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
       if (activeAcquisitionId && activeDataset.meta.masks) {
         const mask = activeDataset.meta.masks[activeAcquisitionId];

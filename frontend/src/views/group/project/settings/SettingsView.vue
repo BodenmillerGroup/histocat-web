@@ -7,9 +7,9 @@
 </template>
 
 <script lang="ts">
-import FilterSettingsView from "@/views/group/project/image/options/settings/general/FilterSettingsView.vue";
-import LegendSettingsView from "@/views/group/project/image/options/settings/general/LegendSettingsView.vue";
-import ScalebarSettingsView from "@/views/group/project/image/options/settings/general/ScalebarSettingsView.vue";
+import FilterSettingsView from "@/views/group/project/settings/FilterSettingsView.vue";
+import LegendSettingsView from "@/views/group/project/settings/LegendSettingsView.vue";
+import ScalebarSettingsView from "@/views/group/project/settings/ScalebarSettingsView.vue";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component({

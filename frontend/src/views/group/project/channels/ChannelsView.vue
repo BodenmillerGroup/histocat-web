@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <div>
     <v-toolbar dense flat>
       <v-text-field v-model="search" label="Search" single-line hide-details clearable dense>
         <template v-slot:append-outer>
@@ -14,7 +14,7 @@
       v-model="selected"
       show-select
       hide-default-footer
-      class="overflow-y-auto scroll-view"
+      class="overflow-y-auto"
       dense
       disable-pagination
       no-data-text="Please first select an acquisition"
@@ -34,19 +34,17 @@
         </v-edit-dialog>
       </template>
     </v-data-table>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
-import { settingsModule } from "@/modules/settings";
 import { isEqual } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class ChannelsView extends Vue {
-  readonly settingsContext = settingsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
   search = "";

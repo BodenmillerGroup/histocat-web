@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 100%; height: 100%">
     <v-navigation-drawer
       :mini-variant="miniDrawer"
       mini-variant-width="60"
@@ -201,7 +201,7 @@
         slot="extension"
       />
     </v-app-bar>
-    <v-main>
+    <v-main style="width: 100%; height: 100%">
       <router-view />
     </v-main>
   </div>
@@ -216,7 +216,8 @@ import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
 import { projectsModule } from "@/modules/projects";
-import { ViewMode } from "@/modules/main/models";
+import { ViewMode } from "@/modules/ui/models";
+import { uiModule } from "@/modules/ui";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === "/main") {
@@ -230,6 +231,7 @@ const routeGuardMain = async (to, from, next) => {
   components: { ToolbarProgressBar },
 })
 export default class Main extends Vue {
+  readonly uiContext = uiModule.context(this.$store);
   readonly mainContext = mainModule.context(this.$store);
   readonly groupContext = groupModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
@@ -247,42 +249,38 @@ export default class Main extends Vue {
 
   @Watch("views")
   viewsChanged(views: string[]) {
-    this.mainContext.mutations.setLayout({
+    this.uiContext.mutations.setLayout({
       showWorkspace: views.includes("workspace"),
       showOptions: views.includes("options"),
     });
   }
 
   get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
+    return this.uiContext.getters.showWorkspace;
   }
 
   get showOptions() {
-    return this.mainContext.getters.showOptions;
+    return this.uiContext.getters.showOptions;
   }
 
   get miniDrawer() {
-    return this.mainContext.getters.dashboardMiniDrawer;
+    return this.uiContext.getters.dashboardMiniDrawer;
   }
 
   get showDrawer() {
-    return this.mainContext.getters.dashboardShowDrawer;
+    return this.uiContext.getters.dashboardShowDrawer;
   }
 
   set showDrawer(value: boolean) {
-    this.mainContext.mutations.setDashboardShowDrawer(value);
+    this.uiContext.mutations.setDashboardShowDrawer(value);
   }
 
   switchShowDrawer() {
-    this.mainContext.mutations.setDashboardShowDrawer(!this.mainContext.getters.dashboardShowDrawer);
+    this.uiContext.mutations.setDashboardShowDrawer(!this.uiContext.getters.dashboardShowDrawer);
   }
 
   get isAdmin() {
     return this.mainContext.getters.isAdmin;
-  }
-
-  get isGroupAdmin() {
-    return this.groupContext.getters.isGroupAdmin;
   }
 
   get activeGroupId() {
@@ -298,15 +296,15 @@ export default class Main extends Vue {
   }
 
   get processing() {
-    return this.mainContext.getters.processing;
+    return this.uiContext.getters.processing;
   }
 
   get processingProgress() {
-    return this.mainContext.getters.processingProgress;
+    return this.uiContext.getters.processingProgress;
   }
 
   setViewMode(value: ViewMode) {
-    this.mainContext.mutations.setViewMode(value);
+    this.uiContext.mutations.setViewMode(value);
   }
 
   mounted() {

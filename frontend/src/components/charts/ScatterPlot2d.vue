@@ -10,14 +10,14 @@ import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import Plotly from "plotly.js/dist/plotly";
 import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
-import { mainModule } from "@/modules/main";
+import { uiModule } from "@/modules/ui";
 
 const pointSize = 3;
 
 @Component
 export default class ScatterPlot2d extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly mainContext = mainModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
 
   @Prop({ type: String, required: true }) readonly plotId;
@@ -29,7 +29,7 @@ export default class ScatterPlot2d extends Vue {
   @Prop({ type: Boolean, required: true }) readonly ignoreSelection!: boolean;
 
   get applyMask() {
-    return this.mainContext.getters.maskMode === "mask";
+    return this.uiContext.getters.maskMode === "mask";
   }
 
   get heatmap() {

@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <div>
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn @click="createPreset" color="primary" elevation="1" small>Create preset</v-btn>
       <v-spacer></v-spacer>
@@ -43,7 +43,7 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

@@ -9,7 +9,7 @@ import Vuex from "vuex";
 import VuexPersistence from "vuex-persist";
 import { createStore, Module } from "vuex-smart-module";
 import createLogger from "vuex/dist/logger";
-import { responsiveModule } from "@/modules/responsive";
+import { uiModule } from "@/modules/ui";
 import { RootActions } from "@/store/actions";
 import { presetsModule } from "@/modules/presets";
 import { gatesModule } from "@/modules/gates";
@@ -33,7 +33,7 @@ const rootModule = new Module({
     dataset: datasetsModule,
     projects: projectsModule,
     main: mainModule,
-    responsive: responsiveModule,
+    ui: uiModule,
     settings: settingsModule,
     user: userModule,
     presets: presetsModule,

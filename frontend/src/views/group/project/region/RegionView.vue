@@ -1,28 +1,24 @@
 <template>
-  <v-card tile>
-    <v-card-title>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        clearable
-        dense
-      />
-    </v-card-title>
+  <div>
+    <v-toolbar dense flat>
+      <v-text-field v-model="search" label="Search" single-line hide-details clearable dense>
+        <template v-slot:append-outer>
+          <v-icon dense>mdi-magnify</v-icon>
+        </template>
+      </v-text-field>
+    </v-toolbar>
     <v-data-table
       :headers="headers"
       :items="items"
       :search="search"
       hide-default-footer
-      class="overflow-y-auto scroll-view"
+      class="overflow-y-auto"
       dense
       disable-pagination
       no-data-text="Please select a region"
     >
     </v-data-table>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

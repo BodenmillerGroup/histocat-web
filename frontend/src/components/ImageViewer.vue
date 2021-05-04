@@ -1,7 +1,7 @@
 <template>
   <div id="canvasContainer">
-    <canvas :id="canvas2d" :ref="canvas2d"></canvas>
-    <canvas :id="canvasWebGl" :ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
+    <canvas id="canvas2d" ref="canvas2d"></canvas>
+    <canvas id="canvasWebGl" ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
   </div>
 </template>
 
@@ -12,14 +12,14 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import { projectsModule } from "@/modules/projects";
 import { analysisModule } from "@/modules/analysis";
 import { transformToWebGl, transformFromWebGl } from "@/utils/webglUtils";
-import { mainModule } from "@/modules/main";
 import { IRegionStatsSubmission } from "@/modules/analysis/models";
 import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
+import { uiModule } from "@/modules/ui";
 
 @Component
 export default class ImageViewer extends Vue {
-  readonly mainContext = mainModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
@@ -33,15 +33,15 @@ export default class ImageViewer extends Vue {
   selection: any[] = [];
 
   get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
+    return this.uiContext.getters.showWorkspace;
   }
 
   get showOptions() {
-    return this.mainContext.getters.showOptions;
+    return this.uiContext.getters.showOptions;
   }
 
   get applyMask() {
-    return this.mainContext.getters.maskMode === "mask";
+    return this.uiContext.getters.maskMode === "mask";
   }
 
   get showLegend() {
@@ -77,7 +77,7 @@ export default class ImageViewer extends Vue {
   }
 
   get mouseMode() {
-    return this.mainContext.getters.mouseMode;
+    return this.uiContext.getters.mouseMode;
   }
 
   @Watch("mouseMode")
@@ -206,7 +206,7 @@ export default class ImageViewer extends Vue {
 
   lassoEndHandler(data: { coordinates: [number, number][] }) {
     if (this.regionsEnabled) {
-      this.calculateRegionStats(transformFromWebGl(data.coordinates, 800, 800));
+      this.calculateRegionStats(transformFromWebGl(data.coordinates, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y));
     }
   }
 
@@ -251,13 +251,10 @@ export default class ImageViewer extends Vue {
 
   private initViewer() {
     const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
 
     this.scatterplot = createScatterplot({
       syncEvents: true,
       canvas: canvas,
-      width: width,
-      height: height,
       opacity: 1,
       pointSize: 2,
       pointSizeSelected: 1,
@@ -294,8 +291,7 @@ export default class ImageViewer extends Vue {
 
 <style scoped>
 #canvasContainer {
-  height: calc(100vh - 134px);
-  position: relative;
+  height: 100%;
   width: 100%;
 }
 #canvasWebGl {

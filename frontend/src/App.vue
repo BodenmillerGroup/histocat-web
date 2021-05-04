@@ -21,7 +21,7 @@
 import NotificationsManager from "@/components/NotificationsManager.vue";
 import { mainModule } from "@/modules/main";
 import { Component, Vue } from "vue-property-decorator";
-import { responsiveModule } from "@/modules/responsive";
+import { uiModule } from "@/modules/ui";
 
 @Component({
   components: {
@@ -30,7 +30,7 @@ import { responsiveModule } from "@/modules/responsive";
 })
 export default class App extends Vue {
   readonly mainContext = mainModule.context(this.$store);
-  readonly responsiveContext = responsiveModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
 
   get loggedIn() {
     return this.mainContext.getters.isLoggedIn;
@@ -43,12 +43,12 @@ export default class App extends Vue {
   mounted() {
     /* listen for resize events */
     window.addEventListener("resize", () => {
-      this.responsiveContext.mutations.setResponsive({
+      this.uiContext.mutations.setResponsive({
         height: window.innerHeight,
         width: window.innerWidth,
       });
     });
-    this.responsiveContext.mutations.setResponsive({
+    this.uiContext.mutations.setResponsive({
       height: window.innerHeight,
       width: window.innerWidth,
     });

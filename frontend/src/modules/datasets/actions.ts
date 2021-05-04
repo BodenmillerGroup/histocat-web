@@ -10,10 +10,12 @@ import { DatasetsGetters } from "./getters";
 import { DatasetsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
 import { IDatasetUpdate } from "@/modules/datasets/models";
+import { uiModule } from "@/modules/ui";
 
 export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, DatasetsMutations, DatasetsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  ui?: Context<typeof uiModule>;
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   projects?: Context<typeof projectsModule>;
@@ -22,6 +24,7 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
   $init(store: Store<any>): void {
     // Create and retain main module context
     this.main = mainModule.context(store);
+    this.ui = uiModule.context(store);
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.projects = projectsModule.context(store);
@@ -92,17 +95,17 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
         payload.data,
         () => {
           console.log("Upload has started.");
-          this.main!.mutations.setProcessing(true);
+          this.ui!.mutations.setProcessing(true);
         },
         () => {
           console.log("Upload completed successfully.");
-          this.main!.mutations.setProcessing(false);
-          this.main!.mutations.setProcessingProgress(0);
+          this.ui!.mutations.setProcessing(false);
+          this.ui!.mutations.setProcessingProgress(0);
           this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);
-          this.main!.mutations.setProcessingProgress(percent);
+          this.ui!.mutations.setProcessingProgress(percent);
         },
         () => {}
       );

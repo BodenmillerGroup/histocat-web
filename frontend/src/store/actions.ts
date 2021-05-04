@@ -12,8 +12,10 @@ import { modelsModule } from "@/modules/models";
 import { segmentationModule } from "@/modules/segmentation";
 import { annotationsModule } from "@/modules/annotations";
 import { cellsModule } from "@/modules/cells";
+import { uiModule } from "@/modules/ui";
 
 export class RootActions extends Actions {
+  ui?: Context<typeof uiModule>;
   group?: Context<typeof groupModule>;
   member?: Context<typeof memberModule>;
   analysis?: Context<typeof analysisModule>;
@@ -29,6 +31,7 @@ export class RootActions extends Actions {
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
+    this.ui = uiModule.context(store);
     this.group = groupModule.context(store);
     this.member = memberModule.context(store);
     this.analysis = analysisModule.context(store);
@@ -62,5 +65,6 @@ export class RootActions extends Actions {
     this.resetProject();
     this.models?.mutations.reset();
     this.group?.mutations.reset();
+    this.ui?.mutations.reset();
   }
 }
