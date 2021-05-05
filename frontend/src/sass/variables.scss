@@ -1,12 +1,17 @@
-// src/sass/variables.scss
-
 // Required for modifying core defaults
 // @import '~vuetify/src/styles/styles.sass';
 
 // Any component modifications must be imported
-@import "~vuetify/src/components/VTreeview/_variables.scss";
+
+//@import "~vuetify/src/components/VTreeview/_variables.scss";
 $treeview-node-height: 24px;
 $treeview-label-font-size: 10pt;
 
-@import "~vuetify/src/components/VTabs/_variables.scss";
+//@import "~vuetify/src/components/VTabs/_variables.scss";
+$tabs-item-padding: 0 8px !default;
 $tabs-bar-height: 36px;
+$tabs-item-min-width: 20px !default;
+
+//@import "~vuetify/src/components/VToolbar/_variables.scss";
+$toolbar-content-padding-y: 4px !default;
+$toolbar-content-padding-x: 8px !default;

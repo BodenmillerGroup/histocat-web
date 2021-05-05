@@ -59,7 +59,7 @@
       </v-btn-toggle>
       <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
     </v-toolbar>
-    <ImageViewer />
+    <ImageViewer ref="imageViewer" />
   </div>
 </template>
 
@@ -137,6 +137,10 @@ export default class ImageView extends Vue {
 
   exportImage(format: ExportFormat) {
     this.projectsContext.actions.exportChannelStackImage(format);
+  }
+
+  refresh() {
+    (this.$refs.imageViewer as any).refresh();
   }
 }
 </script>

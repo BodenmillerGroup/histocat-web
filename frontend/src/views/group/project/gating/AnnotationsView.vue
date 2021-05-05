@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <div>
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn
         @click.stop="
@@ -122,7 +122,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

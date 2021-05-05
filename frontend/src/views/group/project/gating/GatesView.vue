@@ -1,5 +1,5 @@
 <template>
-  <v-card tile>
+  <div>
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn @click="createGate" color="primary" elevation="1" small>Save gate</v-btn>
     </v-toolbar>
@@ -67,7 +67,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-card>
+  </div>
 </template>
 
 <script lang="ts">

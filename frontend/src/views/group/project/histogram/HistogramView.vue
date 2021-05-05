@@ -1,7 +1,12 @@
 <template>
-  <div id="settings-container">
-    <div class="overflow-y-auto channel-settings-view">
-      <BrushableHistogram v-for="channel in selectedChannels" :key="channel.name" :channel="channel" />
+  <div class="root">
+    <div>
+      <BrushableHistogram
+        v-for="channel in selectedChannels"
+        :key="channel.acquisition_id + channel.name + containerWidth"
+        :channel="channel"
+        :containerWidth="containerWidth"
+      />
     </div>
   </div>
 </template>
@@ -17,14 +22,22 @@ import BrushableHistogram from "@/components/BrushableHistogram.vue";
 export default class HistogramView extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
 
+  containerWidth = 340;
+
   get selectedChannels() {
     return this.projectsContext.getters.selectedChannels;
+  }
+
+  refresh(containerWidth: number) {
+    this.containerWidth = containerWidth;
   }
 }
 </script>
 
 <style scoped>
-.channel-settings-view {
-  height: calc(50vh - 82px);
+.root {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

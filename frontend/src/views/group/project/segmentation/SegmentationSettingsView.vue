@@ -1,147 +1,139 @@
 <template>
-  <v-card tile class="ma-1">
-    <v-card-title>Settings</v-card-title>
-    <v-card-text>
-      <v-form v-model="valid" ref="form">
-        <v-tabs v-model="tab">
-          <v-tab>General</v-tab>
-          <v-tab>Pre</v-tab>
-          <v-tab>Post</v-tab>
-          <v-tab-item>
-            <v-select
-              label="Model"
-              v-model="modelId"
-              :items="models"
-              item-value="id"
-              item-text="name"
-              :rules="modelRules"
-            />
-            <v-radio-group v-model="compartment" label="Compartment">
-              <v-radio label="Whole-Cell" value="whole-cell" />
-              <v-radio label="Nuclear" value="nuclear" />
-            </v-radio-group>
-            <v-text-field label="Dataset Name" hint="Resulting dataset name" v-model="datasetName" />
-            <v-text-field
-              label="Dataset Description"
-              hint="Resulting dataset description"
-              v-model="datasetDescription"
-            />
-          </v-tab-item>
-          <v-tab-item>
-            <v-switch v-model="threshold" label="Threshold" inset class="ml-1" />
-            <v-text-field
-              label="Percentile"
-              v-model.number="percentile"
-              type="number"
-              min="0"
-              :rules="percentileRules"
-              :disabled="!threshold"
-            />
-            <v-switch v-model="normalize" label="Normalize" inset class="ml-1" />
-            <v-text-field
-              label="Kernel Size"
-              v-model.number="kernelSize"
-              type="number"
-              min="0"
-              step="1"
-              :rules="kernelSizeRules"
-              :disabled="!normalize"
-            />
-          </v-tab-item>
-          <v-tab-item>
-            <v-text-field
-              label="Radius"
-              hint="Radius of disk used to search for maxima"
-              v-model.number="radius"
-              type="number"
-              min="0"
-              step="1"
-              :rules="radiusRules"
-            />
-            <v-text-field
-              label="Maxima Threshold"
-              hint="Threshold for the maxima prediction"
-              v-model.number="maximaThreshold"
-              type="number"
-              min="0"
-              :rules="maximaThresholdRules"
-            />
-            <v-text-field
-              label="Interior Threshold"
-              hint="Threshold for the interior prediction"
-              v-model.number="interiorThreshold"
-              type="number"
-              min="0"
-              :rules="interiorThresholdRules"
-            />
-            <v-text-field
-              label="Small Objects Threshold"
-              hint="Removes objects smaller than this size"
-              v-model.number="smallObjectsThreshold"
-              type="number"
-              min="0"
-              step="1"
-              :rules="smallObjectsThresholdRules"
-            />
-            <v-text-field
-              label="Fill Holes Threshold"
-              hint="Maximum size for holes within segmented objects to be filled"
-              v-model.number="fillHolesThreshold"
-              type="number"
-              min="0"
-              step="1"
-              :rules="fillHolesThresholdRules"
-            />
-            <v-select
-              :items="validModelNames"
-              v-model="interiorModel"
-              label="Interior Model"
-              hint="Semantic head to use to predict interior of each object"
-              :rules="interiorModelRules"
-            />
-            <v-select
-              :items="validModelNames"
-              v-model="maximaModel"
-              label="Maxima Model"
-              hint="Semantic head to use to predict maxima of each object"
-              :rules="maximaModelRules"
-            />
-            <v-text-field
-              label="Interior Model Smooth"
-              hint="Smoothing factor to apply to interior model predictions"
-              v-model.number="interiorModelSmooth"
-              type="number"
-              min="0"
-              step="1"
-              :rules="interiorModelSmoothRules"
-            />
-            <v-text-field
-              label="Maxima Model Smooth"
-              hint="Smoothing factor to apply to maxima model predictions"
-              v-model.number="maximaModelSmooth"
-              type="number"
-              min="0"
-              step="1"
-              :rules="maximaModelSmoothRules"
-            />
-            <v-text-field
-              label="Pixel Expansion"
-              hint="Optional number of pixels to expand segmentation labels"
-              v-model.number="pixelExpansion"
-              type="number"
-              min="0"
-              step="1"
-              clearable
-              :rules="pixelExpansionRules"
-            />
-          </v-tab-item>
-        </v-tabs>
-      </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn @click="submit" color="primary" block>Submit</v-btn>
-    </v-card-actions>
-  </v-card>
+  <div class="px-2 pt-1">
+    <h4>Settings</h4>
+    <v-form v-model="valid" ref="form">
+      <v-tabs v-model="tab">
+        <v-tab>General</v-tab>
+        <v-tab>Pre</v-tab>
+        <v-tab>Post</v-tab>
+        <v-tab-item>
+          <v-select
+            label="Model"
+            v-model="modelId"
+            :items="models"
+            item-value="id"
+            item-text="name"
+            :rules="modelRules"
+          />
+          <v-radio-group v-model="compartment" label="Compartment" dense>
+            <v-radio label="Whole-Cell" value="whole-cell" />
+            <v-radio label="Nuclear" value="nuclear" />
+          </v-radio-group>
+          <v-text-field label="Dataset Name" hint="Resulting dataset name" v-model="datasetName" />
+          <v-text-field label="Dataset Description" hint="Resulting dataset description" v-model="datasetDescription" />
+        </v-tab-item>
+        <v-tab-item>
+          <v-switch v-model="threshold" label="Threshold" inset class="ml-1" dense />
+          <v-text-field
+            label="Percentile"
+            v-model.number="percentile"
+            type="number"
+            min="0"
+            :rules="percentileRules"
+            :disabled="!threshold"
+          />
+          <v-switch v-model="normalize" label="Normalize" inset class="ml-1" dense />
+          <v-text-field
+            label="Kernel Size"
+            v-model.number="kernelSize"
+            type="number"
+            min="0"
+            step="1"
+            :rules="kernelSizeRules"
+            :disabled="!normalize"
+          />
+        </v-tab-item>
+        <v-tab-item>
+          <v-text-field
+            label="Radius"
+            hint="Radius of disk used to search for maxima"
+            v-model.number="radius"
+            type="number"
+            min="0"
+            step="1"
+            :rules="radiusRules"
+          />
+          <v-text-field
+            label="Maxima Threshold"
+            hint="Threshold for the maxima prediction"
+            v-model.number="maximaThreshold"
+            type="number"
+            min="0"
+            :rules="maximaThresholdRules"
+          />
+          <v-text-field
+            label="Interior Threshold"
+            hint="Threshold for the interior prediction"
+            v-model.number="interiorThreshold"
+            type="number"
+            min="0"
+            :rules="interiorThresholdRules"
+          />
+          <v-text-field
+            label="Small Objects Threshold"
+            hint="Removes objects smaller than this size"
+            v-model.number="smallObjectsThreshold"
+            type="number"
+            min="0"
+            step="1"
+            :rules="smallObjectsThresholdRules"
+          />
+          <v-text-field
+            label="Fill Holes Threshold"
+            hint="Maximum size for holes within segmented objects to be filled"
+            v-model.number="fillHolesThreshold"
+            type="number"
+            min="0"
+            step="1"
+            :rules="fillHolesThresholdRules"
+          />
+          <v-select
+            :items="validModelNames"
+            v-model="interiorModel"
+            label="Interior Model"
+            hint="Semantic head to use to predict interior of each object"
+            :rules="interiorModelRules"
+          />
+          <v-select
+            :items="validModelNames"
+            v-model="maximaModel"
+            label="Maxima Model"
+            hint="Semantic head to use to predict maxima of each object"
+            :rules="maximaModelRules"
+          />
+          <v-text-field
+            label="Interior Model Smooth"
+            hint="Smoothing factor to apply to interior model predictions"
+            v-model.number="interiorModelSmooth"
+            type="number"
+            min="0"
+            step="1"
+            :rules="interiorModelSmoothRules"
+          />
+          <v-text-field
+            label="Maxima Model Smooth"
+            hint="Smoothing factor to apply to maxima model predictions"
+            v-model.number="maximaModelSmooth"
+            type="number"
+            min="0"
+            step="1"
+            :rules="maximaModelSmoothRules"
+          />
+          <v-text-field
+            label="Pixel Expansion"
+            hint="Optional number of pixels to expand segmentation labels"
+            v-model.number="pixelExpansion"
+            type="number"
+            min="0"
+            step="1"
+            clearable
+            :rules="pixelExpansionRules"
+          />
+        </v-tab-item>
+      </v-tabs>
+    </v-form>
+    <v-btn @click="submit" color="primary" block>Submit</v-btn>
+  </div>
 </template>
 
 <script lang="ts">

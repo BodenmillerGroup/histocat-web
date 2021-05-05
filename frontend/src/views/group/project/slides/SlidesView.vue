@@ -1,6 +1,6 @@
 <template>
-  <div v-if="projectData">
-    <v-toolbar flat dense color="grey lighten-4">
+  <div v-if="projectData" class="root">
+    <v-toolbar dense color="grey lighten-4">
       <UploadButton label="Upload slide" :upload="upload" />
       <v-spacer />
       <v-tooltip bottom>
@@ -14,7 +14,7 @@
     </v-toolbar>
     <v-toolbar dense flat>
       <v-text-field v-model="search" label="Search" single-line hide-details clearable dense>
-        <template v-slot:append-outer>
+        <template v-slot:append>
           <v-icon dense>mdi-magnify</v-icon>
         </template>
       </v-text-field>
@@ -29,7 +29,6 @@
       activatable
       transition
       return-object
-      class="overflow-y-auto scroll-view"
     >
       <template v-slot:prepend="{ item }">
         <v-icon small>
@@ -189,7 +188,9 @@ export default class ImageWorkspaceView extends Vue {
 </script>
 
 <style scoped>
-.scroll-view {
-  height: calc(100vh - 144px);
+.root {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

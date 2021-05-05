@@ -1,5 +1,5 @@
 <template>
-  <div :id="plotId" :ref="plotId" class="plot" v-intersect="onIntersect" v-resize="onResize">
+  <div :id="plotId" :ref="plotId" class="plot" v-intersect="onIntersect">
     <!-- Plotly chart will be drawn inside this DIV -->
   </div>
 </template>
@@ -44,10 +44,6 @@ export default class ScatterPlot2d extends Vue {
     if (isIntersecting) {
       this.refresh();
     }
-  }
-
-  onResize() {
-    // this.refresh();
   }
 
   refresh() {
@@ -199,7 +195,6 @@ export default class ScatterPlot2d extends Vue {
 <style scoped>
 .plot {
   height: 100%;
-  position: absolute;
   width: 100%;
 }
 </style>

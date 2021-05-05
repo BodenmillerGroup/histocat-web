@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-full py-0">
+  <div class="root">
     <AcquisitionsView />
     <PanelView />
     <SegmentationSettingsView />
@@ -23,9 +23,12 @@ export default class SegmentationView extends Vue {}
 </script>
 
 <style scoped>
-.layout-full {
+.root {
   display: grid;
-  grid-template-columns: 30% 1fr 20%;
+  grid-template-columns: 30% 1fr 250px;
   grid-template-rows: auto;
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
 }
 </style>

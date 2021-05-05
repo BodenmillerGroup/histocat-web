@@ -11,10 +11,6 @@ export class UiMutations extends Mutations<UiState> {
     this.state.responsive = value;
   }
 
-  setDashboardShowDrawer(payload: boolean) {
-    this.state.dashboardShowDrawer = payload;
-  }
-
   setProcessing(payload: boolean) {
     this.state.processing = payload;
   }

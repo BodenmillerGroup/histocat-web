@@ -1,148 +1,39 @@
 <template>
-  <div style="width: 100%; height: 100%">
-    <v-navigation-drawer
-      mini-variant
-      mini-variant-width="60"
-      :clipped="$vuetify.breakpoint.lgAndUp"
-      v-model="showDrawer"
-      fixed
-      app
-      width="180"
-    >
-      <v-row no-gutters>
-        <v-col>
-          <v-list nav dense>
-            <v-list-item
-              v-if="activeGroupId && !activeProjectId"
-              :to="{ name: 'group-projects', params: { groupId: activeGroupId } }"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
-                  </template>
-                  <span>Projects</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Projects</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+  <div class="fill">
+    <v-app-bar app dense dark color="primary" clipped-left extension-height="0">
+      <v-toolbar-title @click.stop="$router.push({ name: 'groups' }, () => {})" class="toolbar-title">
+        {{ appName }}
+      </v-toolbar-title>
+      <v-spacer />
 
-            <v-list-item
-              v-if="activeGroupId && !activeProjectId"
-              :to="{ name: 'group-members', params: { groupId: activeGroupId } }"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-account-multiple-outline</v-icon>
-                  </template>
-                  <span>Members</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Members</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+      <v-btn
+        text
+        v-if="activeGroupId"
+        @click="$router.push({ name: 'group-projects', params: { groupId: activeGroupId } }, () => {})"
+      >
+        <v-icon left>mdi-view-dashboard-outline</v-icon>
+        Projects
+      </v-btn>
 
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('image')">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-magnify-scan</v-icon>
-                  </template>
-                  <span>Image</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Image</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+      <v-btn
+        text
+        v-if="activeGroupId && !activeProjectId"
+        :to="{ name: 'group-members', params: { groupId: activeGroupId } }"
+      >
+        <v-icon left>mdi-account-multiple-outline</v-icon>
+        Members
+      </v-btn>
 
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('segmentation')">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-scatter-plot-outline</v-icon>
-                  </template>
-                  <span>Segmentation</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Segmentation</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+      <v-btn text v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-users' }">
+        <v-icon left>mdi-account-outline</v-icon>
+        Users
+      </v-btn>
 
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('data')">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-graph-outline</v-icon>
-                  </template>
-                  <span>Data</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Data</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+      <v-btn text v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-models' }">
+        <v-icon left>mdi-brain</v-icon>
+        Models
+      </v-btn>
 
-            <v-divider v-if="activeGroupId && activeProjectId" />
-
-            <v-list-item
-              v-if="activeGroupId && activeProjectId"
-              @click="$router.push({ name: 'group-projects', params: { groupId: activeGroupId } }, () => {})"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
-                  </template>
-                  <span>Projects</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Projects</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-users' }">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-account-outline</v-icon>
-                  </template>
-                  <span>Users</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Users</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-models' }">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-brain</v-icon>
-                  </template>
-                  <span>Models</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Models</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-col>
-      </v-row>
-    </v-navigation-drawer>
-    <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
-      <v-app-bar-nav-icon @click.stop="switchShowDrawer" />
-      <v-toolbar-title @click.stop="$router.push({ name: 'groups' }, () => {})" class="toolbar-title">{{
-        appName
-      }}</v-toolbar-title>
       <v-spacer />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -181,7 +72,7 @@
         slot="extension"
       />
     </v-app-bar>
-    <v-main style="width: 100%; height: 100%">
+    <v-main class="fill">
       <router-view />
     </v-main>
   </div>
@@ -225,18 +116,6 @@ export default class Main extends Vue {
     routeGuardMain(to, from, next);
   }
 
-  get showDrawer() {
-    return this.uiContext.getters.dashboardShowDrawer;
-  }
-
-  set showDrawer(value: boolean) {
-    this.uiContext.mutations.setDashboardShowDrawer(value);
-  }
-
-  switchShowDrawer() {
-    this.uiContext.mutations.setDashboardShowDrawer(!this.uiContext.getters.dashboardShowDrawer);
-  }
-
   get isAdmin() {
     return this.mainContext.getters.isAdmin;
   }
@@ -276,6 +155,10 @@ export default class Main extends Vue {
 <style scoped>
 .toolbar-title {
   cursor: pointer;
+}
+.fill {
+  width: 100%;
+  height: 100%;
 }
 </style>
 

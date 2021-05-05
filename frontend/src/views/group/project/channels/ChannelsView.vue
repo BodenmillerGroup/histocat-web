@@ -1,40 +1,38 @@
 <template>
-  <div>
-    <v-toolbar dense flat>
-      <v-text-field v-model="search" label="Search" single-line hide-details clearable dense>
-        <template v-slot:append-outer>
-          <v-icon dense>mdi-magnify</v-icon>
+  <v-data-table
+    :headers="headers"
+    :items="items"
+    :search="search"
+    v-model="selected"
+    show-select
+    hide-default-footer
+    dense
+    disable-pagination
+    no-data-text="Please first select an acquisition"
+    class="root"
+  >
+    <template v-slot:top>
+      <v-text-field v-model="search" label="Search" clearable single-line dense>
+        <template v-slot:append>
+          <v-icon>mdi-magnify</v-icon>
         </template>
       </v-text-field>
-    </v-toolbar>
-    <v-data-table
-      :headers="headers"
-      :items="items"
-      :search="search"
-      v-model="selected"
-      show-select
-      hide-default-footer
-      class="overflow-y-auto"
-      dense
-      disable-pagination
-      no-data-text="Please first select an acquisition"
-    >
-      <template v-slot:item.customLabel="props">
-        <v-edit-dialog :return-value.sync="props.item.customLabel" @save="save(props.item)">
-          {{ props.item.customLabel }}
-          <template v-slot:input>
-            <v-text-field
-              v-model="props.item.customLabel"
-              :rules="[max25chars]"
-              label="Edit"
-              single-line
-              counter
-            ></v-text-field>
-          </template>
-        </v-edit-dialog>
-      </template>
-    </v-data-table>
-  </div>
+    </template>
+    <template v-slot:item.customLabel="props">
+      <v-edit-dialog :return-value.sync="props.item.customLabel" @save="save(props.item)">
+        {{ props.item.customLabel }}
+        <template v-slot:input>
+          <v-text-field
+            v-model="props.item.customLabel"
+            :rules="[max25chars]"
+            label="Edit"
+            single-line
+            counter
+          ></v-text-field>
+        </template>
+      </v-edit-dialog>
+    </template>
+  </v-data-table>
 </template>
 
 <script lang="ts">
@@ -55,14 +53,12 @@ export default class ChannelsView extends Vue {
       sortable: true,
       value: "name",
       align: "start",
-      width: "30%",
     },
     {
       text: "Label",
       sortable: true,
       value: "customLabel",
       align: "start",
-      width: "50%",
     },
   ];
 
@@ -127,18 +123,12 @@ export default class ChannelsView extends Vue {
 </script>
 
 <style scoped>
-table.v-table tbody td,
-table.v-table tbody th {
-  height: 35px;
-}
-
-.scroll-view {
-  height: calc(50vh - 92px);
-}
-</style>
-
-<style>
-.channels-table table {
-  table-layout: fixed;
+.root {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 8px;
+  margin-right: auto;
+  margin-left: auto;
 }
 </style>

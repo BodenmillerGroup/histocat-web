@@ -2,7 +2,7 @@
   <v-expansion-panel>
     <v-expansion-panel-header>Filter</v-expansion-panel-header>
     <v-expansion-panel-content class="ma-0 pa-0">
-      <v-switch v-model="apply" label="Apply Filter" inset hide-details class="ma-0 pa-0" />
+      <v-switch v-model="apply" label="Apply Filter" inset dense hide-details class="ma-0 pa-0" />
       <v-select :items="filterTypes" v-model="filterType" label="Filter Type" hide-details />
       <v-select :items="kernelSizes" v-model.number="kernelSize" label="Kernel Size" hide-details />
       <v-text-field

@@ -2,7 +2,7 @@
   <v-expansion-panel>
     <v-expansion-panel-header>Legend</v-expansion-panel-header>
     <v-expansion-panel-content class="ma-0 pa-0">
-      <v-switch v-model="apply" label="Show Legend" hide-details inset class="ma-0 pa-0"></v-switch>
+      <v-switch v-model="apply" label="Show Legend" dense hide-details inset class="ma-0 pa-0"/>
       <v-text-field
         type="number"
         label="Font Size (pt)"
@@ -11,8 +11,8 @@
         min="0"
         step="1"
         hide-details
-      ></v-text-field>
-      <v-switch v-model="showIntensity" label="Show Intensity" hide-details inset></v-switch>
+      />
+      <v-switch v-model="showIntensity" label="Show Intensity" dense hide-details inset/>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>

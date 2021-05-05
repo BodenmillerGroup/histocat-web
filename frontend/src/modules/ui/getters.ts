@@ -10,10 +10,6 @@ export class UiGetters extends Getters<UiState> {
     return this.state.responsive;
   }
 
-  get dashboardShowDrawer() {
-    return this.state.dashboardShowDrawer;
-  }
-
   get processing() {
     return this.state.processing;
   }

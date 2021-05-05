@@ -1,7 +1,7 @@
 <template>
-  <div id="canvasContainer">
-    <canvas id="canvas2d" ref="canvas2d"></canvas>
-    <canvas id="canvasWebGl" ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
+  <div id="canvasContainer" ref="canvasContainer" v-intersect="onIntersect" v-resize="onResize">
+    <canvas id="canvas2d" ref="canvas2d" />
+    <canvas id="canvasWebGl" ref="canvasWebGl" />
   </div>
 </template>
 
@@ -25,16 +25,9 @@ export default class ImageViewer extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
 
-  private readonly canvas2d = "canvas2d";
-  private readonly canvasWebGl = "canvasWebGl";
-
   points: ICell[] = [];
   scatterplot: any;
   selection: any[] = [];
-
-  get dashboardShowDrawer() {
-    return this.uiContext.getters.dashboardShowDrawer;
-  }
 
   get applyMask() {
     return this.uiContext.getters.maskMode === "mask";
@@ -85,8 +78,8 @@ export default class ImageViewer extends Vue {
 
   onIntersect(entries, observer, isIntersecting) {
     if (isIntersecting) {
-      const canvas = this.$refs.canvasWebGl as Element;
-      const { width, height } = canvas.getBoundingClientRect();
+      const canvasContainer = this.$refs.canvasContainer as Element;
+      const { width, height } = canvasContainer.getBoundingClientRect();
       this.scatterplot.set({ width, height });
     }
   }
@@ -104,8 +97,8 @@ export default class ImageViewer extends Vue {
     if (!this.scatterplot) {
       return;
     }
-    const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
+    const canvasContainer = this.$refs.canvasContainer as Element;
+    const { width, height } = canvasContainer.getBoundingClientRect();
     this.scatterplot.set({ width, height });
     this.scatterplot.refresh();
   }
@@ -286,11 +279,12 @@ export default class ImageViewer extends Vue {
 #canvasContainer {
   height: 100%;
   width: 100%;
+  position: absolute;
 }
 #canvasWebGl {
   height: 100%;
-  position: absolute;
   width: 100%;
+  position: absolute;
 }
 #canvas2d {
   pointer-events: none;

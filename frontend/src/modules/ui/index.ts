@@ -350,7 +350,6 @@ export class UiState {
     height: null,
   };
 
-  dashboardShowDrawer = true;
   processing = false;
   processingProgress = 0;
 

@@ -1,57 +1,16 @@
 import { ComponentContainer } from "golden-layout";
 import Vue from "vue";
 import ImageView from "./ImageView.vue";
+import { LayoutComponent } from "@/components/LayoutComponent";
 
-export class ImageComponent {
+export class ImageComponent extends LayoutComponent {
   static readonly typeName = ImageComponent.name;
 
-  private readonly _element: any;
-
-  private readonly _containerClickListener = () => this.handleClickFocusEvent();
-  private readonly _containerFocusinListener = () => this.handleClickFocusEvent();
-  private readonly _beforeComponentReleaseEventListener = () => this.handleBeforeComponentReleaseEvent();
-  private readonly _showEventListener = () => this.handleShowEvent();
-  private readonly _resizeEventListener = () => this.handleResizeEvent();
-
-  constructor(private _container: ComponentContainer, store: any, parent) {
-    const ComponentClass = Vue.extend(ImageView);
-    this._element = new ComponentClass({ store: store, parent: parent });
-    this._element.$mount();
-    this._container.element.appendChild(this._element.$el);
-
-    this._container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
-    this._container.addEventListener("beforeComponentRelease", this._beforeComponentReleaseEventListener);
-    this._container.addEventListener("show", this._showEventListener);
-    this._container.addEventListener("resize", this._resizeEventListener);
-
-    this._container.element.addEventListener("click", this._containerClickListener);
-    this._container.element.addEventListener("focusin", this._containerFocusinListener);
+  constructor(_container: ComponentContainer, store: any, parent) {
+    super(_container, Vue.extend(ImageView), store, parent);
   }
 
-  private handleContainerStateRequestEvent(): string | undefined {
-    return undefined;
-  }
-
-  private handleBeforeComponentReleaseEvent(): void {
-    console.log("handleBeforeComponentReleaseEvent");
-    this._element.$destroy();
-    this._container.element.removeChild(this._element.$el);
-    this._container.removeEventListener("show", this._showEventListener);
-    this._container.removeEventListener("resize", this._resizeEventListener);
-    this._container.removeEventListener("beforeComponentRelease", this._beforeComponentReleaseEventListener);
-    this._container.element.removeEventListener("click", this._containerClickListener);
-    this._container.element.removeEventListener("focusin", this._containerFocusinListener);
-  }
-
-  private handleShowEvent(): void {
-    console.log("handleShowEvent");
-  }
-
-  private handleResizeEvent(): void {
-    console.log("handleResizeEvent");
-  }
-
-  private handleClickFocusEvent(): void {
-    this._container.focus();
+  protected handleResizeEvent(): void {
+    this._component.refresh();
   }
 }

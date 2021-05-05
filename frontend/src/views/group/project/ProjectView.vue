@@ -1,6 +1,6 @@
 <template>
   <LoadingView v-if="!projectData" text="Loading..." />
-  <section v-else id="layoutContainer" ref="layoutContainer"></section>
+  <section v-else id="layoutContainer" ref="layoutContainer" v-resize="handleWindowResizeEvent" />
 </template>
 
 <script lang="ts">
@@ -43,10 +43,8 @@ export default class ProjectView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
-  _goldenLayout = new GoldenLayout(this.$refs.layoutContainer as HTMLElement);
+  _goldenLayout?: GoldenLayout;
   _containerMap = new Map();
-
-  private _windowResizeListener = () => this.handleWindowResizeEvent();
 
   get projectData() {
     return this.projectsContext.getters.projectData;
@@ -54,6 +52,10 @@ export default class ProjectView extends Vue {
 
   get activeLayout() {
     return this.uiContext.getters.activeLayout;
+  }
+
+  get responsive() {
+    return this.uiContext.getters.responsive;
   }
 
   private createComponent(container: ComponentContainer, config: ResolvedComponentItemConfig) {
@@ -103,11 +105,10 @@ export default class ProjectView extends Vue {
 
   private handleWindowResizeEvent() {
     // handling of resize event is required if GoldenLayout does not use body element
-    const bodyWidth = document.body.offsetWidth;
-    const controlsWidth = 60;
-    const bodyHeight = document.body.offsetHeight;
-    const controlsHeight = 60;
-    this._goldenLayout.setSize(bodyWidth - controlsWidth, bodyHeight - controlsHeight);
+    if (this._goldenLayout) {
+      const appBarHeight = 48;
+      this._goldenLayout.setSize(this.responsive.width!, this.responsive.height! - appBarHeight);
+    }
   }
 
   async mounted() {
@@ -134,8 +135,6 @@ export default class ProjectView extends Vue {
     };
 
     this._goldenLayout.loadLayout(this.activeLayout.config);
-
-    globalThis.addEventListener("resize", this._windowResizeListener, { passive: true });
   }
 
   beforeDestroy() {
