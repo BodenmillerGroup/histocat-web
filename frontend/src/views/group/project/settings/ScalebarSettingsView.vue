@@ -2,7 +2,7 @@
   <v-expansion-panel>
     <v-expansion-panel-header>Scalebar</v-expansion-panel-header>
     <v-expansion-panel-content class="ma-0 pa-0">
-      <v-switch v-model="apply" label="Show Scalebar" dense hide-details inset class="ma-0 pa-0"/>
+      <v-switch v-model="apply" label="Show Scalebar" dense hide-details inset class="ma-0 pa-0" />
       <v-text-field
         type="number"
         :rules="[required]"

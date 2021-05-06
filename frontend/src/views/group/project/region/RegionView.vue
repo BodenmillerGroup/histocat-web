@@ -7,7 +7,7 @@
     dense
     disable-pagination
     no-data-text="Please select a region"
-    class="root"
+    class="region-view"
   >
     <template v-slot:top>
       <v-text-field v-model="search" label="Search" clearable single-line dense>
@@ -65,7 +65,7 @@ export default class RegionsView extends Vue {
 </script>
 
 <style scoped>
-.root {
+.region-view {
   width: 100%;
   height: 100%;
   overflow-y: auto;

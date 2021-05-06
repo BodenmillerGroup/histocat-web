@@ -9,7 +9,7 @@
     dense
     disable-pagination
     no-data-text="Please first select an acquisition"
-    class="root"
+    class="channels-view"
   >
     <template v-slot:top>
       <v-text-field v-model="search" label="Search" clearable single-line dense>
@@ -123,7 +123,7 @@ export default class ChannelsView extends Vue {
 </script>
 
 <style scoped>
-.root {
+.channels-view {
   width: 100%;
   height: 100%;
   overflow-y: auto;

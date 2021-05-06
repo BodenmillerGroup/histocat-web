@@ -1,5 +1,5 @@
 <template>
-  <div :id="plotId" :ref="plotId" class="plot" v-intersect="onIntersect">
+  <div :id="plotId" :ref="plotId" class="scatter-plot-2d" v-intersect="onIntersect">
     <!-- Plotly chart will be drawn inside this DIV -->
   </div>
 </template>
@@ -47,12 +47,18 @@ export default class ScatterPlot2d extends Vue {
   }
 
   refresh() {
-    const plotElement = this.$refs[this.plotId] as Element;
-    const { width, height } = plotElement.getBoundingClientRect();
-    Plotly.relayout(this.plotId, {
-      width,
-      height,
-    });
+    try {
+      const plotElement = this.$refs[this.plotId] as Element;
+      if (plotElement) {
+        const { width, height } = plotElement.getBoundingClientRect();
+        Plotly.relayout(this.plotId, {
+          width,
+          height,
+        });
+      }
+    } catch {
+      // TODO: find more elegant way to avoid exception during component dragging
+    }
   }
 
   private refreshOnDataChange(data: Readonly<Map<number, ICell[]>>) {
@@ -150,33 +156,37 @@ export default class ScatterPlot2d extends Vue {
       responsive: true,
     };
 
-    Plotly.react(this.plotId, initData, initLayout, initConfig);
+    try {
+      Plotly.react(this.plotId, initData, initLayout, initConfig);
 
-    const plot = this.$refs[this.plotId] as any;
-    plot.on("plotly_selected", (eventData) => {
-      if (eventData) {
-        if (eventData.points.length > 0) {
-          const selectedCells: string[] = [];
-          eventData.points.forEach((point, i) => {
-            const cellPoint = point.customdata as ICell;
-            selectedCells.push(cellPoint.cellId);
-          });
-          this.cellsContext.mutations.setSelectedCellIds(selectedCells);
-          if (this.applyMask) {
-            this.projectsContext.actions.getChannelStackImage();
+      const plot = this.$refs[this.plotId] as any;
+      plot.on("plotly_selected", (eventData) => {
+        if (eventData) {
+          if (eventData.points.length > 0) {
+            const selectedCells: string[] = [];
+            eventData.points.forEach((point, i) => {
+              const cellPoint = point.customdata as ICell;
+              selectedCells.push(cellPoint.cellId);
+            });
+            this.cellsContext.mutations.setSelectedCellIds(selectedCells);
+            if (this.applyMask) {
+              this.projectsContext.actions.getChannelStackImage();
+            }
           }
         }
-      }
-    });
+      });
 
-    plot.on("plotly_deselect", () => {
-      this.cellsContext.mutations.setSelectedCellIds([]);
-      if (this.applyMask) {
-        this.projectsContext.actions.getChannelStackImage();
-      }
-    });
+      plot.on("plotly_deselect", () => {
+        this.cellsContext.mutations.setSelectedCellIds([]);
+        if (this.applyMask) {
+          this.projectsContext.actions.getChannelStackImage();
+        }
+      });
 
-    this.refreshOnDataChange(this.data);
+      this.refreshOnDataChange(this.data);
+    } catch {
+      // TODO: find more elegant way to avoid exception during layout refresh
+    }
   }
 
   mounted() {
@@ -193,8 +203,9 @@ export default class ScatterPlot2d extends Vue {
 </script>
 
 <style scoped>
-.plot {
+.scatter-plot-2d {
   height: 100%;
   width: 100%;
+  position: relative;
 }
 </style>

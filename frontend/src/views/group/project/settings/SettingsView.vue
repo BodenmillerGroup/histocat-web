@@ -1,9 +1,11 @@
 <template>
-  <v-expansion-panels v-model="panel" multiple accordion>
-    <LegendSettingsView></LegendSettingsView>
-    <ScalebarSettingsView></ScalebarSettingsView>
-    <FilterSettingsView></FilterSettingsView>
-  </v-expansion-panels>
+  <div class="settings-view">
+    <v-expansion-panels v-model="panel" multiple accordion>
+      <LegendSettingsView></LegendSettingsView>
+      <ScalebarSettingsView></ScalebarSettingsView>
+      <FilterSettingsView></FilterSettingsView>
+    </v-expansion-panels>
+  </div>
 </template>
 
 <script lang="ts">
@@ -19,3 +21,11 @@ export default class GeneralSettingsView extends Vue {
   panel = [];
 }
 </script>
+
+<style scoped>
+.settings-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+</style>

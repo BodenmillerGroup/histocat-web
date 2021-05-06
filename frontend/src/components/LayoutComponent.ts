@@ -28,7 +28,6 @@ export abstract class LayoutComponent {
   }
 
   protected handleBeforeComponentReleaseEvent(): void {
-    console.log("handleBeforeComponentReleaseEvent");
     this._component.$destroy();
     this._container.element.removeChild(this._component.$el);
     this._container.removeEventListener("show", this._showEventListener);
@@ -38,13 +37,9 @@ export abstract class LayoutComponent {
     this._container.element.removeEventListener("focusin", this._containerFocusinListener);
   }
 
-  protected handleShowEvent(): void {
-    console.log("handleShowEvent");
-  }
+  protected handleShowEvent(): void {}
 
-  protected handleResizeEvent(): void {
-    console.log("handleResizeEvent");
-  }
+  protected handleResizeEvent(): void {}
 
   protected handleClickFocusEvent(): void {
     this._container.focus();

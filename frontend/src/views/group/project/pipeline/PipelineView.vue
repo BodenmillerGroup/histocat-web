@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <v-banner v-if="!dataset" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
+  <div v-else class="root">
     <v-toolbar dense flat>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
@@ -160,7 +161,6 @@
 <script lang="ts">
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
-import { settingsModule } from "@/modules/settings";
 import { Component, Vue } from "vue-property-decorator";
 import { mainModule } from "@/modules/main";
 import { pipelinesModule } from "@/modules/pipelines";
@@ -194,7 +194,6 @@ import LouvainStepEditor from "@/views/group/project/pipeline/steps/LouvainStepE
 export default class PipelineView extends Vue {
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly settingsContext = settingsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly pipelinesContext = pipelinesModule.context(this.$store);
 
@@ -405,3 +404,11 @@ export default class PipelineView extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.root {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+</style>

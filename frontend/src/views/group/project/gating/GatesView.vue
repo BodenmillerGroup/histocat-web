@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="gates-view">
     <v-toolbar flat dense color="grey lighten-4">
-      <v-btn @click="createGate" color="primary" elevation="1" small>Save gate</v-btn>
+      <v-btn @click="createGate" color="primary" elevation="1" x-small tile>Save gate</v-btn>
     </v-toolbar>
-    <v-list dense class="overflow-y-auto scroll-view pa-0">
+    <v-list dense class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>
@@ -137,7 +137,9 @@ export default class GatesView extends Vue {
 </script>
 
 <style scoped>
-.scroll-view {
-  height: calc(33vh - 100px);
+.gates-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

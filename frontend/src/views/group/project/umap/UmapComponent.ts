@@ -9,4 +9,8 @@ export class UmapComponent extends LayoutComponent {
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(UmapView), store, parent);
   }
+
+  protected handleResizeEvent(): void {
+    this._component.refresh();
+  }
 }

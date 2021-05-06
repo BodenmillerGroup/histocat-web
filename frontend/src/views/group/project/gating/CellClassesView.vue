@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="cell-classes-view">
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn
         @click.stop="
@@ -10,11 +10,12 @@
         color="primary"
         elevation="1"
         x-small
+        tile
         >Add cell class</v-btn
       >
-      <v-btn @click="resetCellClasses" color="primary" elevation="1" x-small class="ml-2">Reset</v-btn>
+      <v-btn @click="resetCellClasses" color="primary" elevation="1" x-small tile class="ml-2">Reset</v-btn>
     </v-toolbar>
-    <v-list dense class="overflow-y-auto scroll-view pa-0">
+    <v-list dense class="pa-0">
       <v-list-item v-for="item in cellClasses" :key="item[0]">
         <v-list-item-avatar size="16" :color="item[1]" />
         <v-list-item-content>
@@ -135,7 +136,9 @@ export default class CellClassesView extends Vue {
 </script>
 
 <style scoped>
-.scroll-view {
-  height: calc(33vh - 30px);
+.cell-classes-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

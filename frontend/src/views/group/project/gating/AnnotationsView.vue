@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="annotations-view">
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn
         @click.stop="
@@ -11,6 +11,7 @@
         color="primary"
         elevation="1"
         x-small
+        tile
         >Add annotation</v-btn
       >
       <v-btn
@@ -19,11 +20,12 @@
         color="primary"
         elevation="1"
         x-small
+        tile
         class="ml-2"
         >Predict</v-btn
       >
     </v-toolbar>
-    <v-list dense class="overflow-y-auto scroll-view pa-0">
+    <v-list dense class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="(item, index) in annotations" :key="index">
           <v-list-item-avatar size="16" :color="cellClasses[item.cellClass]" />
@@ -219,7 +221,9 @@ export default class AnnotationsView extends Vue {
 </script>
 
 <style scoped>
-.scroll-view {
-  height: calc(33vh - 100px);
+.annotations-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

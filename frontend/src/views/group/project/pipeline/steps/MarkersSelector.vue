@@ -1,14 +1,5 @@
 <template>
-  <v-card tile>
-    <v-card-title>
-      Markers
-      <v-spacer />
-      <v-text-field v-model="search" label="Search" clearable single-line hide-details>
-        <template v-slot:append>
-          <v-icon>mdi-magnify</v-icon>
-        </template>
-      </v-text-field>
-    </v-card-title>
+  <div class="overflow-y-auto scroll-view px-2">
     <v-data-table
       :headers="headers"
       :items="channels"
@@ -17,12 +8,19 @@
       item-key="name"
       show-select
       hide-default-footer
-      class="overflow-y-auto scroll-view"
       dense
       disable-pagination
       no-data-text="Please first select an acquisition"
-    />
-  </v-card>
+    >
+      <template v-slot:top>
+        <v-text-field v-model="search" label="Search" clearable single-line dense>
+          <template v-slot:append>
+            <v-icon>mdi-magnify</v-icon>
+          </template>
+        </v-text-field>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script lang="ts">

@@ -9,4 +9,8 @@ export class TsneComponent extends LayoutComponent {
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(TsneView), store, parent);
   }
+
+  protected handleResizeEvent(): void {
+    this._component.refresh();
+  }
 }

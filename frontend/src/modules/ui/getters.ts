@@ -2,6 +2,10 @@ import { Getters } from "vuex-smart-module";
 import { UiState } from ".";
 
 export class UiGetters extends Getters<UiState> {
+  get layouts() {
+    return this.state.layouts;
+  }
+
   get activeLayout() {
     return this.state.activeLayout;
   }

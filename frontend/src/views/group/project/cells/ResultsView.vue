@@ -1,6 +1,6 @@
 <template>
   <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
-  <div v-else>
+  <div v-else class="results-view">
     <v-toolbar flat dense color="grey lighten-4">
       <v-select
         :items="heatmaps"
@@ -25,7 +25,7 @@
         <span>Refresh results</span>
       </v-tooltip>
     </v-toolbar>
-    <v-list dense two-line class="overflow-y-auto scroll-view pa-0">
+    <v-list dense two-line class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>
@@ -270,7 +270,9 @@ export default class ResultsView extends Vue {
 </script>
 
 <style scoped>
-.scroll-view {
-  height: calc(50vh - 100px);
+.results-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 </style>

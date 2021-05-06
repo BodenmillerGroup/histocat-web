@@ -12,6 +12,8 @@ export class HistogramComponent extends LayoutComponent {
 
   protected handleResizeEvent(): void {
     const containerWidth = this._container.width;
-    this._component.refresh(containerWidth);
+    if (containerWidth && containerWidth > 0) {
+      this._component.refresh(containerWidth);
+    }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="root">
+  <div class="segmentation-view">
     <AcquisitionsView />
     <PanelView />
     <SegmentationSettingsView />
@@ -23,7 +23,7 @@ export default class SegmentationView extends Vue {}
 </script>
 
 <style scoped>
-.root {
+.segmentation-view {
   display: grid;
   grid-template-columns: 30% 1fr 250px;
   grid-template-rows: auto;

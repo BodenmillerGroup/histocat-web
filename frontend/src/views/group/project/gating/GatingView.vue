@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="gating-view">
     <GatesView />
     <AnnotationsView />
     <CellClassesView />
@@ -17,3 +17,13 @@ import AnnotationsView from "@/views/group/project/gating/AnnotationsView.vue";
 })
 export default class GatingView extends Vue {}
 </script>
+
+<style scoped>
+.gating-view {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 33.33% 33.33% 33.33%;
+  width: 100%;
+  height: 100%;
+}
+</style>

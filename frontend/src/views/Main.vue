@@ -4,6 +4,7 @@
       <v-toolbar-title @click.stop="$router.push({ name: 'groups' }, () => {})" class="toolbar-title">
         {{ appName }}
       </v-toolbar-title>
+
       <v-spacer />
 
       <v-btn
@@ -11,7 +12,7 @@
         v-if="activeGroupId"
         @click="$router.push({ name: 'group-projects', params: { groupId: activeGroupId } }, () => {})"
       >
-        <v-icon left>mdi-view-dashboard-outline</v-icon>
+        <v-icon left>mdi-alpha-p-box-outline</v-icon>
         Projects
       </v-btn>
 
@@ -35,6 +36,41 @@
       </v-btn>
 
       <v-spacer />
+
+      <v-menu offset-y tile open-on-hover v-if="activeGroupId && activeProjectId">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" text small>
+            <v-icon left small>mdi-view-dashboard-outline</v-icon>
+            Layout
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item v-for="layout in layouts" :key="layout.name" @click="loadLayout(layout.name)">
+            <v-list-item-title>{{ layout.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-tooltip bottom v-if="activeGroupId && activeProjectId">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon @click="saveLayout">
+            <v-icon>mdi-shape-square-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Save layout</span>
+      </v-tooltip>
+
+      <v-tooltip bottom v-if="activeGroupId && activeProjectId">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon @click="resetLayouts">
+            <v-icon>mdi-square-off-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Reset layouts</span>
+      </v-tooltip>
+
+      <v-divider vertical />
+
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" icon href="https://plankter.gitbook.io/histocat" target="_blank">
@@ -138,6 +174,25 @@ export default class Main extends Vue {
 
   get processingProgress() {
     return this.uiContext.getters.processingProgress;
+  }
+
+  get layouts() {
+    return this.uiContext.getters.layouts;
+  }
+
+  loadLayout(name: string) {
+    this.uiContext.mutations.loadLayout(name);
+  }
+
+  saveLayout() {
+    const name = self.prompt("Please enter layout name:");
+    if (name) {
+      this.uiContext.mutations.addLayout(name);
+    }
+  }
+
+  resetLayouts(name: string) {
+    this.uiContext.mutations.resetLayouts();
   }
 
   mounted() {

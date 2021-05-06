@@ -1,5 +1,5 @@
 <template>
-  <div v-intersect="onIntersect">
+  <div class="tiles-view" v-intersect="onIntersect">
     <v-toolbar dense flat>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
@@ -105,3 +105,11 @@ export default class TilesView extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.tiles-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+</style>

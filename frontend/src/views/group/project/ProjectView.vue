@@ -135,14 +135,13 @@ export default class ProjectView extends Vue {
     };
 
     this._goldenLayout.loadLayout(this.activeLayout.config);
+    this.uiContext.mutations.setGoldenLayout(this._goldenLayout);
   }
 
   beforeDestroy() {
     WebSocketManager.close();
-    // if (process.env.VUE_APP_ENV !== "development") {
-    //   this.$store.dispatch("reset");
-    // }
     this.$store.dispatch("resetProject");
+    this.uiContext.mutations.setGoldenLayout(null);
   }
 }
 </script>

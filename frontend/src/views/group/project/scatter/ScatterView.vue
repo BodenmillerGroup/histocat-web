@@ -34,6 +34,7 @@
       v-if="activeResult"
       :ignore-selection="true"
       plot-id="scatterPlot"
+      ref="scatterPlot"
       :data="plotData"
       mapping="scatterplot"
       title="Scatter Plot"
@@ -107,6 +108,12 @@ export default class ScatterView extends Vue {
         markerX: this.markerX,
         markerY: this.markerY,
       });
+    }
+  }
+
+  refresh() {
+    if (this.$refs.scatterPlot) {
+      (this.$refs.scatterPlot as any).refresh();
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="presets-view">
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn @click="createPreset" color="primary" elevation="1" small>Create preset</v-btn>
       <v-spacer></v-spacer>
@@ -12,7 +12,7 @@
         <span>Refresh presets</span>
       </v-tooltip>
     </v-toolbar>
-    <v-list dense class="overflow-y-auto scroll-view pa-0">
+    <v-list dense class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>
@@ -110,3 +110,11 @@ export default class PresetsView extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.presets-view {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+</style>

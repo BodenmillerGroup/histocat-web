@@ -3,6 +3,7 @@
     <ScatterPlot2d
       v-if="activeResult"
       plot-id="tsnePlot"
+      ref="tsnePlot"
       :ignore-selection="false"
       :data="plotData"
       mapping="tsne"
@@ -31,6 +32,12 @@ export default class TsneView extends Vue {
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;
+  }
+
+  refresh() {
+    if (this.$refs.tsnePlot) {
+      (this.$refs.tsnePlot as any).refresh();
+    }
   }
 }
 </script>

@@ -3,6 +3,7 @@
     <ScatterPlot2d
       v-if="activeResult"
       plot-id="pcaPlot"
+      ref="pcaPlot"
       :ignore-selection="false"
       :data="plotData"
       mapping="pca"
@@ -31,6 +32,12 @@ export default class PcaView extends Vue {
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;
+  }
+
+  refresh() {
+    if (this.$refs.pcaPlot) {
+      (this.$refs.pcaPlot as any).refresh();
+    }
   }
 }
 </script>

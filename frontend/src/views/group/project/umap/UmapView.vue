@@ -3,6 +3,7 @@
     <ScatterPlot2d
       v-if="activeResult"
       plot-id="umapPlot"
+      ref="umapPlot"
       :ignore-selection="false"
       :data="plotData"
       mapping="umap"
@@ -31,6 +32,12 @@ export default class UmapView extends Vue {
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;
+  }
+
+  refresh() {
+    if (this.$refs.umapPlot) {
+      (this.$refs.umapPlot as any).refresh();
+    }
   }
 }
 </script>

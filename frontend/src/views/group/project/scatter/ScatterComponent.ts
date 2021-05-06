@@ -9,4 +9,8 @@ export class ScatterComponent extends LayoutComponent {
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(ScatterView), store, parent);
   }
+
+  protected handleResizeEvent(): void {
+    this._component.refresh();
+  }
 }
