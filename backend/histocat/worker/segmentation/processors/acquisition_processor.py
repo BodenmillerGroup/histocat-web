@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import tifffile
-from deepcell.applications import Mesmer, NuclearSegmentation, CytoplasmSegmentation
+from deepcell.applications import CytoplasmSegmentation, Mesmer, NuclearSegmentation
 from deepcell.utils.plot_utils import create_rgb_image, make_outline_overlay
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage import io, measure
@@ -26,9 +26,7 @@ def process_acquisition(
     parser = OmeTiffParser(acquisition.location)
     acquisition_data = parser.get_acquisition_data()
 
-    IA_stack = np.zeros(
-        (acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 2)
-    )
+    IA_stack = np.zeros((acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 2))
 
     # sum up nuclear markers
     for c in params.nuclei_channels:

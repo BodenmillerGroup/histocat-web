@@ -76,7 +76,7 @@ def get_centroids(
         "objectNumbers": adata.obs["ObjectNumber"].tolist(),
         "x": adata.obs["CentroidX"].round(2).tolist(),
         "y": adata.obs["CentroidY"].round(2).tolist(),
-        "colors": colors
+        "colors": colors,
     }
     return ORJSONResponse(output)
 

@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_sequential_colors():
-    return cm.ScalarMappable(None, 'jet')
+    return cm.ScalarMappable(None, "jet")
 
 
 def get_qualitative_colors():
-    return cm.ScalarMappable(None, 'Accent')
+    return cm.ScalarMappable(None, "Accent")
 
 
 def apply_filter(image: np.ndarray, filter: FilterDto):
@@ -68,7 +68,15 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
 
         colors = heatmap_dict.values()
         # alpha = 0.3 if mask_settings.gated else 1
-        img = label2rgb(label=mask, image=image, colors=colors, alpha=mask_settings.opacity, bg_label=0, image_alpha=1, kind="overlay")
+        img = label2rgb(
+            label=mask,
+            image=image,
+            colors=colors,
+            alpha=mask_settings.opacity,
+            bg_label=0,
+            image_alpha=1,
+            kind="overlay",
+        )
         return img
     else:
         boundary = find_boundaries(mask, connectivity=1, mode="inner")

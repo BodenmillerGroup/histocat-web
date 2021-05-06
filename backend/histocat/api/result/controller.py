@@ -15,6 +15,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
 from histocat.core.constants import ANNDATA_FILE_EXTENSION
+from histocat.core.image import get_qualitative_colors, get_sequential_colors
 from histocat.core.member.models import MemberModel
 from histocat.core.result import service
 from histocat.core.result.dto import (
@@ -25,7 +26,6 @@ from histocat.core.result.dto import (
 )
 from histocat.core.user.models import UserModel
 from histocat.core.utils import stream_bytes
-from histocat.core.image import get_sequential_colors, get_qualitative_colors
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -152,11 +152,7 @@ def get_colors_data(
         colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
 
     if colors is not None:
-        output["colors"] = {
-            "type": colors_type,
-            "name": colors_name,
-            "data": colors
-        }
+        output["colors"] = {"type": colors_type, "name": colors_name, "data": colors}
 
     return ORJSONResponse(output)
 

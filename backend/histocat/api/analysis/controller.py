@@ -9,20 +9,24 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage.measure import regionprops
-from sqlalchemy.orm import Session
-from starlette.requests import Request
 from sklearn.ensemble import RandomForestClassifier
+from sqlalchemy.orm import Session
 from starlette import status
+from starlette.requests import Request
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member
 from histocat.core.acquisition import service as acquisition_service
+from histocat.core.analysis.dto import (
+    ClassifyCellsDto,
+    ClassifyCellsSubmissionDto,
+    RegionChannelStatsDto,
+    RegionStatsSubmissionDto,
+)
 from histocat.core.constants import ANNDATA_FILE_EXTENSION
 from histocat.core.dataset import service as dataset_service
-from histocat.core.result import service as result_service
-from histocat.core.analysis.dto import RegionChannelStatsDto, RegionStatsSubmissionDto, ClassifyCellsSubmissionDto, \
-    ClassifyCellsDto
 from histocat.core.member.models import MemberModel
+from histocat.core.result import service as result_service
 
 logger = logging.getLogger(__name__)
 
@@ -139,11 +143,7 @@ async def classify_cells(
     annotations = []
     for cell_class in result_df["cellClass"].unique():
         cellIds = result_df[result_df["cellClass"] == cell_class].index.to_list()
-        annotation = {
-            "cellClass": cell_class,
-            "visible": True,
-            "cellIds": cellIds
-        }
+        annotation = {"cellClass": cell_class, "visible": True, "cellIds": cellIds}
         annotations.append(annotation)
 
     content = {

@@ -26,21 +26,22 @@ from histocat.core.acquisition.dto import (
     ChannelUpdateDto,
 )
 from histocat.core.constants import ANNDATA_FILE_EXTENSION
+from histocat.core.dataset import service as dataset_service
 from histocat.core.image import (
     apply_filter,
     colorize,
     draw_mask,
     draw_overlay,
     draw_scalebar,
+    get_qualitative_colors,
+    get_sequential_colors,
     scale_image,
 )
 from histocat.core.member.models import MemberModel
 from histocat.core.project.dto import ProjectFullDto
 from histocat.core.redis_manager import redis_manager
 from histocat.core.result import service as result_service
-from histocat.core.dataset import service as dataset_service
 from histocat.core.utils import stream_bytes
-from histocat.core.image import get_sequential_colors, get_qualitative_colors
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -160,17 +161,13 @@ async def download_channel_stack(
                 heatmap_values = adata.X[:, adata.var.index == params.mask.colorsName][:, 0]
                 mappable = get_sequential_colors()
                 colors = [c for c in mappable.to_rgba(heatmap_values)]
-                heatmap_dict = dict(
-                    zip(adata.obs["ObjectNumber"], colors)
-                )
+                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], colors))
                 heatmap_dict.pop("0", None)
             elif params.mask.colorsType == "clustering":
                 heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName]).astype(int)[params.mask.colorsName]
                 mappable = get_qualitative_colors()
                 colors = [c for c in mappable.to_rgba(heatmap_values)]
-                heatmap_dict = dict(
-                    zip(adata.obs["ObjectNumber"], colors)
-                )
+                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], colors))
                 heatmap_dict.pop("0", None)
             elif params.mask.colorsType == "annotation":
                 heatmap_dict = dict()

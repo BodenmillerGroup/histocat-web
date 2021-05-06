@@ -3,7 +3,7 @@ SHELL := /bin/bash
 
 bootstrap:
 	cd backend && poetry install --extras "backend worker"
-	cd frontend && yarn install
+	cd frontend && yarn install --frozen-lockfile
 
 deploy-development:
 	./scripts/deploy-development.sh

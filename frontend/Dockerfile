@@ -9,7 +9,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock /app/
 
-RUN yarn install --non-interactive
+RUN yarn install --frozen-lockfile --non-interactive
 
 COPY ./ /app/
 
