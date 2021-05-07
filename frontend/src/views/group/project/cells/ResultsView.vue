@@ -107,9 +107,11 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import { datasetsModule } from "@/modules/datasets";
 import { apiUrl } from "@/env";
 import { cellsModule } from "@/modules/cells";
+import { uiModule } from "@/modules/ui";
 
 @Component
 export default class ResultsView extends Vue {
+  readonly uiContext = uiModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetContext = datasetsModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
@@ -204,7 +206,9 @@ export default class ResultsView extends Vue {
       value = null;
     }
     this.cellsContext.mutations.setHeatmap(value);
-    this.projectsContext.actions.getChannelStackImage();
+    if (this.uiContext.getters.maskMode === "mask") {
+      this.projectsContext.actions.getChannelStackImage();
+    }
   }
 
   @Watch("heatmap")

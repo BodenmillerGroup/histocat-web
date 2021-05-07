@@ -3,6 +3,10 @@ import { SettingsState } from ".";
 import { IImageFilter, IImageLegend, IImageScalebar } from "./models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
+  setActiveLayoutUid(uid: string) {
+    this.state.activeLayoutUid = uid;
+  }
+
   setChannelsSettings(payload) {
     this.state.channelsSettings = { ...this.state.channelsSettings, ...payload };
   }

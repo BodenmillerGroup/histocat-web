@@ -32,6 +32,8 @@ import { ScatterComponent } from "@/views/group/project/scatter/ScatterComponent
 import { LeidenComponent } from "@/views/group/project/leiden/LeidenComponent";
 import { LouvainComponent } from "@/views/group/project/louvain/LouvainComponent";
 import { PipelinesComponent } from "@/views/group/project/pipelines/PipelinesComponent";
+import { settingsModule } from "@/modules/settings";
+import { DEFAULT_LAYOUT_UID } from "@/modules/ui/defaultLayouts";
 
 @Component({
   components: {
@@ -42,6 +44,7 @@ export default class ProjectView extends Vue {
   readonly uiContext = uiModule.context(this.$store);
   readonly mainContext = mainModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
+  readonly settingsContext = settingsModule.context(this.$store);
 
   _goldenLayout?: GoldenLayout;
   _containerMap = new Map();
@@ -134,8 +137,8 @@ export default class ProjectView extends Vue {
       this._containerMap.delete(container);
     };
 
-    this._goldenLayout.loadLayout(this.activeLayout.config);
     this.uiContext.mutations.setGoldenLayout(this._goldenLayout);
+    await this.uiContext.actions.loadLayout(this.settingsContext.getters.activeLayoutUid ? this.settingsContext.getters.activeLayoutUid : DEFAULT_LAYOUT_UID);
   }
 
   beforeDestroy() {

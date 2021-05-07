@@ -20,6 +20,8 @@ import { PresetsComponent } from "@/views/group/project/presets/PresetsComponent
 import { SettingsComponent } from "@/views/group/project/settings/SettingsComponent";
 import { ILayout } from "@/modules/ui/models";
 
+export const DEFAULT_LAYOUT_UID = "f9dc50aa-4d89-4d78-87ac-afdf1e704cbd";
+
 const defaultConfig: LayoutConfig = {
   root: {
     type: ItemType.row,
@@ -673,6 +675,7 @@ const segmentationModeConfig: LayoutConfig = {
 
 export const DEFAULT_LAYOUTS: ILayout[] = [
   {
+    uid: DEFAULT_LAYOUT_UID,
     name: "Default",
     config: defaultConfig,
     isDefault: true,

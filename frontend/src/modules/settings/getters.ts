@@ -2,6 +2,10 @@ import { Getters } from "vuex-smart-module";
 import { SettingsState } from ".";
 
 export class SettingsGetters extends Getters<SettingsState> {
+  get activeLayoutUid() {
+    return this.state.activeLayoutUid;
+  }
+
   get channelsSettings() {
     return this.state.channelsSettings;
   }

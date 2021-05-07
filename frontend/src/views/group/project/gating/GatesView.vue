@@ -1,5 +1,6 @@
 <template>
-  <div class="gates-view">
+  <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
+  <div v-else class="gates-view">
     <v-toolbar flat dense color="grey lighten-4">
       <v-btn @click="createGate" color="primary" elevation="1" x-small tile>Save gate</v-btn>
     </v-toolbar>
@@ -73,9 +74,11 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { gatesModule } from "@/modules/gates";
+import { datasetsModule } from "@/modules/datasets";
 
 @Component
 export default class GatesView extends Vue {
+  readonly datasetContext = datasetsModule.context(this.$store);
   readonly gateContext = gatesModule.context(this.$store);
 
   dialog = false;
@@ -93,6 +96,10 @@ export default class GatesView extends Vue {
     } else {
       this.gateContext.mutations.setActiveGateId(null);
     }
+  }
+
+  get activeDatasetId() {
+    return this.datasetContext.getters.activeDatasetId;
   }
 
   get gates() {

@@ -111,11 +111,13 @@ import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 import { cellsModule } from "@/modules/cells";
 import { gatesModule } from "@/modules/gates";
 import { annotationsModule } from "@/modules/annotations";
+import { uiModule } from "@/modules/ui";
 
 @Component({
   components: { TreeView, UploadButton },
 })
 export default class DatasetsView extends Vue {
+  readonly uiContext = uiModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
@@ -147,7 +149,7 @@ export default class DatasetsView extends Vue {
           this.cellsContext.actions.initializeCells({ datasetId: dataset.id }),
           this.cellsContext.actions.getDatasetResults(dataset.id),
           this.gatesContext.actions.getGates(),
-          this.projectsContext.actions.getChannelStackImage(),
+          ...(this.uiContext.getters.maskMode === "mask" ? [this.projectsContext.actions.getChannelStackImage()] : []),
         ]);
       }
     } else {

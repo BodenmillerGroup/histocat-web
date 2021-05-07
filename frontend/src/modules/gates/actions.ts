@@ -10,22 +10,28 @@ import { datasetsModule } from "@/modules/datasets";
 import { groupModule } from "@/modules/group";
 import { cellsModule } from "@/modules/cells";
 import { annotationsModule } from "@/modules/annotations";
+import { projectsModule } from "@/modules/projects";
+import { uiModule } from "@/modules/ui";
 
 export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutations, GatesActions> {
   // Declare context type
+  ui?: Context<typeof uiModule>;
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
   datasets?: Context<typeof datasetsModule>;
   cells?: Context<typeof cellsModule>;
   annotations?: Context<typeof annotationsModule>;
+  projects?: Context<typeof projectsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
+    this.ui = uiModule.context(store);
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
     this.datasets = datasetsModule.context(store);
     this.cells = cellsModule.context(store);
     this.annotations = annotationsModule.context(store);
+    this.projects = projectsModule.context(store);
   }
 
   async getGates() {
@@ -72,6 +78,13 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
       if (data) {
         this.annotations?.mutations.setCellClasses(data.cell_classes);
         this.annotations?.mutations.setAnnotations(data.annotations);
+
+        if (this.cells!.getters.heatmap && this.cells!.getters.heatmap.type === "annotation") {
+          this.projects!.actions.getAnnotationData();
+          if (this.ui!.getters.maskMode === "mask") {
+            await this.projects!.actions.getChannelStackImage();
+          }
+        }
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

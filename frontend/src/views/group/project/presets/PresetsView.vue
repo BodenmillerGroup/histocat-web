@@ -17,7 +17,7 @@
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>
             <v-list-item-title>{{ item.name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ item.createdAt }}</v-list-item-subtitle>
+            <v-list-item-subtitle class="font-weight-light">{{ item.createdAt }}</v-list-item-subtitle>
           </v-list-item-content>
 
           <v-list-item-action>

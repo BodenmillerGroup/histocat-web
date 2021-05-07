@@ -45,7 +45,7 @@
           </v-btn>
         </template>
         <v-list dense>
-          <v-list-item v-for="layout in layouts" :key="layout.name" @click="loadLayout(layout.name)">
+          <v-list-item v-for="layout in layouts" :key="layout.name" @click="loadLayout(layout.uid)">
             <v-list-item-title>{{ layout.name }}</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -180,19 +180,19 @@ export default class Main extends Vue {
     return this.uiContext.getters.layouts;
   }
 
-  loadLayout(name: string) {
-    this.uiContext.mutations.loadLayout(name);
+  loadLayout(uid: string) {
+    this.uiContext.actions.loadLayout(uid);
   }
 
   saveLayout() {
     const name = self.prompt("Please enter layout name:");
     if (name) {
-      this.uiContext.mutations.addLayout(name);
+      this.uiContext.actions.addLayout(name);
     }
   }
 
-  resetLayouts(name: string) {
-    this.uiContext.mutations.resetLayouts();
+  resetLayouts() {
+    this.uiContext.actions.resetLayouts();
   }
 
   mounted() {

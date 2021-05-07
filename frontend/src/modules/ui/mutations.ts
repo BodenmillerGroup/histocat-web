@@ -3,6 +3,7 @@ import { PROJECT_LAYOUTS_STORAGE_KEY, UiState } from ".";
 import { ILayout, IResponsive } from "./models";
 import { GoldenLayout, LayoutConfig } from "golden-layout";
 import { DEFAULT_LAYOUTS } from "@/modules/ui/defaultLayouts";
+import { v4 } from "uuid";
 
 export class UiMutations extends Mutations<UiState> {
   setGoldenLayout(value: GoldenLayout | null) {
@@ -12,12 +13,14 @@ export class UiMutations extends Mutations<UiState> {
   addLayout(name: string) {
     if (this.state.goldenLayout) {
       const layout: ILayout = {
+        uid: v4(),
         name: name,
         config: LayoutConfig.fromResolved(this.state.goldenLayout.saveLayout()),
         isDefault: false,
       };
       const layouts = this.state.layouts.concat(layout);
       this.state.layouts = layouts;
+      this.state.activeLayout = layout;
       localStorage.setItem(PROJECT_LAYOUTS_STORAGE_KEY, JSON.stringify(layouts));
     }
   }
@@ -32,9 +35,9 @@ export class UiMutations extends Mutations<UiState> {
     }
   }
 
-  loadLayout(name: string) {
+  loadLayout(uid: string) {
     if (this.state.goldenLayout) {
-      const layout = this.state.layouts.find((item) => item.name === name);
+      const layout = this.state.layouts.find((item) => item.uid === uid);
       if (layout) {
         this.state.activeLayout = layout;
         this.state.goldenLayout.loadLayout(layout.config);

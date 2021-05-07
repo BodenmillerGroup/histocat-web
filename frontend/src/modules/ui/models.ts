@@ -1,6 +1,7 @@
 import { LayoutConfig } from "golden-layout";
 
 export interface ILayout {
+  uid: string;
   name: string;
   config: LayoutConfig;
   isDefault: boolean;

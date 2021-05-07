@@ -30,7 +30,7 @@
         <v-list-item v-for="(item, index) in annotations" :key="index">
           <v-list-item-avatar size="16" :color="cellClasses[item.cellClass]" />
           <v-list-item-action>
-            <v-checkbox v-model="item.visible" hide-details dense />
+            <v-checkbox v-model="item.visible" hide-details dense @change="onVisibilityChange" />
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
@@ -137,15 +137,19 @@ import { datasetsModule } from "@/modules/datasets";
 import ChannelSelector from "@/views/group/project/gating/ChannelSelector.vue";
 import ThresholdSelector from "@/views/group/project/gating/ThresholdSelector.vue";
 import { required, positiveNumber } from "@/utils/validators";
+import { uiModule } from "@/modules/ui";
+import { projectsModule } from "@/modules/projects";
 
 @Component({
   components: { ThresholdSelector, ChannelSelector },
 })
 export default class AnnotationsView extends Vue {
+  readonly uiContext = uiModule.context(this.$store);
   readonly annotationsContext = annotationsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
   readonly cellsContext = cellsModule.context(this.$store);
   readonly datasetsContext = datasetsModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
 
   readonly nEstimatorsRules = [required, positiveNumber];
 
@@ -216,6 +220,18 @@ export default class AnnotationsView extends Vue {
       thresholds: thresholds,
       nEstimators: this.nEstimators,
     });
+  }
+
+  onVisibilityChange(value) {
+    if (
+      this.cellsContext.getters.heatmap &&
+      this.cellsContext.getters.heatmap.type === "annotation"
+    ) {
+      this.projectsContext.actions.getAnnotationData();
+      if (this.uiContext.getters.maskMode === "mask") {
+        this.projectsContext.actions.getChannelStackImage();
+      }
+    }
   }
 }
 </script>

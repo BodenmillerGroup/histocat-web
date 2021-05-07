@@ -88,10 +88,16 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { annotationsModule } from "@/modules/annotations";
+import { uiModule } from "@/modules/ui";
+import { cellsModule } from "@/modules/cells";
+import { projectsModule } from "@/modules/projects";
 
 @Component
 export default class CellClassesView extends Vue {
+  readonly uiContext = uiModule.context(this.$store);
   readonly annotationsContext = annotationsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
+  readonly projectsContext = projectsModule.context(this.$store);
 
   addDialog = false;
   editDialog = false;
@@ -126,6 +132,13 @@ export default class CellClassesView extends Vue {
         nextName: this.name!,
         color: this.color!,
       });
+
+      if (this.cellsContext.getters.heatmap && this.cellsContext.getters.heatmap.type === "annotation") {
+        this.projectsContext.actions.getAnnotationData();
+        if (this.uiContext.getters.maskMode === "mask") {
+          this.projectsContext.actions.getChannelStackImage();
+        }
+      }
     }
   }
 
