@@ -14,7 +14,7 @@ describe("UploadButton.vue", () => {
       },
       propsData: {
         label: "Upload",
-        upload: () => {}
+        upload: () => {},
       },
     });
     expect(wrapper.text()).toMatch(title);

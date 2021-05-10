@@ -70,6 +70,7 @@
     "eslint-plugin-prettier": "3.4.0",
     "eslint-plugin-vue": "7.9.0",
     "fibers": "5.0.0",
+    "jest-serializer-vue": "2.0.2",
     "prettier": "2.3.0",
     "sass": "1.32.12",
     "sass-loader": "10.1.1",
