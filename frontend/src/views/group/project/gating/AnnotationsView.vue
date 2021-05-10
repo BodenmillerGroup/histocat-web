@@ -223,10 +223,7 @@ export default class AnnotationsView extends Vue {
   }
 
   onVisibilityChange(value) {
-    if (
-      this.cellsContext.getters.heatmap &&
-      this.cellsContext.getters.heatmap.type === "annotation"
-    ) {
+    if (this.cellsContext.getters.heatmap && this.cellsContext.getters.heatmap.type === "annotation") {
       this.projectsContext.actions.getAnnotationData();
       if (this.uiContext.getters.maskMode === "mask") {
         this.projectsContext.actions.getChannelStackImage();

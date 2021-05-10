@@ -138,7 +138,9 @@ export default class ProjectView extends Vue {
     };
 
     this.uiContext.mutations.setGoldenLayout(this._goldenLayout);
-    await this.uiContext.actions.loadLayout(this.settingsContext.getters.activeLayoutUid ? this.settingsContext.getters.activeLayoutUid : DEFAULT_LAYOUT_UID);
+    await this.uiContext.actions.loadLayout(
+      this.settingsContext.getters.activeLayoutUid ? this.settingsContext.getters.activeLayoutUid : DEFAULT_LAYOUT_UID
+    );
   }
 
   beforeDestroy() {

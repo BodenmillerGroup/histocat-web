@@ -1,4 +1,4 @@
-const env = process.env.VUE_APP_ENV;
+const env = process.env.FRONTEND_ENV;
 
 let envApiUrl = "";
 let appNameTmp = process.env.VUE_APP_NAME;

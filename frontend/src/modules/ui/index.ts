@@ -10,12 +10,15 @@ export const PROJECT_LAYOUTS_STORAGE_KEY = "ProjectLayouts";
 
 let initialLayouts = DEFAULT_LAYOUTS;
 if (localStorage.getItem(PROJECT_LAYOUTS_STORAGE_KEY)) {
-  initialLayouts = JSON.parse(localStorage.getItem(PROJECT_LAYOUTS_STORAGE_KEY)!);
+  const layouts = JSON.parse(localStorage.getItem(PROJECT_LAYOUTS_STORAGE_KEY)!);
+  if (layouts && layouts.length > 0) {
+    initialLayouts = layouts;
+  }
 }
 
 export class UiState {
-  layouts = initialLayouts;
-  activeLayout = initialLayouts[0];
+  layouts = initialLayouts ? initialLayouts : DEFAULT_LAYOUTS;
+  activeLayout = initialLayouts ? initialLayouts[0] : DEFAULT_LAYOUTS[0];
   goldenLayout: GoldenLayout | null = null;
 
   responsive: IResponsive = {

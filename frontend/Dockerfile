@@ -13,9 +13,6 @@ RUN yarn install --frozen-lockfile --non-interactive
 
 COPY ./ /app/
 
-ARG FRONTEND_ENV
-ENV VUE_APP_ENV=${FRONTEND_ENV}
-
 # Comment out the next line to disable tests
 #RUN yarn test:unit
 

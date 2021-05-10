@@ -6,7 +6,6 @@ set -e
 DOMAIN=localhost \
 BACKEND_ENV=development \
 FRONTEND_ENV=development \
-VUE_APP_ENV=development \
 docker-compose \
 -f .deploy/shared.yml \
 -f .deploy/development.yml \

@@ -5,7 +5,6 @@ set -e
 
 BACKEND_ENV=staging \
 FRONTEND_ENV=staging \
-VUE_APP_ENV=staging \
 docker-compose \
 -f .deploy/shared.yml \
 -f .deploy/staging.yml \

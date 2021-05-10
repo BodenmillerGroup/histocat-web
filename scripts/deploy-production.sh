@@ -5,7 +5,6 @@ set -e
 
 BACKEND_ENV=production \
 FRONTEND_ENV=production \
-VUE_APP_ENV=production \
 docker-compose \
 -f .deploy/shared.yml \
 -f .deploy/production.yml \
