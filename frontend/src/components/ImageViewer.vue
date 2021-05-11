@@ -2,6 +2,9 @@
   <div id="canvasContainer" ref="canvasContainer" v-intersect="onIntersect" v-resize="onResize">
     <canvas id="canvas2d" ref="canvas2d" />
     <canvas id="canvasWebGl" ref="canvasWebGl" />
+    <div id="cellTooltipContainer">
+      <Tooltip id="cellTooltip" v-if="cellInfo" :cell="cellInfo" />
+    </div>
   </div>
 </template>
 
@@ -16,8 +19,11 @@ import { IRegionStatsSubmission } from "@/modules/analysis/models";
 import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
 import { uiModule } from "@/modules/ui";
+import Tooltip from "@/components/tooltip/Tooltip.vue";
 
-@Component
+@Component({
+  components: { Tooltip },
+})
 export default class ImageViewer extends Vue {
   readonly uiContext = uiModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
@@ -28,6 +34,8 @@ export default class ImageViewer extends Vue {
   points: ICell[] = [];
   scatterplot: any;
   selection: any[] = [];
+
+  cellInfo: ICell | null = null;
 
   get applyMask() {
     return this.uiContext.getters.maskMode === "mask";
@@ -139,20 +147,15 @@ export default class ImageViewer extends Vue {
 
   pointoverHandler(idx: number) {
     const point = this.points[idx];
-    console.log(
-      `X: ${point.xy[0]}\nY: ${point.xy[1]}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
-    );
+    this.cellInfo = point;
   }
 
   pointoutHandler(idx: number) {
     const point = this.points[idx];
-    console.log(
-      `X: ${point.xy[0]}\nY: ${point.xy[1]}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
-    );
+    this.cellInfo = null;
   }
 
   selectHandler({ points: selectedPoints }) {
-    console.log("ImageViewer Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
       const selectedCells: string[] = [];
@@ -167,6 +170,7 @@ export default class ImageViewer extends Vue {
     } else {
       this.cellsContext.mutations.setSelectedCellIds([]);
       if (this.applyMask) {
+        this.cellInfo = null;
         this.projectsContext.actions.getChannelStackImage();
       }
     }
@@ -257,7 +261,7 @@ export default class ImageViewer extends Vue {
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
-    // this.scatterplot.subscribe("pointout", this.pointoutHandler);
+    this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
     this.scatterplot.subscribe("lassoEnd", this.lassoEndHandler);
@@ -290,5 +294,23 @@ export default class ImageViewer extends Vue {
   pointer-events: none;
   position: absolute;
   z-index: 2;
+}
+#cellTooltipContainer {
+  position: relative;
+}
+#cellTooltip {
+  margin: 4px;
+  background: black;
+  color: white;
+  opacity: 0.8;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  height: auto;
+  width: auto;
+  font-size: 80%;
+  text-align: right;
 }
 </style>

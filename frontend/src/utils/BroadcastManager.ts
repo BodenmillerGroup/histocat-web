@@ -9,7 +9,7 @@ export class BroadcastManager {
     BroadcastManager.pubSub = createPubSub({ async: false, caseInsensitive: false });
   }
 
-  static publish(event: string, payload?: any, isGlobal: boolean = true) {
+  static publish(event: string, payload?: any, isGlobal = true) {
     if (isGlobal) {
       globalPubSub.publish(event, payload);
     } else {
@@ -17,13 +17,13 @@ export class BroadcastManager {
     }
   }
 
-  static subscribe(event: string, handler: Function, times: number = Infinity, isGlobal: boolean = true) {
+  static subscribe(event: string, handler: Function, times = Infinity, isGlobal = true) {
     return isGlobal
       ? globalPubSub.subscribe(event, handler, times)
       : BroadcastManager.pubSub.subscribe(event, handler, times);
   }
 
-  static unsubscribe(event: string | object, handler?: Function, isGlobal: boolean = true) {
+  static unsubscribe(event: string | object, handler?: Function, isGlobal = true) {
     if (isGlobal) {
       globalPubSub.unsubscribe(event, handler);
     } else {

@@ -32,15 +32,15 @@ export const api = {
   },
 
   async getResultData(groupId: number, resultId: number) {
-    let url = `groups/${groupId}/results/${resultId}/data`;
+    const url = `groups/${groupId}/results/${resultId}/data`;
     return ApiManager.api.get(url).json<IRawResultData>();
   },
   async getColorsData(groupId: number, resultId: number, colorsType: string, colorsName: string) {
-    let url = `groups/${groupId}/results/${resultId}/colors?colors_type=${colorsType}&colors_name=${colorsName}`;
+    const url = `groups/${groupId}/results/${resultId}/colors?colors_type=${colorsType}&colors_name=${colorsName}`;
     return ApiManager.api.get(url).json<IRawColorsData>();
   },
   async getScatterPlotData(groupId: number, resultId: number, markerX: string, markerY: string) {
-    let url = `groups/${groupId}/results/${resultId}/scatterplot?marker_x=${markerX}&marker_y=${markerY}`;
+    const url = `groups/${groupId}/results/${resultId}/scatterplot?marker_x=${markerX}&marker_y=${markerY}`;
     return ApiManager.api.get(url).json<IRawScatterData>();
   },
 };

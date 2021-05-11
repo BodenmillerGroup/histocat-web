@@ -85,8 +85,8 @@ export default class EditProject extends Vue {
   readonly nameRules = [required];
 
   valid = true;
-  name: string = "";
-  description: string = "";
+  name = "";
+  description = "";
   tags: any[] = [];
 
   editing = null;

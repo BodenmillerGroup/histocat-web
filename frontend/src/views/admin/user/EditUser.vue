@@ -76,13 +76,13 @@ export default class EditUser extends Vue {
   }
 
   valid = true;
-  name: string = "";
-  email: string = "";
-  isActive: boolean = true;
-  isAdmin: boolean = false;
+  name = "";
+  email = "";
+  isActive = true;
+  isAdmin = false;
   setPassword = false;
-  password1: string = "";
-  password2: string = "";
+  password1 = "";
+  password2 = "";
 
   async mounted() {
     await this.userContext.actions.getUsers();

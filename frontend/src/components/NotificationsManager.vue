@@ -17,9 +17,9 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 export default class NotificationsManager extends Vue {
   readonly mainContext = mainModule.context(this.$store);
 
-  show: boolean = false;
-  text: string = "";
-  showProgress: boolean = false;
+  show = false;
+  text = "";
+  showProgress = false;
   currentNotification: AppNotification | false = false;
 
   async hide() {

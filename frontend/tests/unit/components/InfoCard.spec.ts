@@ -11,10 +11,10 @@ describe("InfoCard.vue", () => {
       propsData: {
         node: {
           item: {
-            type: "slide"
-          }
-        }
-      }
+            type: "slide",
+          },
+        },
+      },
     });
     expect(wrapper.element).toMatchSnapshot();
   });

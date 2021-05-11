@@ -35,8 +35,8 @@ export default class UserProfileEdit extends Vue {
   readonly emailRules = [required, email];
 
   valid = true;
-  name: string = "";
-  email: string = "";
+  name = "";
+  email = "";
 
   created() {
     const userProfile = this.userProfile;

@@ -45,7 +45,7 @@ export default class Login extends Vue {
   readonly usernameRules = [required, email];
 
   valid = true;
-  username: string = "";
+  username = "";
   appName = appName;
 
   cancel() {
