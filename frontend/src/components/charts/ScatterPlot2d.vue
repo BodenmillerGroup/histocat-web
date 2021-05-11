@@ -13,6 +13,7 @@ import { ICell } from "@/modules/cells/models";
 import { uiModule } from "@/modules/ui";
 
 const pointSize = 3;
+const unselectedPointSize = 2;
 
 @Component
 export default class ScatterPlot2d extends Vue {
@@ -77,8 +78,16 @@ export default class ScatterPlot2d extends Vue {
           size: pointSize,
           color: filteredCells.map((v) => v.color),
         },
+        selected: {
+          marker: {
+            size: pointSize,
+            opacity: 1.0,
+            color: "#4151b6",
+          },
+        },
         unselected: {
           marker: {
+            size: unselectedPointSize,
             opacity: 0.1,
           },
         },

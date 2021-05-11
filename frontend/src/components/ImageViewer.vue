@@ -247,9 +247,11 @@ export default class ImageViewer extends Vue {
       canvas: canvas,
       opacity: 1,
       pointSize: 2,
-      pointSizeSelected: 1,
-      pointOutlineWidth: 1,
-      pointColor: [255, 140, 0],
+      pointSizeSelected: 0,
+      pointOutlineWidth: 0,
+      pointColor: [0.66, 0.66, 0.66, 1],
+      pointColorActive: [0, 0.55, 1, 1],
+      pointColorHover: [1, 1, 1, 1],
       lassoMinDelay: 15,
       lassoClearEvent: "lassoEnd",
       showReticle: false,
@@ -257,7 +259,6 @@ export default class ImageViewer extends Vue {
       deselectOnEscape: true,
       mouseMode: "panZoom",
       keyMap: { shift: "lasso", ctrl: "merge" },
-      colorBy: "valueA",
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
