@@ -32,7 +32,7 @@
     </v-toolbar>
     <ScatterPlot2d
       v-if="activeResult"
-      :ignore-selection="true"
+      :ignore-selection="false"
       plot-id="scatterPlot"
       ref="scatterPlot"
       :data="plotData"

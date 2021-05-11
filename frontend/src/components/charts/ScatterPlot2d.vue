@@ -56,7 +56,7 @@ export default class ScatterPlot2d extends Vue {
           height,
         });
       }
-    } catch {
+    } catch (e) {
       // TODO: find more elegant way to avoid exception during component dragging
     }
   }
@@ -110,7 +110,11 @@ export default class ScatterPlot2d extends Vue {
       autosize: true,
     };
 
-    Plotly.react(this.plotId, traces, layout);
+    try {
+      Plotly.react(this.plotId, traces, layout);
+    } catch (e) {
+      // TODO: find more elegant way to avoid exception during component dragging
+    }
   }
 
   @Watch("data")
@@ -142,7 +146,11 @@ export default class ScatterPlot2d extends Vue {
       };
     }
 
-    Plotly.update(this.plotId, updatedData);
+    try {
+      Plotly.update(this.plotId, updatedData);
+    } catch (e) {
+      // TODO: find more elegant way to avoid exception during component dragging
+    }
   }
 
   private initPlot() {
@@ -184,7 +192,7 @@ export default class ScatterPlot2d extends Vue {
       });
 
       this.refreshOnDataChange(this.data);
-    } catch {
+    } catch (e) {
       // TODO: find more elegant way to avoid exception during layout refresh
     }
   }
@@ -193,12 +201,13 @@ export default class ScatterPlot2d extends Vue {
     this.initPlot();
   }
 
-  // TODO: check how plotly WebGl context should be destroyed
-  // beforeDestroy() {
-  //   if (this.plotId) {
-  //     Plotly.purge(this.plotId);
-  //   }
-  // }
+  beforeDestroy() {
+    try {
+      Plotly.purge(this.$refs[this.plotId]);
+    } catch (e) {
+      // TODO: check how plotly WebGl context should be destroyed
+    }
+  }
 }
 </script>
 

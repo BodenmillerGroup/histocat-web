@@ -21,7 +21,7 @@ deepcell-cpu = { version = "^0.9.0", optional = true }
 dramatiq = { version = "^1.10.0", extras = ["rabbitmq", "watch"] }
 email-validator = "^1.1.1"
 emails = "^0.6"
-fastapi = "^0.64.0"
+fastapi = "^0.65.0"
 gunicorn = { version = "^20.0.4", optional = true }
 imctools = "^2.1.6"
 jinja2 = { version = "^2.11.3", optional = true }
@@ -41,7 +41,7 @@ redis = { version = "^3.5.3", extras = ["hiredis"] }
 requests = "^2.25.1"
 scanpy = { version = "^1.7.2", extras = ["leiden", "louvain"] }
 scikit-image = "0.16.2"
-SQLAlchemy = "^1.4.14"
+SQLAlchemy = "^1.4.15"
 tenacity = "^7.0.0"
 ujson = "^4.0.1"
 uvicorn = { version = "^0.13.4", extras = ["standard"], optional = true }
