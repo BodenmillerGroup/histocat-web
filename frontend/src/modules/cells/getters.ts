@@ -22,16 +22,12 @@ export class CellsGetters extends Getters<CellsState> {
     return this.state.ids.map((id) => this.state.entities[id]);
   }
 
-  getResult(id: number) {
-    return this.state.entities[id];
-  }
-
   get activeResultId() {
     return this.state.activeResultId;
   }
 
   get activeResult() {
-    return this.getters.activeResultId ? this.getters.getResult(this.getters.activeResultId) : null;
+    return this.getters.activeResultId ? this.state.entities[this.getters.activeResultId] : null;
   }
 
   get markers() {

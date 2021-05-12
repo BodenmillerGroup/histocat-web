@@ -46,6 +46,7 @@
                     color="primary lighten-2"
                     @click.stop=""
                     :href="`${apiUrl}/datasets/${item.id}/download`"
+                    target="_blank"
                   >
                     <v-icon small>mdi-download-outline</v-icon>
                   </v-btn>
@@ -105,7 +106,7 @@
 import { apiUrl } from "@/env";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import UploadButton from "@/components/UploadButton.vue";
 import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 import { cellsModule } from "@/modules/cells";
@@ -135,10 +136,13 @@ export default class DatasetsView extends Vue {
   name: string | null = null;
   description: string | null = null;
 
-  selected?: number | null = null;
+  get selected() {
+    return this.datasetsContext.getters.activeDataset
+      ? this.datasets.indexOf(this.datasetsContext.getters.activeDataset)
+      : null;
+  }
 
-  @Watch("selected")
-  datasetChanged(index?: number | null) {
+  set selected(index: number | null | undefined) {
     this.cellsContext.mutations.reset();
     if (index !== null && index !== undefined) {
       const dataset = this.datasets[index];

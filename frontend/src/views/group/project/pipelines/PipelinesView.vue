@@ -13,55 +13,53 @@
       </v-tooltip>
     </v-toolbar>
     <v-list dense two-line class="pa-0">
-      <v-list-item-group v-model="selected" color="primary">
-        <v-list-item v-for="item in items" :key="item.id">
-          <v-list-item-content>
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-            <v-list-item-subtitle v-if="item.description">{{ item.description }}</v-list-item-subtitle>
-            <v-list-item-subtitle class="font-weight-light">{{ item.createdAt }}</v-list-item-subtitle>
-          </v-list-item-content>
+      <v-list-item v-for="item in items" :key="item.id">
+        <v-list-item-content>
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
+          <v-list-item-subtitle v-if="item.description">{{ item.description }}</v-list-item-subtitle>
+          <v-list-item-subtitle class="font-weight-light">{{ item.createdAt }}</v-list-item-subtitle>
+        </v-list-item-content>
 
-          <v-list-item-action>
-            <v-row>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" download color="primary lighten-2" @click="loadPipeline(item.id)">
-                    <v-icon small>mdi-refresh-circle</v-icon>
-                  </v-btn>
-                </template>
-                <span>Load pipeline</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    small
-                    v-on="on"
-                    color="primary lighten-2"
-                    @click.stop="
-                      activeId = item.id;
-                      name = item.name;
-                      description = item.description;
-                      dialog = true;
-                    "
-                  >
-                    <v-icon small>mdi-pencil-outline</v-icon>
-                  </v-btn>
-                </template>
-                <span>Edit pipeline</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn icon small v-on="on" color="secondary lighten-2" @click.stop="deletePipeline(item.id)">
-                    <v-icon small>mdi-delete-outline</v-icon>
-                  </v-btn>
-                </template>
-                <span>Delete pipeline</span>
-              </v-tooltip>
-            </v-row>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list-item-group>
+        <v-list-item-action>
+          <v-row>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon small v-on="on" download color="primary lighten-2" @click="loadPipeline(item.id)">
+                  <v-icon small>mdi-refresh-circle</v-icon>
+                </v-btn>
+              </template>
+              <span>Load pipeline</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  icon
+                  small
+                  v-on="on"
+                  color="primary lighten-2"
+                  @click.stop="
+                    activeId = item.id;
+                    name = item.name;
+                    description = item.description;
+                    dialog = true;
+                  "
+                >
+                  <v-icon small>mdi-pencil-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Edit pipeline</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn icon small v-on="on" color="secondary lighten-2" @click.stop="deletePipeline(item.id)">
+                  <v-icon small>mdi-delete-outline</v-icon>
+                </v-btn>
+              </template>
+              <span>Delete pipeline</span>
+            </v-tooltip>
+          </v-row>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
     <v-dialog v-model="dialog" scrollable max-width="600px">
       <v-card>
@@ -82,7 +80,7 @@
 
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { pipelinesModule } from "@/modules/pipelines";
 
 @Component
@@ -95,20 +93,8 @@ export default class PipelinesView extends Vue {
   name: string | null = null;
   description: string | null = null;
 
-  selected?: number | null = null;
-
   get activeProjectId() {
     return this.projectsContext.getters.activeProjectId;
-  }
-
-  @Watch("selected")
-  pipelineChanged(index: number | null) {
-    if (index !== null && index !== undefined) {
-      const pipeline = this.pipelines[index];
-      this.pipelinesContext.mutations.setActivePipelineId(pipeline.id);
-    } else {
-      this.pipelinesContext.mutations.setActivePipelineId(null);
-    }
   }
 
   get pipelines() {

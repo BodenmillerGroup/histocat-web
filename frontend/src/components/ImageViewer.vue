@@ -96,11 +96,6 @@ export default class ImageViewer extends Vue {
     this.refresh();
   }
 
-  @Watch("dashboardShowDrawer")
-  showWorkspaceChanged(value) {
-    this.refresh();
-  }
-
   refresh() {
     if (!this.scatterplot) {
       return;
@@ -151,7 +146,6 @@ export default class ImageViewer extends Vue {
   }
 
   pointoutHandler(idx: number) {
-    const point = this.points[idx];
     this.cellInfo = null;
   }
 
@@ -270,6 +264,9 @@ export default class ImageViewer extends Vue {
 
   mounted() {
     this.initViewer();
+    if (this.channelStackImage) {
+      this.onChannelStackImageChanged(this.channelStackImage);
+    }
   }
 
   beforeDestroy() {

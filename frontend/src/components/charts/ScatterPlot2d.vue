@@ -49,10 +49,10 @@ export default class ScatterPlot2d extends Vue {
 
   refresh() {
     try {
-      const plotElement = this.$refs[this.plotId] as Element;
-      if (plotElement) {
-        const { width, height } = plotElement.getBoundingClientRect();
-        Plotly.relayout(this.plotId, {
+      const plot = this.$refs[this.plotId] as Element;
+      if (plot) {
+        const { width, height } = plot.getBoundingClientRect();
+        Plotly.relayout(plot, {
           width,
           height,
         });
@@ -120,7 +120,8 @@ export default class ScatterPlot2d extends Vue {
     };
 
     try {
-      Plotly.react(this.plotId, traces, layout);
+      const plot = this.$refs[this.plotId] as any;
+      Plotly.react(plot, traces, layout);
     } catch (e) {
       // TODO: find more elegant way to avoid exception during component dragging
     }
@@ -156,7 +157,8 @@ export default class ScatterPlot2d extends Vue {
     }
 
     try {
-      Plotly.update(this.plotId, updatedData);
+      const plot = this.$refs[this.plotId] as any;
+      Plotly.update(plot, updatedData);
     } catch (e) {
       // TODO: find more elegant way to avoid exception during component dragging
     }
@@ -174,9 +176,10 @@ export default class ScatterPlot2d extends Vue {
     };
 
     try {
-      Plotly.react(this.plotId, initData, initLayout, initConfig);
-
       const plot = this.$refs[this.plotId] as any;
+
+      Plotly.react(plot, initData, initLayout, initConfig);
+
       plot.on("plotly_selected", (eventData) => {
         if (eventData) {
           if (eventData.points.length > 0) {

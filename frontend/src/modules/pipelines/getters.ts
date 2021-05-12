@@ -14,15 +14,11 @@ export class PipelinesGetters extends Getters<PipelinesState> {
     return this.state.steps;
   }
 
-  getPipeline(id: number) {
-    return this.state.entities[id];
-  }
-
   get activePipelineId() {
     return this.state.activePipelineId;
   }
 
   get activePipeline() {
-    return this.getters.activePipelineId ? this.getters.getPipeline(this.getters.activePipelineId) : null;
+    return this.getters.activePipelineId ? this.state.entities[this.getters.activePipelineId] : null;
   }
 }

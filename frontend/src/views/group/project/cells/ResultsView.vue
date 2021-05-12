@@ -46,6 +46,7 @@
                     color="primary lighten-2"
                     @click.stop=""
                     :href="`${apiUrl}/results/${item.id}/download`"
+                    target="_blank"
                   >
                     <v-icon small>mdi-download-outline</v-icon>
                   </v-btn>
@@ -123,10 +124,11 @@ export default class ResultsView extends Vue {
   name: string | null = null;
   description: string | null = null;
 
-  selected?: number | null = null;
+  get selected() {
+    return this.cellsContext.getters.activeResult ? this.results.indexOf(this.cellsContext.getters.activeResult) : null;
+  }
 
-  @Watch("selected")
-  resultChanged(index: number | null | undefined) {
+  set selected(index: number | null | undefined) {
     if (index !== null && index !== undefined) {
       const result = this.results[index];
       this.cellsContext.mutations.setActiveResultId(result.id);
