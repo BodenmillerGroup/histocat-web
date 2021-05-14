@@ -4,7 +4,7 @@ import CellsView from "./CellsView.vue";
 import { LayoutComponent } from "@/components/LayoutComponent";
 
 export class CellsComponent extends LayoutComponent {
-  static readonly typeName = CellsComponent.name;
+  static readonly typeName = "cells";
 
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(CellsView), store, parent);

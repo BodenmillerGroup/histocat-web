@@ -21,7 +21,7 @@
     "url": "https://github.com/BodenmillerGroup/histocat-web/issues"
   },
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "export VUE_APP_PROTOCOL=http && export VUE_APP_DOMAIN=localhost && export VUE_APP_NAME=histoCAT && vue-cli-service serve",
     "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
@@ -36,7 +36,6 @@
     "lodash-es": "4.17.21",
     "memoize-one": "5.2.1",
     "normalizr": "3.6.1",
-    "plotly.js": "1.58.4",
     "register-service-worker": "1.7.2",
     "regl-scatterplot": "0.18.6",
     "uuid": "8.3.2",

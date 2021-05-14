@@ -4,6 +4,7 @@
 </template>
 
 <script lang="ts">
+import "@/sass/goldenlayout-theme.css";
 import LoadingView from "@/components/LoadingView.vue";
 import { projectsModule } from "@/modules/projects";
 import { mainModule } from "@/modules/main";
@@ -11,8 +12,6 @@ import { WebSocketManager } from "@/utils/WebSocketManager";
 import { Component, Vue } from "vue-property-decorator";
 import { ComponentContainer, ComponentItem, GoldenLayout, ResolvedComponentItemConfig } from "golden-layout";
 import { ImageComponent } from "@/views/group/project/image/ImageComponent";
-import "golden-layout/dist/css/goldenlayout-base.css";
-import "@/sass/goldenlayout-theme.scss";
 import { uiModule } from "@/modules/ui";
 import { SlidesComponent } from "@/views/group/project/slides/SlidesComponent";
 import { ChannelsComponent } from "@/views/group/project/channels/ChannelsComponent";

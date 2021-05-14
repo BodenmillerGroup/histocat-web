@@ -4,7 +4,7 @@ import PipelineView from "./PipelineView.vue";
 import { LayoutComponent } from "@/components/LayoutComponent";
 
 export class PipelineComponent extends LayoutComponent {
-  static readonly typeName = PipelineComponent.name;
+  static readonly typeName = "pipeline";
 
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(PipelineView), store, parent);

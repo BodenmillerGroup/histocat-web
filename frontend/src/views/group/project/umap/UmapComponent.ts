@@ -4,7 +4,7 @@ import UmapView from "./UmapView.vue";
 import { LayoutComponent } from "@/components/LayoutComponent";
 
 export class UmapComponent extends LayoutComponent {
-  static readonly typeName = UmapComponent.name;
+  static readonly typeName = "umap";
 
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(UmapView), store, parent);

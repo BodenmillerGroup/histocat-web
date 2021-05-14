@@ -7,10 +7,12 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import Plotly from "plotly.js/dist/plotly";
+// import Plotly from "plotly.js/dist/plotly";
 import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
 import { uiModule } from "@/modules/ui";
+
+declare const Plotly;
 
 const pointSize = 3;
 const unselectedPointSize = 2;

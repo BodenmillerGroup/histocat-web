@@ -4,7 +4,7 @@ import HistogramView from "./HistogramView.vue";
 import { LayoutComponent } from "@/components/LayoutComponent";
 
 export class HistogramComponent extends LayoutComponent {
-  static readonly typeName = HistogramComponent.name;
+  static readonly typeName = "histogram";
 
   constructor(_container: ComponentContainer, store: any, parent) {
     super(_container, Vue.extend(HistogramView), store, parent);

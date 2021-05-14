@@ -1,5 +1,3 @@
-console.log(process.env)
-
 const envApiUrl = `${process.env.VUE_APP_PROTOCOL}://${process.env.VUE_APP_DOMAIN}`;
 
 export const apiUrl = `${envApiUrl}/api/v1`;
