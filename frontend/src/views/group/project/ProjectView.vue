@@ -33,7 +33,7 @@ import { LeidenComponent } from "@/views/group/project/leiden/LeidenComponent";
 import { LouvainComponent } from "@/views/group/project/louvain/LouvainComponent";
 import { PipelinesComponent } from "@/views/group/project/pipelines/PipelinesComponent";
 import { settingsModule } from "@/modules/settings";
-import { DEFAULT_LAYOUT_UID } from "@/modules/ui/defaultLayouts";
+import { DEFAULT_LAYOUT_UID } from "@/modules/ui/constants";
 
 @Component({
   components: {

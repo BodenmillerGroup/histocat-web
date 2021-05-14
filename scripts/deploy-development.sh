@@ -3,9 +3,6 @@
 # Exit in case of error
 set -e
 
-DOMAIN=localhost \
-BACKEND_ENV=development \
-FRONTEND_ENV=development \
 docker-compose \
 -f .deploy/shared.yml \
 -f .deploy/development.yml \

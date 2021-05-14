@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2021.05.10",
+  "version": "2021.05.14",
   "private": true,
   "description": "histoCAT for Web",
   "author": {
@@ -10,6 +10,7 @@
   "homepage": "https://github.com/BodenmillerGroup/histocat-web#readme",
   "keywords": [
     "histoCAT",
+    "IMC",
     "BodenmillerLab"
   ],
   "repository": {
@@ -20,7 +21,7 @@
     "url": "https://github.com/BodenmillerGroup/histocat-web/issues"
   },
   "scripts": {
-    "serve": "FRONTEND_ENV=development && vue-cli-service serve",
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --modern",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
@@ -74,7 +75,7 @@
     "fibers": "5.0.0",
     "jest-serializer-vue": "2.0.2",
     "prettier": "2.3.0",
-    "sass": "1.32.12",
+    "sass": "1.32.13",
     "sass-loader": "10.1.1",
     "typescript": "4.2.4",
     "vue-cli-plugin-vuetify": "2.4.0",

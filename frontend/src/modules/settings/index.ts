@@ -3,7 +3,7 @@ import { SettingsActions } from "./actions";
 import { SettingsGetters } from "./getters";
 import { IChannelSettings, IImageFilter, IImageLegend, IImageScalebar } from "./models";
 import { SettingsMutations } from "./mutations";
-import { DEFAULT_LAYOUT_UID } from "@/modules/ui/defaultLayouts";
+import { DEFAULT_LAYOUT_UID } from "@/modules/ui/constants";
 
 export class SettingsState {
   activeLayoutUid = DEFAULT_LAYOUT_UID; // Default layout uid

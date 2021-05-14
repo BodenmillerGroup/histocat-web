@@ -105,7 +105,7 @@ def signup(
     if not config.USERS_OPEN_REGISTRATION:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Open user resgistration is forbidden on this server",
+            detail="Open user registration is forbidden on this server",
         )
     user = service.get_by_email(db, email=email)
     if user:
