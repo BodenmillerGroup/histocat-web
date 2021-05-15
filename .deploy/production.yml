@@ -15,10 +15,6 @@ services:
   frontend:
     restart: always
     image: ${DOCKER_IMAGE_FRONTEND}:${TAG-latest}
-    args:
-      VUE_APP_NAME: ${VUE_APP_NAME}
-      VUE_APP_PROTOCOL: ${VUE_APP_PROTOCOL}
-      VUE_APP_DOMAIN: ${DOMAIN_PROD}
 
   proxy:
     command:
