@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ToolbarProgressBar.vue renders correctly 1`] = `
+<div
+  aria-valuemax="100"
+  aria-valuemin="0"
+  aria-valuenow="0"
+  class="v-progress-linear ma-0 v-progress-linear--reverse theme--light"
+  role="progressbar"
+  style="height: 0px; top: -2px;"
+>
+  <div
+    class="v-progress-linear__background primary"
+    style="opacity: 0.3; right: 0%; width: 100%;"
+  />
+  <div
+    class="v-progress-linear__buffer"
+    style="height: 0px;"
+  />
+  <transition-stub
+    name="slide-x-transition"
+  >
+    <div
+      class="v-progress-linear__determinate primary"
+      style="width: 0%;"
+    />
+  </transition-stub>
+</div>
+`;

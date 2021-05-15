@@ -19,8 +19,6 @@ export class ProjectsState {
   activeWorkspaceNode: object | null = null;
   selectedMetals: string[] = [];
   channelStackImage: string | ArrayBuffer | null = null;
-
-  colorizeMaskInProgress = false;
 }
 
 export const projectsModule = new Module({

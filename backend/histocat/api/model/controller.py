@@ -74,6 +74,7 @@ def update(
 @router.post("/models", response_model=ModelDto)
 def create(
     name: str = Form(""),
+    application: str = Form(""),
     description: str = Form(None),
     file: UploadFile = File(None),
     user: UserModel = Depends(get_admin),
@@ -86,7 +87,7 @@ def create(
             detail="The model with this name already exists.",
         )
 
-    params = ModelCreateDto(name=name, description=description)
+    params = ModelCreateDto(name=name, description=description, application=application)
     model = service.create(db, params=params)
 
     path = os.path.join(config.INBOX_DIRECTORY, str(uuid.uuid4()))

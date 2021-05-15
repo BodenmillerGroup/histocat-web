@@ -65,10 +65,6 @@ export class ProjectsMutations extends Mutations<ProjectsState> {
     this.state.channelStackImage = base64Image;
   }
 
-  setColorizeMaskInProgress(status: boolean) {
-    this.state.colorizeMaskInProgress = status;
-  }
-
   reset() {
     // acquire initial state
     const s = new ProjectsState();

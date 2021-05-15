@@ -7,6 +7,8 @@ services:
       dockerfile: backend.dockerfile
       args:
         BACKEND_ENV: development
+        PROTOCOL: ${PROTOCOL}
+        DOMAIN: ${DOMAIN_DEV}
     command: /app/bin/start-reload.sh
     ports:
       - 5678:5678
@@ -20,6 +22,8 @@ services:
       dockerfile: worker.dockerfile
       args:
         BACKEND_ENV: development
+        PROTOCOL: ${PROTOCOL}
+        DOMAIN: ${DOMAIN_DEV}
     ports:
       - 5688:5688
     volumes:
@@ -30,7 +34,10 @@ services:
     build:
       context: ../frontend
       args:
-        FRONTEND_ENV: development
+        VUE_APP_NAME: ${VUE_APP_NAME}
+        VUE_APP_PROTOCOL: ${VUE_APP_PROTOCOL}
+        VUE_APP_DOMAIN: ${DOMAIN_DEV}
+
 
   proxy:
     command:

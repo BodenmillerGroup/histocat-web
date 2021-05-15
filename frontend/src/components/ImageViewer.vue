@@ -1,7 +1,10 @@
 <template>
-  <div id="canvasContainer">
-    <canvas :id="canvas2d" :ref="canvas2d"></canvas>
-    <canvas :id="canvasWebGl" :ref="canvasWebGl" v-intersect="onIntersect" v-resize="onResize" />
+  <div id="canvasContainer" ref="canvasContainer" v-intersect="onIntersect" v-resize="onResize">
+    <canvas id="canvas2d" ref="canvas2d" />
+    <canvas id="canvasWebGl" ref="canvasWebGl" />
+    <div id="cellTooltipContainer">
+      <Tooltip id="cellTooltip" v-if="cellInfo" :cell="cellInfo" />
+    </div>
   </div>
 </template>
 
@@ -11,41 +14,31 @@ import createScatterplot from "regl-scatterplot";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { projectsModule } from "@/modules/projects";
 import { analysisModule } from "@/modules/analysis";
-import { datasetsModule } from "@/modules/datasets";
 import { transformToWebGl, transformFromWebGl } from "@/utils/webglUtils";
-import { centroidsModule } from "@/modules/centroids";
-import { mainModule } from "@/modules/main";
-import { resultsModule } from "@/modules/results";
-import { ICellPoint, ISelectedCell } from "@/modules/results/models";
 import { IRegionStatsSubmission } from "@/modules/analysis/models";
+import { cellsModule } from "@/modules/cells";
+import { ICell } from "@/modules/cells/models";
+import { uiModule } from "@/modules/ui";
+import Tooltip from "@/components/tooltip/Tooltip.vue";
 
-@Component
+@Component({
+  components: { Tooltip },
+})
 export default class ImageViewer extends Vue {
-  readonly mainContext = mainModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
-  readonly datasetContext = datasetsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly settingsContext = settingsModule.context(this.$store);
-  readonly centroidsContext = centroidsModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
-  private readonly canvas2d = "canvas2d";
-  private readonly canvasWebGl = "canvasWebGl";
-
-  points: ICellPoint[] = [];
+  points: ICell[] = [];
   scatterplot: any;
   selection: any[] = [];
 
-  get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.mainContext.getters.showOptions;
-  }
+  cellInfo: ICell | null = null;
 
   get applyMask() {
-    return this.settingsContext.getters.maskSettings.mode === "mask";
+    return this.uiContext.getters.maskMode === "mask";
   }
 
   get showLegend() {
@@ -56,10 +49,6 @@ export default class ImageViewer extends Vue {
     return this.projectsContext.getters.activeAcquisitionId;
   }
 
-  get activeDataset() {
-    return this.datasetContext.getters.activeDataset;
-  }
-
   get activeAcquisition() {
     return this.projectsContext.getters.activeAcquisition;
   }
@@ -68,8 +57,8 @@ export default class ImageViewer extends Vue {
     return this.projectsContext.getters.channelStackImage;
   }
 
-  get centroids() {
-    return this.centroidsContext.getters.centroids;
+  get cellsByAcquisition() {
+    return this.cellsContext.getters.cellsByAcquisition;
   }
 
   get selectedChannels() {
@@ -85,7 +74,7 @@ export default class ImageViewer extends Vue {
   }
 
   get mouseMode() {
-    return this.settingsContext.getters.mouseMode;
+    return this.uiContext.getters.mouseMode;
   }
 
   @Watch("mouseMode")
@@ -97,8 +86,8 @@ export default class ImageViewer extends Vue {
 
   onIntersect(entries, observer, isIntersecting) {
     if (isIntersecting) {
-      const canvas = this.$refs.canvasWebGl as Element;
-      const { width, height } = canvas.getBoundingClientRect();
+      const canvasContainer = this.$refs.canvasContainer as Element;
+      const { width, height } = canvasContainer.getBoundingClientRect();
       this.scatterplot.set({ width, height });
     }
   }
@@ -107,22 +96,12 @@ export default class ImageViewer extends Vue {
     this.refresh();
   }
 
-  @Watch("showWorkspace")
-  showWorkspaceChanged(value) {
-    this.refresh();
-  }
-
-  @Watch("showOptions")
-  showOptionsChanged(value) {
-    this.refresh();
-  }
-
   refresh() {
     if (!this.scatterplot) {
       return;
     }
-    const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
+    const canvasContainer = this.$refs.canvasContainer as Element;
+    const { width, height } = canvasContainer.getBoundingClientRect();
     this.scatterplot.set({ width, height });
     this.scatterplot.refresh();
   }
@@ -148,14 +127,14 @@ export default class ImageViewer extends Vue {
           prevBackgroundImage.destroy();
         }
 
-        if (this.applyMask && this.centroids && this.centroids.has(this.activeAcquisitionId!)) {
-          this.points = this.centroids.get(this.activeAcquisitionId!)!;
+        if (this.applyMask && this.cellsByAcquisition && this.cellsByAcquisition.has(this.activeAcquisitionId!)) {
+          this.points = this.cellsByAcquisition.get(this.activeAcquisitionId!)!;
           const x = transformToWebGl(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
           this.scatterplot.draw(x);
         } else {
           this.scatterplot.draw([]);
         }
-        this.scatterplot.deselect({ preventEvent: true });
+        // this.scatterplot.deselect({ preventEvent: true });
       };
       img.src = value;
     }
@@ -163,37 +142,29 @@ export default class ImageViewer extends Vue {
 
   pointoverHandler(idx: number) {
     const point = this.points[idx];
-    console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
-    );
+    this.cellInfo = point;
   }
 
   pointoutHandler(idx: number) {
-    const point = this.points[idx];
-    console.log(
-      `X: ${point.x}\nY: ${point.y}\nAcquisitionId: ${point.acquisitionId}\nCellId: ${point.cellId}\nObjectNumber: ${point.objectNumber}\nColor: ${point.color}`
-    );
+    this.cellInfo = null;
   }
 
   selectHandler({ points: selectedPoints }) {
-    console.log("ImageViewer Selected:", selectedPoints);
     this.selection = selectedPoints;
     if (this.selection.length > 0) {
-      const newSelectedCells: ISelectedCell[] = [];
+      const selectedCells: string[] = [];
       for (const i of this.selection) {
         const point = this.points[i];
-        const acquisitionId = point.acquisitionId;
-        newSelectedCells.push(
-          Object.freeze({ acquisitionId: acquisitionId, cellId: point.cellId, objectNumber: point.objectNumber })
-        );
+        selectedCells.push(point.cellId);
       }
-      this.resultsContext.mutations.setSelectedCells(newSelectedCells);
+      this.cellsContext.mutations.setSelectedCellIds(selectedCells);
       if (this.applyMask) {
         this.projectsContext.actions.getChannelStackImage();
       }
     } else {
-      this.resultsContext.mutations.setSelectedCells([]);
+      this.cellsContext.mutations.setSelectedCellIds([]);
       if (this.applyMask) {
+        this.cellInfo = null;
         this.projectsContext.actions.getChannelStackImage();
       }
     }
@@ -217,7 +188,9 @@ export default class ImageViewer extends Vue {
 
   lassoEndHandler(data: { coordinates: [number, number][] }) {
     if (this.regionsEnabled) {
-      this.calculateRegionStats(transformFromWebGl(data.coordinates, 800, 800));
+      this.calculateRegionStats(
+        transformFromWebGl(data.coordinates, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y)
+      );
     }
   }
 
@@ -262,28 +235,28 @@ export default class ImageViewer extends Vue {
 
   private initViewer() {
     const canvas = this.$refs.canvasWebGl as Element;
-    const { width, height } = canvas.getBoundingClientRect();
 
     this.scatterplot = createScatterplot({
       syncEvents: true,
       canvas: canvas,
-      width: width,
-      height: height,
       opacity: 1,
       pointSize: 2,
-      pointSizeSelected: 1,
-      pointOutlineWidth: 1,
-      pointColor: [255, 140, 0],
+      pointSizeSelected: 0,
+      pointOutlineWidth: 0,
+      pointColor: [0.66, 0.66, 0.66, 1],
+      pointColorActive: [0, 0.55, 1, 1],
+      pointColorHover: [1, 1, 1, 1],
       lassoMinDelay: 15,
       lassoClearEvent: "lassoEnd",
       showReticle: false,
       deselectOnDblClick: true,
       deselectOnEscape: true,
       mouseMode: "panZoom",
+      keyMap: { shift: "lasso", ctrl: "merge" },
     });
 
     this.scatterplot.subscribe("pointover", this.pointoverHandler);
-    // this.scatterplot.subscribe("pointout", this.pointoutHandler);
+    this.scatterplot.subscribe("pointout", this.pointoutHandler);
     this.scatterplot.subscribe("select", this.selectHandler);
     this.scatterplot.subscribe("deselect", this.deselectHandler);
     this.scatterplot.subscribe("lassoEnd", this.lassoEndHandler);
@@ -291,6 +264,9 @@ export default class ImageViewer extends Vue {
 
   mounted() {
     this.initViewer();
+    if (this.channelStackImage) {
+      this.onChannelStackImageChanged(this.channelStackImage);
+    }
   }
 
   beforeDestroy() {
@@ -303,18 +279,36 @@ export default class ImageViewer extends Vue {
 
 <style scoped>
 #canvasContainer {
-  height: calc(100vh - 134px);
-  position: relative;
+  height: 100%;
   width: 100%;
+  position: absolute;
 }
 #canvasWebGl {
   height: 100%;
-  position: absolute;
   width: 100%;
+  position: absolute;
 }
 #canvas2d {
   pointer-events: none;
   position: absolute;
   z-index: 2;
+}
+#cellTooltipContainer {
+  position: relative;
+}
+#cellTooltip {
+  margin: 4px;
+  background: black;
+  color: white;
+  opacity: 0.8;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  height: auto;
+  width: auto;
+  font-size: 80%;
+  text-align: right;
 }
 </style>

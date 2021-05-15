@@ -1,40 +1,46 @@
 <template>
-  <div :id="plotId" :ref="plotId" class="plot" v-intersect="onIntersect" v-resize="onResize">
+  <div :id="plotId" :ref="plotId" class="scatter-plot-2d" v-intersect="onIntersect">
     <!-- Plotly chart will be drawn inside this DIV -->
   </div>
 </template>
 
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
-import { settingsModule } from "@/modules/settings";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-import Plotly from "plotly.js/dist/plotly";
-import { ICellPoint, ISelectedCell } from "@/modules/results/models";
-import { resultsModule } from "@/modules/results";
+// import Plotly from "plotly.js/dist/plotly";
+import { cellsModule } from "@/modules/cells";
+import { ICell } from "@/modules/cells/models";
+import { uiModule } from "@/modules/ui";
+
+declare const Plotly;
+
+const pointSize = 3;
+const unselectedPointSize = 2;
 
 @Component
 export default class ScatterPlot2d extends Vue {
   readonly projectsContext = projectsModule.context(this.$store);
-  readonly settingsContext = settingsModule.context(this.$store);
-  readonly resultsContext = resultsModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
+  readonly cellsContext = cellsModule.context(this.$store);
 
-  @Prop({ type: String, required: true }) plotId;
-  @Prop({ type: String, required: true }) title;
-  @Prop({ type: String, required: false }) xAxisTitle;
-  @Prop({ type: String, required: false }) yAxisTitle;
-  @Prop({ type: Map, required: true }) data!: Map<number, ICellPoint[]>;
-  @Prop({ type: Boolean, required: true }) ignoreSelection!: boolean;
+  @Prop({ type: String, required: true }) readonly plotId;
+  @Prop({ type: String, required: true }) readonly title;
+  @Prop({ type: String, required: false }) readonly xAxisTitle;
+  @Prop({ type: String, required: false }) readonly yAxisTitle;
+  @Prop({ type: String, required: true }) readonly mapping!: string;
+  @Prop({ type: Map, required: true }) readonly data!: Readonly<Map<number, ICell[]>>;
+  @Prop({ type: Boolean, required: true }) readonly ignoreSelection!: boolean;
 
   get applyMask() {
-    return this.settingsContext.getters.maskSettings.mode === "mask";
+    return this.uiContext.getters.maskMode === "mask";
   }
 
   get heatmap() {
-    return this.resultsContext.getters.heatmap;
+    return this.cellsContext.getters.heatmap;
   }
 
   get selectedCells() {
-    return this.resultsContext.getters.selectedCells;
+    return this.cellsContext.getters.selectedCells;
   }
 
   onIntersect(entries, observer, isIntersecting) {
@@ -43,110 +49,120 @@ export default class ScatterPlot2d extends Vue {
     }
   }
 
-  onResize() {
-    // this.refresh();
-  }
-
   refresh() {
-    const plotElement = this.$refs[this.plotId] as Element;
-    const { width, height } = plotElement.getBoundingClientRect();
-    Plotly.relayout(this.plotId, {
-      width,
-      height,
-    });
+    try {
+      const plot = this.$refs[this.plotId] as Element;
+      if (plot) {
+        const { width, height } = plot.getBoundingClientRect();
+        Plotly.relayout(plot, {
+          width,
+          height,
+        });
+      }
+    } catch (e) {
+      // TODO: find more elegant way to avoid exception during component dragging
+    }
   }
 
-  private refreshOnDataChange(data: Map<number, ICellPoint[]>) {
-    if (data) {
-      const traces: any[] = [];
-      data.forEach((v, k) => {
-        traces.push({
-          type: "scattergl",
-          mode: "markers",
-          name: `Acquisition ${k}`,
-          x: v.map((v) => v.x),
-          y: v.map((v) => v.y),
-          text: v.map((v) => `CellID: ${v.cellId}`),
-          customdata: v,
-          marker: this.heatmap
-            ? {
-                size: 3,
-                color: v.map((v) => v.color),
-                colorscale: "Jet",
-              }
-            : {
-                size: 3,
-              },
-          unselected: {
-            marker: {
-              opacity: 0.1,
-            },
+  private refreshOnDataChange(data: Readonly<Map<number, ICell[]>>) {
+    const traces: any[] = [];
+    data.forEach((cells, k) => {
+      const filteredCells = cells.filter((v) => v.mappings[this.mapping]);
+      traces.push({
+        type: "scattergl",
+        mode: "markers",
+        name: `Acquisition ${k}`,
+        x: filteredCells.map((v) => v.mappings[this.mapping][0]),
+        y: filteredCells.map((v) => v.mappings[this.mapping][1]),
+        text: filteredCells.map((v) => `CellID: ${v.cellId}`),
+        customdata: filteredCells,
+        marker: {
+          size: pointSize,
+          color: filteredCells.map((v) => v.color),
+        },
+        selected: {
+          marker: {
+            size: pointSize,
+            opacity: 1.0,
+            color: "#4151b6",
           },
-        });
+        },
+        unselected: {
+          marker: {
+            size: unselectedPointSize,
+            opacity: 0.1,
+          },
+        },
       });
+    });
 
-      const layout = {
-        showlegend: true,
-        xaxis: {
-          title: this.xAxisTitle,
-          spikesnap: 'cursor',
-          spikemode: 'across',
-          spikethickness: 1,
-          spikedash: 'solid',
-          showspikes: true,
-          spikecolor: "grey"
-        },
-        yaxis: {
-          title: this.yAxisTitle,
-          spikesnap: 'cursor',
-          spikemode: 'across',
-          spikethickness: 1,
-          spikedash: 'solid',
-          showspikes: true,
-          spikecolor: "grey"
-        },
-        hovermode: "closest",
-        dragmode: "lasso",
-        autosize: true,
-      };
+    const layout = {
+      showlegend: true,
+      xaxis: {
+        title: this.xAxisTitle,
+        spikesnap: "cursor",
+        spikemode: "across",
+        spikethickness: 1,
+        spikedash: "solid",
+        showspikes: true,
+        spikecolor: "grey",
+      },
+      yaxis: {
+        title: this.yAxisTitle,
+        spikesnap: "cursor",
+        spikemode: "across",
+        spikethickness: 1,
+        spikedash: "solid",
+        showspikes: true,
+        spikecolor: "grey",
+      },
+      hovermode: "closest",
+      dragmode: "lasso",
+      autosize: true,
+    };
 
-      Plotly.react(this.plotId, traces, layout);
-    } else {
-      Plotly.react(this.plotId, [], {});
+    try {
+      const plot = this.$refs[this.plotId] as any;
+      Plotly.react(plot, traces, layout);
+    } catch (e) {
+      // TODO: find more elegant way to avoid exception during component dragging
     }
   }
 
   @Watch("data")
-  dataChanged(data: Map<number, ICellPoint[]>) {
+  dataChanged(data: Map<number, ICell[]>) {
     this.refreshOnDataChange(data);
   }
 
   @Watch("selectedCells")
-  selectedCellsChanged(selectedCells: ISelectedCell[]) {
-    if (this.data) {
-      const selectedpoints: any[] = [];
-      this.data.forEach((v, k) => {
-        // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
-        selectedpoints.push(
-          selectedCells.length > 0
-            ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
-            : null
-        );
-      });
+  selectedCellsChanged(selectedCells: ICell[]) {
+    const selectedpoints: any[] = [];
+    this.data.forEach((v, k) => {
+      // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
+      selectedpoints.push(
+        selectedCells.length > 0
+          ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
+          : null
+      );
+    });
 
-      const updatedData: any = {
-        selectedpoints: selectedpoints,
+    const updatedData: any = {
+      selectedpoints: selectedpoints,
+    };
+
+    if (this.ignoreSelection) {
+      updatedData.unselected = {
+        marker: {
+          opacity: 0,
+        },
       };
+    }
 
-      if (this.ignoreSelection) {
-        updatedData.unselected = {
-          marker: {
-            opacity: 0,
-          },
-        };
-      }
-
-      Plotly.update(this.plotId, updatedData);
+    try {
+      const plot = this.$refs[this.plotId] as any;
+      Plotly.update(plot, updatedData);
+    } catch (e) {
+      // TODO: find more elegant way to avoid exception during component dragging
     }
   }
 
@@ -161,52 +177,58 @@ export default class ScatterPlot2d extends Vue {
       responsive: true,
     };
 
-    Plotly.react(this.plotId, initData, initLayout, initConfig);
+    try {
+      const plot = this.$refs[this.plotId] as any;
 
-    const plot = this.$refs[this.plotId] as any;
-    plot.on("plotly_selected", (eventData) => {
-      if (eventData) {
-        if (eventData.points.length > 0) {
-          // console.log(eventData.points);
-          const newSelectedCells: ISelectedCell[] = [];
-          eventData.points.forEach((point, i) => {
-            const cellPoint = point.customdata as ICellPoint;
-            newSelectedCells.push({
-              acquisitionId: cellPoint.acquisitionId,
-              cellId: cellPoint.cellId,
-              objectNumber: cellPoint.objectNumber,
+      Plotly.react(plot, initData, initLayout, initConfig);
+
+      plot.on("plotly_selected", (eventData) => {
+        if (eventData) {
+          if (eventData.points.length > 0) {
+            const selectedCells: string[] = [];
+            eventData.points.forEach((point, i) => {
+              const cellPoint = point.customdata as ICell;
+              selectedCells.push(cellPoint.cellId);
             });
-          });
-          this.resultsContext.mutations.setSelectedCells(newSelectedCells);
-          if (this.applyMask) {
-            this.projectsContext.actions.getChannelStackImage();
+            this.cellsContext.mutations.setSelectedCellIds(selectedCells);
+            if (this.applyMask) {
+              this.projectsContext.actions.getChannelStackImage();
+            }
           }
         }
-      }
-    });
+      });
 
-    plot.on("plotly_deselect", () => {
-      this.resultsContext.mutations.setSelectedCells([]);
-      if (this.applyMask) {
-        this.projectsContext.actions.getChannelStackImage();
-      }
-    });
+      plot.on("plotly_deselect", () => {
+        this.cellsContext.mutations.setSelectedCellIds([]);
+        if (this.applyMask) {
+          this.projectsContext.actions.getChannelStackImage();
+        }
+      });
 
-    if (this.data) {
       this.refreshOnDataChange(this.data);
+    } catch (e) {
+      // TODO: find more elegant way to avoid exception during layout refresh
     }
   }
 
   mounted() {
     this.initPlot();
   }
+
+  beforeDestroy() {
+    try {
+      Plotly.purge(this.$refs[this.plotId]);
+    } catch (e) {
+      // TODO: check how plotly WebGl context should be destroyed
+    }
+  }
 }
 </script>
 
 <style scoped>
-.plot {
+.scatter-plot-2d {
   height: 100%;
-  position: absolute;
   width: 100%;
+  position: relative;
 }
 </style>

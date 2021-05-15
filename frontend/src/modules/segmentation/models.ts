@@ -1,6 +1,6 @@
 export interface ISegmentationPreprocessingSettings {
-  threshold: boolean;
-  percentile: number;
+  threshold?: boolean;
+  percentile?: number;
   normalize: boolean;
   kernel_size: number;
 }
@@ -22,6 +22,7 @@ export interface ISegmentationSubmission {
   dataset_name: string | null;
   dataset_description: string | null;
   model_id: number;
+  compartment: string;
   acquisition_ids: readonly number[];
   channels: string[];
   nuclei_channels: string[];

@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def import_dataset(db: Session, dataset: DatasetModel, segmentation_data: Sequence[Dict]):
     """Import dataset from the segmentation pipeline output."""
 
-    meta = {"columns": {"neighbors": []}}
+    meta = {"columns": {}}
 
     masks = {}
     for ac_segmentation_data in segmentation_data:
@@ -86,6 +86,7 @@ def _import_cells(dataset: DatasetModel, segmentation_data: Sequence[Dict]):
             "CentroidY": centroids_y_all,
         }
     )
+    obs.index = obs.index.astype(str, copy=False)
     obs["CellId"] = obs.index
 
     var_names = []

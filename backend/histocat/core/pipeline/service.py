@@ -14,6 +14,7 @@ def get_project_pipelines(session: Session, *, project_id: int) -> Sequence[Pipe
     return (
         session.query(PipelineModel.id, PipelineModel.name, PipelineModel.description, PipelineModel.created_at)
         .filter(PipelineModel.project_id == project_id)
+        .order_by(PipelineModel.id)
         .all()
     )
 

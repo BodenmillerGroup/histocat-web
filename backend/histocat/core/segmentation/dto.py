@@ -6,8 +6,8 @@ from pydantic import BaseModel
 class SegmentationPreprocessingSettingsDto(BaseModel):
     """Segmentation preprocessing settings model."""
 
-    threshold: bool
-    percentile: float
+    threshold: Optional[bool]
+    percentile: Optional[float]
     normalize: bool
     kernel_size: int
 
@@ -33,6 +33,7 @@ class SegmentationSubmissionDto(BaseModel):
     dataset_name: Optional[str]
     dataset_description: Optional[str]
     model_id: int
+    compartment: str
     acquisition_ids: List[int]
     channels: List[str]
     nuclei_channels: List[str]

@@ -1,10 +1,14 @@
 import { Mutations } from "vuex-smart-module";
 import { SettingsState } from ".";
-import { IImageFilter, IImageLegend, IImageScalebar, IMaskSettings } from "./models";
+import { IImageFilter, IImageLegend, IImageScalebar } from "./models";
 
 export class SettingsMutations extends Mutations<SettingsState> {
+  setActiveLayoutUid(uid: string) {
+    this.state.activeLayoutUid = uid;
+  }
+
   setChannelsSettings(payload) {
-    this.state.channelsSettings = { ...this.state.channelsSettings, payload };
+    this.state.channelsSettings = { ...this.state.channelsSettings, ...payload };
   }
 
   setChannelColor(payload: { channelName: string; color: string }) {
@@ -38,14 +42,6 @@ export class SettingsMutations extends Mutations<SettingsState> {
 
   setScalebar(payload: IImageScalebar) {
     this.state.scalebar = payload;
-  }
-
-  setMaskSettings(payload: IMaskSettings) {
-    this.state.mask = payload;
-  }
-
-  setMouseMode(mode: "panZoom" | "lasso" | "rotate") {
-    this.state.mouseMode = mode;
   }
 
   reset() {

@@ -1,41 +1,38 @@
 <template>
-  <v-card tile class="ma-1">
-    <v-card-title>Channels</v-card-title>
-    <v-card-text>
-      <v-data-table
-        :headers="headers"
-        :items="items"
-        :search="search"
-        v-model="selected"
-        show-select
-        hide-default-footer
-        dense
-        disable-pagination
-        no-data-text="Please first select an acquisition"
-      >
-        <template v-slot:top>
-          <v-text-field v-model="search" label="Search" clearable single-line>
-            <template v-slot:append>
-              <v-icon>mdi-magnify</v-icon>
-            </template>
-          </v-text-field>
-        </template>
-        <template v-slot:item.type="props">
-          <v-radio-group v-model="props.item.type" row dense mandatory hide-details class="ma-0">
-            <v-radio label="" value="none" @click="typeChanged" />
-            <v-radio label="nuclear" value="nuclear" @click="typeChanged" />
-            <v-radio label="cytoplasm" value="cytoplasm" @click="typeChanged" />
-          </v-radio-group>
-        </template>
-      </v-data-table>
-    </v-card-text>
-  </v-card>
+  <div v-if="projectData" class="px-2 pt-1">
+    <h4>Channels</h4>
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      :search="search"
+      v-model="selected"
+      show-select
+      hide-default-footer
+      dense
+      disable-pagination
+      no-data-text="Please first select an acquisition"
+    >
+      <template v-slot:top>
+        <v-text-field v-model="search" label="Search" clearable single-line>
+          <template v-slot:append>
+            <v-icon>mdi-magnify</v-icon>
+          </template>
+        </v-text-field>
+      </template>
+      <template v-slot:item.type="props">
+        <v-radio-group v-model="props.item.type" row dense mandatory hide-details class="ma-0 pa-0">
+          <v-radio label="" value="none" @click="typeChanged" />
+          <v-radio label="nuclear" value="nuclear" @click="typeChanged" />
+          <v-radio label="cytoplasm" value="cytoplasm" @click="typeChanged" />
+        </v-radio-group>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { IChannel } from "@/modules/projects/models";
-import { settingsModule } from "@/modules/settings";
 import { intersectionBy } from "lodash-es";
 import { Component, Vue } from "vue-property-decorator";
 import { segmentationModule } from "@/modules/segmentation";
@@ -44,7 +41,6 @@ import { channelTypeToString } from "@/utils/converters";
 
 @Component
 export default class PanelView extends Vue {
-  readonly settingsContext = settingsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
   readonly segmentationContext = segmentationModule.context(this.$store);
 
@@ -59,7 +55,6 @@ export default class PanelView extends Vue {
       sortable: true,
       value: "name",
       align: "start",
-      width: 100,
     },
     {
       text: "Label",
@@ -72,19 +67,22 @@ export default class PanelView extends Vue {
       sortable: true,
       value: "mass",
       align: "end",
-      width: 100,
     },
     {
       text: "Type",
       sortable: true,
       value: "type",
       align: "start",
-      width: 350,
+      width: 303,
     },
   ];
 
   get selectedAcquisitionIds() {
     return this.segmentationContext.getters.selectedAcquisitionIds;
+  }
+
+  get projectData() {
+    return this.projectsContext.getters.projectData!;
   }
 
   get channels() {

@@ -1,28 +1,26 @@
 <template>
-  <v-card tile class="ma-1">
-    <v-card-title>Acquisitions</v-card-title>
-    <v-card-text>
-      <v-data-table
-        :headers="headers"
-        :items="items"
-        :search="search"
-        v-model="selected"
-        show-select
-        hide-default-footer
-        dense
-        disable-pagination
-        no-data-text="No available single-cell data"
-      >
-        <template v-slot:top>
-          <v-text-field v-model="search" label="Search" clearable single-line>
-            <template v-slot:append>
-              <v-icon>mdi-magnify</v-icon>
-            </template>
-          </v-text-field>
-        </template>
-      </v-data-table>
-    </v-card-text>
-  </v-card>
+  <div v-if="projectData" class="px-2 pt-1">
+    <h4>Acquisitions</h4>
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      :search="search"
+      v-model="selected"
+      show-select
+      hide-default-footer
+      dense
+      disable-pagination
+      no-data-text="No available single-cell data"
+    >
+      <template v-slot:top>
+        <v-text-field v-model="search" label="Search" clearable single-line>
+          <template v-slot:append>
+            <v-icon>mdi-magnify</v-icon>
+          </template>
+        </v-text-field>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script lang="ts">
@@ -46,7 +44,6 @@ export default class AcquisitionsView extends Vue {
       filterable: false,
       value: "id",
       align: "end",
-      width: 70,
     },
     {
       text: "Slide ID",
@@ -54,7 +51,6 @@ export default class AcquisitionsView extends Vue {
       filterable: false,
       value: "slide_id",
       align: "end",
-      width: 100,
     },
     {
       text: "Descriptions",

@@ -50,16 +50,12 @@ class ColorsDto(BaseModel):
 
     type: str
     name: str
-    data: List[Any]
+    data: List[str]
 
 
 class ResultDataDto(BaseModel):
     cellIds: List[str]
-    acquisitionIds: List[int]
-    objectNumbers: List[int]
     markers: List[str]
-    x: List[float]
-    y: List[float]
     mappings: Optional[Dict[str, MappingDto]]
 
 

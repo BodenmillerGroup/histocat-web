@@ -1,81 +1,146 @@
 <template>
-  <LoadingView v-if="!projectData" text="Loading..." />
-  <div v-else :class="layoutClass">
-    <div v-show="showWorkspace" class="pr-1">
-      <ImageWorkspaceView :projectData="projectData" />
-    </div>
-    <VisualizationView />
-    <div v-show="showOptions">
-      <OptionsView />
-    </div>
+  <div>
+    <v-toolbar dense flat>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" small elevation="1" :disabled="!activeAcquisition">
+            <v-icon left small>mdi-download</v-icon>
+            Export
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item @click="exportImage('tiff')">
+            <v-list-item-title>Export TIFF</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="exportImage('png')">
+            <v-list-item-title>Export PNG</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="exportImage('ome-tiff')">
+            <v-list-item-title>Export OME-TIFF</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-menu offset-y open-on-hover>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn v-bind="attrs" v-on="on" small elevation="1" :disabled="!activeAcquisition || !hasMask" class="ml-2">
+            <v-icon left small>mdi-cog-outline</v-icon>
+            Mode
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item-group v-model="maskMode" color="primary">
+            <v-list-item value="raw">
+              <v-list-item-title>Show Raw Image</v-list-item-title>
+            </v-list-item>
+            <v-list-item value="mask">
+              <v-list-item-title>Show Mask Overlay</v-list-item-title>
+            </v-list-item>
+            <v-list-item value="origin" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'">
+              <v-list-item-title>Show Mask Source</v-list-item-title>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+        <v-list dense subheader>
+          <v-subheader>Mask Opacity</v-subheader>
+          <v-list-item>
+            <v-list-item-content>
+              <v-slider :value="maskOpacity" @end="maskOpacityHandler" hide-details min="0" max="1" step="0.01" />
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
+        <v-btn value="panZoom" small>
+          <v-icon>mdi-arrow-top-left</v-icon>
+        </v-btn>
+        <v-btn value="lasso" small>
+          <v-icon>mdi-lasso</v-icon>
+        </v-btn>
+      </v-btn-toggle>
+      <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
+    </v-toolbar>
+    <ImageViewer ref="imageViewer" />
   </div>
 </template>
 
 <script lang="ts">
-import LoadingView from "@/components/LoadingView.vue";
+import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
-import { mainModule } from "@/modules/main";
-import VisualizationView from "@/views/group/project/image/visualization/VisualizationView.vue";
-import ImageWorkspaceView from "@/views/group/project/image/workspace/ImageWorkspaceView.vue";
+import { ExportFormat } from "@/modules/projects/models";
 import { Component, Vue } from "vue-property-decorator";
-import OptionsView from "@/views/group/project/image/options/OptionsView.vue";
+import ImageViewer from "@/components/ImageViewer.vue";
+import { analysisModule } from "@/modules/analysis";
+import { uiModule } from "@/modules/ui";
 
 @Component({
-  components: {
-    OptionsView,
-    ImageWorkspaceView,
-    VisualizationView,
-    LoadingView,
-  },
+  components: { ImageViewer },
 })
 export default class ImageView extends Vue {
-  readonly mainContext = mainModule.context(this.$store);
+  readonly uiContext = uiModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
+  readonly datasetsContext = datasetsModule.context(this.$store);
+  readonly analysisContext = analysisModule.context(this.$store);
 
-  get projectData() {
-    return this.projectsContext.getters.projectData;
+  get maskMode() {
+    return this.uiContext.getters.maskMode;
   }
 
-  get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
+  set maskMode(value: "raw" | "mask" | "origin") {
+    this.uiContext.mutations.setMaskMode(value);
+    this.projectsContext.actions.getChannelStackImage();
   }
 
-  get showOptions() {
-    return this.mainContext.getters.showOptions;
+  get maskOpacity() {
+    return this.uiContext.getters.maskOpacity;
   }
 
-  get layoutClass() {
-    if (!this.showWorkspace && this.showOptions) {
-      return "layout-without-workspace py-0";
-    } else if (this.showWorkspace && !this.showOptions) {
-      return "layout-without-options py-0";
-    } else if (!this.showWorkspace && !this.showOptions) {
-      return "layout-empty py-0";
+  maskOpacityHandler(value: number) {
+    this.uiContext.mutations.setMaskOpacity(value);
+    this.projectsContext.actions.getChannelStackImage();
+  }
+
+  get mouseMode() {
+    return this.uiContext.getters.mouseMode;
+  }
+
+  set mouseMode(value: "panZoom" | "lasso" | "rotate") {
+    this.uiContext.mutations.setMouseMode(value);
+  }
+
+  get regionsEnabled() {
+    return this.analysisContext.getters.regionsEnabled;
+  }
+
+  set regionsEnabled(value: boolean) {
+    this.analysisContext.mutations.setRegionsEnabled(value);
+  }
+
+  get activeProjectId() {
+    return this.projectsContext.getters.activeProjectId;
+  }
+
+  get activeAcquisition() {
+    return this.projectsContext.getters.activeAcquisition;
+  }
+
+  get activeDataset() {
+    return this.datasetsContext.getters.activeDataset;
+  }
+
+  get hasMask() {
+    let hasMask = false;
+    if (this.activeAcquisition && this.activeDataset && this.activeDataset.meta.masks) {
+      hasMask = !!this.activeDataset.meta.masks[this.activeAcquisition.id];
     }
-    return "layout-full py-0";
+    return hasMask;
+  }
+
+  exportImage(format: ExportFormat) {
+    this.projectsContext.actions.exportChannelStackImage(format);
+  }
+
+  refresh() {
+    (this.$refs.imageViewer as any).refresh();
   }
 }
 </script>
-
-<style scoped>
-.layout-full {
-  display: grid;
-  grid-template-columns: 380px 1fr 380px;
-  grid-template-rows: auto;
-}
-.layout-without-workspace {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  grid-template-rows: auto;
-}
-.layout-without-options {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  grid-template-rows: auto;
-}
-.layout-empty {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto;
-}
-</style>

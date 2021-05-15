@@ -85,8 +85,8 @@ export default class CreateProject extends Vue {
   readonly nameRules = [required];
 
   valid = false;
-  name: string = "";
-  description: string = "";
+  name = "";
+  description = "";
   tags: any[] = [];
 
   editing = null;

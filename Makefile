@@ -2,8 +2,8 @@ PATH  := node_modules/.bin:$(PATH)
 SHELL := /bin/bash
 
 bootstrap:
-	cd backend && JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 poetry install --extras "backend worker"
-	cd frontend && yarn install
+	cd backend && poetry install --extras "backend worker"
+	cd frontend && yarn install --frozen-lockfile
 
 deploy-development:
 	./scripts/deploy-development.sh
@@ -19,9 +19,6 @@ build:
 
 build-push:
 	./scripts/build-push.sh
-
-build-push-worker-base-image:
-	./scripts/build-worker-base-image.sh
 
 clean:
 	sudo find . -type d -name __pycache__ -exec rm -r {} \+

@@ -53,7 +53,7 @@ def import_dataset(db: Session, mask_map_filename: Path, project_id: int):
             ac_output = _process_single_cell_data(acquisition, mask_meta.get("location"))
             segmentation_data.append(ac_output)
 
-    meta = {"masks": masks, "columns": {"neighbors": []}}
+    meta = {"masks": masks, "columns": {}}
 
     channels = _import_cells(dataset=dataset, segmentation_data=segmentation_data)
 
@@ -165,6 +165,7 @@ def _import_cells(dataset: DatasetModel, segmentation_data: Sequence[Dict]):
             "CentroidY": centroids_y_all,
         }
     )
+    obs.index = obs.index.astype(str, copy=False)
     obs["CellId"] = obs.index
 
     var_names = []

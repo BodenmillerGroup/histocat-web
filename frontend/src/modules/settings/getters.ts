@@ -2,6 +2,10 @@ import { Getters } from "vuex-smart-module";
 import { SettingsState } from ".";
 
 export class SettingsGetters extends Getters<SettingsState> {
+  get activeLayoutUid() {
+    return this.state.activeLayoutUid;
+  }
+
   get channelsSettings() {
     return this.state.channelsSettings;
   }
@@ -16,13 +20,5 @@ export class SettingsGetters extends Getters<SettingsState> {
 
   get scalebar() {
     return this.state.scalebar;
-  }
-
-  get maskSettings() {
-    return this.state.mask;
-  }
-
-  get mouseMode() {
-    return this.state.mouseMode;
   }
 }

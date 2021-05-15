@@ -31,7 +31,7 @@ def process_segmentation(
         actor_name="process_segmentation",
         queue_name="process",
         args=(),
-        kwargs={"project_id": project_id, "payload": params.json()},
+        kwargs={"project_id": project_id, "payload": params.json(exclude_unset=True)},
         options={},
     )
     broker.enqueue(message)

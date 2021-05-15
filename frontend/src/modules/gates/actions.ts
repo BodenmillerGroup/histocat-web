@@ -8,30 +8,41 @@ import { GatesGetters } from "./getters";
 import { GatesMutations } from "./mutations";
 import { datasetsModule } from "@/modules/datasets";
 import { groupModule } from "@/modules/group";
-import { resultsModule } from "@/modules/results";
-import { ISelectedCell } from "@/modules/results/models";
+import { cellsModule } from "@/modules/cells";
+import { annotationsModule } from "@/modules/annotations";
+import { projectsModule } from "@/modules/projects";
+import { uiModule } from "@/modules/ui";
 
 export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutations, GatesActions> {
   // Declare context type
+  ui?: Context<typeof uiModule>;
   main?: Context<typeof mainModule>;
   group?: Context<typeof groupModule>;
-  dataset?: Context<typeof datasetsModule>;
-  results?: Context<typeof resultsModule>;
+  datasets?: Context<typeof datasetsModule>;
+  cells?: Context<typeof cellsModule>;
+  annotations?: Context<typeof annotationsModule>;
+  projects?: Context<typeof projectsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
+    this.ui = uiModule.context(store);
     this.main = mainModule.context(store);
     this.group = groupModule.context(store);
-    this.dataset = datasetsModule.context(store);
-    this.results = resultsModule.context(store);
+    this.datasets = datasetsModule.context(store);
+    this.cells = cellsModule.context(store);
+    this.annotations = annotationsModule.context(store);
+    this.projects = projectsModule.context(store);
   }
 
-  async getGates(datasetId: number) {
+  async getGates() {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const data = await api.getDatasetGates(groupId, datasetId);
-      if (data) {
-        this.mutations.setEntities(data);
+      const datasetId = this.datasets!.getters.activeDatasetId;
+      if (datasetId) {
+        const data = await api.getDatasetGates(groupId, datasetId);
+        if (data) {
+          this.mutations.setEntities(data);
+        }
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
@@ -41,23 +52,15 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
   async createGate(name: string) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const datasetId = this.dataset!.getters.activeDatasetId;
-      const selectedCells = this.results!.getters.selectedCells;
-      if (datasetId && selectedCells) {
-        const acquisitionIds: number[] = [];
-        const indices: number[] = [];
-        const cellIds: string[] = [];
-        selectedCells.forEach((selectedCell) => {
-          acquisitionIds.push(selectedCell.acquisitionId);
-          indices.push(selectedCell.objectNumber);
-          cellIds.push(selectedCell.cellId);
-        });
+      const datasetId = this.datasets!.getters.activeDatasetId;
+      const cellClasses = this.annotations?.getters.cellClasses;
+      const annotations = this.annotations?.getters.annotations;
+      if (datasetId && cellClasses && annotations) {
         const payload: IGateCreate = {
           dataset_id: datasetId!,
           name: name,
-          acquisition_ids: acquisitionIds,
-          indices: indices,
-          cell_ids: cellIds,
+          cell_classes: cellClasses,
+          annotations: annotations,
         };
         const data = await api.createGate(groupId, payload);
         this.mutations.addEntity(data);
@@ -68,19 +71,20 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
     }
   }
 
-  async applyGate(id: number) {
+  async loadGate(id: number) {
     try {
       const groupId = this.group?.getters.activeGroupId!;
       const data = await api.getGate(groupId, id);
       if (data) {
-        const selectedCells: ISelectedCell[] = [];
-        for (let i = 0; i < data.acquisition_ids.length; i++) {
-          const acquisitionId = data.acquisition_ids[i];
-          const index = data.indices[i];
-          const cellId = data.cell_ids[i];
-          selectedCells.push(Object.freeze({ acquisitionId: acquisitionId, cellId: cellId, objectNumber: index }));
+        this.annotations?.mutations.setCellClasses(data.cell_classes);
+        this.annotations?.mutations.setAnnotations(data.annotations);
+
+        if (this.cells!.getters.heatmap && this.cells!.getters.heatmap.type === "annotation") {
+          this.projects!.actions.getAnnotationData();
+          if (this.ui!.getters.maskMode === "mask") {
+            await this.projects!.actions.getChannelStackImage();
+          }
         }
-        this.results?.mutations.setSelectedCells(selectedCells);
       }
     } catch (error) {
       await this.main!.actions.checkApiError(error);

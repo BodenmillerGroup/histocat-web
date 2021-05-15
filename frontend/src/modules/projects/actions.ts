@@ -10,23 +10,29 @@ import { ProjectsGetters } from "./getters";
 import { ExportFormat, IChannelUpdate, IProjectCreate, IProjectUpdate } from "./models";
 import { ProjectsMutations } from "./mutations";
 import { groupModule } from "@/modules/group";
-import { resultsModule } from "@/modules/results";
+import { cellsModule } from "@/modules/cells";
+import { annotationsModule } from "@/modules/annotations";
+import { uiModule } from "@/modules/ui";
 
 export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, ProjectsMutations, ProjectsActions> {
   // Declare context type
   main?: Context<typeof mainModule>;
+  ui?: Context<typeof uiModule>;
   group?: Context<typeof groupModule>;
   settings?: Context<typeof settingsModule>;
   datasets?: Context<typeof datasetsModule>;
-  results?: Context<typeof resultsModule>;
+  cells?: Context<typeof cellsModule>;
+  annotations?: Context<typeof annotationsModule>;
 
   // Called after the module is initialized
   $init(store: Store<any>): void {
     this.main = mainModule.context(store);
+    this.ui = uiModule.context(store);
     this.group = groupModule.context(store);
     this.settings = settingsModule.context(store);
     this.datasets = datasetsModule.context(store);
-    this.results = resultsModule.context(store);
+    this.cells = cellsModule.context(store);
+    this.annotations = annotationsModule.context(store);
   }
 
   async getGroupProjects(groupId: number) {
@@ -96,17 +102,17 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
         payload.data,
         () => {
           console.log("Upload has started.");
-          this.main!.mutations.setProcessing(true);
+          this.ui!.mutations.setProcessing(true);
         },
         () => {
           console.log("Upload completed successfully.");
-          this.main!.mutations.setProcessing(false);
-          this.main!.mutations.setProcessingProgress(0);
+          this.ui!.mutations.setProcessing(false);
+          this.ui!.mutations.setProcessingProgress(0);
           this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);
-          this.main!.mutations.setProcessingProgress(percent);
+          this.ui!.mutations.setProcessingProgress(percent);
         },
         () => {}
       );
@@ -155,39 +161,17 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     }
     try {
       const groupId = this.group?.getters.activeGroupId!;
-      const response = await api.downloadChannelStackImage(groupId, params);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
-      };
+      const data = await api.downloadChannelStackImage(groupId, params);
+      if (data) {
+        const blob = await data.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          this.mutations.setChannelStackImage(reader.result);
+        };
+      }
     } catch (error) {
       await this.main!.actions.checkApiError(error);
-    }
-  }
-
-  async getColorizedMaskImage() {
-    const params = await this.actions.prepareStackParams();
-    if (params.channels.length === 0 || !params.hasOwnProperty("mask")) {
-      return;
-    }
-    params["mask"]["apply"] = true;
-    params["mask"]["colorize"] = true;
-    try {
-      this.mutations.setColorizeMaskInProgress(true);
-      const groupId = this.group?.getters.activeGroupId!;
-      const response = await api.downloadChannelStackImage(groupId, params);
-      const blob = await response.blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        this.mutations.setChannelStackImage(reader.result);
-      };
-    } catch (error) {
-      await this.main!.actions.checkApiError(error);
-    } finally {
-      this.mutations.setColorizeMaskInProgress(false);
     }
   }
 
@@ -240,6 +224,12 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     }
   }
 
+  async getAnnotationData() {
+    const annotations = this.annotations!.getters.annotations;
+    const cellClasses = this.annotations!.getters.cellClasses;
+    this.cells!.mutations.updateCellsByAnnotations({ annotations: annotations, cellClasses: cellClasses });
+  }
+
   /**
    * Prepare stack image call parameters
    */
@@ -273,30 +263,59 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     const activeDataset = this.datasets!.getters.activeDataset;
     if (activeDataset) {
       output["datasetId"] = activeDataset.id;
-      const maskSettings = this.settings!.getters.maskSettings;
+      const maskMode = this.ui!.getters.maskMode;
+      const maskOpacity = this.ui!.getters.maskOpacity;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
       if (activeAcquisitionId && activeDataset.meta.masks) {
         const mask = activeDataset.meta.masks[activeAcquisitionId];
         if (mask) {
           output["mask"] = {
-            colorize: false,
-            mode: maskSettings.mode,
+            mode: maskMode,
+            opacity: maskOpacity,
             location: mask.location,
           };
-          if (this.results?.getters.heatmap) {
-            output["mask"]["colorsType"] = this.results.getters.heatmap.type;
-            output["mask"]["colorsName"] = this.results.getters.heatmap.label;
+          if (this.cells?.getters.activeResultId) {
+            output["mask"]["resultId"] = this.cells?.getters.activeResultId;
           }
-          if (this.results?.getters.activeResultId) {
-            output["mask"]["resultId"] = this.results?.getters.activeResultId;
+
+          if (this.cells?.getters.heatmap) {
+            output["mask"]["colorsType"] = this.cells.getters.heatmap.type;
+            output["mask"]["colorsName"] = this.cells.getters.heatmap.value;
           }
-          // Prepare selected cell ids visualisation
-          const selectedCells = this.results?.getters.selectedCells?.filter(
-            (v) => v.acquisitionId === activeAcquisitionId
-          );
-          if (selectedCells && selectedCells.length > 0) {
+
+          if (this.cells?.getters.heatmap && this.cells.getters.heatmap.type === "annotation") {
+            const annotations = this.annotations?.getters.annotations;
+            const cellClasses = this.annotations?.getters.cellClasses;
+            const cellColors = {};
+            annotations?.forEach((annotation) => {
+              if (annotation.visible) {
+                const color = cellClasses![annotation.cellClass];
+                if (!cellColors.hasOwnProperty(color)) {
+                  cellColors[color] = [];
+                }
+                const objectNumbers: number[] = [];
+                annotation.cellIds.forEach((cellId) => {
+                  const cell = this.cells?.getters.cells[cellId];
+                  if (cell?.acquisitionId === activeAcquisitionId) {
+                    objectNumbers.push(cell.objectNumber);
+                  }
+                });
+                cellColors[color] = cellColors[color].concat(objectNumbers);
+              }
+            });
             output["mask"]["gated"] = true;
-            output["mask"]["cellIds"] = selectedCells.map((item) => item.objectNumber);
+            output["mask"]["cells"] = cellColors;
+          } else {
+            // Prepare selected cell objectNumbers visualisation
+            const selectedAcquisitionCells = this.cells?.getters.selectedCells?.filter(
+              (v) => v.acquisitionId === activeAcquisitionId
+            );
+            if (selectedAcquisitionCells && selectedAcquisitionCells.length > 0) {
+              output["mask"]["gated"] = true;
+              output["mask"]["cells"] = {
+                "#ffffff": selectedAcquisitionCells.map((item) => item.objectNumber),
+              };
+            }
           }
         }
       }

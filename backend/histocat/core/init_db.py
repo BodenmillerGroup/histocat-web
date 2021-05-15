@@ -11,6 +11,7 @@ from histocat.core.pipeline.models import PipelineModel  # noqa
 from histocat.core.preset.models import PresetModel  # noqa
 from histocat.core.project.models import ProjectModel  # noqa
 from histocat.core.result.models import ResultModel  # noqa
+from histocat.core.security import get_password_hash
 from histocat.core.slide.models import SlideModel  # noqa
 from histocat.core.user import service
 from histocat.core.user.dto import UserCreateDto
@@ -29,9 +30,10 @@ def init_db(db_session):
 
     user = service.get_by_email(db_session, email=config.FIRST_SUPERUSER)
     if not user:
+        hashed_password = get_password_hash(config.FIRST_SUPERUSER_PASSWORD)
         user_in = UserCreateDto(
             email=config.FIRST_SUPERUSER,
-            password=config.FIRST_SUPERUSER_PASSWORD,
+            password=hashed_password,
             is_admin=True,
         )
         user = service.create(db_session, params=user_in)

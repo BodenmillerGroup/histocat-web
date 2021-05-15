@@ -61,8 +61,4 @@ export class ProjectsGetters extends Getters<ProjectsState> {
   get channelStackImage() {
     return this.state.channelStackImage;
   }
-
-  get colorizeMaskInProgress() {
-    return this.state.colorizeMaskInProgress;
-  }
 }

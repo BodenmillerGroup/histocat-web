@@ -2,7 +2,7 @@ import { IUserProfile } from "@/modules/user/models";
 import { Module } from "vuex-smart-module";
 import { MainActions } from "./actions";
 import { MainGetters } from "./getters";
-import { AppNotification, ViewMode } from "./models";
+import { AppNotification } from "./models";
 import { MainMutations } from "./mutations";
 
 export class MainState {
@@ -10,15 +10,7 @@ export class MainState {
   isLoggedIn: boolean | null = null;
   logInError = false;
   userProfile: IUserProfile | null = null;
-  dashboardMiniDrawer = true;
-  dashboardShowDrawer = true;
   notifications: AppNotification[] = [];
-  showWorkspace = true;
-  showOptions = true;
-  viewMode: ViewMode = "image";
-
-  processing = false;
-  processingProgress = 0;
 }
 
 export const mainModule = new Module({

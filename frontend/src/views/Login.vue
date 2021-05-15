@@ -64,8 +64,8 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Login extends Vue {
   readonly mainContext = mainModule.context(this.$store);
 
-  email: string = "";
-  password: string = "";
+  email = "";
+  password = "";
   appName = appName;
 
   get loginError() {

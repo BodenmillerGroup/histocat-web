@@ -1,169 +1,76 @@
 <template>
-  <div>
-    <v-navigation-drawer
-      :mini-variant="miniDrawer"
-      mini-variant-width="60"
-      :clipped="$vuetify.breakpoint.lgAndUp"
-      v-model="showDrawer"
-      fixed
-      app
-      width="180"
-    >
-      <v-row no-gutters>
-        <v-col>
-          <v-list nav dense>
-            <v-list-item
-              v-if="activeGroupId && !activeProjectId"
-              :to="{ name: 'group-projects', params: { groupId: activeGroupId } }"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
-                  </template>
-                  <span>Projects</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Projects</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+  <div class="fill">
+    <v-app-bar app dense dark color="primary" clipped-left extension-height="0">
+      <v-toolbar-title @click.stop="$router.push({ name: 'groups' }, () => {})" class="toolbar-title">
+        {{ appName }}
+      </v-toolbar-title>
 
-            <v-list-item
-              v-if="activeGroupId && !activeProjectId"
-              :to="{ name: 'group-members', params: { groupId: activeGroupId } }"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-account-multiple-outline</v-icon>
-                  </template>
-                  <span>Members</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Members</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('image')">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-magnify-scan</v-icon>
-                  </template>
-                  <span>Image</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Image</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('segmentation')">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-scatter-plot-outline</v-icon>
-                  </template>
-                  <span>Segmentation</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Segmentation</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="activeGroupId && activeProjectId" @click="setViewMode('data')">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-graph-outline</v-icon>
-                  </template>
-                  <span>Data</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Data</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-divider v-if="activeGroupId && activeProjectId" />
-
-            <v-list-item
-              v-if="activeGroupId && activeProjectId"
-              @click="$router.push({ name: 'group-projects', params: { groupId: activeGroupId } }, () => {})"
-            >
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-view-dashboard-outline</v-icon>
-                  </template>
-                  <span>Projects</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Projects</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-users' }">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-account-outline</v-icon>
-                  </template>
-                  <span>Users</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Users</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-
-            <v-list-item v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-models' }">
-              <v-list-item-icon>
-                <v-tooltip right>
-                  <template v-slot:activator="{ on }">
-                    <v-icon v-on="on">mdi-brain</v-icon>
-                  </template>
-                  <span>Models</span>
-                </v-tooltip>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title>Models</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-col>
-      </v-row>
-    </v-navigation-drawer>
-    <v-app-bar app dense dark color="primary" :clipped-left="$vuetify.breakpoint.lgAndUp" extension-height="0">
-      <v-app-bar-nav-icon @click.stop="switchShowDrawer" />
-      <v-toolbar-title @click.stop="$router.push({ name: 'groups' }, () => {})" class="toolbar-title">{{
-        appName
-      }}</v-toolbar-title>
       <v-spacer />
-      <v-btn-toggle v-if="activeGroupId && activeProjectId" v-model="views" multiple background-color="primary" group>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="workspace" color="primary">
-              <v-icon>mdi-file-tree</v-icon>
-            </v-btn>
-          </template>
-          <span v-if="!showWorkspace">Show workspace</span>
-          <span v-else>Hide workspace</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn v-on="on" value="options" color="primary">
-              <v-icon>mdi-tune</v-icon>
-            </v-btn>
-          </template>
-          <span v-if="!showOptions">Show options</span>
-          <span v-else>Hide options</span>
-        </v-tooltip>
-      </v-btn-toggle>
+
+      <v-btn
+        text
+        v-if="activeGroupId"
+        @click="$router.push({ name: 'group-projects', params: { groupId: activeGroupId } }, () => {})"
+      >
+        <v-icon left>mdi-alpha-p-box-outline</v-icon>
+        Projects
+      </v-btn>
+
+      <v-btn
+        text
+        v-if="activeGroupId && !activeProjectId"
+        :to="{ name: 'group-members', params: { groupId: activeGroupId } }"
+      >
+        <v-icon left>mdi-account-multiple-outline</v-icon>
+        Members
+      </v-btn>
+
+      <v-btn text v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-users' }">
+        <v-icon left>mdi-account-outline</v-icon>
+        Users
+      </v-btn>
+
+      <v-btn text v-if="!activeGroupId && !activeProjectId && isAdmin" :to="{ name: 'admin-models' }">
+        <v-icon left>mdi-brain</v-icon>
+        Models
+      </v-btn>
+
+      <v-spacer />
+
+      <v-menu offset-y tile open-on-hover v-if="activeGroupId && activeProjectId">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" text small>
+            <v-icon left small>mdi-view-dashboard-outline</v-icon>
+            Layout
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item v-for="layout in layouts" :key="layout.name" @click="loadLayout(layout.uid)">
+            <v-list-item-title>{{ layout.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-tooltip bottom v-if="activeGroupId && activeProjectId">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon @click="saveLayout">
+            <v-icon>mdi-shape-square-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Save layout</span>
+      </v-tooltip>
+
+      <v-tooltip bottom v-if="activeGroupId && activeProjectId">
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" icon @click="resetLayouts">
+            <v-icon>mdi-square-off-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Reset layouts</span>
+      </v-tooltip>
+
+      <v-divider vertical />
+
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" icon href="https://plankter.gitbook.io/histocat" target="_blank">
@@ -201,7 +108,7 @@
         slot="extension"
       />
     </v-app-bar>
-    <v-main>
+    <v-main class="fill">
       <router-view />
     </v-main>
   </div>
@@ -213,10 +120,10 @@ import { appName } from "@/env";
 import { mainModule } from "@/modules/main";
 import { BroadcastManager } from "@/utils/BroadcastManager";
 import { WebSocketManager } from "@/utils/WebSocketManager";
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { groupModule } from "@/modules/group";
 import { projectsModule } from "@/modules/projects";
-import { ViewMode } from "@/modules/main/models";
+import { uiModule } from "@/modules/ui";
 
 const routeGuardMain = async (to, from, next) => {
   if (to.path === "/main") {
@@ -230,12 +137,12 @@ const routeGuardMain = async (to, from, next) => {
   components: { ToolbarProgressBar },
 })
 export default class Main extends Vue {
+  readonly uiContext = uiModule.context(this.$store);
   readonly mainContext = mainModule.context(this.$store);
   readonly groupContext = groupModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
   readonly appName = appName;
-  views: string[] = ["workspace", "options"];
 
   beforeRouteEnter(to, from, next) {
     routeGuardMain(to, from, next);
@@ -245,44 +152,8 @@ export default class Main extends Vue {
     routeGuardMain(to, from, next);
   }
 
-  @Watch("views")
-  viewsChanged(views: string[]) {
-    this.mainContext.mutations.setLayout({
-      showWorkspace: views.includes("workspace"),
-      showOptions: views.includes("options"),
-    });
-  }
-
-  get showWorkspace() {
-    return this.mainContext.getters.showWorkspace;
-  }
-
-  get showOptions() {
-    return this.mainContext.getters.showOptions;
-  }
-
-  get miniDrawer() {
-    return this.mainContext.getters.dashboardMiniDrawer;
-  }
-
-  get showDrawer() {
-    return this.mainContext.getters.dashboardShowDrawer;
-  }
-
-  set showDrawer(value: boolean) {
-    this.mainContext.mutations.setDashboardShowDrawer(value);
-  }
-
-  switchShowDrawer() {
-    this.mainContext.mutations.setDashboardShowDrawer(!this.mainContext.getters.dashboardShowDrawer);
-  }
-
   get isAdmin() {
     return this.mainContext.getters.isAdmin;
-  }
-
-  get isGroupAdmin() {
-    return this.groupContext.getters.isGroupAdmin;
   }
 
   get activeGroupId() {
@@ -298,15 +169,30 @@ export default class Main extends Vue {
   }
 
   get processing() {
-    return this.mainContext.getters.processing;
+    return this.uiContext.getters.processing;
   }
 
   get processingProgress() {
-    return this.mainContext.getters.processingProgress;
+    return this.uiContext.getters.processingProgress;
   }
 
-  setViewMode(value: ViewMode) {
-    this.mainContext.mutations.setViewMode(value);
+  get layouts() {
+    return this.uiContext.getters.layouts;
+  }
+
+  loadLayout(uid: string) {
+    this.uiContext.actions.loadLayout(uid);
+  }
+
+  saveLayout() {
+    const name = self.prompt("Please enter layout name:");
+    if (name) {
+      this.uiContext.actions.addLayout(name);
+    }
+  }
+
+  resetLayouts() {
+    this.uiContext.actions.resetLayouts();
   }
 
   mounted() {
@@ -324,6 +210,10 @@ export default class Main extends Vue {
 <style scoped>
 .toolbar-title {
   cursor: pointer;
+}
+.fill {
+  width: 100%;
+  height: 100%;
 }
 </style>
 

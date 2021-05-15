@@ -14,6 +14,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class LoadingView extends Vue {
-  @Prop(String) text: string | undefined;
+  @Prop(String) readonly text: string | undefined;
 }
 </script>

@@ -1,5 +1,5 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:14.16.1-alpine3.13 as build-stage
+FROM node:14.17.0-alpine3.13 as build-stage
 
 # Comment out the next line to disable git
 #RUN apk update && apk upgrade && \
@@ -9,22 +9,28 @@ WORKDIR /app
 
 COPY package.json yarn.lock /app/
 
-RUN yarn install --non-interactive
+RUN yarn install --frozen-lockfile --non-interactive
 
 COPY ./ /app/
 
-ARG FRONTEND_ENV
-ENV VUE_APP_ENV=${FRONTEND_ENV}
-
 # Comment out the next line to disable tests
 #RUN yarn test:unit
+
+ARG VUE_APP_NAME
+ENV VUE_APP_NAME=${VUE_APP_NAME}
+
+ARG VUE_APP_PROTOCOL
+ENV VUE_APP_PROTOCOL=${VUE_APP_PROTOCOL}
+
+ARG VUE_APP_DOMAIN
+ENV VUE_APP_DOMAIN=${VUE_APP_DOMAIN}
 
 RUN yarn build
 
 
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1.18.0-alpine
+FROM nginx:1.20.0-alpine
 
 LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
 

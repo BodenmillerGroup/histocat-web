@@ -60,12 +60,12 @@ export default class CreateUser extends Vue {
   }
 
   valid = false;
-  name: string = "";
-  email: string = "";
-  isActive: boolean = true;
-  isAdmin: boolean = false;
-  password1: string = "";
-  password2: string = "";
+  name = "";
+  email = "";
+  isActive = true;
+  isAdmin = false;
+  password1 = "";
+  password2 = "";
 
   async mounted() {
     await this.userContext.actions.getUsers();

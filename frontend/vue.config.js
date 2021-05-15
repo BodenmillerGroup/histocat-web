@@ -17,7 +17,7 @@ module.exports = {
     },
   },
 
-  configureWebpack: config => {
+  configureWebpack: (config) => {
     if (process.env.NODE_ENV === "production") {
       ("nosources-source-map");
     } else {

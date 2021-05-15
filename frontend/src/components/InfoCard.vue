@@ -32,7 +32,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
 export default class InfoCard extends Vue {
-  @Prop(Object) node;
+  @Prop(Object) readonly node;
 
   get imageUrl() {
     switch (this.node.item.type) {

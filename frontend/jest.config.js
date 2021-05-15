@@ -1,9 +1,6 @@
 module.exports = {
   preset: "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
-  // moduleNameMapper: {
-  //   "^ky$": require.resolve("ky").replace("index.js", "umd.js"),
-  // },
-  transformIgnorePatterns: [
-    "^.+\\.module\\.(css|sass|scss)$",
-  ]
+  transformIgnorePatterns: ["/node_modules/(?!ky|lodash-es)"],
+  setupFiles: ["<rootDir>/tests/jest.stubs.js"],
+  snapshotSerializers: ["jest-serializer-vue"],
 };

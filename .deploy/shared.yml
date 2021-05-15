@@ -68,6 +68,10 @@ services:
       - app-data:/data
 
   frontend:
+    environment:
+      - VUE_APP_NAME
+      - VUE_APP_PROTOCOL
+      - VUE_APP_DOMAIN
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
@@ -89,7 +93,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:5.1
+    image: dpage/pgadmin4:5.2
     depends_on:
       - db
     environment:
@@ -103,13 +107,13 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.8.14-alpine
+    image: rabbitmq:3.8.16-alpine
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   redis:
     restart: always
-    image: redis:6.2.1-alpine3.13
+    image: redis:6.2.3-alpine3.13
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -118,7 +122,7 @@ services:
 
   redisinsight:
     restart: always
-    image: redislabs/redisinsight:1.10.0
+    image: redislabs/redisinsight:1.10.1
     depends_on:
       - redis
     ports:

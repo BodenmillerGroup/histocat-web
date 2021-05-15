@@ -1,4 +1,4 @@
-from typing import Any, Optional, Sequence
+from typing import Any, Dict, Optional, Sequence
 
 from pydantic import BaseModel
 
@@ -8,31 +8,6 @@ class PlotSeriesDto(BaseModel):
 
     label: str
     data: Sequence[float]
-
-
-class ScatterPlotDto(BaseModel):
-    """Scatter plot model."""
-
-    x: PlotSeriesDto
-    y: PlotSeriesDto
-    z: Optional[PlotSeriesDto]
-    heatmap: Optional[PlotSeriesDto]
-
-
-class BoxPlotDto(BaseModel):
-    """Box plot model."""
-
-    series: Sequence[PlotSeriesDto]
-
-
-class PcaDto(BaseModel):
-    """PCA plot model."""
-
-    x: PlotSeriesDto
-    y: PlotSeriesDto
-    z: Optional[PlotSeriesDto]
-    heatmap: Optional[PlotSeriesDto]
-    explained_variance_ratio: Optional[Sequence[float]]
 
 
 class RegionStatsSubmissionDto(BaseModel):
@@ -50,3 +25,22 @@ class RegionChannelStatsDto(BaseModel):
     min: float
     max: float
     mean: float
+
+
+class ClassifyCellsSubmissionDto(BaseModel):
+    """Cell classification submission model."""
+
+    dataset_id: int
+    result_id: Optional[int]
+    channels: Sequence[str]
+    thresholds: Dict
+    n_estimators: int
+    cell_classes: Optional[Any]
+    annotations: Optional[Any]
+
+
+class ClassifyCellsDto(BaseModel):
+    """Cell classification result model."""
+
+    cellClasses: Dict
+    annotations: Sequence[Any]

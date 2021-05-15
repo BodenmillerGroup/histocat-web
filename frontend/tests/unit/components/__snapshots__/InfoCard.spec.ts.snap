@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InfoCard.vue renders correctly 1`] = `
+<div
+  class="card overflow-y-auto v-card v-card--flat v-sheet theme--light rounded-0"
+>
+  <div
+    class="v-card__title"
+  >
+    Info
+  </div>
+   
+  <hr
+    aria-orientation="horizontal"
+    class="v-divider theme--light"
+    role="separator"
+  />
+   
+  <div
+    class="v-card__title"
+  >
+    <div
+      class="v-image v-responsive grey lighten-2 theme--light"
+      style="width: 380px;"
+    >
+      <transition-stub
+        mode="in-out"
+        name="fade-transition"
+      >
+        <div
+          class="v-image__image v-image__image--preload v-image__image--cover"
+          style="background-position: center center;"
+        />
+      </transition-stub>
+      <transition-stub
+        appear="true"
+        name="fade-transition"
+      >
+        <div
+          class="v-image__placeholder"
+        >
+          <div
+            class="row fill-height ma-0 align-center justify-center"
+          >
+            <div
+              aria-valuemax="100"
+              aria-valuemin="0"
+              class="v-progress-circular v-progress-circular--indeterminate grey--text text--lighten-5"
+              role="progressbar"
+              style="height: 32px; width: 32px;"
+            >
+              <svg
+                style="transform: rotate(0deg);"
+                viewBox="22.857142857142858 22.857142857142858 45.714285714285715 45.714285714285715"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  class="v-progress-circular__overlay"
+                  cx="45.714285714285715"
+                  cy="45.714285714285715"
+                  fill="transparent"
+                  r="20"
+                  stroke-dasharray="125.664"
+                  stroke-dashoffset="125.66370614359172px"
+                  stroke-width="5.714285714285714"
+                />
+              </svg>
+              <div
+                class="v-progress-circular__info"
+              />
+            </div>
+          </div>
+        </div>
+      </transition-stub>
+      <div
+        class="v-responsive__content"
+      />
+    </div>
+  </div>
+   
+  <div
+    class="v-list v-sheet theme--light v-list--dense"
+    role="list"
+  />
+</div>
+`;

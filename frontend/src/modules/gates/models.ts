@@ -1,10 +1,11 @@
+import { IAnnotation } from "@/modules/annotations/models";
+
 export interface IGateCreate {
   dataset_id: number;
   name: string;
   description?: string;
-  acquisition_ids: number[];
-  indices: number[];
-  cell_ids: string[];
+  cell_classes: { [name: string]: string };
+  annotations: IAnnotation[];
 }
 
 export interface IGateUpdate {
@@ -17,8 +18,7 @@ export interface IGate {
   dataset_id: number;
   name: string;
   description?: string;
-  acquisition_ids: number[];
-  indices: number[];
-  cell_ids: string[];
+  cell_classes: { [name: string]: string };
+  annotations: IAnnotation[];
   created_at: string;
 }

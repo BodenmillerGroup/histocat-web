@@ -1,16 +1,16 @@
 <template>
   <div class="root">
-    <div class="container">
+    <div class="header">
+      <div class="labels">
+        <span class="range-label">{{ levels[0] }}</span>
+        <span class="label">
+          {{ label }}
+        </span>
+        <span class="range-label">{{ levels[1] }}</span>
+      </div>
       <input type="color" v-model.lazy="color" @click.stop />
     </div>
     <svg :width="width" :height="height" id="svg" ref="svg" />
-    <div class="labels">
-      <span class="range-label"> min {{ unclippedRangeMin.toPrecision(4) }} </span>
-      <span class="label">
-        {{ label }}
-      </span>
-      <span class="range-label"> max {{ unclippedRangeMax.toPrecision(4) }} </span>
-    </div>
   </div>
 </template>
 
@@ -26,33 +26,37 @@ function clamp(val, rng) {
   return Math.max(Math.min(val, rng[1]), rng[0]);
 }
 
+const marginLeft = 2; // Space for 0 tick label on X axis
+const marginRight = 60; // space for Y axis & labels
+const marginBottom = 20; // space for X axis & labels
+const marginTop = 0;
+
 @Component
 export default class BrushableHistogram extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
   @Prop(Object) readonly channel!: IChannel;
+  @Prop(Number) readonly containerWidth!: number;
 
   color = this.channel ? this.metalColor : "#ffffff";
 
-  marginLeft = 10; // Space for 0 tick label on X axis
-  marginRight = 54; // space for Y axis & labels
-  marginBottom = 25; // space for X axis & labels
-  marginTop = 3;
+  height = 50 - marginTop - marginBottom;
 
-  width = 340 - this.marginLeft - this.marginRight;
-  height = 80 - this.marginTop - this.marginBottom;
-
-  unclippedRangeMin = this.channel.min_intensity;
   unclippedRangeMax = this.channel.max_intensity;
 
   brushX: any = null;
   brushXselection: any = null;
 
-  levels: number[] =
-    this.settings && this.settings.levels
+  get width() {
+    return this.containerWidth - marginLeft - marginRight;
+  }
+
+  get levels() {
+    return this.settings && this.settings.levels
       ? [this.settings.levels.min, this.settings.levels.max]
       : [this.channel.min_intensity, this.channel.max_intensity];
+  }
 
   get metalColor() {
     return this.settings ? this.settings.color : "#ffffff";
@@ -89,7 +93,7 @@ export default class BrushableHistogram extends Vue {
     histogramCache.x = d3
       .scaleLinear()
       .domain([domainMin, domainMax])
-      .range([this.marginLeft, this.marginLeft + this.width]);
+      .range([marginLeft, marginLeft + this.width]);
 
     histogramCache.bins = stats.bins;
     histogramCache.binWidth = (domainMax - domainMin) / numBins;
@@ -102,43 +106,10 @@ export default class BrushableHistogram extends Vue {
     histogramCache.y = d3
       .scaleLinear()
       .domain([0, yMax])
-      .range([this.marginTop + this.height, this.marginTop]);
+      .range([marginTop + this.height, marginTop]);
 
     return histogramCache;
   });
-
-  onBrush(event, x) {
-    // const { dispatch, field, isObs, isUserDefined, isDiffExp } = this.props;
-
-    // ignore programmatically generated events
-    if (!event.sourceEvent) return;
-    // ignore cascading events, which are programmatically generated
-    if (event.sourceEvent.sourceEvent) return;
-
-    if (event.selection) {
-      // dispatch({
-      //   type,
-      //   selection: field,
-      //   continuousNamespace: {
-      //     isObs,
-      //     isUserDefined,
-      //     isDiffExp,
-      //   },
-      //   range: [x(d3.event.selection[0]), x(d3.event.selection[1])],
-      // });
-    } else {
-      // dispatch({
-      //   type,
-      //   selection: field,
-      //   continuousNamespace: {
-      //     isObs,
-      //     isUserDefined,
-      //     isDiffExp,
-      //   },
-      //   range: null,
-      // });
-    }
-  }
 
   onBrushEnd(event, x) {
     const minAllowedBrushSize = 10;
@@ -170,14 +141,13 @@ export default class BrushableHistogram extends Vue {
   }
 
   submitRange(range: number[]) {
-    if (!this.activeAcquisitionId) {
-      return;
+    if (this.activeAcquisitionId) {
+      this.settingsContext.mutations.setChannelLevels({
+        channelName: this.channel.name,
+        levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
+      });
+      this.projectsContext.actions.getChannelStackImage();
     }
-    this.settingsContext.mutations.setChannelLevels({
-      channelName: this.channel.name,
-      levels: { min: Math.round(range[0]), max: Math.round(range[1]) },
-    });
-    this.projectsContext.actions.getChannelStackImage();
   }
 
   renderHistogram(histogram) {
@@ -189,11 +159,11 @@ export default class BrushableHistogram extends Vue {
 
     /* Set margins within the SVG */
     const container = svg
-      .attr("width", this.width + this.marginLeft + this.marginRight)
-      .attr("height", this.height + this.marginTop + this.marginBottom)
+      .attr("width", this.width + marginLeft + marginRight)
+      .attr("height", this.height + marginTop + marginBottom)
       .append("g")
       .attr("class", "histogram-container")
-      .attr("transform", `translate(${this.marginLeft},${this.marginTop})`);
+      .attr("transform", `translate(${marginLeft},${marginTop})`);
 
     if (binWidth > 0) {
       /* BINS */
@@ -216,14 +186,12 @@ export default class BrushableHistogram extends Vue {
       .brushX()
       .extent([
         [x.range()[0], y.range()[1]],
-        [x.range()[1], this.marginTop + this.height + this.marginBottom],
+        [x.range()[1], marginTop + this.height + marginBottom],
       ])
       /*
       emit start so that the Undoable history can save an undo point
       upon drag start, and ignore the subsequent intermediate drag events.
       */
-      .on("start", (event) => this.onBrush(event, x.invert))
-      .on("brush", (event) => this.onBrush(event, x.invert))
       .on("end", (event) => this.onBrushEnd(event, x.invert));
 
     const brushXselection = container.insert("g").attr("class", "brush").call(brushX);
@@ -232,7 +200,7 @@ export default class BrushableHistogram extends Vue {
     container
       .insert("g")
       .attr("class", "axis axis--x")
-      .attr("transform", `translate(0,${this.marginTop + this.height})`)
+      .attr("transform", `translate(0,${marginTop + this.height})`)
       .call(
         d3
           .axisBottom(x)
@@ -244,7 +212,7 @@ export default class BrushableHistogram extends Vue {
     container
       .insert("g")
       .attr("class", "axis axis--y")
-      .attr("transform", `translate(${this.marginLeft + this.width},0)`)
+      .attr("transform", `translate(${marginLeft + this.width},0)`)
       .call(
         d3
           .axisRight(y)
@@ -292,13 +260,13 @@ export default class BrushableHistogram extends Vue {
 
 <style scoped>
 .root {
-  padding: 10px;
+  padding: 4px;
+  overflow-x: hidden;
   background-color: white;
 }
-.container {
-  display: flex;
-  justify-content: flex-end;
-  padding-bottom: 8px;
+.header {
+  display: grid;
+  grid-template-columns: 1fr 50px;
 }
 .labels {
   display: flex;
@@ -309,7 +277,7 @@ export default class BrushableHistogram extends Vue {
   font-style: italic;
 }
 .range-label {
-  color: #bbb;
-  font-size: xx-small;
+  color: rgb(145, 145, 145);
+  font-size: x-small;
 }
 </style>

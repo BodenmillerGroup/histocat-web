@@ -5,6 +5,7 @@ from typing import Optional, Sequence
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import anndata as ad
+import matplotlib
 import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, ORJSONResponse, StreamingResponse
@@ -14,6 +15,7 @@ from starlette.status import HTTP_404_NOT_FOUND
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member, get_active_user
 from histocat.core.constants import ANNDATA_FILE_EXTENSION
+from histocat.core.image import get_qualitative_colors, get_sequential_colors
 from histocat.core.member.models import MemberModel
 from histocat.core.result import service
 from histocat.core.result.dto import (
@@ -72,12 +74,8 @@ def get_result_data(
     adata = ad.read_h5ad(location)
 
     output = {
-        "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
-        "objectNumbers": adata.obs["ObjectNumber"].tolist(),
         "markers": adata.var_names.tolist(),
-        "x": adata.obs["CentroidX"].round(2).tolist(),
-        "y": adata.obs["CentroidY"].round(2).tolist(),
     }
 
     mappings = {}
@@ -143,16 +141,18 @@ def get_colors_data(
         "cellIds": adata.obs["CellId"].tolist(),
     }
 
+    colors = None
     if colors_type == "marker":
-        colors = adata.X[:, adata.var.index == colors_name]
-        output["colors"] = {"type": colors_type, "name": colors_name, "data": colors[:, 0].tolist()}
-    elif colors_type == "neighbor" or colors_type == "clustering":
-        colors = sc.get.obs_df(adata, keys=[colors_name])
-        output["colors"] = {
-            "type": colors_type,
-            "name": colors_name,
-            "data": colors[colors_name].tolist(),
-        }
+        values = adata.X[:, adata.var.index == colors_name]
+        mappable = get_sequential_colors()
+        colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
+    elif colors_type == "clustering":
+        values = sc.get.obs_df(adata, keys=[colors_name]).astype(int)
+        mappable = get_qualitative_colors()
+        colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
+
+    if colors is not None:
+        output["colors"] = {"type": colors_type, "name": colors_name, "data": colors}
 
     return ORJSONResponse(output)
 

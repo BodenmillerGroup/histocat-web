@@ -1,27 +1,39 @@
 import logging
+import os
 from typing import Sequence
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, Depends
+import scanpy as sc
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import ORJSONResponse
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage.measure import regionprops
+from sklearn.ensemble import RandomForestClassifier
 from sqlalchemy.orm import Session
+from starlette import status
 from starlette.requests import Request
 
 from histocat.api.db import get_db
 from histocat.api.security import get_active_member
 from histocat.core.acquisition import service as acquisition_service
-from histocat.core.analysis.dto import RegionChannelStatsDto, RegionStatsSubmissionDto
+from histocat.core.analysis.dto import (
+    ClassifyCellsDto,
+    ClassifyCellsSubmissionDto,
+    RegionChannelStatsDto,
+    RegionStatsSubmissionDto,
+)
+from histocat.core.constants import ANNDATA_FILE_EXTENSION
+from histocat.core.dataset import service as dataset_service
 from histocat.core.member.models import MemberModel
+from histocat.core.result import service as result_service
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-@router.post("/groups/{group_id}/analysis/region/stats", response_model=Sequence[RegionChannelStatsDto])
+@router.post("/groups/{group_id}/analysis/region", response_model=Sequence[RegionChannelStatsDto])
 async def calculate_region_stats(
     params: RegionStatsSubmissionDto,
     request: Request,
@@ -54,4 +66,88 @@ async def calculate_region_stats(
             }
         )
 
+    return ORJSONResponse(content)
+
+
+@router.post("/groups/{group_id}/analysis/classify", response_model=ClassifyCellsDto)
+async def classify_cells(
+    group_id: int,
+    params: ClassifyCellsSubmissionDto,
+    member: MemberModel = Depends(get_active_member),
+    db: Session = Depends(get_db),
+):
+    """Classify cells."""
+
+    if params.result_id:
+        result = result_service.get(db, id=params.result_id)
+        location = os.path.join(result.location, f"output{ANNDATA_FILE_EXTENSION}")
+        adata = sc.read_h5ad(location)
+    else:
+        dataset = dataset_service.get(db, id=params.dataset_id)
+        adata = sc.read_h5ad(dataset.cell_file_location())
+
+    cell_ids = []
+    cell_classes = []
+    for annotation in params.annotations:
+        ann_cell_ids = annotation["cellIds"]
+        cell_ids.extend(ann_cell_ids)
+        ann_cell_classes = [annotation["cellClass"]] * len(ann_cell_ids)
+        cell_classes.extend(ann_cell_classes)
+
+    # Convert cell ids to strings
+    cell_ids = list(map(str, cell_ids))
+
+    # Map cell ids to cell classes
+    cells = dict(zip(cell_ids, cell_classes))
+
+    df = adata.to_df()
+
+    df_train = df[df.index.isin(cell_ids)].copy()
+    if df_train.empty:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Train dataset is empty",
+        )
+
+    df_test = df[~df.index.isin(cell_ids)].copy()
+    if df_test.empty:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Test dataset is empty",
+        )
+
+    df_train["cellClass"] = df_train.index
+    df_train["cellClass"].replace(cells, inplace=True)
+
+    # Create a Gaussian Classifier
+    clf = RandomForestClassifier(n_estimators=params.n_estimators)
+
+    # Train the model using the training sets y_pred=clf.predict(X_test)
+    clf.fit(df_train[params.channels], df_train["cellClass"])
+
+    y_pred = clf.predict(df_test[params.channels])
+    y_pred_proba = clf.predict_proba(df_test[params.channels])
+
+    df_test["cellClass"] = y_pred
+
+    # Assign max class probability to a column
+    df_test["Prob"] = [max(prob) for prob in y_pred_proba]
+    df_test["Threshold"] = [params.thresholds[pred] for pred in y_pred]
+
+    # Filter cells by probability thresholds
+    df_test = df_test[df_test["Prob"] >= df_test["Threshold"]]
+
+    # Combine train and test dataframes together
+    result_df = df_test.append(df_train)
+
+    annotations = []
+    for cell_class in result_df["cellClass"].unique():
+        cellIds = result_df[result_df["cellClass"] == cell_class].index.to_list()
+        annotation = {"cellClass": cell_class, "visible": True, "cellIds": cellIds}
+        annotations.append(annotation)
+
+    content = {
+        "cellClasses": params.cell_classes,
+        "annotations": annotations,
+    }
     return ORJSONResponse(content)
