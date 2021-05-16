@@ -1,9 +1,9 @@
 {
-    "python.pythonPath": "venv/bin/python",
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
-    "eslint.packageManager": "yarn",
-    "eslint.validate": [{ "language": "typescript", "autoFix": true },],
-    "eslint.workingDirectories": [{ "directory": "./frontend" },]
+  "python.pythonPath": "venv/bin/python",
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  "eslint.packageManager": "yarn",
+  "eslint.validate": [{ "language": "typescript", "autoFix": true }],
+  "eslint.workingDirectories": [{ "directory": "./frontend" }]
 }

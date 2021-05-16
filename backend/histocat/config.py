@@ -1,4 +1,4 @@
-import os
+import uuid
 
 from pydantic import BaseSettings
 
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # absolute path to the root directory where all group data are located
     ROOT_DATA_DIRECTORY: str = "/data/groups/"
 
-    SECRET_KEY: bytes = os.urandom(32)
+    SECRET_KEY: str = str(uuid.uuid4())
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 60 minutes * 24 hours * 8 days = 8 days
 
@@ -32,11 +32,11 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     SMTP_TLS: bool = True
-    SMTP_PORT: int
-
     SMTP_HOST: str
+    SMTP_PORT: int
     SMTP_USER: str
     SMTP_PASSWORD: str
+
     EMAILS_FROM_EMAIL: str
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 24
     EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS: int = 48

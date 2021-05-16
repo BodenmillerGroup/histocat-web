@@ -1,20 +1,20 @@
-version: '3.7'
+version: "3.7"
 services:
   backend:
     restart: always
-    image: ${DOCKER_IMAGE_BACKEND}:${TAG-latest}
+    image: ${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG-latest}
     environment:
       - SMTP_PASSWORD
 
   worker:
     restart: always
-    image: ${DOCKER_IMAGE_WORKER}:${TAG-latest}
+    image: ${DOCKER_IMAGE_WORKER}:${DOCKER_TAG-latest}
     environment:
       - SMTP_PASSWORD
 
   frontend:
     restart: always
-    image: ${DOCKER_IMAGE_FRONTEND}:${TAG-latest}
+    image: ${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG-latest}
 
   proxy:
     command:

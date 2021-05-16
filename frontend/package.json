@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2021.05.14",
+  "version": "2021.05.16",
   "private": true,
   "description": "histoCAT for Web",
   "author": {
@@ -30,7 +30,7 @@
     "core-js": "3.12.1",
     "d3": "6.7.0",
     "file-saver": "2.0.5",
-    "golden-layout": "2.1.2",
+    "golden-layout": "2.2.0",
     "html2canvas": "1.0.0-rc.7",
     "ky": "0.27.0",
     "lodash-es": "4.17.21",

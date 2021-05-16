@@ -1,6 +1,6 @@
 FROM python:3.8.10
 
-LABEL maintainer="Anton Rau <anton.rau@gmail.com>"
+LABEL maintainer="Anton Rau <anton.rau@uzh.ch>"
 
 ARG BACKEND_ENV=production
 

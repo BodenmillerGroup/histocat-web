@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 services:
   backend:
     restart: "no"
@@ -37,7 +37,6 @@ services:
         VUE_APP_NAME: ${VUE_APP_NAME}
         VUE_APP_PROTOCOL: ${VUE_APP_PROTOCOL}
         VUE_APP_DOMAIN: ${DOMAIN_DEV}
-
 
   proxy:
     command:

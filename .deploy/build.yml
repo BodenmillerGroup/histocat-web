@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   backend:
-    image: '${DOCKER_IMAGE_BACKEND}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG-latest}'
     build:
       context: ../backend
       dockerfile: backend.dockerfile
@@ -11,7 +11,7 @@ services:
         DOMAIN: ${DOMAIN_PROD}
 
   worker:
-    image: '${DOCKER_IMAGE_WORKER}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_WORKER}:${DOCKER_TAG-latest}'
     build:
       context: ../backend
       dockerfile: worker.dockerfile
@@ -21,7 +21,7 @@ services:
         DOMAIN: ${DOMAIN_PROD}
 
   frontend:
-    image: '${DOCKER_IMAGE_FRONTEND}:${TAG-latest}'
+    image: '${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG-latest}'
     build:
       context: ../frontend
       args:
