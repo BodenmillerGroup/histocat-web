@@ -17,8 +17,14 @@ deploy-staging:
 build:
 	./scripts/build.sh
 
+build-staging:
+	./scripts/build-staging.sh
+
 build-push:
 	./scripts/build-push.sh
+
+build-staging-push:
+	./scripts/build-staging-push.sh
 
 clean:
 	sudo find . -type d -name __pycache__ -exec rm -r {} \+

@@ -1,41 +1,22 @@
 version: "3.7"
 services:
   backend:
-    restart: "no"
-    build:
-      context: ../backend
-      dockerfile: backend.dockerfile
-      args:
-        BACKEND_ENV: staging
-        PROTOCOL: ${PROTOCOL}
-        DOMAIN: ${DOMAIN_STAGE}
-    environment:
-      - SMTP_PASSWORD
+    restart: always
+    image: ${DOCKER_IMAGE_BACKEND_STAGING}:${DOCKER_TAG-latest}
 
   worker:
-    restart: "no"
-    build:
-      context: ../backend
-      dockerfile: worker.dockerfile
-      args:
-        BACKEND_ENV: staging
-        PROTOCOL: ${PROTOCOL}
-        DOMAIN: ${DOMAIN_STAGE}
+    restart: always
+    image: ${DOCKER_IMAGE_WORKER_STAGING}:${DOCKER_TAG-latest}
 
   frontend:
-    restart: "no"
-    build:
-      context: ../frontend
-      args:
-        VUE_APP_NAME: ${VUE_APP_NAME}
-        VUE_APP_PROTOCOL: ${VUE_APP_PROTOCOL}
-        VUE_APP_DOMAIN: ${DOMAIN_STAGE}
+    restart: always
+    image: ${DOCKER_IMAGE_FRONTEND_STAGING}:${DOCKER_TAG-latest}
 
   proxy:
     command:
-      - "--log.level=DEBUG"
-      - "--api.insecure=true"
-      - "--api.debug=true"
+      - "--log.level=INFO"
+      - "--api.insecure=false"
+      - "--api.debug=false"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"

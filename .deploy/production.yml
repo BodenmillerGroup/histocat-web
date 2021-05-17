@@ -3,14 +3,10 @@ services:
   backend:
     restart: always
     image: ${DOCKER_IMAGE_BACKEND}:${DOCKER_TAG-latest}
-    environment:
-      - SMTP_PASSWORD
 
   worker:
     restart: always
     image: ${DOCKER_IMAGE_WORKER}:${DOCKER_TAG-latest}
-    environment:
-      - SMTP_PASSWORD
 
   frontend:
     restart: always
