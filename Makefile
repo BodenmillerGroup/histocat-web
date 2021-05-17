@@ -29,6 +29,12 @@ clean:
 serve-frontend:
 	cd frontend && yarn run serve
 
+build-docs:
+	mkdocs build
+
+serve-docs:
+	mkdocs serve
+
 update-frontend:
 	cd frontend && ncu -u && yarn install
 

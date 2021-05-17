@@ -56,6 +56,8 @@ pylint = "*"
 pytest = "*"
 sqlalchemy-stubs = "*"
 vulture = "*"
+mkdocs-material = "*"
+mkdocs-include-markdown-plugin = "*"
 
 [tool.poetry.extras]
 backend = ["alembic", "jinja2", "python-multipart", "gunicorn", "uvicorn"]

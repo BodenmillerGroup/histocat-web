@@ -73,7 +73,7 @@
 
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn v-on="on" icon href="https://plankter.gitbook.io/histocat" target="_blank">
+          <v-btn v-on="on" icon href="https://bodenmillergroup.github.io/histocat-web" target="_blank">
             <v-icon>mdi-help-circle-outline</v-icon>
           </v-btn>
         </template>

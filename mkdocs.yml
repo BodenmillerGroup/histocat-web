@@ -1,0 +1,44 @@
+site_name: histoCAT
+
+copyright: Copyright &copy; 2021 Anton Rau
+repo_url: https://github.com/BodenmillerGroup/histocat-web
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
+  features:
+    - navigation.tabs
+    - navigation.top
+
+markdown_extensions:
+  - admonition
+  - footnotes
+
+plugins:
+  - include-markdown
+  - search
+
+nav:
+  - Home:
+    - index.md
+    - changelog.md
+    - license.md
+  - User manual:
+    - user/registration.md
+    - user/groups.md
+    - user/projects.md
+    - user/workspace.md
+    - user/channels-view.md
+    - user/blend-view.md
+    - user/tiles-view.md
+    - user/channel-settings.md
+    - user/options.md
+    - user/presets.md
+    - user/data.md
+    - user/datasets.md
+    - user/pipelines.md
+    - user/results.md
+    - user/gating.md
+  - Developer documentation:
+    - dev/developer.md
