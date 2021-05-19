@@ -12,7 +12,7 @@
         <span>Refresh datasets</span>
       </v-tooltip>
     </v-toolbar>
-    <v-list dense two-line class="pa-0">
+    <v-list dense class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-icon>
@@ -153,7 +153,7 @@ export default class DatasetsView extends Vue {
           this.cellsContext.actions.initializeCells({ datasetId: dataset.id }),
           this.cellsContext.actions.getDatasetResults(dataset.id),
           this.gatesContext.actions.getGates(),
-          ...(this.uiContext.getters.maskMode === "mask" ? [this.projectsContext.actions.getChannelStackImage()] : []),
+          ...(this.uiContext.getters.showMask ? [this.projectsContext.actions.getChannelStackImage()] : []),
         ]);
       }
     } else {

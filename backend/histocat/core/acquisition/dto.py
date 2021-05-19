@@ -34,7 +34,7 @@ class ScalebarDto(BaseModel):
 
 
 class MaskSettingsDto(BaseModel):
-    mode: str
+    showMask: bool
     opacity: float
     gated: Optional[bool]
     cells: Optional[dict]

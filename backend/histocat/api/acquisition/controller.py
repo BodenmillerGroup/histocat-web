@@ -31,7 +31,6 @@ from histocat.core.image import (
     apply_filter,
     colorize,
     draw_mask,
-    draw_overlay,
     draw_scalebar,
     get_qualitative_colors,
     get_sequential_colors,
@@ -143,7 +142,7 @@ async def download_channel_stack(
     if params.filter.apply:
         additive_image = apply_filter(additive_image, params.filter)
 
-    if params.datasetId and params.mask and params.mask.mode == "mask":
+    if params.datasetId and params.mask and params.mask.showMask:
         heatmap_dict = None
         if params.mask.colorsType and params.mask.colorsName:
 
@@ -177,8 +176,6 @@ async def download_channel_stack(
                 heatmap_dict.pop("0", None)
 
         additive_image = draw_mask(additive_image, params.mask, heatmap_dict)
-    elif params.datasetId and params.mask and params.mask.mode == "origin":
-        additive_image = draw_overlay(params.mask)
 
     if params.scalebar.apply:
         additive_image = draw_scalebar(additive_image, params.scalebar)

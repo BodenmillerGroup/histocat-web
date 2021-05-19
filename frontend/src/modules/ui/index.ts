@@ -29,7 +29,7 @@ export class UiState {
   processing = false;
   processingProgress = 0;
 
-  maskMode: "raw" | "mask" | "origin" = "raw";
+  showMask = false;
   maskOpacity = 1.0;
   mouseMode: "panZoom" | "lasso" | "rotate" = "panZoom";
 }

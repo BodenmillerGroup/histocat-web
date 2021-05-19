@@ -2,7 +2,7 @@
   <v-banner v-if="!activeDatasetId" icon="mdi-alert-circle-outline">Please select dataset</v-banner>
   <div v-else class="gates-view">
     <v-toolbar flat dense color="grey lighten-4">
-      <v-btn @click="createGate" color="primary" elevation="1" x-small tile>Save gate</v-btn>
+      <v-btn @click="createGate" color="primary" elevation="1" x-small tile>Save cells set</v-btn>
     </v-toolbar>
     <v-list dense class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
@@ -20,7 +20,7 @@
                     <v-icon small>mdi-refresh-circle</v-icon>
                   </v-btn>
                 </template>
-                <span>Load gate</span>
+                <span>Load cells set</span>
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
@@ -39,7 +39,7 @@
                     <v-icon small>mdi-pencil-outline</v-icon>
                   </v-btn>
                 </template>
-                <span>Edit gate</span>
+                <span>Edit cells set</span>
               </v-tooltip>
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
@@ -47,7 +47,7 @@
                     <v-icon small>mdi-delete-outline</v-icon>
                   </v-btn>
                 </template>
-                <span>Delete gate</span>
+                <span>Delete cells set</span>
               </v-tooltip>
             </v-row>
           </v-list-item-action>

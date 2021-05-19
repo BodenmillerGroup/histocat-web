@@ -57,8 +57,8 @@ export class UiMutations extends Mutations<UiState> {
     this.state.processingProgress = payload;
   }
 
-  setMaskMode(payload: "raw" | "mask" | "origin") {
-    this.state.maskMode = payload;
+  setShowMask(payload: boolean) {
+    this.state.showMask = payload;
   }
 
   setMaskOpacity(payload: number) {

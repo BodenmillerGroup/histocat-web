@@ -45,18 +45,18 @@
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn small elevation="1" v-on="on" @click="clearPipeline" class="ml-2" :disabled="steps.length === 0">
-            Clear pipeline
+            Clear
           </v-btn>
         </template>
         <span>Clear pipeline</span>
       </v-tooltip>
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn small elevation="1" v-on="on" @click="printPipeline" class="ml-2" :disabled="steps.length === 0">
-            Print
+          <v-btn small elevation="1" v-on="on" @click="savePipeline" class="ml-2" :disabled="steps.length === 0">
+            Save
           </v-btn>
         </template>
-        <span>Print pipeline</span>
+        <span>Save pipeline</span>
       </v-tooltip>
       <v-dialog v-model="dialog" scrollable max-width="600px">
         <template v-slot:activator="{ on, attrs }">
@@ -372,8 +372,11 @@ export default class PipelineView extends Vue {
     this.pipelinesContext.mutations.setSteps([]);
   }
 
-  printPipeline() {
-    console.log(this.steps);
+  async savePipeline() {
+    const name = self.prompt("Please enter pipeline name:");
+    if (name) {
+      await this.pipelinesContext.actions.createPipeline(name);
+    }
   }
 
   checkPipeline() {

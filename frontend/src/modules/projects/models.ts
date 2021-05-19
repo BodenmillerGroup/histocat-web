@@ -1,4 +1,4 @@
-import { IImageFilter, IImageScalebar, IMaskSettings } from "@/modules/settings/models";
+import { IImageFilter, IImageScalebar } from "@/modules/settings/models";
 
 export interface IProjectCreate {
   group_id: number;
@@ -102,6 +102,20 @@ export interface IChannel {
 
 export interface IChannelStats {
   bins: number[];
+}
+
+export interface IMaskSettings {
+  showMask: boolean;
+  opacity: number;
+  gated?: boolean;
+  cells: {
+    [color: string]: number[];
+  };
+  resultId?: number;
+  location?: string;
+  settings?: any;
+  colorsType?: string;
+  colorsName?: string;
 }
 
 export interface IChannelStack {

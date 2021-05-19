@@ -6,7 +6,7 @@ import numpy as np
 import tifffile
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap, to_rgb
-from skimage import img_as_ubyte, io
+from skimage import img_as_ubyte
 from skimage.color import label2rgb
 from skimage.segmentation import find_boundaries
 
@@ -82,12 +82,6 @@ def draw_mask(image: np.ndarray, mask_settings: MaskSettingsDto, heatmap_dict: O
         boundary = find_boundaries(mask, connectivity=1, mode="inner")
         image[boundary > 0] = mask_settings.opacity
         return image
-
-
-def draw_overlay(mask_settings: MaskSettingsDto):
-    filename = mask_settings.location.replace("mask.tiff", "origin.png")
-    overlay = io.imread(filename)
-    return overlay
 
 
 def draw_scalebar(image: np.ndarray, scalebar: ScalebarDto):

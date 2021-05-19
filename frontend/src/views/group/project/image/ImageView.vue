@@ -20,36 +20,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-menu offset-y open-on-hover>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn v-bind="attrs" v-on="on" small elevation="1" :disabled="!activeAcquisition || !hasMask" class="ml-2">
-            <v-icon left small>mdi-cog-outline</v-icon>
-            Mode
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item-group v-model="maskMode" color="primary">
-            <v-list-item value="raw">
-              <v-list-item-title>Show Raw Image</v-list-item-title>
-            </v-list-item>
-            <v-list-item value="mask">
-              <v-list-item-title>Show Mask Overlay</v-list-item-title>
-            </v-list-item>
-            <v-list-item value="origin" :disabled="!activeDataset || activeDataset.origin !== 'DeepCell'">
-              <v-list-item-title>Show Mask Source</v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-        <v-list dense subheader>
-          <v-subheader>Mask Opacity</v-subheader>
-          <v-list-item>
-            <v-list-item-content>
-              <v-slider :value="maskOpacity" @end="maskOpacityHandler" hide-details min="0" max="1" step="0.01" />
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-8">
+      <v-btn-toggle v-model="mouseMode" dense mandatory class="ml-4">
         <v-btn value="panZoom" small>
           <v-icon>mdi-arrow-top-left</v-icon>
         </v-btn>
@@ -57,7 +28,30 @@
           <v-icon>mdi-lasso</v-icon>
         </v-btn>
       </v-btn-toggle>
-      <v-switch v-model="regionsEnabled" label="Region statistics" hide-details inset class="ml-8" dense />
+      <v-switch
+        v-model="showMask"
+        label="Mask"
+        hide-details
+        inset
+        class="ml-4"
+        dense
+        :disabled="!activeAcquisition || !hasMask"
+      />
+      <span class="opacityContainer ml-4">
+        <v-slider
+          label="Opacity"
+          :value="maskOpacity"
+          @end="maskOpacityHandler"
+          hide-details
+          min="0"
+          max="1"
+          step="0.01"
+          dense
+          :disabled="!activeAcquisition || !hasMask"
+        />
+      </span>
+      <v-spacer />
+      <v-switch v-model="regionsEnabled" label="Region" hide-details inset dense />
     </v-toolbar>
     <ImageViewer ref="imageViewer" />
   </div>
@@ -81,12 +75,12 @@ export default class ImageView extends Vue {
   readonly datasetsContext = datasetsModule.context(this.$store);
   readonly analysisContext = analysisModule.context(this.$store);
 
-  get maskMode() {
-    return this.uiContext.getters.maskMode;
+  get showMask() {
+    return this.uiContext.getters.showMask;
   }
 
-  set maskMode(value: "raw" | "mask" | "origin") {
-    this.uiContext.mutations.setMaskMode(value);
+  set showMask(value: boolean) {
+    this.uiContext.mutations.setShowMask(value);
     this.projectsContext.actions.getChannelStackImage();
   }
 
@@ -144,3 +138,9 @@ export default class ImageView extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.opacityContainer {
+  width: 200px;
+}
+</style>

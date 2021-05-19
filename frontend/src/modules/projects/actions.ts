@@ -263,14 +263,14 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
     const activeDataset = this.datasets!.getters.activeDataset;
     if (activeDataset) {
       output["datasetId"] = activeDataset.id;
-      const maskMode = this.ui!.getters.maskMode;
+      const showMask = this.ui!.getters.showMask;
       const maskOpacity = this.ui!.getters.maskOpacity;
       const activeAcquisitionId = this.getters.activeAcquisitionId;
       if (activeAcquisitionId && activeDataset.meta.masks) {
         const mask = activeDataset.meta.masks[activeAcquisitionId];
         if (mask) {
           output["mask"] = {
-            mode: maskMode,
+            showMask: showMask,
             opacity: maskOpacity,
             location: mask.location,
           };

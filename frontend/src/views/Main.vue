@@ -69,8 +69,6 @@
         <span>Reset layouts</span>
       </v-tooltip>
 
-      <v-divider vertical />
-
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn v-on="on" icon href="https://bodenmillergroup.github.io/histocat-web" target="_blank">

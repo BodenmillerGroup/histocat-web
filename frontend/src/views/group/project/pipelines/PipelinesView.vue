@@ -1,18 +1,6 @@
 <template>
   <div class="pipelines-view">
-    <v-toolbar flat dense color="grey lighten-4">
-      <v-btn @click="savePipeline" color="primary" elevation="1" small>Save pipeline</v-btn>
-      <v-spacer></v-spacer>
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn icon small v-on="on" @click="refreshPipelines">
-            <v-icon small>mdi-refresh</v-icon>
-          </v-btn>
-        </template>
-        <span>Refresh pipelines</span>
-      </v-tooltip>
-    </v-toolbar>
-    <v-list dense two-line class="pa-0">
+    <v-list dense class="pa-0">
       <v-list-item v-for="item in items" :key="item.id">
         <v-list-item-content>
           <v-list-item-title>{{ item.name }}</v-list-item-title>
@@ -116,13 +104,6 @@ export default class PipelinesView extends Vue {
   async deletePipeline(id: number) {
     if (self.confirm("Do you really want to delete pipeline?")) {
       await this.pipelinesContext.actions.deletePipeline(id);
-    }
-  }
-
-  async savePipeline() {
-    const name = self.prompt("Please enter pipeline name:");
-    if (name) {
-      await this.pipelinesContext.actions.createPipeline(name);
     }
   }
 

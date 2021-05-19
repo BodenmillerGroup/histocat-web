@@ -25,7 +25,7 @@
         <span>Refresh results</span>
       </v-tooltip>
     </v-toolbar>
-    <v-list dense two-line class="pa-0">
+    <v-list dense class="pa-0">
       <v-list-item-group v-model="selected" color="primary">
         <v-list-item v-for="item in items" :key="item.id">
           <v-list-item-content>
@@ -208,7 +208,7 @@ export default class ResultsView extends Vue {
       value = null;
     }
     this.cellsContext.mutations.setHeatmap(value);
-    if (this.uiContext.getters.maskMode === "mask") {
+    if (this.uiContext.getters.showMask) {
       this.projectsContext.actions.getChannelStackImage();
     }
   }

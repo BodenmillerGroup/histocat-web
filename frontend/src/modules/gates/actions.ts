@@ -81,7 +81,7 @@ export class GatesActions extends Actions<GatesState, GatesGetters, GatesMutatio
 
         if (this.cells!.getters.heatmap && this.cells!.getters.heatmap.type === "annotation") {
           this.projects!.actions.getAnnotationData();
-          if (this.ui!.getters.maskMode === "mask") {
+          if (this.ui!.getters.showMask) {
             await this.projects!.actions.getChannelStackImage();
           }
         }

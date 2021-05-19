@@ -135,7 +135,7 @@ export default class CellClassesView extends Vue {
 
       if (this.cellsContext.getters.heatmap && this.cellsContext.getters.heatmap.type === "annotation") {
         this.projectsContext.actions.getAnnotationData();
-        if (this.uiContext.getters.maskMode === "mask") {
+        if (this.uiContext.getters.showMask) {
           this.projectsContext.actions.getChannelStackImage();
         }
       }

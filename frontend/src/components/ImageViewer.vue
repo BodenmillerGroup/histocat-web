@@ -38,7 +38,7 @@ export default class ImageViewer extends Vue {
   cellInfo: ICell | null = null;
 
   get applyMask() {
-    return this.uiContext.getters.maskMode === "mask";
+    return this.uiContext.getters.showMask;
   }
 
   get showLegend() {
@@ -239,7 +239,7 @@ export default class ImageViewer extends Vue {
     this.scatterplot = createScatterplot({
       syncEvents: true,
       canvas: canvas,
-      opacity: 1,
+      opacity: 0.5,
       pointSize: 2,
       pointSizeSelected: 0,
       pointOutlineWidth: 0,

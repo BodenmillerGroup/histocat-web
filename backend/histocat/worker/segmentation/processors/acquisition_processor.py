@@ -2,8 +2,7 @@ import os
 
 import numpy as np
 import tifffile
-from deepcell.applications import CytoplasmSegmentation, Mesmer, NuclearSegmentation
-from deepcell.utils.plot_utils import create_rgb_image, make_outline_overlay
+from deepcell.applications import Mesmer
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
 from skimage import io, measure
 from sqlalchemy.orm import Session
@@ -51,11 +50,6 @@ def process_acquisition(
         postprocess_kwargs_whole_cell=params.postprocessing.dict(),
         postprocess_kwargs_nuclear=params.postprocessing.dict(),
     )
-    rgb_images = create_rgb_image(im, channel_colors=["green", "red"])
-    overlay_data = make_outline_overlay(rgb_data=rgb_images, predictions=segmentation_predictions)
-
-    filename = os.path.basename(acquisition.location).replace("ome.tiff", "origin.png")
-    io.imsave(os.path.join(dataset.location, filename), overlay_data[0, :, :, :])
 
     mask_filename = os.path.basename(acquisition.location).replace("ome.tiff", "mask.tiff")
     tifffile.imwrite(os.path.join(dataset.location, mask_filename), segmentation_predictions[0, :, :, 0])

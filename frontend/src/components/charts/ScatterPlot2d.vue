@@ -32,7 +32,7 @@ export default class ScatterPlot2d extends Vue {
   @Prop({ type: Boolean, required: true }) readonly ignoreSelection!: boolean;
 
   get applyMask() {
-    return this.uiContext.getters.maskMode === "mask";
+    return this.uiContext.getters.showMask;
   }
 
   get heatmap() {

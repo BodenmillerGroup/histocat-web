@@ -22,8 +22,8 @@ export class UiGetters extends Getters<UiState> {
     return this.state.processingProgress;
   }
 
-  get maskMode() {
-    return this.state.maskMode;
+  get showMask() {
+    return this.state.showMask;
   }
 
   get maskOpacity() {

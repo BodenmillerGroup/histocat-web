@@ -22,8 +22,8 @@
         <v-list-item-action>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on" download color="primary lighten-3" @click="applyPreset($event, item.id)">
-                <v-icon>mdi-refresh-circle</v-icon>
+              <v-btn icon small v-on="on" download color="primary lighten-3" @click="applyPreset($event, item.id)">
+                <v-icon small>mdi-refresh-circle</v-icon>
               </v-btn>
             </template>
             <span>Apply preset</span>
@@ -32,8 +32,8 @@
         <v-list-item-action>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn icon v-on="on" color="secondary lighten-3" @click.stop="deletePreset($event, item.id)">
-                <v-icon>mdi-delete</v-icon>
+              <v-btn icon small v-on="on" color="secondary lighten-3" @click.stop="deletePreset($event, item.id)">
+                <v-icon small>mdi-delete</v-icon>
               </v-btn>
             </template>
             <span>Delete preset</span>
