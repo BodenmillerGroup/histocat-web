@@ -9,10 +9,7 @@ If you want to use desktop applications with similar functionality, there are tw
 * **MATLAB edition**: [https://github.com/BodenmillerGroup/histoCAT](https://github.com/BodenmillerGroup/histoCAT)
 * **histoCAT++ for Mac**: [https://github.com/BodenmillerGroup/histoCAT3D](https://github.com/BodenmillerGroup/histoCAT3D)
 
-Main organisational unit in histoCAT is user group. After registering an account, users can create new groups or join existing public groups. Each user group can host multiple projects. Project can be viewed as a collection of slides with according datasets. Group members have access to all group data, such as projects, datasets, slides, presets, etc.
-
-![histoCAT organizational structure](docs/assets/structure.png)
-
+![histoCAT](docs/assets/overview.png)
 
 ## Resources
 

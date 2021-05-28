@@ -19,7 +19,7 @@ reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 def get_token_data(token: str = Security(reusable_oauth2)):
     try:
-        payload = jwt.decode(token, config.SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, config.JWT_SECRET, algorithms=[ALGORITHM])
         token_data = TokenPayloadDto(**payload)
     except PyJWTError:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate credentials")

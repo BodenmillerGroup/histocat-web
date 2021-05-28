@@ -8,7 +8,7 @@ services:
       args:
         BACKEND_ENV: production
         PROTOCOL: ${PROTOCOL}
-        DOMAIN: ${DOMAIN_PROD}
+        DOMAIN: ${DOMAIN}
 
   worker:
     image: '${DOCKER_IMAGE_WORKER}:${DOCKER_TAG-latest}'
@@ -18,13 +18,11 @@ services:
       args:
         BACKEND_ENV: production
         PROTOCOL: ${PROTOCOL}
-        DOMAIN: ${DOMAIN_PROD}
+        DOMAIN: ${DOMAIN}
 
   frontend:
     image: '${DOCKER_IMAGE_FRONTEND}:${DOCKER_TAG-latest}'
     build:
       context: ../frontend
       args:
-        VUE_APP_NAME: ${VUE_APP_NAME}
-        VUE_APP_PROTOCOL: ${VUE_APP_PROTOCOL}
-        VUE_APP_DOMAIN: ${DOMAIN_PROD}
+        VUE_APP_NAME: ${PROJECT_NAME}

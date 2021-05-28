@@ -47,21 +47,26 @@ app = FastAPI(
 # app.add_middleware(GZipMiddleware, minimum_size=100000)
 
 # CORS
-origins = []
+origins = [
+    "http://localhost",
+    "https://localhost",
+    "ws://localhost",
+    "http://localhost:9999",
+    "https://localhost:9999",
+    "http://localhost:3000",
+    "https://localhost:3000",
+    f"http://{config.DOMAIN}",
+    f"https://{config.DOMAIN}",
+]
 
 # Set all CORS enabled origins
-if config.BACKEND_CORS_ORIGINS:
-    origins_raw = config.BACKEND_CORS_ORIGINS.split(",")
-    for origin in origins_raw:
-        use_origin = origin.strip()
-        origins.append(use_origin)
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(api_router, prefix=config.API_V1_STR)
 

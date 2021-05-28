@@ -15,15 +15,13 @@ class Settings(BaseSettings):
     # absolute path to the root directory where all group data are located
     ROOT_DATA_DIRECTORY: str = "/data/groups/"
 
-    SECRET_KEY: str = str(uuid.uuid4())
+    JWT_SECRET: str = str(uuid.uuid4())
 
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 60 minutes * 24 hours * 8 days = 8 days
 
-    SERVER_NAME: str
-    SERVER_HOST: str
+    PROTOCOL: str
+    DOMAIN: str
 
-    # String of origins separated by commas, e.g: "http://localhost, http://localhost:4200, http://localhost:3000, http://localhost:8080, http://local.dockertoolbox.tiangolo.com"
-    BACKEND_CORS_ORIGINS: str
     PROJECT_NAME: str
 
     POSTGRES_SERVER: str
@@ -31,13 +29,16 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
+    REDIS_HOST: str
+    REDIS_PORT: int
+
     SMTP_TLS: bool = True
     SMTP_HOST: str
     SMTP_PORT: int
     SMTP_USER: str
     SMTP_PASSWORD: str
 
-    EMAILS_FROM_EMAIL: str
+    EMAILS_FROM: str
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 24
     EMAIL_CONFIRM_SIGNUP_EXPIRE_HOURS: int = 48
     EMAIL_TEMPLATES_DIR: str = "/app/histocat/api/email-templates"

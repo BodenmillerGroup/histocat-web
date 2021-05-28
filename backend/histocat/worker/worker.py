@@ -53,7 +53,7 @@ def send_email(email_to: str, subject_template="", html_template="", environment
     message = emails.Message(
         subject=JinjaTemplate(subject_template),
         html=JinjaTemplate(html_template),
-        mail_from=(config.EMAILS_FROM_NAME, config.EMAILS_FROM_EMAIL),
+        mail_from=(config.EMAILS_FROM_NAME, config.EMAILS_FROM),
     )
     smtp_options = {"host": config.SMTP_HOST, "port": config.SMTP_PORT}
     if config.SMTP_TLS:

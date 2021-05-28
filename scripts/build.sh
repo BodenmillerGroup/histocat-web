@@ -8,6 +8,7 @@ if [ $(uname -s) = "Linux" ]; then
     sudo find . -type d -name __pycache__ -exec rm -r {} \+
 fi
 
-TAG=${DOCKER_TAG-latest} docker-compose -f .deploy/build.yml config > docker-stack.yml
+BACKEND_ENV=production \
+docker-compose -f .deploy/build.yml config > docker-stack.yml
 
 docker-compose -f docker-stack.yml build --parallel

@@ -11,7 +11,9 @@ To create a new account, please click "Register an account" link there.
 !!! info "Info"
     You should get a confirmation email. Please click a link in the email in order to complete registration process.
 
-Later on, the user can edit his profile / password in Profile view:
+Later on, the user can edit his name, email and password in Profile view:
 
 ![Profile view](../assets/profile-menu.png)
 
+!!! info "Info"
+    By clicking `RESET SETTINGS` button you can reset all settings stored in the browser to their default values. This will reset login token as well.

@@ -3,6 +3,7 @@
 # Exit in case of error
 set -e
 
+BACKEND_ENV=production \
 docker-compose \
 -f .deploy/shared.yml \
 -f .deploy/production.yml \

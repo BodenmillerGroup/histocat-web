@@ -17,15 +17,10 @@ deploy-staging:
 build:
 	./scripts/build.sh
 
-build-staging:
-	./scripts/build-staging.sh
-
 build-push:
 	./scripts/build-push.sh
 
-build-staging-push:
-	./scripts/build-staging-push.sh
-
+# Clean local development environment
 clean:
 	sudo find . -type d -name __pycache__ -exec rm -r {} \+
 	find . -type d -name .pytest_cache -exec rm -r {} \+
@@ -64,3 +59,13 @@ black:
 
 autoflake:
 	cd backend && autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place app --exclude=__init__.py
+
+# Some Docker-related helper commands
+start:
+	docker ps -qa | xargs docker start
+
+stop:
+	docker ps -q | xargs docker stop
+
+restart:
+	docker ps -qa | xargs docker restart

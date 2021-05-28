@@ -1,6 +1,9 @@
 # Mac OSX
 .DS_Store
 
+# Keep sensitive information out of Git!!
+.env
+
 # local env files
 .env.local
 .env.*.local

@@ -8,7 +8,7 @@ services:
       args:
         BACKEND_ENV: development
         PROTOCOL: ${PROTOCOL}
-        DOMAIN: ${DOMAIN_DEV}
+        DOMAIN: ${DOMAIN}
     command: /app/bin/start-reload.sh
     ports:
       - 5678:5678
@@ -23,7 +23,7 @@ services:
       args:
         BACKEND_ENV: development
         PROTOCOL: ${PROTOCOL}
-        DOMAIN: ${DOMAIN_DEV}
+        DOMAIN: ${DOMAIN}
     ports:
       - 5688:5688
     volumes:
@@ -34,9 +34,7 @@ services:
     build:
       context: ../frontend
       args:
-        VUE_APP_NAME: ${VUE_APP_NAME}
-        VUE_APP_PROTOCOL: ${VUE_APP_PROTOCOL}
-        VUE_APP_DOMAIN: ${DOMAIN_DEV}
+        VUE_APP_NAME: ${PROJECT_NAME}
 
   proxy:
     command:

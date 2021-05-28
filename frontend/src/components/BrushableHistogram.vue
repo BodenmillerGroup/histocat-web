@@ -36,14 +36,12 @@ export default class BrushableHistogram extends Vue {
   readonly settingsContext = settingsModule.context(this.$store);
   readonly projectsContext = projectsModule.context(this.$store);
 
-  @Prop(Object) readonly channel!: IChannel;
+  @Prop({ type: Object, required: true }) readonly channel!: IChannel;
   @Prop(Number) readonly containerWidth!: number;
 
   color = this.channel ? this.metalColor : "#ffffff";
 
   height = 50 - marginTop - marginBottom;
-
-  unclippedRangeMax = this.channel.max_intensity;
 
   brushX: any = null;
   brushXselection: any = null;
@@ -230,9 +228,9 @@ export default class BrushableHistogram extends Vue {
   }
 
   async mounted() {
-    if (this.projectsContext.getters.activeAcquisitionId) {
+    if (this.activeAcquisitionId) {
       const stats = await this.projectsContext.actions.getChannelStats({
-        acquisitionId: this.projectsContext.getters.activeAcquisitionId,
+        acquisitionId: this.activeAcquisitionId,
         channelName: this.channel.name,
       });
       const histogram = this.calcHistogramCache(stats);

@@ -26,6 +26,7 @@ nav:
     - license.md
   - User manual:
     - user/registration.md
+    - user/structure.md
     - user/groups.md
     - user/projects.md
     - user/workspace.md

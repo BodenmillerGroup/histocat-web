@@ -4,6 +4,7 @@ import aioredis
 import orjson
 import redis
 
+from histocat.config import config
 from histocat.core.notifier import Message, notifier
 
 UPDATES_CHANNEL_NAME = "updates"
@@ -11,7 +12,7 @@ UPDATES_CHANNEL_NAME = "updates"
 
 class RedisManager:
     def __init__(self):
-        self._pub = redis.Redis(host="redis")
+        self._pub = redis.Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
         self._sub: aioredis.Redis = None
         self._cache: aioredis.Redis = None
 
@@ -28,9 +29,9 @@ class RedisManager:
         return self._cache
 
     async def start(self):
-        self._pub = await aioredis.create_redis("redis://redis")
-        self._sub = await aioredis.create_redis("redis://redis")
-        self._cache = await aioredis.create_redis("redis://redis")
+        self._pub = await aioredis.create_redis(f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}")
+        self._sub = await aioredis.create_redis(f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}")
+        self._cache = await aioredis.create_redis(f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}")
         channels = await self.sub.subscribe(UPDATES_CHANNEL_NAME)
         updates_channel: aioredis.Channel = channels[0]
         asyncio.ensure_future(self._reader(updates_channel))

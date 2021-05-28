@@ -2,15 +2,30 @@ version: "3.7"
 services:
   backend:
     restart: always
-    image: ${DOCKER_IMAGE_BACKEND_STAGING}:${DOCKER_TAG-latest}
+    build:
+      context: ../backend
+      dockerfile: backend.dockerfile
+      args:
+        BACKEND_ENV: production
+        PROTOCOL: ${PROTOCOL}
+        DOMAIN: ${DOMAIN}
 
   worker:
     restart: always
-    image: ${DOCKER_IMAGE_WORKER_STAGING}:${DOCKER_TAG-latest}
+    build:
+      context: ../backend
+      dockerfile: worker.dockerfile
+      args:
+        BACKEND_ENV: production
+        PROTOCOL: ${PROTOCOL}
+        DOMAIN: ${DOMAIN}
 
   frontend:
     restart: always
-    image: ${DOCKER_IMAGE_FRONTEND_STAGING}:${DOCKER_TAG-latest}
+    build:
+      context: ../frontend
+      args:
+        VUE_APP_NAME: ${PROJECT_NAME}
 
   proxy:
     command:

@@ -164,7 +164,7 @@ def send_new_account_email(email_to: str, username: str, password: str):
     subject = f"{project_name} - New account for user {username}"
     with open(Path(config.EMAIL_TEMPLATES_DIR) / "new_account.html") as f:
         template_str = f.read()
-    link = config.SERVER_HOST
+    link = f"{config.PROTOCOL}://{config.DOMAIN}"
 
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
@@ -197,7 +197,7 @@ def send_reset_password_email(email_to: str, email: str, token):
         use_token = token.decode()
     else:
         use_token = token
-    link = f"{config.SERVER_HOST}/reset-password?token={use_token}"
+    link = f"{config.PROTOCOL}://{config.DOMAIN}/reset-password?token={use_token}"
 
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
@@ -230,7 +230,7 @@ def send_confirm_signup_email(email_to: str, username: str, token):
         use_token = token.decode()
     else:
         use_token = token
-    link = f"{config.SERVER_HOST}/api/v1/auth/confirm-signup/{use_token}"
+    link = f"{config.PROTOCOL}://{config.DOMAIN}/api/v1/auth/confirm-signup/{use_token}"
 
     broker = dramatiq.get_broker()
     message = dramatiq.Message(
@@ -261,7 +261,7 @@ def generate_password_reset_token(email):
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(
         {"exp": exp, "nbf": now, "sub": password_reset_jwt_subject, "email": email},
-        config.SECRET_KEY,
+        config.JWT_SECRET,
         algorithm="HS256",
     )
     return encoded_jwt
@@ -269,7 +269,7 @@ def generate_password_reset_token(email):
 
 def verify_password_reset_token(token) -> Optional[str]:
     try:
-        decoded_token = jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
+        decoded_token = jwt.decode(token, config.JWT_SECRET, algorithms=["HS256"])
         assert decoded_token["sub"] == password_reset_jwt_subject
         return decoded_token["email"]
     except InvalidTokenError:
@@ -283,7 +283,7 @@ def generate_confirm_signup_token(email: str):
     exp = expires.timestamp()
     encoded_jwt = jwt.encode(
         {"exp": exp, "nbf": now, "sub": confirm_signup_jwt_subject, "email": email},
-        config.SECRET_KEY,
+        config.JWT_SECRET,
         algorithm="HS256",
     )
     return encoded_jwt
@@ -291,7 +291,7 @@ def generate_confirm_signup_token(email: str):
 
 def verify_confirm_signup_token(token) -> Optional[str]:
     try:
-        decoded_token = jwt.decode(token, config.SECRET_KEY, algorithms=["HS256"])
+        decoded_token = jwt.decode(token, config.JWT_SECRET, algorithms=["HS256"])
         assert decoded_token["sub"] == confirm_signup_jwt_subject
         return decoded_token["email"]
     except InvalidTokenError:

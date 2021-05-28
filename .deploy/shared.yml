@@ -2,9 +2,8 @@ version: "3.7"
 services:
   backend:
     environment:
-      - BACKEND_CORS_ORIGINS
       - PROJECT_NAME
-      - SECRET_KEY
+      - JWT_SECRET
       - FIRST_SUPERUSER
       - FIRST_SUPERUSER_PASSWORD
       - INBOX_DIRECTORY
@@ -14,14 +13,16 @@ services:
       - SMTP_HOST
       - SMTP_USER
       - SMTP_PASSWORD
-      - EMAILS_FROM_EMAIL
+      - EMAILS_FROM
       - USERS_OPEN_REGISTRATION
       - POSTGRES_SERVER
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
-      - SERVER_NAME=${DOMAIN}
-      - SERVER_HOST=${PROTOCOL}://${DOMAIN}
+      - PROTOCOL
+      - DOMAIN
+      - REDIS_HOST
+      - REDIS_PORT
     depends_on:
       - db
       - rabbitmq
@@ -39,9 +40,8 @@ services:
 
   worker:
     environment:
-      - BACKEND_CORS_ORIGINS
       - PROJECT_NAME
-      - SECRET_KEY
+      - JWT_SECRET
       - FIRST_SUPERUSER
       - FIRST_SUPERUSER_PASSWORD
       - INBOX_DIRECTORY
@@ -51,14 +51,16 @@ services:
       - SMTP_HOST
       - SMTP_USER
       - SMTP_PASSWORD
-      - EMAILS_FROM_EMAIL
+      - EMAILS_FROM
       - USERS_OPEN_REGISTRATION
       - POSTGRES_SERVER
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
-      - SERVER_NAME=${DOMAIN}
-      - SERVER_HOST=${PROTOCOL}://${DOMAIN}
+      - PROTOCOL
+      - DOMAIN
+      - REDIS_HOST
+      - REDIS_PORT
     depends_on:
       - db
       - rabbitmq
@@ -67,10 +69,6 @@ services:
       - app-data:/data
 
   frontend:
-    environment:
-      - VUE_APP_NAME
-      - VUE_APP_PROTOCOL
-      - VUE_APP_DOMAIN
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
@@ -92,7 +90,7 @@ services:
 
   pgadmin:
     restart: always
-    image: dpage/pgadmin4:5.2
+    image: dpage/pgadmin4:5.3
     depends_on:
       - db
     environment:
@@ -131,7 +129,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer-ce:2.1.1-alpine
+    image: portainer/portainer-ce:2.5.0-alpine
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
