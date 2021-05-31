@@ -42,4 +42,7 @@ nav:
     - user/results.md
     - user/gating.md
   - Developer documentation:
-    - dev/developer.md
+    - dev/overview.md
+    - dev/development.md
+    - dev/staging.md
+    - dev/production.md
