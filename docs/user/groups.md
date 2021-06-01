@@ -1,26 +1,27 @@
 # Groups
 
-User groups allow users to combine relevant projects together and share content among group members. 
+Groups allow users to combine relevant projects together and share content among group members. 
 
-Groups can be open or close:
+Groups can be private or public:
 
-* **Close group**: only group admin can add new members. Group is hidden in the groups overview for non-members.
-* **Open group**: any registered user may join the group. Group is visible in groups overview for all users.
+* **Private group**: only group admin can add new members. Group is hidden in the groups overview for non-members.
+* **Public group**: any registered user may join the group. Group is visible in groups overview for all users.
 
 ![Groups overview](../assets/groups-overview.png)
 
-In order to create a new group, please click Add button ![](../assets/add-button.png):
+In order to create a new group, please click round `Add` button ![](../assets/add-button.png):
 
 ![Create Group editor](../assets/create-group.png)
 
 _Name_ field is required and _Description_ and _URL_ are optional.
 
 !!! info "Info"
-    If you are going to manage multiple groups, we suggest to assign some relevant tags in order to simplify groups filtering.
+    If you are going to manage multiple groups, we suggest assigning some relevant tags in order to simplify groups filtering.
 
-### Group members management
+## Group members
 
-When user creates a new group, he automatically assigned as the group's administrator. Group admin can manage group members by clicking **Members** button ![](../assets/members-button.png) at the top left sidebar.
+When user creates a new group, he automatically assigned as the group's administrator.
+Group admin can manage group members by clicking ![](../assets/members-button.png)`Members` button on the top toolbar.
 
 ![Group members overview](../assets/group-members-overview.png)
 
@@ -35,5 +36,4 @@ In order to add new group member, please click **Add Member** button and select 
 !!! info "Info"
     Deselecting **Active** check-box disables access to the group for the selected user.
 
-To switch back to projects list, please click Projects button ![](../assets/projects-button.png)on the left sidebar.
-
+To switch to project list view, please click `Projects` button on the top toolbar.

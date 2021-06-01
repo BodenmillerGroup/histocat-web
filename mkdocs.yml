@@ -10,6 +10,7 @@ theme:
   features:
     - navigation.tabs
     - navigation.top
+    - navigation.expand
 
 markdown_extensions:
   - admonition
@@ -29,18 +30,25 @@ nav:
     - user/structure.md
     - user/groups.md
     - user/projects.md
-    - user/workspace.md
-    - user/channels-view.md
-    - user/blend-view.md
-    - user/tiles-view.md
-    - user/channel-settings.md
-    - user/options.md
-    - user/presets.md
-    - user/data.md
-    - user/datasets.md
-    - user/pipelines.md
-    - user/results.md
-    - user/gating.md
+    - "Project Panels":
+      - user/project.md
+      - user/layouts.md
+      - user/slides.md
+      - user/image.md
+      - user/tiles.md
+      - user/channels.md
+      - user/region.md
+      - user/histogram.md
+      - user/options.md
+      - user/presets.md
+      - user/data.md
+      - user/datasets.md
+      - user/pipelines.md
+      - user/results.md
+      - user/gating.md
+    - "Admin Views":
+      - user/users.md
+      - user/models.md
   - Developer documentation:
     - dev/overview.md
     - dev/development.md

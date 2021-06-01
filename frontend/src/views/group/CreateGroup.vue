@@ -15,7 +15,7 @@
           <v-text-field label="Name" v-model="name" :rules="nameRules" />
           <v-text-field label="Description" v-model="description" />
           <v-text-field label="URL" v-model="url" />
-          <v-checkbox label="Open" v-model="isOpen" />
+          <v-checkbox label="Public group" v-model="isOpen" />
           <v-combobox
             v-model="tags"
             :filter="filter"

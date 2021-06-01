@@ -9,6 +9,7 @@ from starlette import status
 from histocat.api.db import get_db
 from histocat.api.security import get_active_user, get_admin
 from histocat.config import config
+from histocat.core.security import get_password_hash
 from histocat.core.user import service
 from histocat.core.user.dto import UserCreateDto, UserDto, UserUpdateDto
 from histocat.core.user.models import UserModel
@@ -37,9 +38,11 @@ def create(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The user with this username already exists in the system.",
         )
+    plain_password = params.password
+    params.password = get_password_hash(plain_password)
     item = service.create(db, params=params)
     if config.EMAILS_ENABLED and params.email:
-        send_new_account_email(email_to=params.email, username=params.name, password=params.password)
+        send_new_account_email(email_to=params.email, username=params.name, password=plain_password)
     return item
 
 
@@ -55,7 +58,7 @@ def update_me(
     data = jsonable_encoder(user)
     params = UserUpdateDto(**data)
     if password is not None:
-        params.password = password
+        params.password = get_password_hash(password)
     if name is not None:
         params.name = name
     if email is not None:
@@ -99,6 +102,8 @@ def update(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="The user with this username does not exist in the system",
         )
+    if params.password:
+        params.password = get_password_hash(params.password)
     item = service.update(db, item=item, params=params)
     return item
 

@@ -1,4 +1,4 @@
-# Tiles View
+# Tiles
 
 In order to view separate channels with according intensities and colorization, one can use tiles image view, where channels presented on the grid layout.
 

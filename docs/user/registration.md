@@ -16,4 +16,4 @@ Later on, the user can edit his name, email and password in Profile view:
 ![Profile view](../assets/profile-menu.png)
 
 !!! info "Info"
-    By clicking `RESET SETTINGS` button you can reset all settings stored in the browser to their default values. This will reset login token as well.
+    By clicking `RESET SETTINGS` button you can reset all settings stored in the browser to their default values. This will reset login token as well, so you have to re-login afterwards.

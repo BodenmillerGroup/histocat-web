@@ -31,7 +31,7 @@
         <span>Create group</span>
       </v-tooltip>
     </v-row>
-    <masonry :cols="{ default: 4, 1000: 3, 700: 2, 400: 1 }" :gutter="{ default: '0px' }">
+    <masonry :cols="{ default: 3, 1000: 3, 700: 2, 400: 1 }" :gutter="{ default: '0px' }">
       <GroupCard v-for="group in groups" :key="group.id" :group="group" :user="userProfile" />
     </masonry>
   </v-container>
