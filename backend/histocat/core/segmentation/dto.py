@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class SegmentationPreprocessingSettingsDto(BaseModel):
     """Segmentation preprocessing settings model."""
 
+    channels_normalization: Optional[str]
     threshold: Optional[bool]
     percentile: Optional[float]
     normalize: bool

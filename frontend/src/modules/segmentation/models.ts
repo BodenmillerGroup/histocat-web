@@ -1,4 +1,5 @@
 export interface ISegmentationPreprocessingSettings {
+  channels_normalization?: string;
   threshold?: boolean;
   percentile?: number;
   normalize: boolean;

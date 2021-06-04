@@ -23,6 +23,11 @@
           <v-text-field label="Dataset Description" hint="Resulting dataset description" v-model="datasetDescription" />
         </v-tab-item>
         <v-tab-item>
+          <v-radio-group v-model="channelsNormalization" label="Per-channel normalization" dense>
+            <v-radio label="None" value="none" />
+            <v-radio label="Min-Max" value="minmax" />
+            <v-radio label="Z-score" value="zscore" />
+          </v-radio-group>
           <v-switch v-model="threshold" label="Threshold" inset class="ml-1" dense />
           <v-text-field
             label="Percentile"
@@ -173,6 +178,7 @@ export default class SegmentationSettingsView extends Vue {
   modelId: number | null = null;
   compartment = "whole-cell";
 
+  channelsNormalization = "none";
   threshold = true;
   percentile = 99.9;
   normalize = true;
@@ -214,6 +220,7 @@ export default class SegmentationSettingsView extends Vue {
       }
 
       const preprocessingParams = {
+        channels_normalization: this.channelsNormalization,
         threshold: this.threshold,
         percentile: this.percentile,
         normalize: this.normalize,

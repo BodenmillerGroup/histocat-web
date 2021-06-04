@@ -41,11 +41,16 @@ def process_acquisition(
     acquisition_data = parser.get_acquisition_data()
 
     nuclei_channels = acquisition_data.get_image_stack_by_names(params.nuclei_channels)
-    # nuclei_channels = normalize_by_zscore(nuclei_channels)
-    nuclei_channels = np.nanmean(nuclei_channels, axis=0)
-
     cytoplasm_channels = acquisition_data.get_image_stack_by_names(params.cytoplasm_channels)
-    # cytoplasm_channels = normalize_by_zscore(cytoplasm_channels)
+
+    if params.preprocessing.channels_normalization == "minmax":
+        nuclei_channels = normalize_by_minmax(nuclei_channels)
+        cytoplasm_channels = normalize_by_minmax(cytoplasm_channels)
+    elif params.preprocessing.channels_normalization == "zscore":
+        nuclei_channels = normalize_by_zscore(nuclei_channels)
+        cytoplasm_channels = normalize_by_zscore(cytoplasm_channels)
+
+    nuclei_channels = np.nanmean(nuclei_channels, axis=0)
     cytoplasm_channels = np.nanmean(cytoplasm_channels, axis=0)
 
     # Combined together and expand to 4D
