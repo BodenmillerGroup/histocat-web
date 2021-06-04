@@ -18,9 +18,7 @@
       </v-chip>
     </v-card-text>
     <v-card-actions>
-      <v-btn v-if="isMember" color="primary" :to="{ name: 'group', params: { groupId: group.id } }">
-        Open
-      </v-btn>
+      <v-btn v-if="isMember" color="primary" :to="{ name: 'group', params: { groupId: group.id } }"> Open </v-btn>
       <v-btn v-if="!isMember && group.is_open" color="primary" @click="joinGroup()">Join</v-btn>
       <v-spacer />
       <v-tooltip bottom>

@@ -37,7 +37,7 @@ def process_segmentation(db: Session, project_id: int, params: SegmentationSubmi
     # tf.config.threading.set_intra_op_parallelism_threads(4)
     # tf.config.threading.set_inter_op_parallelism_threads(4)
 
-    # load UNET model
+    # load Keras model
     keras_model = tf.keras.models.load_model(model.location, compile=False)
 
     dataset_params = DatasetCreateDto(

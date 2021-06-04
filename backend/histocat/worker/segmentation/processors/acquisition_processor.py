@@ -1,10 +1,11 @@
 import os
+from typing import Sequence, Union
 
 import numpy as np
 import tifffile
 from deepcell.applications import Mesmer
 from imctools.io.ometiff.ometiffparser import OmeTiffParser
-from skimage import io, measure
+from skimage import measure
 from sqlalchemy.orm import Session
 
 from histocat.core.acquisition import service as acquisition_service
@@ -12,6 +13,20 @@ from histocat.core.dataset.models import DatasetModel
 from histocat.core.errors import SegmentationError
 from histocat.core.segmentation.dto import SegmentationSubmissionDto
 from histocat.core.utils import timeit
+
+
+def normalize_by_minmax(img: Sequence[Union[np.ndarray, np.ndarray]]):
+    channel_mins = np.nanmin(img, axis=(1, 2), keepdims=True)
+    channel_maxs = np.nanmax(img, axis=(1, 2), keepdims=True)
+    img = (img - channel_mins) / (channel_maxs - channel_mins)
+    return img
+
+
+def normalize_by_zscore(img: Sequence[Union[np.ndarray, np.ndarray]]):
+    channel_means = np.nanmean(img, axis=(1, 2), keepdims=True)
+    channel_stds = np.nanstd(img, axis=(1, 2), keepdims=True)
+    img = (img - channel_means) / channel_stds
+    return img
 
 
 @timeit
@@ -25,19 +40,16 @@ def process_acquisition(
     parser = OmeTiffParser(acquisition.location)
     acquisition_data = parser.get_acquisition_data()
 
-    IA_stack = np.zeros((acquisition_data.image_data.shape[1], acquisition_data.image_data.data.shape[2], 2))
+    nuclei_channels = acquisition_data.get_image_stack_by_names(params.nuclei_channels)
+    # nuclei_channels = normalize_by_zscore(nuclei_channels)
+    nuclei_channels = np.nanmean(nuclei_channels, axis=0)
 
-    # sum up nuclear markers
-    for c in params.nuclei_channels:
-        img = acquisition_data.get_image_by_name(c)
-        IA_stack[:, :, 0] = IA_stack[:, :, 0] + img
+    cytoplasm_channels = acquisition_data.get_image_stack_by_names(params.cytoplasm_channels)
+    # cytoplasm_channels = normalize_by_zscore(cytoplasm_channels)
+    cytoplasm_channels = np.nanmean(cytoplasm_channels, axis=0)
 
-    # sum up cytoplasmic/membranous markers
-    for c in params.cytoplasm_channels:
-        img = acquisition_data.get_image_by_name(c)
-        IA_stack[:, :, 1] = IA_stack[:, :, 1] + img
-
-    im = np.stack((IA_stack[:, :, 0], IA_stack[:, :, 1]), axis=-1)
+    # Combined together and expand to 4D
+    im = np.stack((nuclei_channels, cytoplasm_channels), axis=-1)
     im = np.expand_dims(im, 0)
 
     app = Mesmer(model)

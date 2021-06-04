@@ -5,6 +5,15 @@ The difference is another domain name address.
 
 Unlike production deployment, staging deployment doesn't require pre-build Docker images as it will build them during deployment process.
 
+## Prerequisite
+
+Make sure that the following tools installed globally on your machine:
+
+* [Git](https://git-scm.com/)
+* [GNU Make](https://www.gnu.org/software/make/)
+* [Docker](https://docs.docker.com/engine/install/ubuntu/)
+* [Docker Compose](https://docs.docker.com/compose/install/)
+
 ## Installation
 
 Clone the histoCAT repo

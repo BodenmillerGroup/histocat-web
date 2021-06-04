@@ -3,7 +3,7 @@
 ## Preparing production Docker images
 
 Production deployment requires pre-build production Docker images to be available.
-Images names are defined by the following env variables:
+Image names defined by the following env variables:
 
 - DOCKER_IMAGE_BACKEND
 - DOCKER_IMAGE_WORKER
@@ -18,6 +18,15 @@ make build-push
 ```
 
 This operation should be done each time you are planning to release new production version.
+
+## Prerequisite
+
+Make sure that the following tools installed globally on your machine:
+
+* [Git](https://git-scm.com/)
+* [GNU Make](https://www.gnu.org/software/make/)
+* [Docker](https://docs.docker.com/engine/install/ubuntu/)
+* [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## Installation
 

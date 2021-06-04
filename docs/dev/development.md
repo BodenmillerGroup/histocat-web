@@ -3,10 +3,14 @@
 Local development deployment supports debugging and hot-reloading both on back-end and front-end.
 To get a local development instance up and running please follow the following steps.
 
+## Prerequisite
+
 Recommended and tested environment for development and deployment is Ubuntu Linux distribution.
 If you are going to use another OS or distribution please make changes accordingly.
-Make sure that the following tools are installed globally on your machine:
+Make sure that the following tools installed globally on your machine:
 
+* [Git](https://git-scm.com/)
+* [GNU Make](https://www.gnu.org/software/make/)
 * [Docker](https://docs.docker.com/engine/install/ubuntu/)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 * [Node.js LTS](https://github.com/nodesource/distributions/blob/master/README.md#debinstall)

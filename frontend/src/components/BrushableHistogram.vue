@@ -8,16 +8,15 @@
         </span>
         <span class="range-label">{{ levels[1] }}</span>
       </div>
-      <input type="color" v-model.lazy="color" @click.stop />
+      <input type="color" v-model.lazy="metalColor" @click.stop />
     </div>
     <svg :width="width" :height="height" id="svg" ref="svg" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import * as d3 from "d3";
-import memoize from "memoize-one";
 import { settingsModule } from "@/modules/settings";
 import { projectsModule } from "@/modules/projects";
 import { IChannel, IChannelStats } from "@/modules/projects/models";
@@ -39,8 +38,6 @@ export default class BrushableHistogram extends Vue {
   @Prop({ type: Object, required: true }) readonly channel!: IChannel;
   @Prop(Number) readonly containerWidth!: number;
 
-  color = this.channel ? this.metalColor : "#ffffff";
-
   height = 50 - marginTop - marginBottom;
 
   brushX: any = null;
@@ -60,6 +57,11 @@ export default class BrushableHistogram extends Vue {
     return this.settings ? this.settings.color : "#ffffff";
   }
 
+  set metalColor(value) {
+    this.settingsContext.mutations.setChannelColor({ channelName: this.channel.name, color: value });
+    this.projectsContext.actions.getChannelStackImage();
+  }
+
   get activeAcquisitionId() {
     return this.projectsContext.getters.activeAcquisitionId;
   }
@@ -72,13 +74,7 @@ export default class BrushableHistogram extends Vue {
     return this.channel.customLabel;
   }
 
-  @Watch("color")
-  onColorChanged(color: string) {
-    this.settingsContext.mutations.setChannelColor({ channelName: this.channel.name, color: color });
-    this.projectsContext.actions.getChannelStackImage();
-  }
-
-  calcHistogramCache = memoize((stats: IChannelStats) => {
+  calcHistogram(stats: IChannelStats) {
     /*
      recalculate expensive stuff, notably bins, summaries, etc.
     */
@@ -107,7 +103,7 @@ export default class BrushableHistogram extends Vue {
       .range([marginTop + this.height, marginTop]);
 
     return histogramCache;
-  });
+  }
 
   onBrushEnd(event, x) {
     const minAllowedBrushSize = 10;
@@ -233,7 +229,7 @@ export default class BrushableHistogram extends Vue {
         acquisitionId: this.activeAcquisitionId,
         channelName: this.channel.name,
       });
-      const histogram = this.calcHistogramCache(stats);
+      const histogram = this.calcHistogram(stats);
       this.renderHistogram(histogram);
 
       // if the selection has changed, ensure that the brush correctly reflects the underlying selection.
