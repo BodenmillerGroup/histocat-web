@@ -114,25 +114,29 @@ export default class ImageViewer extends Vue {
   @Watch("channelStackImage")
   async onChannelStackImageChanged(value) {
     if (value && this.activeAcquisitionId) {
+      const prevBackgroundImage = this.scatterplot.get("backgroundImage");
+      if (prevBackgroundImage) {
+        this.scatterplot.set({
+          backgroundImage: null,
+        });
+        prevBackgroundImage.destroy();
+      }
+
+      const regl = this.scatterplot.get("regl");
       const img = new Image();
       img.crossOrigin = "";
       img.onload = () => {
-        const prevBackgroundImage = this.scatterplot.get("backgroundImage");
-        const regl = this.scatterplot.get("regl");
         this.scatterplot.set({
           backgroundImage: regl.texture(img),
           aspectRatio: this.activeAcquisition!.max_x / this.activeAcquisition!.max_y,
         });
-        if (prevBackgroundImage) {
-          prevBackgroundImage.destroy();
-        }
 
         if (this.applyMask && this.cellsByAcquisition && this.cellsByAcquisition.has(this.activeAcquisitionId!)) {
           this.points = this.cellsByAcquisition.get(this.activeAcquisitionId!)!;
           const x = transformToWebGl(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
           this.scatterplot.draw(x);
         } else {
-          this.scatterplot.draw([]);
+          this.scatterplot.clear();
         }
         // this.scatterplot.deselect({ preventEvent: true });
       };
@@ -237,7 +241,8 @@ export default class ImageViewer extends Vue {
     const canvas = this.$refs.canvasWebGl as Element;
 
     this.scatterplot = createScatterplot({
-      syncEvents: true,
+      syncEvents: false,
+      backgroundImage: null,
       canvas: canvas,
       opacity: 0.5,
       pointSize: 2,

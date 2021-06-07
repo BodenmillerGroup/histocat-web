@@ -12,6 +12,7 @@ from histocat.worker.io import (
     dataset_masks,
     dataset_v1,
     dataset_v2,
+    steinbock,
     imcfolder,
     imcfolder_v1,
     mcd,
@@ -55,6 +56,8 @@ def import_dataset_zip(db: Session, uri: str, project_id: int):
     output_dir = path.parent / "output"
     with zipfile.ZipFile(path, "r") as zip:
         zip.extractall(output_dir)
+
+    # steinbock.import_dataset(db, output_dir, project_id)
 
     for cell_csv_filename in utils.locate(output_dir, CELL_CSV_FILENAME):
         src_folder = Path(cell_csv_filename).parent

@@ -123,15 +123,6 @@ def _import_cell_csv(
     obs["CentroidX"] = df["Location_Center_X"]
     obs["CentroidY"] = df["Location_Center_Y"]
 
-    # TODO: skip neighbors columns to keep things simple
-    # neighbors_cols = [col for col in df.columns if "Neighbors_" in col]
-    # for col in neighbors_cols:
-    #     col_name = col.split("_")[1]
-    #     if col_name:
-    #         obs[col_name] = df[col]
-    #         if col_name == "NumberOfNeighbors":
-    #             obs[col_name] = obs[col_name].astype("int64")
-
     var_names = []
     x_df = pd.DataFrame()
     for key, value in channel_order.items():
