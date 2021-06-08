@@ -153,8 +153,11 @@ export default class DatasetsView extends Vue {
           this.cellsContext.actions.initializeCells({ datasetId: dataset.id }),
           this.cellsContext.actions.getDatasetResults(dataset.id),
           this.gatesContext.actions.getGates(),
-          ...(this.uiContext.getters.showMask ? [this.projectsContext.actions.getChannelStackImage()] : []),
-        ]);
+        ]).then(() => {
+          if (this.uiContext.getters.showMask) {
+            this.projectsContext.actions.getChannelStackImage();
+          }
+        });
       }
     } else {
       this.cellsContext.mutations.setActiveResultId(null);

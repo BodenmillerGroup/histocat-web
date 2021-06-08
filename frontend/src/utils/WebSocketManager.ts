@@ -71,7 +71,7 @@ export class WebSocketManager {
           case "dataset_imported": {
             WebSocketManager.datasetContext.actions.getProjectDatasets(message.projectId);
             WebSocketManager.mainContext.mutations.addNotification({
-              content: "Dataset successfully imported",
+              content: "Dataset is ready",
               color: "success",
             });
             break;
@@ -80,7 +80,7 @@ export class WebSocketManager {
             if (message.payload.dataset_id === WebSocketManager.datasetContext.getters.activeDatasetId) {
               WebSocketManager.cellsContext.mutations.addEntity(message.payload);
               WebSocketManager.mainContext.mutations.addNotification({
-                content: "Pipeline processing result is ready",
+                content: "Pipeline processing complete",
                 color: "success",
               });
             }
