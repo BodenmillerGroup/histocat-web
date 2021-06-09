@@ -72,7 +72,6 @@ export class ModelsActions extends Actions<ModelsState, ModelsGetters, ModelsMut
       //     console.log("Upload completed successfully.");
       //     this.main!.mutations.setProcessing(false);
       //     this.main!.mutations.setProcessingProgress(0);
-      //     this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
       //   },
       //   event => {
       //     const percent = Math.round((100 * event.loaded) / event.total);

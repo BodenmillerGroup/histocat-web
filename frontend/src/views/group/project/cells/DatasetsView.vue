@@ -1,7 +1,28 @@
 <template>
   <div class="datasets-view">
     <v-toolbar flat dense color="grey lighten-4">
-      <UploadButton label="Upload dataset" :upload="upload" />
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" color="primary" elevation="1" small>
+            <v-icon left small>mdi-cloud-upload</v-icon>
+            Upload dataset
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item @click="openUploadDialog('steinbock')">
+            <v-list-item-title>steinbock</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="openUploadDialog('ImcSegmentationPipelineV1')">
+            <v-list-item-title>ImcSegmentationPipelineV1</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="openUploadDialog('ImcSegmentationPipelineV2')">
+            <v-list-item-title>ImcSegmentationPipelineV2</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="openUploadDialog('masks')">
+            <v-list-item-title>Masks</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-spacer />
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
@@ -64,7 +85,7 @@
                       activeId = item.id;
                       name = item.name;
                       description = item.description;
-                      dialog = true;
+                      dialogEditDataset = true;
                     "
                   >
                     <v-icon small>mdi-pencil-outline</v-icon>
@@ -85,7 +106,7 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    <v-dialog v-model="dialog" scrollable max-width="600px">
+    <v-dialog v-model="dialogEditDataset" scrollable max-width="600px">
       <v-card>
         <v-card-title>Edit Dataset</v-card-title>
         <v-card-text>
@@ -94,8 +115,41 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click="dialog = false">Cancel</v-btn>
+          <v-btn text @click="dialogEditDataset = false">Cancel</v-btn>
           <v-btn color="primary" text @click="updateDataset()">Update</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="dialogUploadDataset" scrollable max-width="600px">
+      <v-card>
+        <v-card-title>Upload Dataset</v-card-title>
+        <v-card-text>
+          <v-form v-model="valid" ref="form">
+            <v-text-field
+              v-if="type === 'steinbock'"
+              label="Masks folder name"
+              v-model="masksFolder"
+              :rules="requiredRule"
+            />
+            <v-text-field
+              v-if="type === 'steinbock'"
+              label="Regionprops folder name"
+              v-model="regionpropsFolder"
+              :rules="requiredRule"
+            />
+            <v-text-field
+              v-if="type === 'steinbock'"
+              label="Intensities folder name"
+              v-model="intensitiesFolder"
+              :rules="requiredRule"
+            />
+            <v-file-input v-model="file" label="File" show-size accept=".zip" :rules="requiredRule" />
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="dialogUploadDataset = false">Cancel</v-btn>
+          <v-btn color="primary" text @click="uploadDataset()" :disabled="!valid">Upload</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -107,15 +161,15 @@ import { apiUrl } from "@/env";
 import { datasetsModule } from "@/modules/datasets";
 import { projectsModule } from "@/modules/projects";
 import { Component, Vue } from "vue-property-decorator";
-import UploadButton from "@/components/UploadButton.vue";
 import TreeView from "@/components/vue-json-tree-view/TreeView.vue";
 import { cellsModule } from "@/modules/cells";
 import { gatesModule } from "@/modules/gates";
 import { annotationsModule } from "@/modules/annotations";
 import { uiModule } from "@/modules/ui";
+import { required } from "@/utils/validators";
 
 @Component({
-  components: { TreeView, UploadButton },
+  components: { TreeView },
 })
 export default class DatasetsView extends Vue {
   readonly uiContext = uiModule.context(this.$store);
@@ -131,7 +185,17 @@ export default class DatasetsView extends Vue {
     ready: "mdi-check-circle-outline",
   };
 
-  dialog = false;
+  readonly requiredRule = [required];
+
+  dialogUploadDataset = false;
+  valid = true;
+  file: File | null = null;
+  type: string | null = null;
+  masksFolder = "masks";
+  intensitiesFolder = "object_intensities";
+  regionpropsFolder = "object_regionprops";
+
+  dialogEditDataset = false;
   activeId: number | null = null;
   name: string | null = null;
   description: string | null = null;
@@ -194,7 +258,7 @@ export default class DatasetsView extends Vue {
   }
 
   async updateDataset() {
-    this.dialog = false;
+    this.dialogEditDataset = false;
     if (this.activeId) {
       await this.datasetsContext.actions.updateDataset({
         datasetId: this.activeId,
@@ -203,8 +267,26 @@ export default class DatasetsView extends Vue {
     }
   }
 
-  async upload(data: FormData) {
-    await this.datasetsContext.actions.uploadDataset({ id: this.projectsContext.getters.activeProjectId!, data: data });
+  openUploadDialog(type: string) {
+    this.file = null;
+    this.type = type;
+    this.dialogUploadDataset = true;
+  }
+
+  async uploadDataset() {
+    this.dialogUploadDataset = false;
+    if ((this.$refs.form as any).validate() && this.type && this.file) {
+      const formData = new FormData();
+      formData.append("type", this.type);
+      formData.append("masks_folder", this.masksFolder);
+      formData.append("regionprops_folder", this.regionpropsFolder);
+      formData.append("intensities_folder", this.intensitiesFolder);
+      formData.append("file", this.file);
+      await this.datasetsContext.actions.uploadDataset({
+        projectId: this.projectsContext.getters.activeProjectId!,
+        formData: formData,
+      });
+    }
   }
 
   async mounted() {

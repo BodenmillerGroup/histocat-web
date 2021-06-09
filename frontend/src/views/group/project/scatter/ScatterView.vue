@@ -31,7 +31,6 @@
       />
     </v-toolbar>
     <ScatterPlot2d
-      v-if="activeResult"
       :ignore-selection="false"
       plot-id="scatterPlot"
       ref="scatterPlot"
@@ -126,7 +125,7 @@ export default class ScatterView extends Vue {
 }
 .plot {
   width: 100%;
-  height: calc(100% - 86px);
+  height: calc(100% - 36px);
 }
 .select-input {
   max-width: 200px;

@@ -82,8 +82,8 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
     }
   }
 
-  async uploadDataset(payload: { id: number; data: any }) {
-    if (!payload.id) {
+  async uploadDataset(payload: { projectId: number; formData: FormData }) {
+    if (!payload.projectId) {
       return;
     }
     try {
@@ -91,8 +91,8 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
       await api.uploadDataset(
         this.main!.getters.token,
         groupId,
-        payload.id,
-        payload.data,
+        payload.projectId,
+        payload.formData,
         () => {
           console.log("Upload has started.");
           this.ui!.mutations.setProcessing(true);
@@ -101,7 +101,6 @@ export class DatasetsActions extends Actions<DatasetsState, DatasetsGetters, Dat
           console.log("Upload completed successfully.");
           this.ui!.mutations.setProcessing(false);
           this.ui!.mutations.setProcessingProgress(0);
-          this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);

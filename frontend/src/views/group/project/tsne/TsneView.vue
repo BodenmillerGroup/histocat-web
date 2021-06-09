@@ -1,7 +1,6 @@
 <template>
   <div class="widget-container">
     <ScatterPlot2d
-      v-if="activeResult"
       plot-id="tsnePlot"
       ref="tsnePlot"
       :ignore-selection="false"
@@ -10,7 +9,6 @@
       title="tSNE"
       x-axis-title="tSNE1"
       y-axis-title="tSNE2"
-      class="plot"
     />
   </div>
 </template>
@@ -25,10 +23,6 @@ import { cellsModule } from "@/modules/cells";
 })
 export default class TsneView extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
-
-  get activeResult() {
-    return this.cellsContext.getters.activeResult;
-  }
 
   get plotData() {
     return this.cellsContext.getters.cellsByAcquisition;
@@ -46,9 +40,5 @@ export default class TsneView extends Vue {
 .widget-container {
   width: 100%;
   height: 100%;
-}
-.plot {
-  width: 100%;
-  height: calc(100% - 36px);
 }
 </style>

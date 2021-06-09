@@ -62,10 +62,6 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
     # Convert cell.csv to AnnData file format
     cell_df = _import_cell_csv(src_folder, dst_folder, image_number_to_acquisition_id, channel_order)
 
-    # TODO: skip neighbors columns to keep things simple
-    # neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]
-    # meta["columns"] = {"neighbors": neighbors_cols}
-
     acquisition_ids = sorted(list(masks.keys()))
     channels = [c[0] for c in channel_order]
 

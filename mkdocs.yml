@@ -2,6 +2,7 @@ site_name: histoCAT
 
 copyright: Copyright &copy; 2021 Anton Rau
 repo_url: https://github.com/BodenmillerGroup/histocat-web
+site_url: https://bodenmillergroup.github.io/histocat-web
 
 theme:
   name: material

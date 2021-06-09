@@ -7,12 +7,11 @@
 <script lang="ts">
 import { projectsModule } from "@/modules/projects";
 import { Component, Prop, Vue, Watch } from "vue-property-decorator";
-// import Plotly from "plotly.js/dist/plotly";
+import Plotly from "plotly.js-dist-min";
 import { cellsModule } from "@/modules/cells";
 import { ICell } from "@/modules/cells/models";
 import { uiModule } from "@/modules/ui";
-
-declare const Plotly;
+import { isEqual } from "lodash-es";
 
 const pointSize = 3;
 const unselectedPointSize = 2;
@@ -28,7 +27,7 @@ export default class ScatterPlot2d extends Vue {
   @Prop({ type: String, required: false }) readonly xAxisTitle;
   @Prop({ type: String, required: false }) readonly yAxisTitle;
   @Prop({ type: String, required: true }) readonly mapping!: string;
-  @Prop({ type: Map, required: true }) readonly data!: Readonly<Map<number, ICell[]>>;
+  @Prop() readonly data!: Readonly<Map<number, ICell[]>>;
   @Prop({ type: Boolean, required: true }) readonly ignoreSelection!: boolean;
 
   get applyMask() {
@@ -49,7 +48,7 @@ export default class ScatterPlot2d extends Vue {
     }
   }
 
-  refresh() {
+  public refresh() {
     try {
       const plot = this.$refs[this.plotId] as Element;
       if (plot) {
@@ -64,7 +63,7 @@ export default class ScatterPlot2d extends Vue {
     }
   }
 
-  private refreshOnDataChange(data: Readonly<Map<number, ICell[]>>) {
+  private getTraces(data: Readonly<Map<number, ICell[]>>) {
     const traces: any[] = [];
     data.forEach((cells, k) => {
       const filteredCells = cells.filter((v) => v.mappings[this.mapping]);
@@ -95,9 +94,16 @@ export default class ScatterPlot2d extends Vue {
         },
       });
     });
+    return traces;
+  }
 
+  private refreshOnDataChange(data: Readonly<Map<number, ICell[]>>) {
+    const traces = this.getTraces(data);
     const layout = {
       showlegend: true,
+      hovermode: "closest",
+      dragmode: "lasso",
+      autosize: true,
       xaxis: {
         title: this.xAxisTitle,
         spikesnap: "cursor",
@@ -116,9 +122,6 @@ export default class ScatterPlot2d extends Vue {
         showspikes: true,
         spikecolor: "grey",
       },
-      hovermode: "closest",
-      dragmode: "lasso",
-      autosize: true,
     };
 
     try {
@@ -135,39 +138,41 @@ export default class ScatterPlot2d extends Vue {
   }
 
   @Watch("selectedCells")
-  selectedCellsChanged(selectedCells: ICell[]) {
-    const selectedpoints: any[] = [];
-    this.data.forEach((v, k) => {
-      // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
-      selectedpoints.push(
-        selectedCells.length > 0
-          ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
-          : null
-      );
-    });
+  selectedCellsChanged(selectedCells: ICell[], oldSelectedCells: ICell[]) {
+    if (!isEqual(selectedCells, oldSelectedCells)) {
+      const selectedpoints: any[] = [];
+      this.data.forEach((v, k) => {
+        // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
+        selectedpoints.push(
+          selectedCells.length > 0
+            ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
+            : null
+        );
+      });
 
-    const updatedData: any = {
-      selectedpoints: selectedpoints,
-    };
-
-    if (this.ignoreSelection) {
-      updatedData.unselected = {
-        marker: {
-          opacity: 0,
-        },
+      const updatedData: any = {
+        selectedpoints: selectedpoints,
       };
-    }
 
-    try {
-      const plot = this.$refs[this.plotId] as any;
-      Plotly.update(plot, updatedData);
-    } catch (e) {
-      // TODO: find more elegant way to avoid exception during component dragging
+      if (this.ignoreSelection) {
+        updatedData.unselected = {
+          marker: {
+            opacity: 0,
+          },
+        };
+      }
+
+      try {
+        const plot = this.$refs[this.plotId] as any;
+        Plotly.update(plot, updatedData);
+      } catch (e) {
+        // TODO: find more elegant way to avoid exception during component dragging
+      }
     }
   }
 
   private initPlot() {
-    const initData = [];
+    const traces = this.data.size > 0 ? this.getTraces(this.data) : [];
     const initLayout = {};
     const initConfig = {
       scrollZoom: true,
@@ -180,7 +185,7 @@ export default class ScatterPlot2d extends Vue {
     try {
       const plot = this.$refs[this.plotId] as any;
 
-      Plotly.react(plot, initData, initLayout, initConfig);
+      Plotly.newPlot(plot, traces, initLayout, initConfig);
 
       plot.on("plotly_selected", (eventData) => {
         if (eventData) {
@@ -204,8 +209,6 @@ export default class ScatterPlot2d extends Vue {
           this.projectsContext.actions.getChannelStackImage();
         }
       });
-
-      this.refreshOnDataChange(this.data);
     } catch (e) {
       // TODO: find more elegant way to avoid exception during layout refresh
     }
