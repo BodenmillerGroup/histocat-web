@@ -26,5 +26,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2021-05-27
 
 Initial open-source release
-
-[2.1.0]: https://github.com/BodenmillerGroup/histocat-web/releases/tag/v2.1.0
