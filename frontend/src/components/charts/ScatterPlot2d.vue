@@ -15,6 +15,18 @@ import { isEqual } from "lodash-es";
 
 const pointSize = 3;
 const unselectedPointSize = 2;
+const defaultLayout = {
+  showlegend: false,
+  hovermode: "closest",
+  dragmode: "lasso",
+  autosize: true,
+  margin: {
+    l: 60,
+    r: 20,
+    t: 40,
+    b: 60,
+  },
+};
 
 @Component
 export default class ScatterPlot2d extends Vue {
@@ -27,15 +39,11 @@ export default class ScatterPlot2d extends Vue {
   @Prop({ type: String, required: false }) readonly xAxisTitle;
   @Prop({ type: String, required: false }) readonly yAxisTitle;
   @Prop({ type: String, required: true }) readonly mapping!: string;
-  @Prop() readonly data!: Readonly<Map<number, ICell[]>>;
+  @Prop() readonly data!: ICell[];
   @Prop({ type: Boolean, required: true }) readonly ignoreSelection!: boolean;
 
   get applyMask() {
     return this.uiContext.getters.showMask;
-  }
-
-  get heatmap() {
-    return this.cellsContext.getters.heatmap;
   }
 
   get selectedCells() {
@@ -63,14 +71,12 @@ export default class ScatterPlot2d extends Vue {
     }
   }
 
-  private getTraces(data: Readonly<Map<number, ICell[]>>) {
-    const traces: any[] = [];
-    data.forEach((cells, k) => {
-      const filteredCells = cells.filter((v) => v.mappings[this.mapping]);
-      traces.push({
+  private getTraces(data: ICell[]) {
+    const filteredCells = data.filter((v) => v.mappings[this.mapping]);
+    return [
+      {
         type: "scattergl",
         mode: "markers",
-        name: `Acquisition ${k}`,
         x: filteredCells.map((v) => v.mappings[this.mapping][0]),
         y: filteredCells.map((v) => v.mappings[this.mapping][1]),
         text: filteredCells.map((v) => `CellID: ${v.cellId}`),
@@ -92,18 +98,14 @@ export default class ScatterPlot2d extends Vue {
             opacity: 0.1,
           },
         },
-      });
-    });
-    return traces;
+      },
+    ];
   }
 
-  private refreshOnDataChange(data: Readonly<Map<number, ICell[]>>) {
+  private refreshOnDataChange(data: ICell[]) {
     const traces = this.getTraces(data);
     const layout = {
-      showlegend: true,
-      hovermode: "closest",
-      dragmode: "lasso",
-      autosize: true,
+      ...defaultLayout,
       xaxis: {
         title: this.xAxisTitle,
         spikesnap: "cursor",
@@ -133,22 +135,15 @@ export default class ScatterPlot2d extends Vue {
   }
 
   @Watch("data")
-  dataChanged(data: Map<number, ICell[]>) {
+  dataChanged(data: ICell[]) {
     this.refreshOnDataChange(data);
   }
 
   @Watch("selectedCells")
   selectedCellsChanged(selectedCells: ICell[], oldSelectedCells: ICell[]) {
     if (!isEqual(selectedCells, oldSelectedCells)) {
-      const selectedpoints: any[] = [];
-      this.data.forEach((v, k) => {
-        // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
-        selectedpoints.push(
-          selectedCells.length > 0
-            ? selectedCells.filter((v) => v.acquisitionId === k).map((v) => v.objectNumber - 1)
-            : null
-        );
-      });
+      // TODO: Important!! ObjectNumber starts from 1, so index should be ObjectNumber - 1
+      const selectedpoints = selectedCells.length > 0 ? [selectedCells.map((v) => v.index)] : [null];
 
       const updatedData: any = {
         selectedpoints: selectedpoints,
@@ -172,8 +167,8 @@ export default class ScatterPlot2d extends Vue {
   }
 
   private initPlot() {
-    const traces = this.data.size > 0 ? this.getTraces(this.data) : [];
-    const initLayout = {};
+    const traces = this.data.length > 0 ? this.getTraces(this.data) : [];
+    const initLayout = defaultLayout;
     const initConfig = {
       scrollZoom: true,
       displaylogo: false,
@@ -185,7 +180,7 @@ export default class ScatterPlot2d extends Vue {
     try {
       const plot = this.$refs[this.plotId] as any;
 
-      Plotly.newPlot(plot, traces, initLayout, initConfig);
+      Plotly.react(plot, traces, initLayout, initConfig);
 
       plot.on("plotly_selected", (eventData) => {
         if (eventData) {

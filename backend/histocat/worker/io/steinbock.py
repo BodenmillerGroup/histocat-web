@@ -30,7 +30,14 @@ def _report_error(project_id: int, message: str):
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(project_id, "error", message))
 
 
-def import_dataset(db: Session, input_folder: Path, project_id: int, masks_folder: str, regionprops_folder: str, intensities_folder: str):
+def import_dataset(
+    db: Session,
+    input_folder: Path,
+    project_id: int,
+    masks_folder: str,
+    regionprops_folder: str,
+    intensities_folder: str,
+):
     """Import dataset from the folder compatible with 'steinbock' format."""
 
     # Validate data
@@ -57,13 +64,16 @@ def import_dataset(db: Session, input_folder: Path, project_id: int, masks_folde
 
     regionprops_files = sorted(Path(src_folder / regionprops_folder).rglob("*.csv"))
     if len(regionprops_files) == 0:
-        _report_error(project_id, f"Dataset Import Error: regionprops files are missing in folder '{regionprops_folder}'")
+        _report_error(
+            project_id, f"Dataset Import Error: regionprops files are missing in folder '{regionprops_folder}'"
+        )
         return
 
     intensities_files = sorted(Path(src_folder / intensities_folder).rglob("*.csv"))
     if len(intensities_files) == 0:
-        _report_error(project_id,
-                      f"Dataset Import Error: intensities files are missing in folder '{intensities_folder}'")
+        _report_error(
+            project_id, f"Dataset Import Error: intensities files are missing in folder '{intensities_folder}'"
+        )
         return
 
     # Postpone dataset db entry creation until input data validated
@@ -97,7 +107,6 @@ def import_dataset(db: Session, input_folder: Path, project_id: int, masks_folde
         regionprops_df = regionprops_df.append(df)
     regionprops_df.reset_index(inplace=True, drop=True)
     regionprops_df["CellId"] = regionprops_df.index
-    print(regionprops_df)
 
     intensities_df = pd.DataFrame()
     for intensities_file in intensities_files:
@@ -105,7 +114,6 @@ def import_dataset(db: Session, input_folder: Path, project_id: int, masks_folde
         intensities_df = intensities_df.append(df)
     intensities_df.reset_index(inplace=True, drop=True)
     intensities_df["CellId"] = regionprops_df.index
-    print(intensities_df)
 
     var_names = []
     x_df = pd.DataFrame()
@@ -165,7 +173,11 @@ def _import_regionprops(filepath: Path, acquisition_id_mapping: Dict[str, int]):
     df.rename(columns={"Object": "ObjectNumber", "centroid-0": "CentroidY", "centroid-1": "CentroidX"}, inplace=True)
     df["ImageNumber"] = acquisition_origin_id
     df["AcquisitionId"] = acquisition_id_mapping.get(f"{slide_name}_{acquisition_origin_id}")
-    return slide_name, acquisition_origin_id, df[["ObjectNumber", "ImageNumber", "AcquisitionId", "CentroidX", "CentroidY"]]
+    return (
+        slide_name,
+        acquisition_origin_id,
+        df[["ObjectNumber", "ImageNumber", "AcquisitionId", "CentroidX", "CentroidY"]],
+    )
 
 
 def _import_intensities(filepath: Path, acquisition_id_mapping: Dict[str, int]):

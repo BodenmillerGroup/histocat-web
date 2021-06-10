@@ -34,7 +34,7 @@
       :ignore-selection="false"
       plot-id="scatterPlot"
       ref="scatterPlot"
-      :data="plotData"
+      :data="cellsList"
       mapping="scatterplot"
       title="Scatter Plot"
       :x-axis-title="markerX"
@@ -67,8 +67,8 @@ export default class ScatterView extends Vue {
     return this.cellsContext.getters.activeResult;
   }
 
-  get plotData() {
-    return this.cellsContext.getters.cellsByAcquisition;
+  get cellsList() {
+    return this.cellsContext.getters.cellsList;
   }
 
   get channels() {

@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import tifffile
 from matplotlib import cm
-from matplotlib.colors import LinearSegmentedColormap, to_rgb
+from matplotlib.colors import LinearSegmentedColormap, Normalize, to_rgb
 from skimage import img_as_ubyte
 from skimage.color import label2rgb
 from skimage.segmentation import find_boundaries
@@ -15,12 +15,14 @@ from histocat.core.acquisition.dto import FilterDto, MaskSettingsDto, ScalebarDt
 logger = logging.getLogger(__name__)
 
 
-def get_sequential_colors():
-    return cm.ScalarMappable(None, "jet")
+def get_sequential_colors(vmin: float, vmax: float):
+    norm = Normalize(vmin=vmin, vmax=vmax)
+    return cm.ScalarMappable(norm, "jet")
 
 
-def get_qualitative_colors():
-    return cm.ScalarMappable(None, "Accent")
+def get_qualitative_colors(vmin: float, vmax: float):
+    norm = Normalize(vmin=vmin, vmax=vmax)
+    return cm.ScalarMappable(norm, "Accent")
 
 
 def apply_filter(image: np.ndarray, filter: FilterDto):

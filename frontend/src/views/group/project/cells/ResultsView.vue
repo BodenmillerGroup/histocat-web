@@ -109,6 +109,7 @@ import { datasetsModule } from "@/modules/datasets";
 import { apiUrl } from "@/env";
 import { cellsModule } from "@/modules/cells";
 import { uiModule } from "@/modules/ui";
+import { isEqual } from "lodash-es";
 
 @Component
 export default class ResultsView extends Vue {
@@ -211,14 +212,11 @@ export default class ResultsView extends Vue {
     if (this.uiContext.getters.showMask) {
       this.projectsContext.actions.getChannelStackImage();
     }
-  }
 
-  @Watch("heatmap")
-  async heatmapChanged(value: { type: string; label: string; value: string } | null | undefined) {
     if (value && value.type === "annotation") {
-      await this.projectsContext.actions.getAnnotationData();
+      this.projectsContext.actions.getAnnotationData();
     } else {
-      await this.cellsContext.actions.getColorsData();
+      this.cellsContext.actions.getColorsData();
     }
   }
 

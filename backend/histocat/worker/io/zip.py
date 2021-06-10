@@ -12,11 +12,11 @@ from histocat.worker.io import (
     dataset_masks,
     dataset_v1,
     dataset_v2,
-    steinbock,
     imcfolder,
     imcfolder_v1,
     mcd,
     ometifffolder,
+    steinbock,
     utils,
 )
 from histocat.worker.io.utils import CELL_CSV_FILENAME
@@ -51,7 +51,15 @@ def import_slide(db: Session, uri: str, project_id: int):
 
 
 @timeit
-def import_dataset(db: Session, type: str, masks_folder: str, regionprops_folder: str, intensities_folder: str, uri: str, project_id: int):
+def import_dataset(
+    db: Session,
+    type: str,
+    masks_folder: str,
+    regionprops_folder: str,
+    intensities_folder: str,
+    uri: str,
+    project_id: int,
+):
     path = Path(uri)
     output_dir = path.parent / "output"
     with zipfile.ZipFile(path, "r") as zip:

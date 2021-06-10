@@ -4,7 +4,7 @@
       plot-id="pcaPlot"
       ref="pcaPlot"
       :ignore-selection="false"
-      :data="plotData"
+      :data="cellsList"
       mapping="pca"
       title="PCA"
       x-axis-title="PC1"
@@ -24,8 +24,8 @@ import { cellsModule } from "@/modules/cells";
 export default class PcaView extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
 
-  get plotData() {
-    return this.cellsContext.getters.cellsByAcquisition;
+  get cellsList() {
+    return this.cellsContext.getters.cellsList;
   }
 
   refresh() {

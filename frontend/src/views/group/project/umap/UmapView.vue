@@ -4,7 +4,7 @@
       plot-id="umapPlot"
       ref="umapPlot"
       :ignore-selection="false"
-      :data="plotData"
+      :data="cellsList"
       mapping="umap"
       title="UMAP"
       x-axis-title="UMAP1"
@@ -24,8 +24,8 @@ import { cellsModule } from "@/modules/cells";
 export default class UmapView extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
 
-  get plotData() {
-    return this.cellsContext.getters.cellsByAcquisition;
+  get cellsList() {
+    return this.cellsContext.getters.cellsList;
   }
 
   refresh() {

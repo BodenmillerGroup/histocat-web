@@ -86,7 +86,9 @@ def import_slide(uri: str, project_id: int):
 
 
 @dramatiq.actor(queue_name="import", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def import_dataset(type: str, masks_folder: str, regionprops_folder: str, intensities_folder: str, uri: str, project_id: int):
+def import_dataset(
+    type: str, masks_folder: str, regionprops_folder: str, intensities_folder: str, uri: str, project_id: int
+):
     logger.info(f"Importing dataset into project [{project_id}] from {uri}")
 
     path = os.path.dirname(os.path.abspath(uri))

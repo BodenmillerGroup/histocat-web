@@ -12,6 +12,7 @@ export interface ICentroidsData {
 }
 
 export interface ICell {
+  index: number;
   cellId: string;
   objectNumber: number;
   acquisitionId: number;

@@ -4,7 +4,7 @@
       plot-id="tsnePlot"
       ref="tsnePlot"
       :ignore-selection="false"
-      :data="plotData"
+      :data="cellsList"
       mapping="tsne"
       title="tSNE"
       x-axis-title="tSNE1"
@@ -24,8 +24,8 @@ import { cellsModule } from "@/modules/cells";
 export default class TsneView extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
 
-  get plotData() {
-    return this.cellsContext.getters.cellsByAcquisition;
+  get cellsList() {
+    return this.cellsContext.getters.cellsList;
   }
 
   refresh() {
