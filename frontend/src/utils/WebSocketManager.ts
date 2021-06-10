@@ -86,6 +86,13 @@ export class WebSocketManager {
             }
             break;
           }
+          case "error": {
+            WebSocketManager.mainContext.mutations.addNotification({
+              content: message.payload,
+              color: "error",
+            });
+            break;
+          }
         }
       }
     };

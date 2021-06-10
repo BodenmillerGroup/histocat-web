@@ -4,13 +4,13 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "histocat"
-version = "2021.06.02"
+version = "2021.06.09"
 description = "histoCAT for Web"
 authors = ["Anton Rau <anton.rau@uzh.ch>"]
 license = "MIT"
 homepage = "https://github.com/BodenmillerGroup/histocat-web"
 repository = "https://github.com/BodenmillerGroup/histocat-web"
-documentation = "https://plankter.gitbook.io/histocat"
+documentation = "https://bodenmillergroup.github.io/histocat-web"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.9"
@@ -26,7 +26,7 @@ gunicorn = { version = "^20.0.4", optional = true }
 imctools = "^2.1.7"
 jinja2 = { version = "^3.0.0", optional = true }
 mahotas = "^1.4.11"
-opencv-python-headless = "^4.5.2.52"
+opencv-python-headless = "^4.5.2.54"
 orjson = "^3.5.3"
 passlib = { version = "^1.7.4", extras = ["bcrypt"] }
 psycopg2-binary = "^2.8.6"
@@ -56,8 +56,6 @@ pylint = "*"
 pytest = "*"
 sqlalchemy-stubs = "*"
 vulture = "*"
-mkdocs-material = "*"
-mkdocs-include-markdown-plugin = "*"
 
 [tool.poetry.extras]
 backend = ["alembic", "jinja2", "python-multipart", "gunicorn", "uvicorn"]

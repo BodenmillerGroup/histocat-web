@@ -1,16 +1,14 @@
 <template>
   <div class="widget-container">
     <ScatterPlot2d
-      v-if="activeResult"
       plot-id="pcaPlot"
       ref="pcaPlot"
       :ignore-selection="false"
-      :data="plotData"
+      :data="cellsList"
       mapping="pca"
       title="PCA"
       x-axis-title="PC1"
       y-axis-title="PC2"
-      class="plot"
     />
   </div>
 </template>
@@ -26,12 +24,8 @@ import { cellsModule } from "@/modules/cells";
 export default class PcaView extends Vue {
   readonly cellsContext = cellsModule.context(this.$store);
 
-  get activeResult() {
-    return this.cellsContext.getters.activeResult;
-  }
-
-  get plotData() {
-    return this.cellsContext.getters.cellsByAcquisition;
+  get cellsList() {
+    return this.cellsContext.getters.cellsList;
   }
 
   refresh() {
@@ -46,9 +40,5 @@ export default class PcaView extends Vue {
 .widget-container {
   width: 100%;
   height: 100%;
-}
-.plot {
-  width: 100%;
-  height: calc(100% - 36px);
 }
 </style>

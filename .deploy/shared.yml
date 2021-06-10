@@ -104,13 +104,13 @@ services:
 
   rabbitmq:
     restart: always
-    image: rabbitmq:3.8.16-alpine
+    image: rabbitmq:3.8.17-alpine
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   redis:
     restart: always
-    image: redis:6.2.3-alpine3.13
+    image: redis:6.2.4-alpine3.13
     environment:
       - REDIS_HOST
       - REDIS_PORT
@@ -129,7 +129,7 @@ services:
 
   portainer:
     restart: always
-    image: portainer/portainer-ce:2.5.0-alpine
+    image: portainer/portainer-ce:2.5.1-alpine
     command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

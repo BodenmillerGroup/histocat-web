@@ -28,7 +28,7 @@ export const api = {
     token: string,
     groupId: number,
     projectId: number,
-    data,
+    formData: FormData,
     onLoadStart: () => void,
     onLoad: () => void,
     onProgress: (event: ProgressEvent) => void,
@@ -46,7 +46,7 @@ export const api = {
       onError();
     };
 
-    xhr.send(data);
+    xhr.send(formData);
 
     // return ky.post(`${apiUrl}/api/v1/projects/${id}/upload`, {
     //   body: data,

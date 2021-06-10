@@ -5,10 +5,10 @@ from typing import Optional, Sequence
 from zipfile import ZIP_DEFLATED, ZipFile
 
 import anndata as ad
-import matplotlib
 import scanpy as sc
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse, ORJSONResponse, StreamingResponse
+from matplotlib.colors import rgb2hex
 from sqlalchemy.orm import Session
 from starlette.status import HTTP_404_NOT_FOUND
 
@@ -144,12 +144,12 @@ def get_colors_data(
     colors = None
     if colors_type == "marker":
         values = adata.X[:, adata.var.index == colors_name]
-        mappable = get_sequential_colors()
-        colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
+        mappable = get_sequential_colors(vmin=values.min(), vmax=values.max())
+        colors = [rgb2hex(c) for c in mappable.to_rgba(values)]
     elif colors_type == "clustering":
         values = sc.get.obs_df(adata, keys=[colors_name]).astype(int)
-        mappable = get_qualitative_colors()
-        colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(values)]
+        mappable = get_qualitative_colors(vmin=values.min(), vmax=values.max())
+        colors = [rgb2hex(c) for c in mappable.to_rgba(values)]
 
     if colors is not None:
         output["colors"] = {"type": colors_type, "name": colors_name, "data": colors}

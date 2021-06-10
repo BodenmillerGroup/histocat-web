@@ -7,9 +7,9 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 import anndata as ad
 import dramatiq
-import matplotlib
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import ORJSONResponse
+from matplotlib.colors import rgb2hex
 from sqlalchemy.orm import Session
 from starlette.responses import StreamingResponse
 from starlette.status import HTTP_404_NOT_FOUND
@@ -68,8 +68,8 @@ def get_centroids(
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail=f"Dataset id:{dataset_id} not found")
 
     adata = ad.read_h5ad(dataset.cell_file_location())
-    mappable = get_qualitative_colors()
-    colors = [matplotlib.colors.rgb2hex(c) for c in mappable.to_rgba(adata.obs["AcquisitionId"])]
+    mappable = get_qualitative_colors(vmin=adata.obs["AcquisitionId"].min(), vmax=adata.obs["AcquisitionId"].max())
+    colors = [rgb2hex(c) for c in mappable.to_rgba(adata.obs["AcquisitionId"])]
     output = {
         "acquisitionIds": adata.obs["AcquisitionId"].tolist(),
         "cellIds": adata.obs["CellId"].tolist(),
@@ -134,6 +134,10 @@ async def download_by_id(dataset_id: int, db: Session = Depends(get_db)):
 def upload_dataset(
     group_id: int,
     project_id: int,
+    type: str = Form(None),
+    masks_folder: str = Form(None),
+    regionprops_folder: str = Form(None),
+    intensities_folder: str = Form(None),
     file: UploadFile = File(None),
     member: MemberModel = Depends(get_active_member),
     db: Session = Depends(get_db),
@@ -150,7 +154,14 @@ def upload_dataset(
         actor_name="import_dataset",
         queue_name="import",
         args=(),
-        kwargs={"uri": uri, "project_id": project_id},
+        kwargs={
+            "type": type,
+            "masks_folder": masks_folder,
+            "regionprops_folder": regionprops_folder,
+            "intensities_folder": intensities_folder,
+            "uri": uri,
+            "project_id": project_id,
+        },
         options={},
     )
     broker.enqueue(message)

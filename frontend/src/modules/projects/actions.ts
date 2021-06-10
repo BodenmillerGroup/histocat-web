@@ -108,7 +108,6 @@ export class ProjectsActions extends Actions<ProjectsState, ProjectsGetters, Pro
           console.log("Upload completed successfully.");
           this.ui!.mutations.setProcessing(false);
           this.ui!.mutations.setProcessingProgress(0);
-          this.main!.mutations.addNotification({ content: "File successfully uploaded", color: "success" });
         },
         (event) => {
           const percent = Math.round((100 * event.loaded) / event.total);

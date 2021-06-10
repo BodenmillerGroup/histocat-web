@@ -57,8 +57,8 @@ export default class ImageViewer extends Vue {
     return this.projectsContext.getters.channelStackImage;
   }
 
-  get cellsByAcquisition() {
-    return this.cellsContext.getters.cellsByAcquisition;
+  get cells() {
+    return this.cellsContext.getters.cells;
   }
 
   get selectedChannels() {
@@ -131,8 +131,8 @@ export default class ImageViewer extends Vue {
           aspectRatio: this.activeAcquisition!.max_x / this.activeAcquisition!.max_y,
         });
 
-        if (this.applyMask && this.cellsByAcquisition && this.cellsByAcquisition.has(this.activeAcquisitionId!)) {
-          this.points = this.cellsByAcquisition.get(this.activeAcquisitionId!)!;
+        if (this.applyMask && this.cells) {
+          this.points = Object.values(this.cells).filter((v) => v.acquisitionId === this.activeAcquisitionId!);
           const x = transformToWebGl(this.points, this.activeAcquisition!.max_x, this.activeAcquisition!.max_y);
           this.scatterplot.draw(x);
         } else {
@@ -237,8 +237,13 @@ export default class ImageViewer extends Vue {
     });
   }
 
+  private webglContextLostListener(event) {
+    event.preventDefault();
+  }
+
   private initViewer() {
-    const canvas = this.$refs.canvasWebGl as Element;
+    const canvas = this.$refs.canvasWebGl as HTMLCanvasElement;
+    canvas.addEventListener("webglcontextlost", this.webglContextLostListener, false);
 
     this.scatterplot = createScatterplot({
       syncEvents: false,
@@ -276,6 +281,8 @@ export default class ImageViewer extends Vue {
 
   beforeDestroy() {
     if (this.scatterplot) {
+      const canvas = this.$refs.canvasWebGl as HTMLCanvasElement;
+      canvas.removeEventListener("webglcontextlost", this.webglContextLostListener);
       this.scatterplot.destroy();
     }
   }

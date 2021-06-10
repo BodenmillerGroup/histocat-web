@@ -12,11 +12,11 @@ from histocat.worker.io import (
     dataset_masks,
     dataset_v1,
     dataset_v2,
-    steinbock,
     imcfolder,
     imcfolder_v1,
     mcd,
     ometifffolder,
+    steinbock,
     utils,
 )
 from histocat.worker.io.utils import CELL_CSV_FILENAME
@@ -27,7 +27,7 @@ OME_TIFF_SUFFIX = ".ome.tiff"
 
 
 @timeit
-def import_slide_zip(db: Session, uri: str, project_id: int):
+def import_slide(db: Session, uri: str, project_id: int):
     path = Path(uri)
     output_dir = path.parent / "output"
     with zipfile.ZipFile(path, "r") as zip:
@@ -51,22 +51,29 @@ def import_slide_zip(db: Session, uri: str, project_id: int):
 
 
 @timeit
-def import_dataset_zip(db: Session, uri: str, project_id: int):
+def import_dataset(
+    db: Session,
+    type: str,
+    masks_folder: str,
+    regionprops_folder: str,
+    intensities_folder: str,
+    uri: str,
+    project_id: int,
+):
     path = Path(uri)
     output_dir = path.parent / "output"
     with zipfile.ZipFile(path, "r") as zip:
         zip.extractall(output_dir)
 
-    # steinbock.import_dataset(db, output_dir, project_id)
-
-    for cell_csv_filename in utils.locate(output_dir, CELL_CSV_FILENAME):
-        src_folder = Path(cell_csv_filename).parent
-        is_v2 = os.path.exists(os.path.join(src_folder, "var_cell.csv"))
-        if is_v2:
-            dataset_v2.import_dataset(db, output_dir, cell_csv_filename, project_id)
-        else:
+    if type == "steinbock":
+        steinbock.import_dataset(db, output_dir, project_id, masks_folder, regionprops_folder, intensities_folder)
+    elif type == "ImcSegmentationPipelineV1":
+        for cell_csv_filename in utils.locate(output_dir, CELL_CSV_FILENAME):
             dataset_v1.import_dataset(db, output_dir, cell_csv_filename, project_id)
-
-    masks_csv_files = glob.glob(os.path.join(output_dir, "**", dataset_masks.MASKS_CSV_FILE), recursive=True)
-    if len(masks_csv_files) == 1:
-        dataset_masks.import_dataset(db, Path(masks_csv_files[0]), project_id)
+    elif type == "ImcSegmentationPipelineV2":
+        for cell_csv_filename in utils.locate(output_dir, CELL_CSV_FILENAME):
+            dataset_v2.import_dataset(db, output_dir, cell_csv_filename, project_id)
+    elif type == "masks":
+        masks_csv_files = glob.glob(os.path.join(output_dir, "**", dataset_masks.MASKS_CSV_FILE), recursive=True)
+        if len(masks_csv_files) == 1:
+            dataset_masks.import_dataset(db, Path(masks_csv_files[0]), project_id)

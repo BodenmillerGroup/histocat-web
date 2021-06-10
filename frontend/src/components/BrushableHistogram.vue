@@ -225,10 +225,10 @@ export default class BrushableHistogram extends Vue {
 
   async mounted() {
     if (this.activeAcquisitionId) {
-      const stats = await this.projectsContext.actions.getChannelStats({
+      const stats = (await this.projectsContext.actions.getChannelStats({
         acquisitionId: this.activeAcquisitionId,
         channelName: this.channel.name,
-      }) as IChannelStats;
+      })) as IChannelStats;
       const histogram = this.calcHistogram(stats);
       this.renderHistogram(histogram);
 

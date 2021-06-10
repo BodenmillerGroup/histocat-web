@@ -68,10 +68,6 @@ def import_dataset(db: Session, root_folder: Path, cell_csv_filename: str, proje
 
     cell_df = _import_cell_csv(src_folder, dst_folder, image_number_to_acquisition_id, channel_order)
 
-    # TODO: skip neighbors columns to keep things simple
-    # neighbors_cols = [col.split("_")[1] for col in cell_df.columns if "Neighbors_" in col]
-    # meta["columns"] = {"neighbors": neighbors_cols}
-
     acquisition_ids = sorted(list(masks.keys()))
     channels_sorted = sorted(channel_mass.items(), key=lambda kv: kv[1])
     channels = [c[0] for c in channels_sorted]
@@ -125,15 +121,6 @@ def _import_cell_csv(
     obs["ObjectNumber"] = df["ObjectNumber"]
     obs["CentroidX"] = df["Location_Center_X"]
     obs["CentroidY"] = df["Location_Center_Y"]
-
-    # TODO: skip neighbors columns to keep things simple
-    # neighbors_cols = [col for col in df.columns if "Neighbors_" in col]
-    # for col in neighbors_cols:
-    #     col_name = col.split("_")[1]
-    #     if col_name:
-    #         obs[col_name] = df[col]
-    #         if col_name == "NumberOfNeighbors":
-    #             obs[col_name] = obs[col_name].astype("int64")
 
     var_names = []
     x_df = pd.DataFrame()

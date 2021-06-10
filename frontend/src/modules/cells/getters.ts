@@ -6,8 +6,8 @@ export class CellsGetters extends Getters<CellsState> {
     return this.state.cells;
   }
 
-  get cellsByAcquisition() {
-    return this.state.cellsByAcquisition;
+  get cellsList() {
+    return Object.values(this.state.cells);
   }
 
   get selectedCellIds() {

@@ -154,19 +154,25 @@ async def download_channel_stack(
                 dataset = dataset_service.get(db, id=params.datasetId)
                 adata = sc.read_h5ad(dataset.cell_file_location())
 
-            adata = adata[adata.obs["AcquisitionId"] == params.acquisitionId]
+            acquisition_adata = adata[adata.obs["AcquisitionId"] == params.acquisitionId]
 
             if params.mask.colorsType == "marker":
                 heatmap_values = adata.X[:, adata.var.index == params.mask.colorsName][:, 0]
-                mappable = get_sequential_colors()
-                colors = [c for c in mappable.to_rgba(heatmap_values)]
-                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], colors))
+                mappable = get_sequential_colors(vmin=heatmap_values.min(), vmax=heatmap_values.max())
+                acquisition_heatmap_values = acquisition_adata.X[
+                    :, acquisition_adata.var.index == params.mask.colorsName
+                ][:, 0]
+                colors = [c for c in mappable.to_rgba(acquisition_heatmap_values)]
+                heatmap_dict = dict(zip(acquisition_adata.obs["ObjectNumber"], colors))
                 heatmap_dict.pop("0", None)
             elif params.mask.colorsType == "clustering":
                 heatmap_values = sc.get.obs_df(adata, keys=[params.mask.colorsName]).astype(int)[params.mask.colorsName]
-                mappable = get_qualitative_colors()
-                colors = [c for c in mappable.to_rgba(heatmap_values)]
-                heatmap_dict = dict(zip(adata.obs["ObjectNumber"], colors))
+                mappable = get_qualitative_colors(vmin=heatmap_values.min(), vmax=heatmap_values.max())
+                acquisition_heatmap_values = sc.get.obs_df(acquisition_adata, keys=[params.mask.colorsName]).astype(
+                    int
+                )[params.mask.colorsName]
+                colors = [c for c in mappable.to_rgba(acquisition_heatmap_values)]
+                heatmap_dict = dict(zip(acquisition_adata.obs["ObjectNumber"], colors))
                 heatmap_dict.pop("0", None)
             elif params.mask.colorsType == "annotation":
                 heatmap_dict = dict()

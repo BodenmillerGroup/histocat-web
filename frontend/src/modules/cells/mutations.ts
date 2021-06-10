@@ -4,28 +4,13 @@ import { ICell, ICentroidsData, IRawColorsData, IRawResultData, IRawScatterData,
 import { normalize } from "normalizr";
 import { IAnnotation } from "@/modules/annotations/models";
 
-function getCellsByAcquisition(cells: { [p: string]: ICell }) {
-  // Refresh cellsByAcquisition mapping
-  const cellsByAcquisition = new Map<number, ICell[]>();
-  Object.values(cells).forEach((c) => {
-    if (!cellsByAcquisition.has(c.acquisitionId)) {
-      cellsByAcquisition.set(c.acquisitionId, []);
-    }
-    cellsByAcquisition.get(c.acquisitionId)!.push(c);
-  });
-  return cellsByAcquisition;
-}
-
 export class CellsMutations extends Mutations<CellsState> {
   initializeCells(payload: ICentroidsData) {
     const cells = {};
-    const cellsByAcquisition = new Map<number, ICell[]>();
     payload.cellIds.forEach((cellId, i) => {
       const acquisitionId = payload.acquisitionIds[i];
-      if (!cellsByAcquisition.has(acquisitionId)) {
-        cellsByAcquisition.set(acquisitionId, []);
-      }
       const cell: ICell = {
+        index: i,
         cellId: cellId,
         objectNumber: payload.objectNumbers[i],
         acquisitionId: acquisitionId,
@@ -35,10 +20,8 @@ export class CellsMutations extends Mutations<CellsState> {
         mappings: {},
       };
       cells[cellId] = cell;
-      cellsByAcquisition.get(acquisitionId)!.push(cell);
     });
     this.state.cells = Object.freeze(cells);
-    this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
   updateCellsByResult(payload: IRawResultData) {
@@ -69,11 +52,8 @@ export class CellsMutations extends Mutations<CellsState> {
       }
     }
 
-    const cellsByAcquisition = getCellsByAcquisition(cells);
-
     this.state.markers = Object.freeze(payload.markers);
     this.state.cells = Object.freeze(cells);
-    this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
   updateCellsByColors(payload: IRawColorsData | null) {
@@ -94,10 +74,7 @@ export class CellsMutations extends Mutations<CellsState> {
       }
     }
 
-    const cellsByAcquisition = getCellsByAcquisition(cells);
-
     this.state.cells = Object.freeze(cells);
-    this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
   updateCellsByAnnotations(payload: { annotations: IAnnotation[]; cellClasses: { [name: string]: string } }) {
@@ -125,10 +102,7 @@ export class CellsMutations extends Mutations<CellsState> {
       cell.color = colors[i];
     }
 
-    const cellsByAcquisition = getCellsByAcquisition(cells);
-
     this.state.cells = Object.freeze(cells);
-    this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
   updateCellsByScatterplot(payload: IRawScatterData | null) {
@@ -149,10 +123,7 @@ export class CellsMutations extends Mutations<CellsState> {
       }
     }
 
-    const cellsByAcquisition = getCellsByAcquisition(cells);
-
     this.state.cells = Object.freeze(cells);
-    this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
   }
 
   setSelectedCellIds(payload: string[]) {
@@ -169,10 +140,7 @@ export class CellsMutations extends Mutations<CellsState> {
         cell.mappings = {};
       });
 
-      const cellsByAcquisition = getCellsByAcquisition(cells);
-
       this.state.cells = Object.freeze(cells);
-      this.state.cellsByAcquisition = Object.freeze(cellsByAcquisition);
     }
   }
 

@@ -78,7 +78,7 @@ def import_slide(uri: str, project_id: int):
         if file_extension == MCD_FILENDING:
             mcd.import_mcd(db_session, uri, project_id)
         elif file_extension == ZIP_FILENDING:
-            zip.import_slide_zip(db_session, uri, project_id)
+            zip.import_slide(db_session, uri, project_id)
     except DataImportError as error:
         logger.warning(error)
     finally:
@@ -86,7 +86,9 @@ def import_slide(uri: str, project_id: int):
 
 
 @dramatiq.actor(queue_name="import", max_retries=0, time_limit=1000 * 60 * 60 * 10)  # 10 hours time limit
-def import_dataset(uri: str, project_id: int):
+def import_dataset(
+    type: str, masks_folder: str, regionprops_folder: str, intensities_folder: str, uri: str, project_id: int
+):
     logger.info(f"Importing dataset into project [{project_id}] from {uri}")
 
     path = os.path.dirname(os.path.abspath(uri))
@@ -95,7 +97,7 @@ def import_dataset(uri: str, project_id: int):
 
     try:
         if file_extension == ZIP_FILENDING:
-            zip.import_dataset_zip(db_session, uri, project_id)
+            zip.import_dataset(db_session, type, masks_folder, regionprops_folder, intensities_folder, uri, project_id)
     except DataImportError as error:
         logger.warning(error)
     finally:

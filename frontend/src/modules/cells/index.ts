@@ -15,7 +15,6 @@ export class CellsState {
 
   // Map cells by acquisitionId
   cells: { [cellId: string]: ICell } = {};
-  cellsByAcquisition: Readonly<Map<number, ICell[]>> = new Map<number, ICell[]>();
 
   selectedCellIds: string[] = [];
 

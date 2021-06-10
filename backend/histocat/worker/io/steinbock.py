@@ -2,7 +2,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Dict, Union, List
+from typing import Dict
 
 import anndata as ad
 import pandas as pd
@@ -16,7 +16,7 @@ from histocat.core.notifier import Message
 from histocat.core.project import service as project_service
 from histocat.core.redis_manager import UPDATES_CHANNEL_NAME, redis_manager
 from histocat.core.slide import service as slide_service
-from histocat.worker.io.utils import CELL_CSV_FILENAME, IMAGE_CSV_FILENAME, copy_file
+from histocat.worker.io.utils import copy_file
 
 logger = logging.getLogger(__name__)
 
@@ -24,37 +24,74 @@ logger = logging.getLogger(__name__)
 PANEL_CSV_FILE = "panel.csv"
 
 
-def import_dataset(db: Session, input_folder: Path, project_id: int):
+def _report_error(project_id: int, message: str):
+    """Log error message and send it to the client via websocket"""
+    logger.warning(message)
+    redis_manager.publish(UPDATES_CHANNEL_NAME, Message(project_id, "error", message))
+
+
+def import_dataset(
+    db: Session,
+    input_folder: Path,
+    project_id: int,
+    masks_folder: str,
+    regionprops_folder: str,
+    intensities_folder: str,
+):
     """Import dataset from the folder compatible with 'steinbock' format."""
+
+    # Validate data
 
     project = project_service.get(db, id=project_id)
     if not project:
-        logger.warning(f"Cannot import dataset: project [id: {project_id}] does not exist.")
+        _report_error(project_id, f"Dataset Import Error: project [id: {project_id}] does not exist")
         return
 
+    # Find data source folder where panel file resides
     src_folder = None
     for path in input_folder.rglob(PANEL_CSV_FILE):
         src_folder = path.parent
         break
 
     if src_folder is None:
+        _report_error(project_id, f"Dataset Import Error: panel file is missing")
         return
 
+    mask_files = sorted(Path(src_folder / masks_folder).rglob("*.tiff"))
+    if len(mask_files) == 0:
+        _report_error(project_id, f"Dataset Import Error: mask files are missing in folder '{masks_folder}'")
+        return
+
+    regionprops_files = sorted(Path(src_folder / regionprops_folder).rglob("*.csv"))
+    if len(regionprops_files) == 0:
+        _report_error(
+            project_id, f"Dataset Import Error: regionprops files are missing in folder '{regionprops_folder}'"
+        )
+        return
+
+    intensities_files = sorted(Path(src_folder / intensities_folder).rglob("*.csv"))
+    if len(intensities_files) == 0:
+        _report_error(
+            project_id, f"Dataset Import Error: intensities files are missing in folder '{intensities_folder}'"
+        )
+        return
+
+    # Postpone dataset db entry creation until input data validated
     create_params = DatasetCreateDto(project_id=project_id, origin="steinbock", status="pending")
     dataset = dataset_service.create(db, params=create_params)
-
-    # Metadata dictionary
-    meta = {}
 
     dst_folder = Path(dataset.location)
     os.makedirs(dst_folder, exist_ok=True)
 
-    # Import panel data: { Metal Tag : channel number }
-    channel_order = _import_panel(os.path.join(src_folder, PANEL_CSV_FILE))
+    # Import panel data
+    panel_df = _import_panel(os.path.join(src_folder, PANEL_CSV_FILE))
 
+    # Metadata dictionary
+    meta = {}
     masks = {}
     acquisition_id_mapping = {}
-    for mask_file in sorted(Path(src_folder / "cell_masks").rglob("*.tiff")):
+
+    for mask_file in mask_files:
         result = _import_mask(db, mask_file, dataset)
         if result is not None:
             mask_meta, slide_name, acquisition_origin_id = result
@@ -65,44 +102,40 @@ def import_dataset(db: Session, input_folder: Path, project_id: int):
     meta["masks"] = masks
 
     regionprops_df = pd.DataFrame()
-    for regionprops_file in sorted(Path(src_folder / "cell_regionprops").rglob("*.csv")):
+    for regionprops_file in regionprops_files:
         slide_name, acquisition_origin_id, df = _import_regionprops(regionprops_file, acquisition_id_mapping)
         regionprops_df = regionprops_df.append(df)
     regionprops_df.reset_index(inplace=True, drop=True)
     regionprops_df["CellId"] = regionprops_df.index
 
-    obs = pd.DataFrame(index=regionprops_df.index)
-    obs["CellId"] = regionprops_df.index
-    obs["AcquisitionId"] = regionprops_df["AcquisitionId"]
-    obs["ImageNumber"] = regionprops_df["ImageNumber"]
-    obs["ObjectNumber"] = regionprops_df["ObjectNumber"]
-    obs["CentroidX"] = regionprops_df["CentroidX"]
-    obs["CentroidY"] = regionprops_df["CentroidY"]
-
-    print(obs)
+    intensities_df = pd.DataFrame()
+    for intensities_file in intensities_files:
+        slide_name, acquisition_origin_id, df = _import_intensities(intensities_file, acquisition_id_mapping)
+        intensities_df = intensities_df.append(df)
+    intensities_df.reset_index(inplace=True, drop=True)
+    intensities_df["CellId"] = regionprops_df.index
 
     var_names = []
     x_df = pd.DataFrame()
-    for key, value in channel_order.items():
-        # TODO: check intensity multiplier
-        x_df[key] = range(348) # df[f"Intensity_MeanIntensity_FullStackFiltered_c{value}"] * 2 ** 16
-        var_names.append(key)
+    for index, row in panel_df.iterrows():
+        channel = row["channel"]
+        name = row["name"]
+        # TODO: check intensity
+        x_df[channel] = intensities_df[name]
+        var_names.append(channel)
+
     var = pd.DataFrame(index=var_names)
     var["Channel"] = var.index
     X_counts = x_df.to_numpy()
 
-    adata = ad.AnnData(X_counts, obs=obs, var=var, dtype="float32")
+    adata = ad.AnnData(X_counts, obs=regionprops_df, var=var, dtype="float32")
     dst_uri = dst_folder / CELL_FILENAME
     adata.write_h5ad(dst_uri)
 
-    # # Convert cell.csv to AnnData file format
-    # cell_df = _import_cell_csv(src_folder, dst_folder, image_number_to_acquisition_id, channel_order)
-
     acquisition_ids = sorted(list(masks.keys()))
-    channels = [c[0] for c in channel_order]
 
     update_params = DatasetUpdateDto(
-        name=f"Dataset {dataset.id}", status="ready", acquisition_ids=acquisition_ids, channels=channels, meta=meta
+        name=f"Dataset {dataset.id}", status="ready", acquisition_ids=acquisition_ids, channels=var_names, meta=meta
     )
     dataset = dataset_service.update(db, item=dataset, params=update_params)
     redis_manager.publish(UPDATES_CHANNEL_NAME, Message(project_id, "dataset_imported"))
@@ -110,11 +143,7 @@ def import_dataset(db: Session, input_folder: Path, project_id: int):
 
 def _import_panel(path: str):
     panel_df = pd.read_csv(path)
-    # Map Metal Tag to its order number
-    channel_order = dict(
-        [(metal_name, int(index)) for metal_name, index in zip(panel_df.channel, panel_df.index)]
-    )
-    return channel_order
+    return panel_df
 
 
 def _import_mask(db: Session, filepath: Path, dataset: DatasetModel):
@@ -144,63 +173,19 @@ def _import_regionprops(filepath: Path, acquisition_id_mapping: Dict[str, int]):
     df.rename(columns={"Object": "ObjectNumber", "centroid-0": "CentroidY", "centroid-1": "CentroidX"}, inplace=True)
     df["ImageNumber"] = acquisition_origin_id
     df["AcquisitionId"] = acquisition_id_mapping.get(f"{slide_name}_{acquisition_origin_id}")
-    return slide_name, acquisition_origin_id, df[["ObjectNumber", "ImageNumber", "AcquisitionId", "CentroidX", "CentroidY"]]
+    return (
+        slide_name,
+        acquisition_origin_id,
+        df[["ObjectNumber", "ImageNumber", "AcquisitionId", "CentroidX", "CentroidY"]],
+    )
 
 
-def _import_image_csv(src_folder: Path):
-    src_uri = src_folder / IMAGE_CSV_FILENAME
+def _import_intensities(filepath: Path, acquisition_id_mapping: Dict[str, int]):
+    p = re.compile("(?P<Name>.*)_(?P<AcquisitionID>[0-9]+).csv")
+    slide_name, acquisition_origin_id = p.findall(filepath.name)[0]
 
-    if not src_uri.exists():
-        return None
-
-    df = pd.read_csv(src_uri)
-    return df
-
-
-def _import_cell_csv(
-    src_folder: Path,
-    dst_folder: Path,
-    image_number_to_acquisition_id: Dict[int, int],
-    channel_order: Dict[str, int],
-):
-    src_uri = src_folder / CELL_CSV_FILENAME
-
-    if not src_uri.exists():
-        return None
-
-    df = pd.read_csv(src_uri)
-    df.index = df.index.astype(str, copy=False)
-
-    obs = pd.DataFrame(index=df.index)
-    obs["CellId"] = df.index
-    obs["AcquisitionId"] = df["ImageNumber"]
-    obs["AcquisitionId"].replace(image_number_to_acquisition_id, inplace=True)
-    obs["ImageNumber"] = df["ImageNumber"]
-    obs["ObjectNumber"] = df["ObjectNumber"]
-    obs["CentroidX"] = df["Location_Center_X"]
-    obs["CentroidY"] = df["Location_Center_Y"]
-
-    # TODO: skip neighbors columns to keep things simple
-    # neighbors_cols = [col for col in df.columns if "Neighbors_" in col]
-    # for col in neighbors_cols:
-    #     col_name = col.split("_")[1]
-    #     if col_name:
-    #         obs[col_name] = df[col]
-    #         if col_name == "NumberOfNeighbors":
-    #             obs[col_name] = obs[col_name].astype("int64")
-
-    var_names = []
-    x_df = pd.DataFrame()
-    for key, value in channel_order.items():
-        # TODO: check intensity multiplier
-        x_df[key] = df[f"Intensity_MeanIntensity_FullStackFiltered_c{value}"] * 2 ** 16
-        var_names.append(key)
-    var = pd.DataFrame(index=var_names)
-    var["Channel"] = var.index
-    X_counts = x_df.to_numpy()
-
-    adata = ad.AnnData(X_counts, obs=obs, var=var, dtype="float32")
-    dst_uri = dst_folder / CELL_FILENAME
-    adata.write_h5ad(dst_uri)
-
-    return df
+    df = pd.read_csv(filepath)
+    df.rename(columns={"Object": "ObjectNumber"}, inplace=True)
+    df["ImageNumber"] = acquisition_origin_id
+    df["AcquisitionId"] = acquisition_id_mapping.get(f"{slide_name}_{acquisition_origin_id}")
+    return slide_name, acquisition_origin_id, df
