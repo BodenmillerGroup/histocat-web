@@ -1,4 +1,4 @@
-site_name: histoCAT
+site_name: histoCAT Web
 
 copyright: Copyright &copy; 2021 Anton Rau
 repo_url: https://github.com/BodenmillerGroup/histocat-web
@@ -31,23 +31,21 @@ nav:
     - user/structure.md
     - user/groups.md
     - user/projects.md
-    - "Project Panels":
+    - Project Workspace:
       - user/project.md
-      - user/layouts.md
       - user/slides.md
+      - user/channels.md
       - user/image.md
       - user/tiles.md
-      - user/channels.md
       - user/region.md
       - user/histogram.md
-      - user/options.md
       - user/presets.md
-      - user/data.md
+      - user/settings.md
       - user/datasets.md
       - user/pipelines.md
       - user/results.md
       - user/gating.md
-    - "Admin Views":
+    - Admin Views:
       - user/users.md
       - user/models.md
   - Developer documentation:

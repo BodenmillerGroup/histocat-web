@@ -1,14 +1,14 @@
 # Slides
 
-Main purpose of the Slides view is to provide access to slide images.
+Slides view represents all uploaded slides in a tree-structured manner, Where each slide can host multiple image acquisitions and panorama images.
 
 ![Slides view](../assets/slides-view.png)
 
 The first step is to upload compatible slides files.
-Three formats are supported at the moment:
+Three formats supported at the moment:
 
-* MCD™ files acquired with the Hyperion™ Imaging System and CyTOF® Software 6.7 and later
-* Output of _mcdfolder2imcfolder_ conversion of **imctools v2** library
+* MCD™ files acquired with the Hyperion™ Imaging System and CyTOF® Software 6.7 and later. Such files have `*.mcd` extension. You can also upload zipped MCD files in order to decrease upload size.
+* Zipped output of _mcdfolder2imcfolder_ conversion of **imctools v2** library.
 * Zipped Fluidigm Imaging Mass Cytometry™ data folders with content similar to the following:
 
 ![Fluidigm IMC data folder](../assets/fluidigm-data.png)
