@@ -11250,10 +11250,10 @@ vuex-persist@3.1.3:
     deepmerge "^4.2.2"
     flatted "^3.0.5"
 
-vuex-smart-module@0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/vuex-smart-module/-/vuex-smart-module-0.6.1.tgz#eb0f2ff9c0b7a85b542d7277fcfc8c57b5b5cfca"
-  integrity sha512-vyFqLGDoniy8abSQ5CAkI5/1nYHn+WgFkFObTBSeGOl18qPKOtWFPn3jThw8+fmssdV3h8HqJn+5eXN0STlTyA==
+vuex-smart-module@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/vuex-smart-module/-/vuex-smart-module-0.6.0.tgz#e6d4f0b35e4869215504df9d1702af6387f6d931"
+  integrity sha512-hL63i4O2m3viMsV0vY7wugE+mfy6EPz0HK+wzGqBV2rRcaqEROas3mlBH5XBiuAclNtNEWsr6VPWEfujIzvVMg==
 
 vuex@3.6.2:
   version "3.6.2"
