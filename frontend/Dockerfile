@@ -1,5 +1,5 @@
 # Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM node:14.17.0-alpine3.13 as build-stage
+FROM node:14.17.1-alpine3.13 as build-stage
 
 WORKDIR /app
 

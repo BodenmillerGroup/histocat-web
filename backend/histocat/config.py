@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
 
-    USERS_OPEN_REGISTRATION: bool = False
+    OPEN_USER_REGISTRATION: bool = False
 
     @property
     def SQLALCHEMY_DATABASE_URI(self):

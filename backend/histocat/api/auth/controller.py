@@ -102,7 +102,7 @@ def signup(
     db: Session = Depends(get_db),
 ):
     """Create new user without the need to be logged in."""
-    if not config.USERS_OPEN_REGISTRATION:
+    if not config.OPEN_USER_REGISTRATION:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Open user registration is forbidden on this server",

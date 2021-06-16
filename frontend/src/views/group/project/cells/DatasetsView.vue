@@ -192,8 +192,8 @@ export default class DatasetsView extends Vue {
   file: File | null = null;
   type: string | null = null;
   masksFolder = "masks";
-  intensitiesFolder = "object_intensities";
-  regionpropsFolder = "object_regionprops";
+  intensitiesFolder = "intensities";
+  regionpropsFolder = "regionprops";
 
   dialogEditDataset = false;
   activeId: number | null = null;

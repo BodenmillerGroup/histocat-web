@@ -42,6 +42,7 @@ nav:
       - user/presets.md
       - user/settings.md
       - user/datasets.md
+      - user/segmentation.md
       - user/pipelines.md
       - user/results.md
       - user/gating.md

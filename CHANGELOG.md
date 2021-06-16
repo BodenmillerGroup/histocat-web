@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.4] - 2021-06-16
+
+- Rename `OPEN_USER_REGISTRATION` env variable according to AirLab naming scheme.
+- `steinbock` default folder names updated according to v0.5.2 changes.
+- Some packages updated.
+
 ## [2.1.3] - 2021-06-10
 
 - Scatter plots optimizations. For pending issue see https://github.com/BodenmillerGroup/histocat-web/issues/17
