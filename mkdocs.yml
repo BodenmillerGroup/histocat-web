@@ -33,19 +33,9 @@ nav:
     - user/projects.md
     - Project Workspace:
       - user/project.md
-      - user/slides.md
-      - user/channels.md
-      - user/image.md
-      - user/tiles.md
-      - user/region.md
-      - user/histogram.md
-      - user/presets.md
-      - user/settings.md
+      - user/imaging.md
       - user/datasets.md
-      - user/segmentation.md
-      - user/pipelines.md
-      - user/results.md
-      - user/gating.md
+      - user/data-analysis.md
     - Admin Views:
       - user/users.md
       - user/models.md
